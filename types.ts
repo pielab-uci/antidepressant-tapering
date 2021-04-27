@@ -1,11 +1,21 @@
-export interface User {
+export interface Clinician {
+  id: number;
   email: string;
   password: string;
-  role: "clinician"|"patient";
+  name: string;
+  taperingConfigurations: TaperingConfiguration[];
+}
+
+export interface Patient {
+  id: number;
+  email: string;
+  password: string;
+  name: string;
+  image?: string;
   taperingConfigurations: TaperingConfiguration[];
 }
 
 export interface TaperingConfiguration {
-  clinician: Omit<User, "password"|"taperingConfigurations">;
-  patient: Omit<User, "password"|"taperingConfigurations">;
+  clinicianId: number;
+  patient: Omit<Patient, "password">;
 }

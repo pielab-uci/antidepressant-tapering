@@ -1,4 +1,4 @@
-import { User } from '../../types';
+import {Clinician} from '../../types';
 
 export const LOGIN_REQUEST = "LOGIN_REQUEST" as const;
 export const LOGIN_SUCCESS = "LOGIN_SUCCESS" as const;
@@ -11,7 +11,7 @@ export interface LoginRequestAction {
 
 export interface LoginSuccessAction {
   type: typeof LOGIN_SUCCESS;
-  data: Omit<User, "password">
+  data: Omit<Clinician, "password">
 }
 
 export interface LoginFailureAction {

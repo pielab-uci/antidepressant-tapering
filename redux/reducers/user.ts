@@ -7,14 +7,14 @@ import {
   LoginSuccessAction
 } from "../actions/user";
 import produce from "immer";
-import {User} from "../../types";
+import {Clinician} from "../../types";
 
 export interface UserState {
   loggingIn: boolean;
   loggedIn: boolean;
   logInError: any;
 
-  me: Omit<User, 'password'>|null
+  me: Omit<Clinician, 'password'>|null
 }
 
 export const initialState: UserState = {

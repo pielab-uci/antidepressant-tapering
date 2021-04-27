@@ -1,15 +1,15 @@
 import * as React from 'react';
-import {useSelector} from "react-redux";
-import {UserState} from "../redux/reducers/user";
-import {RootState} from "../redux/reducers";
-import LoginPage from "./LoginPage";
+import NavBar from '../components/NavBar';
+import PatientsList from "../components/PatientsList";
+import {useEffect} from "react";
 
 const HomePage = () => {
-  // const {me} = useSelector<RootState, UserState>(state => state.user)
-
   return (
     <>
       <div>Home</div>
+      <NavBar/>
+      <PatientsList />
+      <button>New Patient</button>
     </>
   )
 }

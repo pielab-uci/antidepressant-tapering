@@ -1,4 +1,4 @@
-import { all, delay, fork, put, takeLatest} from 'redux-saga/effects';
+import {all, delay, fork, put, takeLatest} from 'redux-saga/effects';
 import {
   LOGIN_FAILURE,
   LOGIN_REQUEST,
@@ -7,22 +7,33 @@ import {
   LoginRequestAction,
   LoginSuccessAction
 } from "../actions/user";
-import {User} from "../../types";
+import {Clinician, Patient, TaperingConfiguration} from "../../types";
 
+function loginAPI(): {data: Omit<Clinician, 'password'>} {
+  const dummyClinician: Omit<Clinician, 'password'> = {
+    email: 'clinician@gmail.com',
+    name: 'Stephen Few',
+    id: 1,
+    taperingConfigurations: [{
+      clinicianId: 1,
+      patient: { id:1, name: 'Sally Johnson', email: 'jonhnsons@uci.edu', taperingConfigurations: [] as TaperingConfiguration[],  },
+    }, {
+      clinicianId: 1,
+      patient: { id:2, name: 'John Greenberg', email: 'greenbergj@uci.edu', taperingConfigurations: [] as TaperingConfiguration[] }
+    }]
+  }
+  return{ data: dummyClinician };
+}
 
 function* logIn(action: LoginRequestAction) {
   try {
-  yield delay(1000);
+    yield delay(1000);
+    const result = loginAPI();
 
-  const dummyUser: Omit<User, 'password'> = {
-    email: 'clinician@gmail.com',
-    role: 'clinician',
-    taperingConfigurations: [{ clinician: { email: 'clinician@gmail.com', role: 'clinician'}, patient: {email: 'patient@gmail.com', role: 'patient'}}]
-  }
-  yield put<LoginSuccessAction>({
-    type: LOGIN_SUCCESS,
-    data: dummyUser
-  })
+    yield put<LoginSuccessAction>({
+      type: LOGIN_SUCCESS,
+      data: result.data,
+    })
   } catch (err) {
     console.error(err);
     yield put<LoginFailureAction>({

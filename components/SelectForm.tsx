@@ -1,12 +1,12 @@
 import * as React from 'react';
-import {FC} from "react";
+import {FC, RefObject} from "react";
 import {useForm} from "react-hook-form";
-
 interface Props {
   title: string;
-  options: any[];
+  options: string[];
   onChange: Function;
   info?: any;
+  ref?: RefObject<FC<Props>>
 }
 
 const SelectForm: FC<Props> = ({ title, options, info}) => {

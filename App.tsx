@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {Switch, Route} from 'react-router';
-import {Link, BrowserRouter} from 'react-router-dom';
+import {Link, BrowserRouter, HashRouter as Router} from 'react-router-dom';
 import HomePage from "./pages/HomePage";
 import TaperConfigurationPage from "./pages/TaperConfigurationPage";
 import LoggingConfigurationPage from "./pages/LoggingConfigurationPage";
@@ -11,7 +11,7 @@ import {UserState} from "./redux/reducers/user";
 import LoginPage from "./pages/LoginPage";
 import {useEffect} from "react";
 import {LOGIN_REQUEST, LoginRequestAction} from "./redux/actions/user";
-
+import 'antd/dist/antd.css'
 const App = () => {
   const {me} = useSelector<RootState, UserState>(state => state.user)
   const dispatch = useDispatch();
@@ -25,7 +25,7 @@ const App = () => {
     <>
       {!me ? <LoginPage/>
         :
-        <BrowserRouter>
+        <Router>
           <div>
             <Link to="/">Home</Link>
             &nbsp;
@@ -43,7 +43,7 @@ const App = () => {
               <Route path="/symptom-report" component={SymptomReportPage}/>
             </Switch>
           </div>
-        </BrowserRouter>}
+        </Router>}
     </>
   )
 }

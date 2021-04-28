@@ -3,6 +3,7 @@ const path = require("path");
 module.exports = {
   mode: "development",
   devtool: "source-map",
+  // devtool: "eval",
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".jsx"],
   },
@@ -12,7 +13,9 @@ module.exports = {
   },
 
   module: {
-    rules: [{ test: /.tsx?$/, loader: "awesome-typescript-loader" }],
+    rules: [
+      {test: /.tsx?$/, loader: "awesome-typescript-loader"},
+      {test: /.css$/, use: ['style-loader', 'css-loader']}],
   },
 
   output: {

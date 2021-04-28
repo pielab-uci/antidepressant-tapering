@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {useCallback, useEffect, useState} from "react";
-import PrescriptionForm from "../components/PrescriptionForm";
+import PrescriptionForm from "../components/PrescriptionForm/PrescriptionForm";
+import ProjectedSchedule from "../components/ProjectedSchedule";
 
 const TaperConfigurationPage = () => {
   const [currentDosage, setCurrentDosage] = useState({});
@@ -20,6 +21,9 @@ const TaperConfigurationPage = () => {
 
       <PrescriptionForm/>
       <button onClick={addPrescriptionForm}>Add Drug</button>
+      <hr/>
+      <ProjectedSchedule/>
+      <hr/>
 
       <h3>Share with Patient</h3>
       <textarea/>

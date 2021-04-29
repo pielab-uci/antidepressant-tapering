@@ -1,4 +1,4 @@
-import {PrescriptionFormState} from "./PrescriptionForm";
+import {PrescriptionFormState} from "./types";
 import {Drug} from "../../types";
 import produce from "immer";
 
@@ -44,29 +44,49 @@ export interface ChooseFormAction {
 
 export const CURRENT_DOSAGE_CHANGE = "CURRENT_DOSAGE_CHANGE" as const;
 
-export interface CurrentDosageChange {
+export interface CurrentDosageChangeAction {
   type: typeof CURRENT_DOSAGE_CHANGE;
-  data: string;
+  data: { dosage: string, quantity: number };
+}
+
+export const currentDosageChange = (data: { dosage: string, quantity: number }): CurrentDosageChangeAction => {
+  console.group("currentDosageChange")
+  console.log("data: ", data);
+  console.groupEnd();
+  return ({
+    type: CURRENT_DOSAGE_CHANGE,
+    data,
+  });
 }
 
 export const NEXT_DOSAGE_CHANGE = "NEXT_DOSAGE_CHANGE" as const;
 
+
 export interface NextDosageChangeAction {
   type: typeof NEXT_DOSAGE_CHANGE;
-  data: string;
+  data: { dosage: string, quantity: number };
 }
+
+export const nextDosageChange = (data: { dosage: string, quantity: number }): NextDosageChangeAction => {
+  console.group("nextDosageChange")
+  console.log("data: ", data)
+  console.groupEnd();
+  return ({
+    type: NEXT_DOSAGE_CHANGE,
+    data
+  })
+};
+
 
 export type PrescriptionFormActions =
   | FetchDrugsAction
   | DrugNameChangeAction
   | ChooseBrandAction
   | ChooseFormAction
-  | CurrentDosageChange
+  | CurrentDosageChangeAction
   | NextDosageChangeAction
 
-export type PrescriptionFormReducer = (prevState: PrescriptionFormState, action: PrescriptionFormActions) => PrescriptionFormState;
-
-export const reducer: PrescriptionFormReducer = (state: PrescriptionFormState, action: PrescriptionFormActions): PrescriptionFormState => {
+export const reducer = (state: PrescriptionFormState, action: PrescriptionFormActions): PrescriptionFormState => {
   return produce(state, draft => {
     switch (action.type) {
       case FETCH_DRUGS:
@@ -89,13 +109,25 @@ export const reducer: PrescriptionFormReducer = (state: PrescriptionFormState, a
         break;
 
       case CHOOSE_FORM:
-        draft.chosenDrugForm = draft.drugFormOptions!.find(form => form.form === action.data);
+        const chosenDrugForm = draft.drugFormOptions!.find(form => form.form === action.data)!;
+        draft.chosenDrugForm = chosenDrugForm;
+        draft.dosageOptions = chosenDrugForm.dosages;
+        chosenDrugForm.dosages.forEach(dosage => {
+          draft.currentDosages[dosage] = 0;
+          draft.nextDosages[dosage] = 0;
+        });
         break;
 
       case CURRENT_DOSAGE_CHANGE:
+        if (action.data.quantity >= 0) {
+          draft.currentDosages[action.data.dosage] = action.data.quantity;
+        }
         break;
 
       case NEXT_DOSAGE_CHANGE:
+        if (!(action.data.quantity < 0)) {
+          draft.nextDosages[action.data.dosage] = action.data.quantity;
+        }
         break;
 
       default:
@@ -103,3 +135,5 @@ export const reducer: PrescriptionFormReducer = (state: PrescriptionFormState, a
     }
   })
 }
+
+export type PrescriptionFormReducer = typeof reducer;

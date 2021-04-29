@@ -1,44 +1,57 @@
 import * as React from 'react';
 import Dosages from "../Dosages";
 import SelectInterval from "../SelectInterval";
-import {Reducer, useCallback, useEffect, useReducer} from "react";
+import {useEffect, createContext} from "react";
+import {useReducer} from 'reinspect'
 import {useSelector} from "react-redux";
 import {TaperConfigState} from "../../redux/reducers/taperConfig";
 import {RootState} from "../../redux/reducers";
-import {Drug, DrugOption} from "../../types";
 import {Select} from 'antd';
 
 const {Option} = Select;
 import {
   CHOOSE_BRAND, CHOOSE_FORM,
   DRUG_NAME_CHANGE, FETCH_DRUGS,
-  initialState, PrescriptionFormActions,
-  reducer
+  initialState,
+  reducer,
+  currentDosageChange,
+  nextDosageChange, PrescriptionFormReducer
 } from './reducer'
+import {IPrescriptionFormContext, PrescriptionFormState} from "./types";
+import {DrugForm} from "../../types";
 
-export interface PrescriptionFormState {
-  chosenDrug: Drug | undefined | null;
-  chosenBrand: DrugOption | null;
-  chosenDrugForm: { form: string, dosages: string[] } | null | undefined;
-  brandOptions: DrugOption[] | null;
-  drugFormOptions: { form: string, dosages: string[] }[] | null;
-  dosageOptions: string[];
-  currentDosages: object;
-  nextDosages: object;
-  drugs: Drug[] | null;
-}
+
+export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
+  Current: {dosages: initialState.currentDosages, action: currentDosageChange},
+  Next: {dosages: initialState.nextDosages, action: nextDosageChange},
+  chosenDrugForm: initialState.chosenDrugForm,
+  dosageOptions: initialState.dosageOptions,
+  currentDosages: initialState.currentDosages,
+  nextDosages: initialState.nextDosages,
+  dispatch: () => {
+  }
+});
 
 const PrescriptionForm = () => {
   const {drugs} = useSelector<RootState, TaperConfigState>(state => state.taperConfig);
-  const [state, dispatch] = useReducer<Reducer<PrescriptionFormState, PrescriptionFormActions>>(reducer, initialState);
-  const {chosenDrug, chosenBrand, brandOptions, chosenDrugForm, drugFormOptions, dosageOptions} = state;
+  const [state, dispatch] = useReducer<PrescriptionFormReducer, PrescriptionFormState>(reducer, initialState, init => initialState, 'PrescriptionFormReducer');
+  const {
+    chosenDrug,
+    chosenBrand,
+    brandOptions,
+    chosenDrugForm,
+    drugFormOptions,
+    dosageOptions,
+    currentDosages,
+    nextDosages
+  } = state;
 
   useEffect(() => {
     dispatch({
       type: FETCH_DRUGS,
       data: drugs
     })
-  }, []);
+  }, [drugs]);
 
   const onSubmit = () => {
   }
@@ -57,24 +70,31 @@ const PrescriptionForm = () => {
     });
   }
 
-  const onFormChange = (value: string) => {
-    dispatch({
+  const onFormChange = async (value: string) => {
+    await dispatch({
       type: CHOOSE_FORM,
       data: value,
     });
   }
 
-  const onCurrentDosageChange = useCallback(() => {
-
-  }, []);
-
-  const onNextDosageChange = useCallback(() => {
-
-  }, [])
-
+  const renderDosages = (chosenDrugForm: DrugForm | null | undefined, time: "Current" | "Next", dosages: { [key: string]: number }) => {
+    return (
+      <>
+        {chosenDrugForm ? <Dosages time={time} dosages={dosages}/> : <div>No drug form selected</div>}
+      </>
+    )
+  }
 
   return (
-    <>
+    <PrescriptionFormContext.Provider value={{
+      Current: {dosages: currentDosages, action: currentDosageChange},
+      Next: {dosages: nextDosages, action: nextDosageChange},
+      currentDosages,
+      nextDosages,
+      chosenDrugForm,
+      dosageOptions,
+      dispatch
+    }}>
       <form onSubmit={onSubmit}>
         <h3>Drug Name</h3>
         <Select defaultValue='' value={chosenDrug?.name} onChange={onDrugNameChange} style={{width: 200}}>
@@ -93,13 +113,16 @@ const PrescriptionForm = () => {
         </Select>
         <hr/>
 
-        <Dosages title="Current Dosages" dosages={dosageOptions} onChange={onCurrentDosageChange}/>
-        <Dosages title="Next Dosages" dosages={dosageOptions} onChange={onNextDosageChange}/>
+        <div>Current Dosages</div>
+        {renderDosages(chosenDrugForm, "Current", currentDosages)}
+        <hr/>
+        <div>Next Dosages</div>
+        {renderDosages(chosenDrugForm, "Next", nextDosages)}
         <hr/>
 
         <SelectInterval/>
       </form>
-    </>
+    </PrescriptionFormContext.Provider>
   )
 }
 export default PrescriptionForm;

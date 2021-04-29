@@ -20,14 +20,18 @@ export interface TaperingConfiguration {
   patient: Omit<Patient, "password">;
 }
 
-export interface DrugOption {
-  brand: string;
-  forms: {
-    form: string,
-    dosages: string[]
-  }[]
-}
 export interface Drug {
   name: string;
   options: DrugOption[]
 }
+
+export interface DrugOption {
+  brand: string;
+  forms: DrugForm[]
+}
+
+export interface DrugForm {
+  form: string;
+  dosages: string[]
+}
+

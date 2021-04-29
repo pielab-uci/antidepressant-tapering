@@ -18,4 +18,4 @@ const PatientPage: FC<Props> = ({ patient }) => {
   )
 }
 
-export default PatientPage
+export default PatientPage;

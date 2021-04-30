@@ -1,13 +1,16 @@
 import {Drug, DrugOption, DrugForm} from "../../types";
 import {
-  CurrentDosageChangeAction,
   initialState,
+} from "./reducer";
+import {
+  CurrentDosageChangeAction,
   NextDosageChangeAction,
   PrescriptionFormActions
-} from "./reducer";
+} from './actions';
 import {Dispatch} from "react";
 
 export interface PrescriptionFormState {
+  drugs: Drug[] | null;
   chosenDrug: Drug | undefined | null;
   chosenBrand: DrugOption | null;
   chosenDrugForm: DrugForm | null | undefined;
@@ -16,16 +19,15 @@ export interface PrescriptionFormState {
   dosageOptions: string[];
   currentDosages: { [key: string]: number };
   nextDosages: { [key: string]: number };
-  drugs: Drug[] | null;
+  intervalUnit: "Days"|"Weeks"|"Months";
+  intervalCount: number;
+  intervalStartDate: Date;
+  intervalEndDate: Date | null;
 }
 
-export interface IPrescriptionFormContext {
-  Current: { dosages: typeof initialState.currentDosages, action: (data: {dosage: string, quantity: number}) => CurrentDosageChangeAction};
-  Next: { dosages: typeof initialState.nextDosages, action: (data: {dosage: string, quantity: number}) => NextDosageChangeAction};
-  chosenDrugForm: DrugForm | null | undefined;
-  currentDosages: typeof initialState.currentDosages;
-  nextDosages: typeof initialState.nextDosages;
-  dosageOptions: string[];
+export type IPrescriptionFormContext = PrescriptionFormState
+  & {
+  Current: { dosages: typeof initialState.currentDosages, action: (data: { dosage: string, quantity: number }) => CurrentDosageChangeAction };
+  Next: { dosages: typeof initialState.nextDosages, action: (data: { dosage: string, quantity: number }) => NextDosageChangeAction };
   dispatch: Dispatch<PrescriptionFormActions>;
 }
-

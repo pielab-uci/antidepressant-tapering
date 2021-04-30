@@ -7,27 +7,24 @@ import {useSelector} from "react-redux";
 import {TaperConfigState} from "../../redux/reducers/taperConfig";
 import {RootState} from "../../redux/reducers";
 import {Select} from 'antd';
-
 const {Option} = Select;
 import {
-  CHOOSE_BRAND, CHOOSE_FORM,
-  DRUG_NAME_CHANGE, FETCH_DRUGS,
   initialState,
   reducer,
-  currentDosageChange,
-  nextDosageChange, PrescriptionFormReducer
+  PrescriptionFormReducer
 } from './reducer'
+import {
+  CHOOSE_BRAND, CHOOSE_FORM,
+  DRUG_NAME_CHANGE, FETCH_DRUGS, currentDosageChange, nextDosageChange
+} from './actions'
 import {IPrescriptionFormContext, PrescriptionFormState} from "./types";
 import {DrugForm} from "../../types";
 
 
 export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
+  ...initialState,
   Current: {dosages: initialState.currentDosages, action: currentDosageChange},
   Next: {dosages: initialState.nextDosages, action: nextDosageChange},
-  chosenDrugForm: initialState.chosenDrugForm,
-  dosageOptions: initialState.dosageOptions,
-  currentDosages: initialState.currentDosages,
-  nextDosages: initialState.nextDosages,
   dispatch: () => {
   }
 });
@@ -70,8 +67,8 @@ const PrescriptionForm = () => {
     });
   }
 
-  const onFormChange = async (value: string) => {
-    await dispatch({
+  const onFormChange = (value: string) => {
+    dispatch({
       type: CHOOSE_FORM,
       data: value,
     });
@@ -89,10 +86,7 @@ const PrescriptionForm = () => {
     <PrescriptionFormContext.Provider value={{
       Current: {dosages: currentDosages, action: currentDosageChange},
       Next: {dosages: nextDosages, action: nextDosageChange},
-      currentDosages,
-      nextDosages,
-      chosenDrugForm,
-      dosageOptions,
+      ...state,
       dispatch
     }}>
       <form onSubmit={onSubmit}>

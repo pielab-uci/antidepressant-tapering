@@ -1,6 +1,13 @@
 import {PrescriptionFormState} from "./types";
-import {Drug} from "../../types";
 import produce from "immer";
+import {
+  CHOOSE_BRAND,
+  CHOOSE_FORM, CURRENT_DOSAGE_CHANGE, DRUG_NAME_CHANGE, FETCH_DRUGS,
+  INTERVAL_COUNT_CHANGE, INTERVAL_END_DATE_CHANGE,
+  INTERVAL_START_DATE_CHANGE, INTERVAL_UNIT_CHANGE,
+  NEXT_DOSAGE_CHANGE,
+  PrescriptionFormActions
+} from "./actions";
 
 export const initialState: PrescriptionFormState = {
   drugs: null,
@@ -12,79 +19,12 @@ export const initialState: PrescriptionFormState = {
   dosageOptions: [],
   currentDosages: {},
   nextDosages: {},
+  intervalCount: 0,
+  intervalUnit: "Days",
+  intervalStartDate: new Date(),
+  intervalEndDate: null
 }
 
-export const FETCH_DRUGS = "FETCH_DRUGS" as const;
-
-export interface FetchDrugsAction {
-  type: typeof FETCH_DRUGS,
-  data: Drug[];
-}
-
-export const DRUG_NAME_CHANGE = "DRUG_NAME_CHANGE" as const;
-
-export interface DrugNameChangeAction {
-  type: typeof DRUG_NAME_CHANGE;
-  data: string;
-}
-
-export const CHOOSE_BRAND = "CHOOSE_BRAND" as const;
-
-export interface ChooseBrandAction {
-  type: typeof CHOOSE_BRAND,
-  data: string;
-}
-
-export const CHOOSE_FORM = "CHOOSE_FORM" as const;
-
-export interface ChooseFormAction {
-  type: typeof CHOOSE_FORM,
-  data: string;
-}
-
-export const CURRENT_DOSAGE_CHANGE = "CURRENT_DOSAGE_CHANGE" as const;
-
-export interface CurrentDosageChangeAction {
-  type: typeof CURRENT_DOSAGE_CHANGE;
-  data: { dosage: string, quantity: number };
-}
-
-export const currentDosageChange = (data: { dosage: string, quantity: number }): CurrentDosageChangeAction => {
-  console.group("currentDosageChange")
-  console.log("data: ", data);
-  console.groupEnd();
-  return ({
-    type: CURRENT_DOSAGE_CHANGE,
-    data,
-  });
-}
-
-export const NEXT_DOSAGE_CHANGE = "NEXT_DOSAGE_CHANGE" as const;
-
-
-export interface NextDosageChangeAction {
-  type: typeof NEXT_DOSAGE_CHANGE;
-  data: { dosage: string, quantity: number };
-}
-
-export const nextDosageChange = (data: { dosage: string, quantity: number }): NextDosageChangeAction => {
-  console.group("nextDosageChange")
-  console.log("data: ", data)
-  console.groupEnd();
-  return ({
-    type: NEXT_DOSAGE_CHANGE,
-    data
-  })
-};
-
-
-export type PrescriptionFormActions =
-  | FetchDrugsAction
-  | DrugNameChangeAction
-  | ChooseBrandAction
-  | ChooseFormAction
-  | CurrentDosageChangeAction
-  | NextDosageChangeAction
 
 export const reducer = (state: PrescriptionFormState, action: PrescriptionFormActions): PrescriptionFormState => {
   return produce(state, draft => {
@@ -128,6 +68,22 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         if (!(action.data.quantity < 0)) {
           draft.nextDosages[action.data.dosage] = action.data.quantity;
         }
+        break;
+
+      case INTERVAL_START_DATE_CHANGE:
+        draft.intervalStartDate = action.data;
+        break;
+
+      case INTERVAL_END_DATE_CHANGE:
+        draft.intervalEndDate = action.data;
+        break;
+
+      case INTERVAL_UNIT_CHANGE:
+        draft.intervalUnit = action.data;
+        break;
+
+      case INTERVAL_COUNT_CHANGE:
+        draft.intervalCount = action.data;
         break;
 
       default:

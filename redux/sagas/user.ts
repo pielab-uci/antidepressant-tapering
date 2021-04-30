@@ -1,5 +1,9 @@
 import {all, delay, fork, put, takeLatest} from 'redux-saga/effects';
 import {
+  ADD_NEW_PATIENT_FAILURE, ADD_NEW_PATIENT_REQUEST,
+  ADD_NEW_PATIENT_SUCCESS, AddNewPatientFailure,
+  AddNewPatientRequest,
+  AddNewPatientSuccess,
   LOGIN_FAILURE,
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
@@ -8,21 +12,12 @@ import {
   LoginSuccessAction
 } from "../actions/user";
 import {Clinician, Patient, TaperingConfiguration} from "../../types";
+import {stephen, xiao} from "./dummies";
 
-function loginAPI(): {data: Omit<Clinician, 'password'>} {
-  const dummyClinician: Omit<Clinician, 'password'> = {
-    email: 'clinician@gmail.com',
-    name: 'Stephen Few',
-    id: 1,
-    taperingConfigurations: [{
-      clinicianId: 1,
-      patient: { id:1, name: 'Sally Johnson', email: 'jonhnsons@uci.edu', taperingConfigurations: [] as TaperingConfiguration[],  },
-    }, {
-      clinicianId: 1,
-      patient: { id:2, name: 'John Greenberg', email: 'greenbergj@uci.edu', taperingConfigurations: [] as TaperingConfiguration[] }
-    }]
-  }
-  return{ data: dummyClinician };
+
+function loginAPI(): { data: Omit<Clinician, 'password'> } {
+
+  return {data: stephen};
 }
 
 function* logIn(action: LoginRequestAction) {
@@ -43,11 +38,37 @@ function* logIn(action: LoginRequestAction) {
   }
 }
 
+function addPatientAPI(): { data: Omit<Patient, "password"> } {
+  return {data: xiao}
+}
+
+function* addPatient(action: AddNewPatientRequest) {
+  try {
+    yield delay(1000);
+    const result = addPatientAPI();
+
+    yield put<AddNewPatientSuccess>({
+      type: ADD_NEW_PATIENT_SUCCESS,
+      data: result.data
+    });
+  } catch (err) {
+    console.error(err);
+    yield put<AddNewPatientFailure>({
+      type: ADD_NEW_PATIENT_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+
 function* watchLogIn() {
   yield takeLatest(LOGIN_REQUEST, logIn);
 }
 
+function* watchAddPatient() {
+  yield takeLatest(ADD_NEW_PATIENT_REQUEST, addPatient);
+}
 
 export default function* userSaga() {
-  yield all([fork(watchLogIn)])
+  yield all([fork(watchLogIn), fork(watchAddPatient)])
 };

@@ -25,7 +25,6 @@ export const initialState: PrescriptionFormState = {
   intervalEndDate: null
 }
 
-
 export const reducer = (state: PrescriptionFormState, action: PrescriptionFormActions): PrescriptionFormState => {
   return produce(state, draft => {
     switch (action.type) {
@@ -34,7 +33,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         break;
 
       case DRUG_NAME_CHANGE:
-        const newDrug = draft.drugs!.find(drug => drug.name === action.data)!;
+        const newDrug = draft.drugs!.find(drug => drug.name === action.data.name)!;
         draft.chosenDrug = newDrug;
         draft.chosenBrand = null;
         draft.chosenDrugForm = null;
@@ -43,13 +42,13 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         break;
 
       case CHOOSE_BRAND:
-        const chosenBrandOption = draft.brandOptions!.find(brand => brand.brand === action.data)!;
+        const chosenBrandOption = draft.brandOptions!.find(brand => brand.brand === action.data.brand)!;
         draft.chosenBrand = chosenBrandOption;
         draft.drugFormOptions = chosenBrandOption.forms;
         break;
 
       case CHOOSE_FORM:
-        const chosenDrugForm = draft.drugFormOptions!.find(form => form.form === action.data)!;
+        const chosenDrugForm = draft.drugFormOptions!.find(form => form.form === action.data.form)!;
         draft.chosenDrugForm = chosenDrugForm;
         draft.dosageOptions = chosenDrugForm.dosages;
         chosenDrugForm.dosages.forEach(dosage => {
@@ -59,31 +58,31 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         break;
 
       case CURRENT_DOSAGE_CHANGE:
-        if (action.data.quantity >= 0) {
-          draft.currentDosages[action.data.dosage] = action.data.quantity;
+        if (action.data.dosage.quantity >= 0) {
+          draft.currentDosages[action.data.dosage.dosage] = action.data.dosage.quantity;
         }
         break;
 
       case NEXT_DOSAGE_CHANGE:
-        if (!(action.data.quantity < 0)) {
-          draft.nextDosages[action.data.dosage] = action.data.quantity;
+        if (!(action.data.dosage.quantity < 0)) {
+          draft.nextDosages[action.data.dosage.dosage] = action.data.dosage.quantity;
         }
         break;
 
       case INTERVAL_START_DATE_CHANGE:
-        draft.intervalStartDate = action.data;
+        draft.intervalStartDate = action.data.date;
         break;
 
       case INTERVAL_END_DATE_CHANGE:
-        draft.intervalEndDate = action.data;
+        draft.intervalEndDate = action.data.date;
         break;
 
       case INTERVAL_UNIT_CHANGE:
-        draft.intervalUnit = action.data;
+        draft.intervalUnit = action.data.unit;
         break;
 
       case INTERVAL_COUNT_CHANGE:
-        draft.intervalCount = action.data;
+        draft.intervalCount = action.data.count;
         break;
 
       default:

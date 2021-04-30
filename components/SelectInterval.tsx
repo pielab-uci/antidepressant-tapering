@@ -22,28 +22,29 @@ const SelectInterval = () => {
     intervalUnit,
     intervalStartDate,
     intervalEndDate,
-    dispatch
+    dispatch,
+    id
   } = useContext(PrescriptionFormContext);
   const units = useRef(["Days", "Weeks", "Months"]);
   const onIntervalStartDateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(intervalStartDateChange(new Date(e.target.value)));
+    dispatch(intervalStartDateChange({ id, date: new Date(e.target.value)}));
   }, []);
 
   const onIntervalEndDateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (!isAfter(new Date(e.target.value), intervalStartDate)) {
       alert('End date must be after the start date.')
-      dispatch(intervalEndDateChange(null));
+      dispatch(intervalEndDateChange({id, date: null}));
     } else {
-      dispatch(intervalEndDateChange(new Date(e.target.value)));
+      dispatch(intervalEndDateChange({ id, date: new Date(e.target.value)}));
     }
   }, [intervalStartDate]);
 
   const onIntervalUnitChange = useCallback((value: "Days" | "Weeks" | "Months") => {
-    dispatch(intervalUnitChange(value));
+    dispatch(intervalUnitChange({id, unit: value}));
   }, [])
 
   const onIntervalCountChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(intervalCountChange(parseInt(e.target.value)));
+    dispatch(intervalCountChange({id, count: parseInt(e.target.value)}));
   }, [])
 
   return (

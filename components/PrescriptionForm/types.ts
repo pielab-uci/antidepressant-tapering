@@ -27,7 +27,8 @@ export interface PrescriptionFormState {
 
 export type IPrescriptionFormContext = PrescriptionFormState
   & {
-  Current: { dosages: typeof initialState.currentDosages, action: (data: { dosage: string, quantity: number }) => CurrentDosageChangeAction };
-  Next: { dosages: typeof initialState.nextDosages, action: (data: { dosage: string, quantity: number }) => NextDosageChangeAction };
+  Current: { dosages: typeof initialState.currentDosages, action: (data: {id: number, dosage: { dosage: string, quantity: number }}) => CurrentDosageChangeAction };
+  Next: { dosages: typeof initialState.nextDosages, action: (data: {id: number, dosage: { dosage: string, quantity: number }}) => NextDosageChangeAction };
   dispatch: Dispatch<PrescriptionFormActions>;
+  id: number;
 }

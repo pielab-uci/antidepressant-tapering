@@ -1,26 +1,27 @@
 import * as React from 'react';
-import {useCallback, useEffect, useState} from "react";
-import PrescriptionForm from "../components/PrescriptionForm/PrescriptionForm";
 import ProjectedSchedule from "../components/ProjectedSchedule";
+import {RootState} from "../redux/reducers";
+import {useSelector, useDispatch} from "react-redux";
+import {TaperConfigState} from "../redux/reducers/taperConfig";
+import PrescriptionForm from "../components/PrescriptionForm/PrescriptionForm";
+import {ADD_NEW_DRUG_FORM} from "../redux/actions/taperConfig";
+import {Button} from "antd";
 
 const TaperConfigurationPage = () => {
-  const [currentDosage, setCurrentDosage] = useState({});
-  // need to decide the type of prescription form / tapering configuration
-  const [prescriptionForms, setPrescriptionForms]= useState<string[]>([]);
+  const {drugs, prescriptionFormIds} = useSelector<RootState, TaperConfigState>(state => state.taperConfig);
+  const dispatch = useDispatch();
+  const addNewPrescriptionForm = () => {
+    dispatch({
+      type: ADD_NEW_DRUG_FORM
+    });
+  }
 
-  useEffect(() => {
-    // load drug info and save to the store
-  }, []);
-
-  const addPrescriptionForm = useCallback(() => {
-    setPrescriptionForms(prev => [...prev, 'new one'])
-  }, []);
+  const renderPrescriptionForms = (ids: number[]) => ids.map(id => <PrescriptionForm key={`PrescriptionForm${id}`} drugs={drugs} id={id}/>)
 
   return (
     <>
-
-      <PrescriptionForm/>
-      <button onClick={addPrescriptionForm}>Add Drug</button>
+      {renderPrescriptionForms(prescriptionFormIds)}
+      <Button onClick={addNewPrescriptionForm}>Add Drug</Button>
       <hr/>
       <ProjectedSchedule/>
       <hr/>

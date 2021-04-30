@@ -1,12 +1,10 @@
 import * as React from 'react';
 import Dosages from "../Dosages";
 import SelectInterval from "../SelectInterval";
-import {useEffect, createContext} from "react";
+import {useEffect, createContext, FC} from "react";
 import {useReducer} from 'reinspect'
-import {useSelector} from "react-redux";
-import {TaperConfigState} from "../../redux/reducers/taperConfig";
-import {RootState} from "../../redux/reducers";
-import {Select} from 'antd';
+import {Button, Select} from 'antd';
+
 const {Option} = Select;
 import {
   initialState,
@@ -15,10 +13,12 @@ import {
 } from './reducer'
 import {
   CHOOSE_BRAND, CHOOSE_FORM,
-  DRUG_NAME_CHANGE, FETCH_DRUGS, currentDosageChange, nextDosageChange
+  DRUG_NAME_CHANGE, FETCH_DRUGS, currentDosageChange, nextDosageChange, PrescriptionFormActions
 } from './actions'
 import {IPrescriptionFormContext, PrescriptionFormState} from "./types";
-import {DrugForm} from "../../types";
+import {Drug, DrugForm} from "../../types";
+import {useDispatch} from "react-redux";
+import {REMOVE_DRUG_FORM} from "../../redux/actions/taperConfig";
 
 
 export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
@@ -26,12 +26,23 @@ export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
   Current: {dosages: initialState.currentDosages, action: currentDosageChange},
   Next: {dosages: initialState.nextDosages, action: nextDosageChange},
   dispatch: () => {
-  }
+  },
+  id: -1,
 });
 
-const PrescriptionForm = () => {
-  const {drugs} = useSelector<RootState, TaperConfigState>(state => state.taperConfig);
-  const [state, dispatch] = useReducer<PrescriptionFormReducer, PrescriptionFormState>(reducer, initialState, init => initialState, 'PrescriptionFormReducer');
+interface Props {
+  id: number;
+  drugs: Drug[];
+}
+
+const PrescriptionForm: FC<Props> = ({id, drugs}) => {
+  const globalDispatch = useDispatch();
+  const [state, localDispatch] = useReducer<PrescriptionFormReducer, PrescriptionFormState>(reducer, initialState, init => initialState, 'PrescriptionFormReducer');
+  const dispatch = (action: PrescriptionFormActions) => {
+    globalDispatch(action);
+    localDispatch(action);
+  }
+
   const {
     chosenDrug,
     chosenBrand,
@@ -56,22 +67,29 @@ const PrescriptionForm = () => {
   const onDrugNameChange = (value: string) => {
     dispatch({
       type: DRUG_NAME_CHANGE,
-      data: value,
+      data: {id, name: value},
     });
   }
 
   const onBrandChange = (value: string) => {
     dispatch({
       type: CHOOSE_BRAND,
-      data: value
+      data: { id, brand: value }
     });
   }
 
   const onFormChange = (value: string) => {
     dispatch({
       type: CHOOSE_FORM,
-      data: value,
+      data: { id, form: value},
     });
+  }
+
+  const removeDrugForm = () => {
+    globalDispatch({
+      type: REMOVE_DRUG_FORM,
+      data: id,
+    })
   }
 
   const renderDosages = (chosenDrugForm: DrugForm | null | undefined, time: "Current" | "Next", dosages: { [key: string]: number }) => {
@@ -84,11 +102,13 @@ const PrescriptionForm = () => {
 
   return (
     <PrescriptionFormContext.Provider value={{
+      ...state,
+      id,
       Current: {dosages: currentDosages, action: currentDosageChange},
       Next: {dosages: nextDosages, action: nextDosageChange},
-      ...state,
       dispatch
     }}>
+      <Button onClick={removeDrugForm}>Remove</Button>
       <form onSubmit={onSubmit}>
         <h3>Drug Name</h3>
         <Select defaultValue='' value={chosenDrug?.name} onChange={onDrugNameChange} style={{width: 200}}>
@@ -116,6 +136,7 @@ const PrescriptionForm = () => {
 
         <SelectInterval/>
       </form>
+      <hr/>
     </PrescriptionFormContext.Provider>
   )
 }

@@ -6,9 +6,9 @@ import store from './redux/configureStore'
 import {StateInspector} from "reinspect";
 
 ReactDOM.render(
-  <Provider store={store}>
-    <StateInspector name="useReducerStore">
+  <StateInspector name="useReducerStore">
+    <Provider store={store}>
       <App/>
-    </StateInspector>
-  </Provider>
+    </Provider>
+  </StateInspector>
   , document.querySelector('#root'))

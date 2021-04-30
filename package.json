@@ -8,6 +8,7 @@
     "@emotion/styled": "^11.3.0",
     "@types/react": "^17.0.4",
     "@types/react-dom": "^17.0.3",
+    "@types/react-icons": "^3.0.0",
     "@types/react-router": "^5.1.13",
     "@types/react-router-dom": "^5.1.7",
     "antd": "^4.15.3",

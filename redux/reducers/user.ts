@@ -1,4 +1,8 @@
 import {
+  ADD_NEW_PATIENT_FAILURE,
+  ADD_NEW_PATIENT_REQUEST, ADD_NEW_PATIENT_SUCCESS,
+  AddNewPatientFailure,
+  AddNewPatientRequest, AddNewPatientSuccess,
   LOGIN_FAILURE,
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
@@ -13,6 +17,9 @@ export interface UserState {
   loggingIn: boolean;
   loggedIn: boolean;
   logInError: any;
+  addingPatient: boolean;
+  addedPatient: boolean;
+  addPatientError: any;
 
   me: Omit<Clinician, 'password'>|null
 }
@@ -21,6 +28,10 @@ export const initialState: UserState = {
   loggingIn: false,
   loggedIn: false,
   logInError: null,
+  addingPatient: false,
+  addedPatient: false,
+  addPatientError: null,
+
   me: null
 }
 
@@ -28,7 +39,10 @@ export const initialState: UserState = {
 type UserReducerAction =
   | LoginRequestAction
   | LoginSuccessAction
-  | LoginFailureAction;
+  | LoginFailureAction
+  | AddNewPatientRequest
+  | AddNewPatientSuccess
+  | AddNewPatientFailure;
 
 const userReducer = (state: UserState = initialState, action: UserReducerAction): UserState => {
   return produce(state, (draft) => {
@@ -49,6 +63,22 @@ const userReducer = (state: UserState = initialState, action: UserReducerAction)
         draft.loggingIn = false;
         draft.loggedIn = false;
         draft.logInError = action.error;
+        break;
+
+      case ADD_NEW_PATIENT_REQUEST:
+        draft.addingPatient = true;
+        draft.addedPatient = false;
+        draft.addPatientError = null;
+        break;
+
+      case ADD_NEW_PATIENT_SUCCESS:
+        draft.addingPatient = false;
+        draft.addedPatient = true;
+        break;
+
+      case ADD_NEW_PATIENT_FAILURE:
+        draft.addingPatient = false;
+        draft.addPatientError = action.error;
         break;
 
       default:

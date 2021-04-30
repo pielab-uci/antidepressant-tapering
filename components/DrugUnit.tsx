@@ -11,20 +11,26 @@ interface Props {
 
 const DrugUnit: FC<Props> = ({time, form, dosage}) => {
   const context = useContext(PrescriptionFormContext);
-  const {dispatch} = context;
+  const {dispatch, id} = context;
   const {dosages, action: dosageChangeAction} = context[time];
 
   const onIncrement = useCallback(() => {
     dispatch(dosageChangeAction({
-      dosage,
-      quantity: dosages[dosage] + 1
+      id,
+      dosage: {
+        dosage,
+        quantity: dosages[dosage] + 1
+      }
     }))
   }, [dosages]);
 
   const onDecrement = useCallback(() => {
     dispatch(dosageChangeAction({
-      dosage,
-      quantity: dosages[dosage] - 1
+      id,
+      dosage: {
+        dosage,
+        quantity: dosages[dosage] - 1
+      }
     }))
   }, [dosages])
 

@@ -37,7 +37,7 @@ interface Props {
 
 const PrescriptionForm: FC<Props> = ({id, drugs}) => {
   const globalDispatch = useDispatch();
-  const [state, localDispatch] = useReducer<PrescriptionFormReducer, PrescriptionFormState>(reducer, initialState, init => initialState, 'PrescriptionFormReducer');
+  const [state, localDispatch] = useReducer<PrescriptionFormReducer, PrescriptionFormState>(reducer, initialState, init => initialState, `PrescriptionFormReducer_${id}`);
   const dispatch = (action: PrescriptionFormActions) => {
     globalDispatch(action);
     localDispatch(action);

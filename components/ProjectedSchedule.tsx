@@ -1,18 +1,19 @@
 import * as React from 'react';
 import ProjectedScheduleTable from "./ProjectedScheduleTable";
 import ScheduleChart from "./ScheduleChart";
-import {useForm} from "react-hook-form";
+import {useSelector} from "react-redux";
+import {RootState} from "../redux/reducers";
+import {TaperConfigState} from '../redux/reducers/taperConfig';
+
 const ProjectedSchedule = () => {
-  const { register, handleSubmit } = useForm();
+  const {scheduleTableData} = useSelector<RootState, TaperConfigState>(state => state.taperConfig);
+
   return (
     <>
       <h3>Projected Schedule</h3>
       <div>Based on the current rate of reduction we project the following tapering schedule.</div>
-      <ProjectedScheduleTable />
+      {scheduleTableData.length !== 0 && <ProjectedScheduleTable/>}
       <ScheduleChart/>
-      <form>
-
-      </form>
     </>
   )
 }

@@ -6,7 +6,7 @@ import store from './redux/configureStore'
 import {StateInspector} from "reinspect";
 
 ReactDOM.render(
-  <StateInspector name="useReducerStore">
+  <StateInspector name="PrescriptionForms">
     <Provider store={store}>
       <App/>
     </Provider>

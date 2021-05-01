@@ -4,7 +4,7 @@ import {
   ADD_TAPER_CONFIG_REQUEST, ADD_TAPER_CONFIG_SUCCESS,
   AddTaperConfigFailureAction,
   AddTaperConfigRequestAction,
-  AddTaperConfigSuccessAction
+  AddTaperConfigSuccessAction, CLEAR_SCHEDULE, ClearScheduleAction, GENERATE_SCHEDULE, GenerateScheduleAction
 } from "../actions/taperConfig";
 import produce from "immer";
 import {drugs} from "./drugs";
@@ -34,6 +34,9 @@ import {
   NEXT_DOSAGE_CHANGE,
   NextDosageChangeAction, PrescriptionFormActions
 } from "../../components/PrescriptionForm/actions";
+import {add, format, isAfter, isWithinInterval} from "date-fns";
+import {TableRow} from "../../components/ProjectedScheduleTable";
+import scheduleGenerator from "./scheduleGenerator";
 
 export interface TaperConfigState {
   drugs: Drug[];
@@ -41,6 +44,8 @@ export interface TaperConfigState {
   lastPrescriptionFormId: number;
   prescriptionFormIds: number[];
   prescribedDrugs: PrescribedDrug[];
+
+  scheduleTableData: TableRow[];
 
   addingTaperConfig: boolean;
   addedTaperConfig: boolean;
@@ -65,6 +70,7 @@ export const initialState: TaperConfigState =
       intervalCount: 0,
       intervalUnit: "Days",
     }],
+    scheduleTableData: [],
     addingTaperConfig: false,
     addedTaperConfig: false,
     addingTaperConfigError: null
@@ -77,7 +83,10 @@ export type TaperConfigActions =
   | AddTaperConfigFailureAction
   | AddNewDrugFormAction
   | RemoveDrugFormAction
-  | PrescriptionFormActions
+  | GenerateScheduleAction
+  | ClearScheduleAction
+  | PrescriptionFormActions;
+
 
 
 const taperConfigReducer = (state: TaperConfigState = initialState, action: TaperConfigActions) => {
@@ -121,6 +130,14 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case REMOVE_DRUG_FORM:
         draft.prescriptionFormIds = draft.prescriptionFormIds.filter(id => id !== action.data);
         draft.prescribedDrugs = draft.prescribedDrugs.filter(drug => drug.id !== action.data);
+        break;
+
+      case GENERATE_SCHEDULE:
+        draft.scheduleTableData = scheduleGenerator(draft.prescribedDrugs);
+        break;
+
+      case CLEAR_SCHEDULE:
+        draft.scheduleTableData = [];
         break;
 
       case DRUG_NAME_CHANGE: {

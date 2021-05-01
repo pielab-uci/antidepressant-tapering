@@ -36,9 +36,6 @@ export interface CurrentDosageChangeAction {
 }
 
 export const currentDosageChange = (data: { id: number, dosage: { dosage: string, quantity: number } }): CurrentDosageChangeAction => {
-  console.group("currentDosageChange")
-  console.log("data: ", data);
-  console.groupEnd();
   return ({
     type: CURRENT_DOSAGE_CHANGE,
     data,

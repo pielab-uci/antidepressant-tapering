@@ -18,7 +18,7 @@ import {
 import {IPrescriptionFormContext, PrescriptionFormState} from "./types";
 import {Drug, DrugForm} from "../../types";
 import {useDispatch} from "react-redux";
-import {REMOVE_DRUG_FORM} from "../../redux/actions/taperConfig";
+import {CLEAR_SCHEDULE, REMOVE_DRUG_FORM} from "../../redux/actions/taperConfig";
 
 
 export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
@@ -89,6 +89,9 @@ const PrescriptionForm: FC<Props> = ({id, drugs}) => {
     globalDispatch({
       type: REMOVE_DRUG_FORM,
       data: id,
+    });
+    globalDispatch({
+      type: CLEAR_SCHEDULE,
     })
   }
 

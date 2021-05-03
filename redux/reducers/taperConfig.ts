@@ -1,10 +1,27 @@
 import {Drug, PrescribedDrug, TaperingConfiguration} from "../../types";
 import {
   ADD_TAPER_CONFIG_FAILURE,
-  ADD_TAPER_CONFIG_REQUEST, ADD_TAPER_CONFIG_SUCCESS,
+  ADD_TAPER_CONFIG_REQUEST,
+  ADD_TAPER_CONFIG_SUCCESS,
   AddTaperConfigFailureAction,
   AddTaperConfigRequestAction,
-  AddTaperConfigSuccessAction, CLEAR_SCHEDULE, ClearScheduleAction, GENERATE_SCHEDULE, GenerateScheduleAction
+  AddTaperConfigSuccessAction,
+  CLEAR_SCHEDULE,
+  ClearScheduleAction,
+  GENERATE_SCHEDULE,
+  GenerateScheduleAction,
+  SHARE_WITH_PATIENT_APP_FAILURE,
+  SHARE_WITH_PATIENT_APP_REQUEST,
+  SHARE_WITH_PATIENT_APP_SUCCESS,
+  SHARE_WITH_PATIENT_EMAIL_FAILURE,
+  SHARE_WITH_PATIENT_EMAIL_REQUEST,
+  SHARE_WITH_PATIENT_EMAIL_SUCCESS,
+  ShareWithPatientAppFailure,
+  ShareWithPatientAppRequest,
+  ShareWithPatientAppSuccess,
+  ShareWithPatientEmailFailure,
+  ShareWithPatientEmailRequest,
+  ShareWithPatientEmailSuccess
 } from "../actions/taperConfig";
 import produce from "immer";
 import {drugs} from "./drugs";
@@ -17,26 +34,17 @@ import {
 import {
   CHOOSE_BRAND,
   CHOOSE_FORM,
-  ChooseBrandAction,
-  ChooseFormAction,
   CURRENT_DOSAGE_CHANGE,
-  CurrentDosageChangeAction,
   DRUG_NAME_CHANGE,
-  DrugNameChangeAction,
   INTERVAL_COUNT_CHANGE,
   INTERVAL_END_DATE_CHANGE,
   INTERVAL_START_DATE_CHANGE,
   INTERVAL_UNIT_CHANGE,
-  IntervalCountChangeAction,
-  IntervalEndDateChangeAction,
-  IntervalStartDateChangeAction,
-  IntervalUnitChangeAction,
   NEXT_DOSAGE_CHANGE,
-  NextDosageChangeAction, PrescriptionFormActions
+  PrescriptionFormActions
 } from "../../components/PrescriptionForm/actions";
-import {add, format, isAfter, isWithinInterval} from "date-fns";
-import {TableRow} from "../../components/ProjectedScheduleTable";
-import scheduleGenerator from "./scheduleGenerator";
+import {Schedule} from "../../components/ProjectedSchedule";
+import {chartDataConverter, ScheduleChartData, scheduleGenerator} from "./utils";
 
 export interface TaperConfigState {
   drugs: Drug[];
@@ -45,11 +53,20 @@ export interface TaperConfigState {
   prescriptionFormIds: number[];
   prescribedDrugs: PrescribedDrug[];
 
-  scheduleTableData: TableRow[];
+  projectedSchedule: Schedule;
+  scheduleChartData: ScheduleChartData;
 
   addingTaperConfig: boolean;
   addedTaperConfig: boolean;
   addingTaperConfigError: any;
+
+  sharingWithPatientApp: boolean;
+  sharedWithPatientApp: boolean;
+  sharingWithPatientAppError: any;
+
+  sharingWithPatientEmail: boolean;
+  sharedWithPatientEmail: boolean;
+  sharingWithPatientEmailError: any;
 }
 
 export const initialState: TaperConfigState =
@@ -70,10 +87,20 @@ export const initialState: TaperConfigState =
       intervalCount: 0,
       intervalUnit: "Days",
     }],
-    scheduleTableData: [],
+    projectedSchedule: { startDates: {}, endDates: {}, data: [], drugs: []},
+    scheduleChartData: [],
+
     addingTaperConfig: false,
     addedTaperConfig: false,
-    addingTaperConfigError: null
+    addingTaperConfigError: null,
+
+    sharingWithPatientApp: false,
+    sharedWithPatientApp: false,
+    sharingWithPatientAppError: null,
+
+    sharingWithPatientEmail: false,
+    sharedWithPatientEmail: false,
+    sharingWithPatientEmailError: null
   }
 
 
@@ -85,6 +112,12 @@ export type TaperConfigActions =
   | RemoveDrugFormAction
   | GenerateScheduleAction
   | ClearScheduleAction
+  | ShareWithPatientAppRequest
+  | ShareWithPatientAppSuccess
+  | ShareWithPatientAppFailure
+  | ShareWithPatientEmailRequest
+  | ShareWithPatientEmailSuccess
+  | ShareWithPatientEmailFailure
   | PrescriptionFormActions;
 
 
@@ -133,11 +166,45 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         break;
 
       case GENERATE_SCHEDULE:
-        draft.scheduleTableData = scheduleGenerator(draft.prescribedDrugs);
+        draft.projectedSchedule = scheduleGenerator(draft.prescribedDrugs);
+        draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
         break;
 
       case CLEAR_SCHEDULE:
-        draft.scheduleTableData = [];
+        draft.projectedSchedule = { startDates: {}, endDates: {}, data: [], drugs: []};
+        draft.scheduleChartData = [];
+        break;
+
+      case SHARE_WITH_PATIENT_APP_REQUEST:
+        draft.sharingWithPatientApp = true;
+        draft.sharedWithPatientApp = false;
+        draft.sharingWithPatientAppError = null;
+        break;
+
+      case SHARE_WITH_PATIENT_APP_SUCCESS:
+        draft.sharingWithPatientApp = false;
+        draft.sharedWithPatientApp = true;
+        break;
+
+      case SHARE_WITH_PATIENT_APP_FAILURE:
+        draft.sharingWithPatientApp = false;
+        draft.sharingWithPatientAppError = action.error;
+        break;
+
+      case SHARE_WITH_PATIENT_EMAIL_REQUEST:
+        draft.sharingWithPatientEmail = true;
+        draft.sharedWithPatientEmail = false;
+        draft.sharingWithPatientEmailError = null;
+        break;
+
+      case SHARE_WITH_PATIENT_EMAIL_SUCCESS:
+        draft.sharingWithPatientEmail = false;
+        draft.sharedWithPatientEmail = true;
+        break;
+
+      case SHARE_WITH_PATIENT_EMAIL_FAILURE:
+        draft.sharingWithPatientEmail = false;
+        draft.sharingWithPatientEmailError = action.error;
         break;
 
       case DRUG_NAME_CHANGE: {

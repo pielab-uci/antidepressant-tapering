@@ -11,7 +11,7 @@ import {
   LoginRequestAction,
   LoginSuccessAction
 } from "../actions/user";
-import {Clinician, Patient, TaperingConfiguration} from "../../types";
+import {Clinician, Patient} from "../../types";
 import {stephen, xiao} from "./dummies";
 
 

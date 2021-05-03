@@ -3,7 +3,7 @@ import {useMemo} from 'react';
 import {RootState} from "../redux/reducers";
 import {useSelector} from "react-redux";
 import {TaperConfigState} from "../redux/reducers/taperConfig";
-import {Column, useTable} from 'react-table';
+import {Table} from "antd";
 
 export interface TableRow {
   Drug: string;
@@ -13,45 +13,17 @@ export interface TableRow {
 }
 
 const ProjectedScheduleTable = () => {
-  const columns: Column<TableRow>[] = useMemo(() => [
-    {Header: 'Drug', accessor: 'Drug' as keyof TableRow},
-    {Header: 'Current Dosage', accessor: 'Current Dosage' as keyof TableRow},
-    {Header: 'Next Dosage', accessor: 'Next Dosage' as keyof TableRow},
-    {Header: 'Dates', accessor: 'Dates' as keyof TableRow}], []);
+  const columns = useMemo(() => [
+    { title: 'Drug', dataIndex: 'Drug', key: 'Drug'},
+    { title: 'Current Dosage', dataIndex: 'Current Dosage', key: 'Current Dosage'},
+    { title: 'Next Dosage', dataIndex: 'Next Dosage', key: 'Next Dosage'},
+    { title: 'Dates', dataIndex: 'Dates', key: 'Dates'}
+  ], [])
 
-  const {scheduleTableData} = useSelector<RootState, TaperConfigState>(state => state.taperConfig);
-
-  const tableInstance = useTable<TableRow>({columns, data: scheduleTableData});
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow} = tableInstance;
+  const {projectedSchedule} = useSelector<RootState, TaperConfigState>(state => state.taperConfig);
 
   return (
-    <table {...getTableProps()}>
-      <thead>
-      {headerGroups.map(headerGroup => (
-        <tr {...headerGroup.getHeaderGroupProps()}>
-          {headerGroup.headers.map(column => (
-            <th {...column.getHeaderProps()}>
-              {column.render('Header')}
-            </th>
-          ))}
-        </tr>
-      ))}
-      </thead>
-      <tbody {...getTableBodyProps()}>
-      {rows.map(row => {
-        prepareRow(row);
-        return (
-          <tr {...row.getRowProps()}>
-            {row.cells.map(cell => (
-              <td {...cell.getCellProps()}>
-                {cell.render('Cell')}
-              </td>
-            ))}
-          </tr>
-        )
-      })}
-      </tbody>
-    </table>
+    <Table columns={columns} dataSource={projectedSchedule.data.map((d, i) => ({...d, key: i}))}/>
   )
 }
 

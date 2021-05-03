@@ -21,14 +21,11 @@ const Dosages: FC<Props> = ({time, dosages}) => {
       if (time === "Next") {
         const currentDosageSum = calculateDosageSum(currentDosages);
         const nextDosageSum = calculateDosageSum(nextDosages);
-        console.log('currentDosageSum: ', currentDosageSum)
-        console.log('nextDosageSum: ', nextDosageSum);
         if (currentDosageSum === 0) {
           setDosageDifferencePercent(null);
         } else {
           setDosageDifferencePercent(((nextDosageSum - currentDosageSum) / currentDosageSum * 100).toFixed(2));
         }
-        console.log('dosageDifferencePercent: ', dosageDifferencePercent)
       }
     }, [currentDosages, nextDosages]
   )

@@ -13,6 +13,7 @@
     "jsx": "react",
     "allowJs": true,
     "esModuleInterop": true,
+    "skipLibCheck": true
   },
   "exclude": ["dist", "node_modules"],
 }

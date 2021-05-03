@@ -19,7 +19,7 @@ const DrugUnit: FC<Props> = ({time, form, dosage}) => {
       id,
       dosage: {
         dosage,
-        quantity: dosages[dosage] + 1
+        quantity: dosages[dosage] + 0.5
       }
     }))
   }, [dosages]);
@@ -29,7 +29,7 @@ const DrugUnit: FC<Props> = ({time, form, dosage}) => {
       id,
       dosage: {
         dosage,
-        quantity: dosages[dosage] - 1
+        quantity: dosages[dosage] - 0.5
       }
     }))
   }, [dosages])

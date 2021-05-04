@@ -27,6 +27,8 @@ import {
   AddNewDrugFormAction,
   REMOVE_DRUG_FORM,
   RemoveDrugFormAction,
+  ToggleShareProjectedScheduleWithPatient,
+  TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT, CHANGE_MESSAGE_FOR_PATIENT, ChangeMessageForPatient,
 } from '../actions/taperConfig';
 import drugs from './drugs';
 
@@ -56,6 +58,7 @@ export interface TaperConfigState {
   scheduleChartData: ScheduleChartData;
 
   messageForPatient: string;
+  shareProjectedScheduleWithPatient: boolean;
 
   addingTaperConfig: boolean;
   addedTaperConfig: boolean;
@@ -91,7 +94,9 @@ export const initialState: TaperConfigState = {
     startDates: {}, endDates: {}, data: [], drugs: [],
   },
   scheduleChartData: [],
+
   messageForPatient: '',
+  shareProjectedScheduleWithPatient: false,
 
   addingTaperConfig: false,
   addedTaperConfig: false,
@@ -114,6 +119,8 @@ export type TaperConfigActions =
   | RemoveDrugFormAction
   | GenerateScheduleAction
   | ClearScheduleAction
+  | ChangeMessageForPatient
+  | ToggleShareProjectedScheduleWithPatient
   | ShareWithPatientAppRequest
   | ShareWithPatientAppSuccess
   | ShareWithPatientAppFailure
@@ -206,6 +213,14 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
     case SHARE_WITH_PATIENT_EMAIL_FAILURE:
       draft.sharingWithPatientEmail = false;
       draft.sharingWithPatientEmailError = action.error;
+      break;
+
+    case CHANGE_MESSAGE_FOR_PATIENT:
+      draft.messageForPatient = action.data;
+      break;
+
+    case TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT:
+      draft.shareProjectedScheduleWithPatient = !draft.shareProjectedScheduleWithPatient;
       break;
 
     case DRUG_NAME_CHANGE: {

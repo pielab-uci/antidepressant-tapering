@@ -1,23 +1,36 @@
 import * as React from 'react';
 import { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Button, Checkbox } from 'antd';
-import TextArea from 'antd/es/input/TextArea';
+import { Button, Checkbox, Input } from 'antd';
+
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import ProjectedSchedule from '../components/ProjectedSchedule';
 import { RootState } from '../redux/reducers';
 import { TaperConfigState } from '../redux/reducers/taperConfig';
 import PrescriptionForm from '../components/PrescriptionForm/PrescriptionForm';
 import {
-  ADD_NEW_DRUG_FORM,
+  ADD_NEW_DRUG_FORM, changeMessageForPatient,
   GENERATE_SCHEDULE,
   SHARE_WITH_PATIENT_APP_REQUEST,
-  SHARE_WITH_PATIENT_EMAIL_REQUEST,
+  SHARE_WITH_PATIENT_EMAIL_REQUEST, TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
 } from '../redux/actions/taperConfig';
 
+const { TextArea } = Input;
+
 const TaperConfigurationPage = () => {
-  const { drugs, prescriptionFormIds, messageForPatient } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
+  const {
+    drugs,
+    prescriptionFormIds,
+    messageForPatient,
+    shareProjectedScheduleWithPatient,
+  } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const dispatch = useDispatch();
+
+  const toggleShareProjectedSchedule = useCallback(() => {
+    dispatch({
+      type: TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
+    });
+  }, []);
 
   const addNewPrescriptionForm = useCallback(() => {
     dispatch({
@@ -47,20 +60,28 @@ const TaperConfigurationPage = () => {
     alert('Message copied.');
   }, []);
 
-  const renderPrescriptionForms = (ids: number[]) => ids.map((id) => <PrescriptionForm key={`PrescriptionForm${id}`} drugs={drugs} id={id} />);
+  const onChangeMessageForPatient = useCallback((e) => {
+    dispatch(changeMessageForPatient(e.target.value));
+  }, []);
+  const renderPrescriptionForms = (ids: number[]) => ids.map((id) => <PrescriptionForm key={`PrescriptionForm${id}`} drugs={drugs} id={id}/>);
 
   return (
     <>
       {renderPrescriptionForms(prescriptionFormIds)}
       <Button onClick={addNewPrescriptionForm}>Add Drug</Button>
       <Button onClick={generateSchedule}>Generate schedule</Button>
-      <hr />
-      <ProjectedSchedule />
-      <hr />
+      <hr/>
+      <ProjectedSchedule/>
+      <hr/>
 
       <h3>Share with Patient</h3>
-      <TextArea value={messageForPatient} />
-      {/* <Checkbox checked={}></Checkbox> */}
+      <TextArea
+        value={messageForPatient}
+        defaultValue={messageForPatient}
+        onChange={onChangeMessageForPatient}/>
+      <Checkbox checked={shareProjectedScheduleWithPatient} onChange={toggleShareProjectedSchedule}>
+        Share projected schedule
+      </Checkbox>
       <Button onClick={shareWithApp}>App</Button>
       <Button onClick={shareWithEmail}>Email</Button>
       <CopyToClipboard text={messageForPatient} onCopy={onCopy}>

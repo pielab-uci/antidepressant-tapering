@@ -37,5 +37,6 @@ module.exports = {
     historyApiFallback: {
       index: './dist/index.html'
     },
+    writeToDisk: true,
   },
 };

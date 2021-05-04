@@ -94,3 +94,20 @@ export interface ShareWithPatientEmailFailure {
   type: typeof SHARE_WITH_PATIENT_EMAIL_FAILURE;
   error: any;
 }
+
+export const TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT = 'TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT' as const;
+
+export interface ToggleShareProjectedScheduleWithPatient {
+  type: typeof TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT;
+}
+
+export const CHANGE_MESSAGE_FOR_PATIENT = 'CHANGE_MESSAGE_FOR_PATIENT' as const;
+export interface ChangeMessageForPatient {
+  type: typeof CHANGE_MESSAGE_FOR_PATIENT,
+  data: string;
+}
+
+export const changeMessageForPatient = (data: string): ChangeMessageForPatient => ({
+  type: CHANGE_MESSAGE_FOR_PATIENT,
+  data,
+});

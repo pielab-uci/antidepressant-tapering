@@ -44,15 +44,8 @@ const PrescriptionForm: FC<Props> = ({ id, drugs }) => {
   };
 
   const {
-    chosenDrug,
-    chosenBrand,
-    brandOptions,
-    chosenDrugForm,
-    drugFormOptions,
-    currentDosagesQty,
-    nextDosagesQty,
-    intervalStartDate,
-    intervalEndDate,
+    chosenDrug, chosenBrand, brandOptions, chosenDrugForm, drugFormOptions,
+    currentDosagesQty, nextDosagesQty, intervalStartDate, intervalEndDate,
   } = state;
 
   const [showTotalQuantities, setShowTotalQuantities] = useState(false, `PrescriptionForm-ShowTotalQuantities_${id}`);

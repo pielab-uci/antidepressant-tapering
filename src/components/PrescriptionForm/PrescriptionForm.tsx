@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, createContext, FC } from 'react';
-import { useReducer } from 'reinspect';
+import { useReducer, useState } from 'reinspect';
 import { Button, Select } from 'antd';
 import { useDispatch } from 'react-redux';
 import Dosages from '../Dosages';
@@ -17,13 +17,14 @@ import {
 import { IPrescriptionFormContext, PrescriptionFormState } from './types';
 import { Drug, DrugForm } from '../../types';
 import { CLEAR_SCHEDULE, REMOVE_DRUG_FORM } from '../../redux/actions/taperConfig';
+import TotalQuantities from '../TotalQuantities';
 
 const { Option } = Select;
 
 export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
   ...initialState,
-  Current: { dosages: initialState.currentDosages, action: currentDosageChange },
-  Next: { dosages: initialState.nextDosages, action: nextDosageChange },
+  Current: { dosages: initialState.currentDosagesQty, action: currentDosageChange },
+  Next: { dosages: initialState.nextDosagesQty, action: nextDosageChange },
   dispatch: () => {
   },
   id: -1,
@@ -48,10 +49,13 @@ const PrescriptionForm: FC<Props> = ({ id, drugs }) => {
     brandOptions,
     chosenDrugForm,
     drugFormOptions,
-    dosageOptions,
-    currentDosages,
-    nextDosages,
+    currentDosagesQty,
+    nextDosagesQty,
+    intervalStartDate,
+    intervalEndDate,
   } = state;
+
+  const [showTotalQuantities, setShowTotalQuantities] = useState(false, `PrescriptionForm-ShowTotalQuantities_${id}`);
 
   useEffect(() => {
     dispatch({
@@ -59,6 +63,13 @@ const PrescriptionForm: FC<Props> = ({ id, drugs }) => {
       data: drugs,
     });
   }, [drugs]);
+
+  useEffect(() => {
+    setShowTotalQuantities(
+      ![chosenDrug, chosenBrand, chosenDrugForm,
+        intervalStartDate, intervalEndDate].some((el) => el === null),
+    );
+  }, [chosenDrug, chosenBrand, chosenDrugForm, intervalStartDate, intervalEndDate]);
 
   const onSubmit = () => {
   };
@@ -96,7 +107,9 @@ const PrescriptionForm: FC<Props> = ({ id, drugs }) => {
 
   const renderDosages = (chosenDrugForm: DrugForm | null | undefined, time: 'Current' | 'Next', dosages: { [key: string]: number }) => (
     <>
-      {chosenDrugForm ? <Dosages time={time} dosages={dosages} /> : <div>No drug form selected</div>}
+      {chosenDrugForm
+        ? <Dosages time={time} dosages={dosages} />
+        : <div>No drug form selected</div>}
     </>
   );
 
@@ -104,8 +117,8 @@ const PrescriptionForm: FC<Props> = ({ id, drugs }) => {
     <PrescriptionFormContext.Provider value={{
       ...state,
       id,
-      Current: { dosages: currentDosages, action: currentDosageChange },
-      Next: { dosages: nextDosages, action: nextDosageChange },
+      Current: { dosages: currentDosagesQty, action: currentDosageChange },
+      Next: { dosages: nextDosagesQty, action: nextDosageChange },
       dispatch,
     }}
     >
@@ -119,23 +132,29 @@ const PrescriptionForm: FC<Props> = ({ id, drugs }) => {
         <h3>Prescription settings</h3>
         <label>Brand</label>
         <Select defaultValue="" value={chosenBrand?.brand} onChange={onBrandChange} style={{ width: 200 }}>
-          {brandOptions?.map((brand) => <Option key={brand.brand} value={brand.brand}>{brand.brand}</Option>)}
+          {brandOptions?.map(
+            (brand) => <Option key={brand.brand} value={brand.brand}>{brand.brand}</Option>,
+          )}
         </Select>
 
         <label>Form</label>
         <Select defaultValue="" value={chosenDrugForm?.form} onChange={onFormChange} style={{ width: 200 }}>
-          {drugFormOptions?.map((form) => <Option key={form.form} value={form.form}>{form.form}</Option>)}
+          {drugFormOptions?.map(
+            (form) => <Option key={form.form} value={form.form}>{form.form}</Option>,
+          )}
         </Select>
         <hr />
 
         <div>Current Dosages</div>
-        {renderDosages(chosenDrugForm, 'Current', currentDosages)}
+        {renderDosages(chosenDrugForm, 'Current', currentDosagesQty)}
         <hr />
         <div>Next Dosages</div>
-        {renderDosages(chosenDrugForm, 'Next', nextDosages)}
+        {renderDosages(chosenDrugForm, 'Next', nextDosagesQty)}
         <hr />
 
         <SelectInterval />
+        <hr/>
+        {showTotalQuantities && <TotalQuantities/>}
       </form>
       <hr />
     </PrescriptionFormContext.Provider>

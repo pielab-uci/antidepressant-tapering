@@ -1,11 +1,12 @@
 import produce from 'immer';
+import { differenceInDays } from 'date-fns';
 import { PrescriptionFormState } from './types';
 import {
   CHOOSE_BRAND,
   CHOOSE_FORM, CURRENT_DOSAGE_CHANGE, DRUG_NAME_CHANGE, FETCH_DRUGS,
   INTERVAL_COUNT_CHANGE, INTERVAL_END_DATE_CHANGE,
   INTERVAL_START_DATE_CHANGE, INTERVAL_UNIT_CHANGE,
-  NEXT_DOSAGE_CHANGE,
+  NEXT_DOSAGE_CHANGE, PRESCRIBED_QUANTITY_CHANGE,
   PrescriptionFormActions,
 } from './actions';
 
@@ -17,12 +18,14 @@ export const initialState: PrescriptionFormState = {
   brandOptions: [],
   drugFormOptions: [],
   dosageOptions: [],
-  currentDosages: {},
-  nextDosages: {},
+  currentDosagesQty: {},
+  nextDosagesQty: {},
+  prescribedDosagesQty: {},
   intervalCount: 0,
   intervalUnit: 'Days',
   intervalStartDate: new Date(),
   intervalEndDate: null,
+  intervalDurationDays: 0,
 };
 
 export const reducer = (state: PrescriptionFormState, action: PrescriptionFormActions): PrescriptionFormState => produce(state, (draft) => {
@@ -56,30 +59,48 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
       draft.chosenDrugForm = chosenDrugForm;
       draft.dosageOptions = chosenDrugForm.dosages;
       chosenDrugForm.dosages.forEach((dosage) => {
-        draft.currentDosages[dosage] = 0;
-        draft.nextDosages[dosage] = 0;
+        draft.currentDosagesQty[dosage] = 0;
+        draft.nextDosagesQty[dosage] = 0;
       });
       break;
     }
 
     case CURRENT_DOSAGE_CHANGE:
       if (action.data.dosage.quantity >= 0) {
-        draft.currentDosages[action.data.dosage.dosage] = action.data.dosage.quantity;
+        draft.currentDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;
       }
       break;
 
     case NEXT_DOSAGE_CHANGE:
       if (!(action.data.dosage.quantity < 0)) {
-        draft.nextDosages[action.data.dosage.dosage] = action.data.dosage.quantity;
+        draft.nextDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;
+        draft.prescribedDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity * draft.intervalDurationDays;
+      }
+      break;
+
+    case PRESCRIBED_QUANTITY_CHANGE:
+      if (!(action.data.dosage.quantity < 0)
+        && (action.data.dosage.quantity < draft.nextDosagesQty[action.data.dosage.dosage] * draft.intervalDurationDays)) {
+        draft.prescribedDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;
       }
       break;
 
     case INTERVAL_START_DATE_CHANGE:
       draft.intervalStartDate = action.data.date;
+      if (draft.intervalEndDate) {
+        draft.intervalDurationDays = differenceInDays(draft.intervalEndDate, draft.intervalStartDate);
+        Object.keys(draft.nextDosagesQty).forEach((key) => {
+          draft.prescribedDosagesQty[key] = draft.nextDosagesQty[key] * draft.intervalDurationDays;
+        });
+      }
       break;
 
     case INTERVAL_END_DATE_CHANGE:
       draft.intervalEndDate = action.data.date;
+      draft.intervalDurationDays = differenceInDays(action.data.date!, draft.intervalStartDate);
+      Object.keys(draft.nextDosagesQty).forEach((key) => {
+        draft.prescribedDosagesQty[key] = draft.nextDosagesQty[key] * draft.intervalDurationDays;
+      });
       break;
 
     case INTERVAL_UNIT_CHANGE:

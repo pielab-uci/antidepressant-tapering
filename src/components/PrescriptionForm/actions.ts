@@ -54,6 +54,20 @@ export const nextDosageChange = (data: {
   data,
 });
 
+export const PRESCRIBED_QUANTITY_CHANGE = 'PRESCRIBED_QUANTITY_CHANGE' as const;
+
+export interface PrescribedQuantityChange {
+  type: typeof PRESCRIBED_QUANTITY_CHANGE,
+  data: { id: number, dosage: { dosage: string, quantity: number } }
+}
+
+export const prescribedQuantityChange = (data: {
+  id: number, dosage: { dosage: string, quantity: number }
+}) => ({
+  type: PRESCRIBED_QUANTITY_CHANGE,
+  data,
+});
+
 export const INTERVAL_START_DATE_CHANGE = 'INTERVAL_START_DATE_CHANGE' as const;
 
 export interface IntervalStartDateChangeAction {
@@ -109,6 +123,7 @@ export type PrescriptionFormActions =
   | ChooseFormAction
   | CurrentDosageChangeAction
   | NextDosageChangeAction
+  | PrescribedQuantityChange
   | IntervalStartDateChangeAction
   | IntervalEndDateChangeAction
   | IntervalCountChangeAction

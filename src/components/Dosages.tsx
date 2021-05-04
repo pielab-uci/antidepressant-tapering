@@ -12,7 +12,7 @@ interface Props {
 
 const Dosages: FC<Props> = ({ time, dosages }) => {
   const {
-    chosenDrugForm, dosageOptions, currentDosages, nextDosages,
+    chosenDrugForm, dosageOptions, currentDosagesQty, nextDosagesQty,
   } = useContext(PrescriptionFormContext);
   const unit = Object.keys(dosages)[0].match(/[a-z]+/);
   const [dosageDifferencePercent, setDosageDifferencePercent] = useState<string | null>(null);
@@ -21,15 +21,17 @@ const Dosages: FC<Props> = ({ time, dosages }) => {
 
   useEffect(() => {
     if (time === 'Next') {
-      const currentDosageSum = calculateDosageSum(currentDosages);
-      const nextDosageSum = calculateDosageSum(nextDosages);
+      const currentDosageSum = calculateDosageSum(currentDosagesQty);
+      const nextDosageSum = calculateDosageSum(nextDosagesQty);
       if (currentDosageSum === 0) {
         setDosageDifferencePercent(null);
       } else {
-        setDosageDifferencePercent(((nextDosageSum - currentDosageSum) / currentDosageSum * 100).toFixed(2));
+        setDosageDifferencePercent(
+          ((nextDosageSum - currentDosageSum) / currentDosageSum * 100).toFixed(2),
+        );
       }
     }
-  }, [currentDosages, nextDosages]);
+  }, [currentDosagesQty, nextDosagesQty]);
 
   return (
     <>

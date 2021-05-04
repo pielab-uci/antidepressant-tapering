@@ -17,19 +17,21 @@ interface Converted {
 }
 
 const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule => {
-  const validate = (prescribedDrugs: PrescribedDrug[]): PrescribedDrug[] | null => {
-    for (const drug of prescribedDrugs) {
-      if (Object.entries(drug).some(([k, v]) => v === null)) {
+  const validate = (drugs: PrescribedDrug[]): PrescribedDrug[] | null => {
+    for (const drug of drugs) {
+      if (Object.values(drug).some((v) => v === null)) {
         alert(`Please check ${drug.name} if you fill all the inputs.`);
         return null;
       }
     }
-    return prescribedDrugs;
+    return drugs;
   };
 
-  const convert = (prescribedDrugs: PrescribedDrug[]): Converted[] => prescribedDrugs.map((drug) => {
-    const currentDosageSum = drug.currentDosages.reduce((acc, d) => acc + parseInt(d.dosage, 10) * d.quantity, 0);
-    const nextDosageSum = drug.nextDosages.reduce((acc, d) => acc + parseInt(d.dosage, 10) * d.quantity, 0);
+  const convert = (drugs: PrescribedDrug[]): Converted[] => drugs.map((drug) => {
+    const currentDosageSum = drug.currentDosages
+      .reduce((acc, d) => acc + parseInt(d.dosage, 10) * d.quantity, 0);
+    const nextDosageSum = drug.nextDosages
+      .reduce((acc, d) => acc + parseInt(d.dosage, 10) * d.quantity, 0);
     const dosageUnit = drug.currentDosages[0].dosage.match(/[a-z]+/)!;
     const duration = { [drug.intervalUnit.toLowerCase()]: drug.intervalCount };
     const dates = {
@@ -103,7 +105,9 @@ const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule => {
         return 1;
       }
 
-      const compareDrugNames = drugNames.findIndex((drug) => drug === a.Drug) < drugNames.findIndex((drug) => drug === b.Drug);
+      const compareDrugNames = drugNames
+        .findIndex((drug) => drug === a.Drug) < drugNames.findIndex((drug) => drug === b.Drug);
+
       if (compareDrugNames) {
         return -1;
       }
@@ -156,8 +160,15 @@ const chartDataConverter = (schedule: Schedule): ScheduleChartData => {
     groupByDrug.push({ name: drug, data: [] as { time: string, dosage: number }[] });
   });
 
-  schedule.data.forEach((row) => {
-    groupByDrug.find((drug) => drug.name === row.Drug)!.data.push({ time: format(row.startDate, 'MM-dd'), dosage: parseInt(row['Current Dosage']) });
+  schedule.data.forEach((row, i) => {
+    groupByDrug
+      .find((drug) => drug.name === row.Drug)!
+      .data.push({ time: format(row.startDate, 'MM-dd'), dosage: parseInt(row['Current Dosage'], 10) });
+
+    if (i === schedule.data.length - 1) {
+      groupByDrug.find((drug) => drug.name === row.Drug)!
+        .data.push({ time: format(row.endDate, 'MM-dd'), dosage: parseInt(row['Next Dosage'], 10) });
+    }
   });
 
   groupByDrug.forEach((drug) => {

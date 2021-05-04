@@ -11,6 +11,7 @@ module.exports = {
         'no-param-reassign': 'off',
         'consistent-return': 'off',
         'import/no-cycle': 'off',
+        'import/extensions': 'off',
       },
     },
   ],
@@ -35,5 +36,6 @@ module.exports = {
     '@typescript-eslint',
   ],
   rules: {
+
   },
 };

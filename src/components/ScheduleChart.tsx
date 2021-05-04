@@ -3,14 +3,12 @@ import {
   CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from 'recharts';
 import { useSelector } from 'react-redux';
-import { format } from 'date-fns';
 import { TaperConfigState } from '../redux/reducers/taperConfig';
 import { RootState } from '../redux/reducers';
 
 const ScheduleChart = () => {
   const { scheduleChartData } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
 
-  const formatXAxis = (date: Date) => format(date, 'MM-dd');
   return (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart width={300} height={300}>

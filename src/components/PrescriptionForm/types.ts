@@ -17,23 +17,25 @@ export interface PrescriptionFormState {
   brandOptions: DrugOption[] | null;
   drugFormOptions: DrugForm[] | null;
   dosageOptions: string[];
-  currentDosages: { [key: string]: number };
-  nextDosages: { [key: string]: number };
+  currentDosagesQty: { [key: string]: number };
+  nextDosagesQty: { [key: string]: number };
+  prescribedDosagesQty: { [key: string]: number };
   intervalUnit: 'Days'|'Weeks'|'Months';
   intervalCount: number;
   intervalStartDate: Date;
   intervalEndDate: Date | null;
+  intervalDurationDays: number;
 }
 
 export type IPrescriptionFormContext = PrescriptionFormState
 & {
   Current: {
-    dosages: typeof initialState.currentDosages,
+    dosages: typeof initialState.currentDosagesQty,
     action: (data: { id: number, dosage: { dosage: string, quantity: number } })
     => CurrentDosageChangeAction
   };
   Next: {
-    dosages: typeof initialState.nextDosages,
+    dosages: typeof initialState.nextDosagesQty,
     action: (data: { id: number, dosage: { dosage: string, quantity: number } })
     => NextDosageChangeAction
   };

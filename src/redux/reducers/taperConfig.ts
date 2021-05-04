@@ -55,6 +55,8 @@ export interface TaperConfigState {
   projectedSchedule: Schedule;
   scheduleChartData: ScheduleChartData;
 
+  messageForPatient: string;
+
   addingTaperConfig: boolean;
   addedTaperConfig: boolean;
   addingTaperConfigError: any;
@@ -89,6 +91,7 @@ export const initialState: TaperConfigState = {
     startDates: {}, endDates: {}, data: [], drugs: [],
   },
   scheduleChartData: [],
+  messageForPatient: '',
 
   addingTaperConfig: false,
   addedTaperConfig: false,

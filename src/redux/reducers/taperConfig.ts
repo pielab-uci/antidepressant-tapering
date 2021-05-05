@@ -1,5 +1,8 @@
 import produce from 'immer';
-import { Drug, PrescribedDrug, TaperingConfiguration } from '../../types';
+import { add, differenceInCalendarDays } from 'date-fns';
+import {
+  Drug, PrescribedDrug, TaperingConfiguration, ToDays,
+} from '../../types';
 import {
   ADD_TAPER_CONFIG_FAILURE,
   ADD_TAPER_CONFIG_REQUEST,
@@ -59,6 +62,7 @@ export interface TaperConfigState {
 
   messageForPatient: string;
   shareProjectedScheduleWithPatient: boolean;
+  showMessageForPatient: boolean;
 
   addingTaperConfig: boolean;
   addedTaperConfig: boolean;
@@ -89,6 +93,7 @@ export const initialState: TaperConfigState = {
     intervalEndDate: null,
     intervalCount: 0,
     intervalUnit: 'Days',
+    intervalDurationDays: 0,
   }],
   projectedSchedule: {
     startDates: {}, endDates: {}, data: [], drugs: [],
@@ -97,6 +102,7 @@ export const initialState: TaperConfigState = {
 
   messageForPatient: '',
   shareProjectedScheduleWithPatient: false,
+  showMessageForPatient: false,
 
   addingTaperConfig: false,
   addedTaperConfig: false,
@@ -129,182 +135,194 @@ export type TaperConfigActions =
   | ShareWithPatientEmailFailure
   | PrescriptionFormActions;
 
-const taperConfigReducer = (state: TaperConfigState = initialState, action: TaperConfigActions) => produce(state, (draft) => {
-  switch (action.type) {
-    case ADD_TAPER_CONFIG_REQUEST:
-      draft.addingTaperConfig = true;
-      draft.addedTaperConfig = false;
-      draft.addingTaperConfigError = null;
-      break;
+const taperConfigReducer = (state: TaperConfigState = initialState, action: TaperConfigActions) => {
+  return produce(state, (draft) => {
+    switch (action.type) {
+      case ADD_TAPER_CONFIG_REQUEST:
+        draft.addingTaperConfig = true;
+        draft.addedTaperConfig = false;
+        draft.addingTaperConfigError = null;
+        break;
 
-    case ADD_TAPER_CONFIG_SUCCESS:
-      draft.addingTaperConfig = false;
-      draft.addedTaperConfig = true;
-      draft.taperConfigs.unshift(action.data);
-      break;
+      case ADD_TAPER_CONFIG_SUCCESS:
+        draft.addingTaperConfig = false;
+        draft.addedTaperConfig = true;
+        draft.taperConfigs.unshift(action.data);
+        break;
 
-    case ADD_TAPER_CONFIG_FAILURE:
-      draft.addingTaperConfig = false;
-      draft.addedTaperConfig = false;
-      draft.addingTaperConfigError = action.error;
-      break;
+      case ADD_TAPER_CONFIG_FAILURE:
+        draft.addingTaperConfig = false;
+        draft.addedTaperConfig = false;
+        draft.addingTaperConfigError = action.error;
+        break;
 
-    case ADD_NEW_DRUG_FORM:
-      draft.prescriptionFormIds.push(draft.lastPrescriptionFormId + 1);
-      draft.prescribedDrugs.push({
-        id: draft.lastPrescriptionFormId + 1,
-        name: '',
-        brand: '',
-        form: '',
-        currentDosages: [],
-        nextDosages: [],
-        intervalStartDate: new Date(),
-        intervalEndDate: null,
-        intervalCount: 0,
-        intervalUnit: 'Days',
-      });
-      draft.lastPrescriptionFormId += 1;
-      break;
+      case ADD_NEW_DRUG_FORM:
+        draft.prescriptionFormIds.push(draft.lastPrescriptionFormId + 1);
+        draft.prescribedDrugs.push({
+          id: draft.lastPrescriptionFormId + 1,
+          name: '',
+          brand: '',
+          form: '',
+          currentDosages: [],
+          nextDosages: [],
+          intervalStartDate: new Date(),
+          intervalEndDate: null,
+          intervalCount: 0,
+          intervalUnit: 'Days',
+          intervalDurationDays: 0,
+        });
+        draft.lastPrescriptionFormId += 1;
+        break;
 
-    case REMOVE_DRUG_FORM:
-      draft.prescriptionFormIds = draft.prescriptionFormIds.filter((id) => id !== action.data);
-      draft.prescribedDrugs = draft.prescribedDrugs.filter((drug) => drug.id !== action.data);
-      break;
+      case REMOVE_DRUG_FORM:
+        draft.prescriptionFormIds = draft.prescriptionFormIds.filter((id) => id !== action.data);
+        draft.prescribedDrugs = draft.prescribedDrugs.filter((drug) => drug.id !== action.data);
+        break;
 
-    case GENERATE_SCHEDULE:
-      draft.projectedSchedule = scheduleGenerator(draft.prescribedDrugs);
-      draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
-      break;
+      case GENERATE_SCHEDULE:
+        draft.projectedSchedule = scheduleGenerator(draft.prescribedDrugs);
+        draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
+        draft.showMessageForPatient = true;
+        break;
 
-    case CLEAR_SCHEDULE:
-      draft.projectedSchedule = {
-        startDates: {}, endDates: {}, data: [], drugs: [],
-      };
-      draft.scheduleChartData = [];
-      break;
+      case CLEAR_SCHEDULE:
+        draft.projectedSchedule = {
+          startDates: {}, endDates: {}, data: [], drugs: [],
+        };
+        draft.scheduleChartData = [];
+        draft.showMessageForPatient = false;
+        break;
 
-    case SHARE_WITH_PATIENT_APP_REQUEST:
-      draft.sharingWithPatientApp = true;
-      draft.sharedWithPatientApp = false;
-      draft.sharingWithPatientAppError = null;
-      break;
+      case SHARE_WITH_PATIENT_APP_REQUEST:
+        draft.sharingWithPatientApp = true;
+        draft.sharedWithPatientApp = false;
+        draft.sharingWithPatientAppError = null;
+        break;
 
-    case SHARE_WITH_PATIENT_APP_SUCCESS:
-      draft.sharingWithPatientApp = false;
-      draft.sharedWithPatientApp = true;
-      break;
+      case SHARE_WITH_PATIENT_APP_SUCCESS:
+        draft.sharingWithPatientApp = false;
+        draft.sharedWithPatientApp = true;
+        break;
 
-    case SHARE_WITH_PATIENT_APP_FAILURE:
-      draft.sharingWithPatientApp = false;
-      draft.sharingWithPatientAppError = action.error;
-      break;
+      case SHARE_WITH_PATIENT_APP_FAILURE:
+        draft.sharingWithPatientApp = false;
+        draft.sharingWithPatientAppError = action.error;
+        break;
 
-    case SHARE_WITH_PATIENT_EMAIL_REQUEST:
-      draft.sharingWithPatientEmail = true;
-      draft.sharedWithPatientEmail = false;
-      draft.sharingWithPatientEmailError = null;
-      break;
+      case SHARE_WITH_PATIENT_EMAIL_REQUEST:
+        draft.sharingWithPatientEmail = true;
+        draft.sharedWithPatientEmail = false;
+        draft.sharingWithPatientEmailError = null;
+        break;
 
-    case SHARE_WITH_PATIENT_EMAIL_SUCCESS:
-      draft.sharingWithPatientEmail = false;
-      draft.sharedWithPatientEmail = true;
-      break;
+      case SHARE_WITH_PATIENT_EMAIL_SUCCESS:
+        draft.sharingWithPatientEmail = false;
+        draft.sharedWithPatientEmail = true;
+        break;
 
-    case SHARE_WITH_PATIENT_EMAIL_FAILURE:
-      draft.sharingWithPatientEmail = false;
-      draft.sharingWithPatientEmailError = action.error;
-      break;
+      case SHARE_WITH_PATIENT_EMAIL_FAILURE:
+        draft.sharingWithPatientEmail = false;
+        draft.sharingWithPatientEmailError = action.error;
+        break;
 
-    case CHANGE_MESSAGE_FOR_PATIENT:
-      draft.messageForPatient = action.data;
-      break;
+      case CHANGE_MESSAGE_FOR_PATIENT:
+        draft.messageForPatient = action.data;
+        break;
 
-    case TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT:
-      draft.shareProjectedScheduleWithPatient = !draft.shareProjectedScheduleWithPatient;
-      break;
+      case TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT:
+        draft.shareProjectedScheduleWithPatient = !draft.shareProjectedScheduleWithPatient;
+        break;
 
-    case DRUG_NAME_CHANGE: {
-      const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
-      drug.name = action.data.name;
-      drug.brand = '';
-      drug.form = '';
-      drug.currentDosages = [];
-      drug.nextDosages = [];
-      break;
-    }
-
-    case CHOOSE_BRAND: {
-      const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
-      drug.brand = action.data.brand;
-      drug.form = '';
-      drug.currentDosages = [];
-      drug.nextDosages = [];
-      break;
-    }
-
-    case CHOOSE_FORM: {
-      const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
-      drug.form = action.data.form;
-      drug.currentDosages = [];
-      drug.nextDosages = [];
-      break;
-    }
-
-    case CURRENT_DOSAGE_CHANGE: {
-      const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
-      const idx = drug.currentDosages.findIndex(
-        (curDosage) => curDosage.dosage === action.data.dosage.dosage,
-      );
-
-      if (idx === -1) {
-        drug.currentDosages.push(action.data.dosage);
-      } else {
-        drug.currentDosages[idx] = action.data.dosage;
+      case DRUG_NAME_CHANGE: {
+        const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
+        drug.name = action.data.name;
+        drug.brand = '';
+        drug.form = '';
+        drug.currentDosages = [];
+        drug.nextDosages = [];
+        break;
       }
-      break;
-    }
 
-    case NEXT_DOSAGE_CHANGE: {
-      const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
-      const idx = drug.nextDosages.findIndex(
-        (nextDosage) => nextDosage.dosage === action.data.dosage.dosage,
-      );
-
-      if (idx === -1) {
-        drug.nextDosages.push(action.data.dosage);
-      } else {
-        drug.nextDosages[idx] = action.data.dosage;
+      case CHOOSE_BRAND: {
+        const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
+        drug.brand = action.data.brand;
+        drug.form = '';
+        drug.currentDosages = [];
+        drug.nextDosages = [];
+        break;
       }
-      break;
-    }
 
-    case INTERVAL_START_DATE_CHANGE: {
-      const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
-      drug.intervalStartDate = action.data.date;
-    }
-      break;
+      case CHOOSE_FORM: {
+        const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
+        drug.form = action.data.form;
+        drug.currentDosages = [];
+        drug.nextDosages = [];
+        break;
+      }
 
-    case INTERVAL_END_DATE_CHANGE: {
-      const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
-      drug.intervalEndDate = action.data.date;
-      break;
-    }
+      case CURRENT_DOSAGE_CHANGE: {
+        const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
+        const idx = drug.currentDosages.findIndex(
+          (curDosage) => curDosage.dosage === action.data.dosage.dosage,
+        );
 
-    case INTERVAL_UNIT_CHANGE: {
-      const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
-      drug.intervalUnit = action.data.unit;
-      break;
-    }
+        if (idx === -1) {
+          drug.currentDosages.push(action.data.dosage);
+        } else {
+          drug.currentDosages[idx] = action.data.dosage;
+        }
+        break;
+      }
 
-    case INTERVAL_COUNT_CHANGE: {
-      const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
-      drug.intervalCount = action.data.count;
-      break;
-    }
+      case NEXT_DOSAGE_CHANGE: {
+        const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
+        const idx = drug.nextDosages.findIndex(
+          (nextDosage) => nextDosage.dosage === action.data.dosage.dosage,
+        );
 
-    default:
-      return state;
-  }
-});
+        if (idx === -1) {
+          drug.nextDosages.push(action.data.dosage);
+        } else {
+          drug.nextDosages[idx] = action.data.dosage;
+        }
+        break;
+      }
+
+      case INTERVAL_START_DATE_CHANGE: {
+        const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
+        drug.intervalStartDate = action.data.date;
+        if (drug.intervalEndDate) {
+          drug.intervalDurationDays = differenceInCalendarDays(drug.intervalEndDate, drug.intervalStartDate);
+        }
+      }
+        break;
+
+      case INTERVAL_END_DATE_CHANGE: {
+        const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
+        drug.intervalEndDate = action.data.date;
+        break;
+      }
+
+      case INTERVAL_UNIT_CHANGE: {
+        const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
+        drug.intervalUnit = action.data.unit;
+        drug.intervalDurationDays = ToDays[drug.intervalUnit] * drug.intervalCount;
+        drug.intervalEndDate = add(drug.intervalStartDate, { [drug.intervalUnit.toLowerCase()]: drug.intervalCount });
+        break;
+      }
+
+      case INTERVAL_COUNT_CHANGE: {
+        const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
+        drug.intervalCount = action.data.count;
+        drug.intervalDurationDays = ToDays[drug.intervalUnit] * drug.intervalCount;
+        drug.intervalEndDate = add(drug.intervalStartDate, { [drug.intervalUnit.toLowerCase()]: drug.intervalCount });
+        break;
+      }
+
+      default:
+        return state;
+    }
+  });
+};
 
 export default taperConfigReducer;

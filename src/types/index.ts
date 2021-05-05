@@ -25,6 +25,12 @@ export interface TaperingConfiguration {
   drugs: PrescribedDrug[];
 }
 
+export enum ToDays {
+  'Days' = 1,
+  'Weeks' = 7,
+  'Months' = 30,
+}
+
 export interface PrescribedDrug {
   id: number;
   name: string;
@@ -36,6 +42,7 @@ export interface PrescribedDrug {
   intervalEndDate: Date | null;
   intervalCount: number;
   intervalUnit: 'Days'|'Weeks'|'Months';
+  intervalDurationDays: number;
 }
 
 export interface Drug {

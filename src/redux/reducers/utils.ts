@@ -16,6 +16,7 @@ interface Converted {
   endIntervalsDate: Date
 }
 
+// TODO: endIntervalsDate -> simply intervalEndDate
 const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule => {
   const validate = (drugs: PrescribedDrug[]): PrescribedDrug[] | null => {
     for (const drug of drugs) {
@@ -40,7 +41,7 @@ const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule => {
     };
 
     return {
-      name: drug.name,
+      name: drug.brand,
       currentDosageSum,
       nextDosageSum,
       dates,

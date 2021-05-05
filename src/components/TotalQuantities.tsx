@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useCallback, useContext, useMemo } from 'react';
 import { Input } from 'antd';
-import { differenceInDays } from 'date-fns';
 import { PrescriptionFormContext } from './PrescriptionForm/PrescriptionForm';
 import { prescribedQuantityChange } from './PrescriptionForm/actions';
 
@@ -14,6 +13,7 @@ const TotalQuantities = () => {
 
   const onCountChange = useCallback((e) => {
     console.log(e);
+    console.log('e.target.value: ', e.target.value);
     dispatch(prescribedQuantityChange(
       { dosage: { dosage: e.target.title, quantity: parseInt(e.target.value, 10) }, id },
     ));
@@ -33,7 +33,7 @@ const TotalQuantities = () => {
               max={Next.dosages[key] * intervalDurationDays}
               defaultValue={Next.dosages[key] * intervalDurationDays}
               value={prescribedDosagesQty[key]}
-              step={0.5}
+              // step={}
               width={'50px'}
               onChange={onCountChange}/>
           </div>

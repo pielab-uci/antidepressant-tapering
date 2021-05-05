@@ -66,7 +66,7 @@ const SelectInterval = () => {
       <div>End on</div>
       <Input
         type="date"
-        value={intervalEndDate ? format(intervalEndDate, 'yyyy-MM-dd') : undefined}
+        value={intervalEndDate ? format(new Date(intervalEndDate.valueOf() + intervalEndDate.getTimezoneOffset() * 60 * 1000), 'yyyy-MM-dd') : undefined}
         onChange={onIntervalEndDateChange}
         style={inputStyle}
       />

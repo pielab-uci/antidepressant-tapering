@@ -12,6 +12,7 @@ module.exports = {
         'consistent-return': 'off',
         'import/no-cycle': 'off',
         'import/extensions': 'off',
+        'arrow-body-style': 'off',
       },
     },
   ],

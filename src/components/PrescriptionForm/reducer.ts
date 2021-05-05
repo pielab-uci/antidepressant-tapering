@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { differenceInDays } from 'date-fns';
+import { add, differenceInCalendarDays } from 'date-fns';
 import { PrescriptionFormState } from './types';
 import {
   CHOOSE_BRAND,
@@ -9,6 +9,7 @@ import {
   NEXT_DOSAGE_CHANGE, PRESCRIBED_QUANTITY_CHANGE,
   PrescriptionFormActions,
 } from './actions';
+import { ToDays } from '../../types';
 
 export const initialState: PrescriptionFormState = {
   drugs: null,
@@ -80,35 +81,45 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
 
     case PRESCRIBED_QUANTITY_CHANGE:
       if (!(action.data.dosage.quantity < 0)
-        && (action.data.dosage.quantity < draft.nextDosagesQty[action.data.dosage.dosage] * draft.intervalDurationDays)) {
+        && (action.data.dosage.quantity <= draft.nextDosagesQty[action.data.dosage.dosage] * draft.intervalDurationDays)) {
         draft.prescribedDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;
       }
       break;
 
     case INTERVAL_START_DATE_CHANGE:
       draft.intervalStartDate = action.data.date;
-      if (draft.intervalEndDate) {
-        draft.intervalDurationDays = differenceInDays(draft.intervalEndDate, draft.intervalStartDate);
-        Object.keys(draft.nextDosagesQty).forEach((key) => {
-          draft.prescribedDosagesQty[key] = draft.nextDosagesQty[key] * draft.intervalDurationDays;
-        });
-      }
+      draft.intervalEndDate = add(draft.intervalStartDate, { days: draft.intervalDurationDays });
+
+      Object.keys(draft.nextDosagesQty).forEach((key) => {
+        draft.prescribedDosagesQty[key] = draft.nextDosagesQty[key] * draft.intervalDurationDays;
+      });
+
       break;
 
     case INTERVAL_END_DATE_CHANGE:
       draft.intervalEndDate = action.data.date;
-      draft.intervalDurationDays = differenceInDays(action.data.date!, draft.intervalStartDate);
+      draft.intervalDurationDays = differenceInCalendarDays(draft.intervalEndDate!, draft.intervalStartDate);
+      Object.keys(draft.nextDosagesQty).forEach((key) => {
+        draft.prescribedDosagesQty[key] = draft.nextDosagesQty[key] * draft.intervalDurationDays;
+      });
+
+      break;
+
+    case INTERVAL_UNIT_CHANGE:
+      draft.intervalUnit = action.data.unit;
+      draft.intervalDurationDays = ToDays[draft.intervalUnit] * draft.intervalCount;
       Object.keys(draft.nextDosagesQty).forEach((key) => {
         draft.prescribedDosagesQty[key] = draft.nextDosagesQty[key] * draft.intervalDurationDays;
       });
       break;
 
-    case INTERVAL_UNIT_CHANGE:
-      draft.intervalUnit = action.data.unit;
-      break;
-
     case INTERVAL_COUNT_CHANGE:
       draft.intervalCount = action.data.count;
+      draft.intervalDurationDays = ToDays[draft.intervalUnit] * draft.intervalCount;
+      draft.intervalEndDate = add(draft.intervalStartDate, { [draft.intervalUnit.toLowerCase()]: draft.intervalCount });
+      Object.keys(draft.nextDosagesQty).forEach((key) => {
+        draft.prescribedDosagesQty[key] = draft.nextDosagesQty[key] * draft.intervalDurationDays;
+      });
       break;
   }
 });

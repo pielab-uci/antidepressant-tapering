@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Checkbox, Input } from 'antd';
-
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import ProjectedSchedule from '../components/ProjectedSchedule';
 import { RootState } from '../redux/reducers';
@@ -14,6 +13,7 @@ import {
   SHARE_WITH_PATIENT_APP_REQUEST,
   SHARE_WITH_PATIENT_EMAIL_REQUEST, TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
 } from '../redux/actions/taperConfig';
+import { messageGenerator } from './utils';
 
 const { TextArea } = Input;
 
@@ -23,8 +23,17 @@ const TaperConfigurationPage = () => {
     prescriptionFormIds,
     messageForPatient,
     shareProjectedScheduleWithPatient,
+    projectedSchedule,
+    prescribedDrugs,
+    showMessageForPatient,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (showMessageForPatient) {
+      dispatch(changeMessageForPatient(messageGenerator(prescribedDrugs)));
+    }
+  }, [projectedSchedule]);
 
   const toggleShareProjectedSchedule = useCallback(() => {
     dispatch({
@@ -63,7 +72,9 @@ const TaperConfigurationPage = () => {
   const onChangeMessageForPatient = useCallback((e) => {
     dispatch(changeMessageForPatient(e.target.value));
   }, []);
-  const renderPrescriptionForms = (ids: number[]) => ids.map((id) => <PrescriptionForm key={`PrescriptionForm${id}`} drugs={drugs} id={id}/>);
+
+  const renderPrescriptionForms = (ids: number[]) => ids.map((id) => <PrescriptionForm key={`PrescriptionForm${id}`}
+                                                                                       drugs={drugs} id={id}/>);
 
   return (
     <>

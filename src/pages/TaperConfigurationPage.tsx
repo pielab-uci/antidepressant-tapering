@@ -89,10 +89,11 @@ const TaperConfigurationPage = () => {
   return (
     <>
       {renderPrescriptionForms(prescriptionFormIds)}
-      <SelectInterval/>
       <hr/>
       <Button onClick={addNewPrescriptionForm}>Add Drug</Button>
       <Button onClick={generateSchedule}>Generate schedule</Button>
+      <hr/>
+      <SelectInterval/>
       <hr/>
       <ProjectedSchedule/>
       <hr/>

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  FC, useCallback, useContext,
+  FC, useCallback, useContext, useEffect,
 } from 'react';
 import { Button } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,6 +8,7 @@ import { Dispatch } from 'redux';
 import { PrescriptionFormContext } from './PrescriptionForm/PrescriptionForm';
 import { RootState } from '../redux/reducers';
 import { TaperConfigActions, TaperConfigState } from '../redux/reducers/taperConfig';
+import { intervalDurationDaysChange } from './PrescriptionForm/actions';
 
 interface Props {
   form: string;
@@ -22,6 +23,10 @@ const DrugUnit: FC<Props> = ({ time, form, dosage }) => {
   const { intervalDurationDays } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
 
+  useEffect(() => {
+    formActionDispatch(intervalDurationDaysChange(intervalDurationDays));
+  }, [intervalDurationDays]);
+
   const onIncrement = useCallback(() => {
     const actionData = {
       id,
@@ -32,9 +37,9 @@ const DrugUnit: FC<Props> = ({ time, form, dosage }) => {
       intervalDurationDays,
     };
 
-    formActionDispatch(dosageChangeAction(actionData));
     taperConfigActionDispatch(dosageChangeAction(actionData));
-  }, [dosages]);
+    formActionDispatch(dosageChangeAction(actionData));
+  }, [dosages, intervalDurationDays]);
 
   const onDecrement = useCallback(() => {
     const actionData = {
@@ -46,9 +51,9 @@ const DrugUnit: FC<Props> = ({ time, form, dosage }) => {
       intervalDurationDays,
     };
 
-    formActionDispatch(dosageChangeAction(actionData));
     taperConfigActionDispatch(dosageChangeAction(actionData));
-  }, [dosages]);
+    formActionDispatch(dosageChangeAction(actionData));
+  }, [dosages, intervalDurationDays]);
 
   return (
     <>

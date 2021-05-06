@@ -17,7 +17,7 @@ const Dosages: FC<Props> = ({ time, dosages }) => {
   const unit = Object.keys(dosages)[0].match(/[a-z]+/);
   const [dosageDifferencePercent, setDosageDifferencePercent] = useState<string | null>(null);
 
-  const calculateDosageSum = (dosages: { [key: string]: number }): number => Object.entries(dosages).reduce((acc, [dosage, count]) => acc + parseInt(dosage) * count, 0);
+  const calculateDosageSum = (dosages: { [key: string]: number }): number => Object.entries(dosages).reduce((acc, [dosage, count]) => acc + parseFloat(dosage) * count, 0);
 
   useEffect(() => {
     if (time === 'Next') {

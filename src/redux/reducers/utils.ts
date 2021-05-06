@@ -34,9 +34,9 @@ const validate = (drugs: PrescribedDrug[]): PrescribedDrug[] | null => {
 const convert = (drugs: PrescribedDrug[]): Converted[] => {
   return drugs.map((drug) => {
     const currentDosageSum = drug.currentDosages
-      .reduce((acc, d) => acc + parseInt(d.dosage, 10) * d.quantity, 0);
+      .reduce((acc, d) => acc + parseFloat(d.dosage) * d.quantity, 0);
     const nextDosageSum = drug.nextDosages
-      .reduce((acc, d) => acc + parseInt(d.dosage, 10) * d.quantity, 0);
+      .reduce((acc, d) => acc + parseFloat(d.dosage) * d.quantity, 0);
     const dosageUnit = drug.currentDosages[0].dosage.match(/[a-z]+/)!;
     const isIncreasing = currentDosageSum < nextDosageSum;
 
@@ -187,23 +187,37 @@ const scheduleGenerator = (prescribedDrugs: PrescribedDrug[], intervalStartDate:
 export type ScheduleChartData = { name: string, data: { time: string, dosage: number }[] }[];
 
 const chartDataConverter = (schedule: Schedule): ScheduleChartData => {
-  const groupByDrug: ScheduleChartData = [];
+  const rowsGroupByDrug: { [drug: string]: (TableRow & { startDate: Date; endDate: Date })[] } = {};
+
   schedule.drugs.forEach((drug) => {
-    groupByDrug.push({ name: drug, data: [] as { time: string, dosage: number }[] });
+    rowsGroupByDrug[drug] = [];
   });
 
-  schedule.data.forEach((row, i) => {
-    groupByDrug
-      .find((drug) => drug.name === row.Drug)!
-      .data.push({ time: format(row.startDate, 'MM-dd'), dosage: parseInt(row['Current Dosage'], 10) });
-
-    if (i === schedule.data.length - 1) {
-      groupByDrug.find((drug) => drug.name === row.Drug)!
-        .data.push({ time: format(row.endDate, 'MM-dd'), dosage: parseInt(row['Next Dosage'], 10) });
-    }
+  schedule.data.forEach((row) => {
+    rowsGroupByDrug[row.Drug].push(row);
   });
 
-  return groupByDrug;
+  const scheduleChartData: ScheduleChartData = [];
+
+  Object.entries(rowsGroupByDrug).forEach(([k, rows]) => {
+    scheduleChartData.push({ name: k, data: [] });
+    rows.forEach((row, i) => {
+      const chartData = scheduleChartData.find((el) => el.name === k)!;
+      chartData.data.push({
+        time: format(row.startDate, 'MM-dd'),
+        dosage: parseFloat(row['Current Dosage']),
+      });
+
+      if (i === rows.length - 1) {
+        chartData.data.push({
+          time: format(row.endDate, 'MM-dd'),
+          dosage: parseFloat(row['Next Dosage']),
+        });
+      }
+    });
+  });
+
+  return scheduleChartData;
 };
 
 const messageGenerator = (drugs: PrescribedDrug[], intervalStartDate: Date, intervalEndDate: Date): string => {

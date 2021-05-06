@@ -2,9 +2,8 @@ import * as React from 'react';
 import { useEffect, createContext, FC } from 'react';
 import { useReducer, useState } from 'reinspect';
 import { Button, Select } from 'antd';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Dosages from '../Dosages';
-import SelectInterval from '../SelectInterval';
 import {
   initialState,
   reducer,
@@ -18,6 +17,8 @@ import { IPrescriptionFormContext, PrescriptionFormState } from './types';
 import { Drug, DrugForm } from '../../types';
 import { CLEAR_SCHEDULE, REMOVE_DRUG_FORM } from '../../redux/actions/taperConfig';
 import TotalQuantities from '../TotalQuantities';
+import { RootState } from '../../redux/reducers';
+import { TaperConfigActions, TaperConfigState } from '../../redux/reducers/taperConfig';
 
 const { Option } = Select;
 
@@ -25,7 +26,7 @@ export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
   ...initialState,
   Current: { dosages: initialState.currentDosagesQty, action: currentDosageChange },
   Next: { dosages: initialState.nextDosagesQty, action: nextDosageChange },
-  dispatch: () => {
+  formActionDispatch: () => {
   },
   id: -1,
 });
@@ -36,25 +37,29 @@ interface Props {
 }
 
 const PrescriptionForm: FC<Props> = ({ id, drugs }) => {
-  const globalDispatch = useDispatch();
-  const [state, localDispatch] = useReducer<PrescriptionFormReducer, PrescriptionFormState>(reducer, initialState, (init) => initialState, `PrescriptionFormReducer_${id}`);
-  const dispatch = (action: PrescriptionFormActions) => {
-    globalDispatch(action);
-    localDispatch(action);
-  };
+  const taperConfigActionDispatch = useDispatch();
+  const [state, formActionDispatch] = useReducer<PrescriptionFormReducer, PrescriptionFormState>(reducer, initialState, (init) => initialState, `PrescriptionFormReducer_${id}`);
 
   const {
     chosenDrug, chosenBrand, brandOptions, chosenDrugForm, drugFormOptions,
-    currentDosagesQty, nextDosagesQty, intervalStartDate, intervalEndDate,
+    currentDosagesQty, nextDosagesQty,
   } = state;
+
+  const {
+    intervalStartDate,
+    intervalEndDate,
+  } = useSelector<RootState, TaperConfigState>((rootState) => rootState.taperConfig);
 
   const [showTotalQuantities, setShowTotalQuantities] = useState(false, `PrescriptionForm-ShowTotalQuantities_${id}`);
 
   useEffect(() => {
-    dispatch({
+    const action = {
       type: FETCH_DRUGS,
       data: drugs,
-    });
+      id,
+    };
+    // taperConfigActionDispatch(action);
+    formActionDispatch(action);
   }, [drugs]);
 
   useEffect(() => {
@@ -68,32 +73,53 @@ const PrescriptionForm: FC<Props> = ({ id, drugs }) => {
   };
 
   const onDrugNameChange = (value: string) => {
-    dispatch({
+    const action = {
       type: DRUG_NAME_CHANGE,
-      data: { id, name: value },
-    });
+      data: { name: value, id },
+    };
+    taperConfigActionDispatch(action);
+    formActionDispatch(action);
+    // dispatch({
+    //   type: DRUG_NAME_CHANGE,
+    //   data: { id, name: value },
+    // });
   };
 
   const onBrandChange = (value: string) => {
-    dispatch({
+    const action = {
       type: CHOOSE_BRAND,
-      data: { id, brand: value },
-    });
+      data: { brand: value, id },
+    };
+
+    formActionDispatch(action);
+    taperConfigActionDispatch(action);
+    // dispatch({
+    //   type: CHOOSE_BRAND,
+    //   data: { id, brand: value },
+    // });
   };
 
   const onFormChange = (value: string) => {
-    dispatch({
+    const action = {
       type: CHOOSE_FORM,
-      data: { id, form: value },
-    });
+      data: { form: value, id },
+    };
+
+    formActionDispatch(action);
+    taperConfigActionDispatch(action);
+
+    // dispatch({
+    //   type: CHOOSE_FORM,
+    //   data: { id, form: value },
+    // });
   };
 
   const removeDrugForm = () => {
-    globalDispatch({
+    taperConfigActionDispatch({
       type: REMOVE_DRUG_FORM,
       data: id,
     });
-    globalDispatch({
+    taperConfigActionDispatch({
       type: CLEAR_SCHEDULE,
     });
   };
@@ -112,7 +138,7 @@ const PrescriptionForm: FC<Props> = ({ id, drugs }) => {
       id,
       Current: { dosages: currentDosagesQty, action: currentDosageChange },
       Next: { dosages: nextDosagesQty, action: nextDosageChange },
-      dispatch,
+      formActionDispatch,
     }}
     >
       <Button onClick={removeDrugForm}>Remove</Button>
@@ -143,10 +169,8 @@ const PrescriptionForm: FC<Props> = ({ id, drugs }) => {
         <hr />
         <div>Next Dosages</div>
         {renderDosages(chosenDrugForm, 'Next', nextDosagesQty)}
-        <hr />
-
-        <SelectInterval />
         <hr/>
+
         {showTotalQuantities && <TotalQuantities/>}
       </form>
       <hr />

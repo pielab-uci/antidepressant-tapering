@@ -111,3 +111,57 @@ export const changeMessageForPatient = (data: string): ChangeMessageForPatient =
   type: CHANGE_MESSAGE_FOR_PATIENT,
   data,
 });
+
+export const INTERVAL_START_DATE_CHANGE = 'INTERVAL_START_DATE_CHANGE' as const;
+
+export interface IntervalStartDateChangeAction {
+  type: typeof INTERVAL_START_DATE_CHANGE,
+  data: { date: Date, intervalDurationDays?: number } ;
+}
+
+export const intervalStartDateChange = (data: { date: Date, intervalDurationDays?: number }): IntervalStartDateChangeAction => ({
+  type: INTERVAL_START_DATE_CHANGE,
+  data,
+});
+
+export const INTERVAL_END_DATE_CHANGE = 'INTERVAL_END_DATE_CHANGE' as const;
+
+export interface IntervalEndDateChangeAction {
+  type: typeof INTERVAL_END_DATE_CHANGE,
+  data: { date: Date | null; intervalDurationDays?: number }
+}
+
+export const intervalEndDateChange = (data: { date: Date | null, intervalDurationDays?: number }): IntervalEndDateChangeAction => ({
+  type: INTERVAL_END_DATE_CHANGE,
+  data,
+});
+
+export const INTERVAL_COUNT_CHANGE = 'INTERVAL_COUNT_CHANGE' as const;
+
+export interface IntervalCountChangeAction {
+  type: typeof INTERVAL_COUNT_CHANGE,
+  data: { count: number, intervalDurationDays?: number }
+}
+
+export const intervalCountChange = (data: { count: number, intervalDurationDays?: number }): IntervalCountChangeAction => ({
+  type: INTERVAL_COUNT_CHANGE,
+  data,
+});
+
+export const INTERVAL_UNIT_CHANGE = 'INTERVAL_UNIT_CHANGE' as const;
+
+export interface IntervalUnitChangeAction {
+  type: typeof INTERVAL_UNIT_CHANGE;
+  data: { unit: 'Days' | 'Weeks' | 'Months', intervalDurationDays?: number }
+}
+
+export const intervalUnitChange = (data: { unit: 'Days' | 'Weeks' | 'Months', intervalDurationDays?: number }): IntervalUnitChangeAction => ({
+  type: INTERVAL_UNIT_CHANGE,
+  data,
+});
+
+export type IntervalConfigActions =
+  | IntervalStartDateChangeAction
+  | IntervalEndDateChangeAction
+  | IntervalUnitChangeAction
+  | IntervalCountChangeAction;

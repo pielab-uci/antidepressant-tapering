@@ -1,24 +1,43 @@
 import * as React from 'react';
-import { useCallback, useContext, useMemo } from 'react';
+import {
+  useCallback, useContext, useEffect, useMemo,
+} from 'react';
 import { Input } from 'antd';
+import { useDispatch, useSelector } from 'react-redux';
+import { Dispatch } from 'redux';
 import { PrescriptionFormContext } from './PrescriptionForm/PrescriptionForm';
-import { prescribedQuantityChange } from './PrescriptionForm/actions';
+import { intervalDurationDaysChange, prescribedQuantityChange } from './PrescriptionForm/actions';
+import { RootState } from '../redux/reducers';
+import { TaperConfigActions, TaperConfigState } from '../redux/reducers/taperConfig';
 
 const TotalQuantities = () => {
   const {
     chosenDrug, chosenBrand, chosenDrugForm,
-    Next, prescribedDosagesQty, id, dispatch,
-    intervalDurationDays,
+    Next, prescribedDosagesQty, id, formActionDispatch,
   } = useContext(PrescriptionFormContext);
 
-  const onCountChange = useCallback((e) => {
-    console.log(e);
-    console.log('e.target.value: ', e.target.value);
-    dispatch(prescribedQuantityChange(
-      { dosage: { dosage: e.target.title, quantity: parseInt(e.target.value, 10) }, id },
-    ));
-  }, [prescribedDosagesQty]);
+  const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
+  const { intervalDurationDays } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
 
+  useEffect(() => {
+    formActionDispatch(intervalDurationDaysChange(intervalDurationDays));
+  }, [intervalDurationDays]);
+
+  const onCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(e);
+
+    console.log('e.target.value: ', e.target.value);
+    const actionData = {
+      dosage: { dosage: e.target.title, quantity: parseInt(e.target.value, 10) },
+      id,
+      intervalDurationDays,
+    };
+
+    formActionDispatch(prescribedQuantityChange(actionData));
+    taperConfigActionDispatch(prescribedQuantityChange(actionData));
+  };
+  // useCallback((e) => {
+  // }, [prescribedDosagesQty, intervalDurationDays]);
   return (
     <div>
       <h3>Total number of {chosenDrug?.name}({chosenBrand?.brand}) {chosenDrugForm?.form}</h3>

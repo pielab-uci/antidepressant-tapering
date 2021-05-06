@@ -31,7 +31,14 @@ import {
   REMOVE_DRUG_FORM,
   RemoveDrugFormAction,
   ToggleShareProjectedScheduleWithPatient,
-  TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT, CHANGE_MESSAGE_FOR_PATIENT, ChangeMessageForPatient,
+  TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
+  CHANGE_MESSAGE_FOR_PATIENT,
+  INTERVAL_COUNT_CHANGE,
+  INTERVAL_END_DATE_CHANGE,
+  INTERVAL_START_DATE_CHANGE,
+  INTERVAL_UNIT_CHANGE,
+  ChangeMessageForPatient,
+  IntervalConfigActions,
 } from '../actions/taperConfig';
 import drugs from './drugs';
 
@@ -40,10 +47,6 @@ import {
   CHOOSE_FORM,
   CURRENT_DOSAGE_CHANGE,
   DRUG_NAME_CHANGE,
-  INTERVAL_COUNT_CHANGE,
-  INTERVAL_END_DATE_CHANGE,
-  INTERVAL_START_DATE_CHANGE,
-  INTERVAL_UNIT_CHANGE,
   NEXT_DOSAGE_CHANGE,
   PrescriptionFormActions,
 } from '../../components/PrescriptionForm/actions';
@@ -59,6 +62,12 @@ export interface TaperConfigState {
 
   projectedSchedule: Schedule;
   scheduleChartData: ScheduleChartData;
+
+  intervalStartDate: Date,
+  intervalEndDate: Date | null,
+  intervalCount: number,
+  intervalUnit: 'Days'|'Weeks'|'Months',
+  intervalDurationDays: number,
 
   messageForPatient: string;
   shareProjectedScheduleWithPatient: boolean;
@@ -89,16 +98,17 @@ export const initialState: TaperConfigState = {
     form: '',
     currentDosages: [],
     nextDosages: [],
-    intervalStartDate: new Date(),
-    intervalEndDate: null,
-    intervalCount: 0,
-    intervalUnit: 'Days',
-    intervalDurationDays: 0,
   }],
   projectedSchedule: {
     startDates: {}, endDates: {}, data: [], drugs: [],
   },
   scheduleChartData: [],
+
+  intervalStartDate: new Date(),
+  intervalEndDate: null,
+  intervalCount: 0,
+  intervalUnit: 'Days',
+  intervalDurationDays: 0,
 
   messageForPatient: '',
   shareProjectedScheduleWithPatient: false,
@@ -133,6 +143,7 @@ export type TaperConfigActions =
   | ShareWithPatientEmailRequest
   | ShareWithPatientEmailSuccess
   | ShareWithPatientEmailFailure
+  | IntervalConfigActions
   | PrescriptionFormActions;
 
 const taperConfigReducer = (state: TaperConfigState = initialState, action: TaperConfigActions) => {
@@ -165,11 +176,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           form: '',
           currentDosages: [],
           nextDosages: [],
-          intervalStartDate: new Date(),
-          intervalEndDate: null,
-          intervalCount: 0,
-          intervalUnit: 'Days',
-          intervalDurationDays: 0,
         });
         draft.lastPrescriptionFormId += 1;
         break;
@@ -180,8 +186,8 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         break;
 
       case GENERATE_SCHEDULE:
-        draft.projectedSchedule = scheduleGenerator(draft.prescribedDrugs);
-        draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
+        draft.projectedSchedule = scheduleGenerator(draft.prescribedDrugs, draft.intervalStartDate, draft.intervalEndDate!);
+        // draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
         draft.showMessageForPatient = true;
         break;
 
@@ -288,34 +294,31 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         break;
       }
 
-      case INTERVAL_START_DATE_CHANGE: {
-        const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
-        drug.intervalStartDate = action.data.date;
-        if (drug.intervalEndDate) {
-          drug.intervalDurationDays = differenceInCalendarDays(drug.intervalEndDate, drug.intervalStartDate);
+      case INTERVAL_START_DATE_CHANGE:
+        console.log('INTERVAL_START_DATE_CHANGE');
+        console.log(action.data);
+        draft.intervalStartDate = action.data.date;
+        if (draft.intervalEndDate) {
+          draft.intervalDurationDays = differenceInCalendarDays(draft.intervalEndDate, draft.intervalStartDate);
         }
-      }
         break;
 
       case INTERVAL_END_DATE_CHANGE: {
-        const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
-        drug.intervalEndDate = action.data.date;
+        draft.intervalEndDate = action.data.date;
         break;
       }
 
       case INTERVAL_UNIT_CHANGE: {
-        const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
-        drug.intervalUnit = action.data.unit;
-        drug.intervalDurationDays = ToDays[drug.intervalUnit] * drug.intervalCount;
-        drug.intervalEndDate = add(drug.intervalStartDate, { [drug.intervalUnit.toLowerCase()]: drug.intervalCount });
+        draft.intervalUnit = action.data.unit;
+        draft.intervalDurationDays = ToDays[draft.intervalUnit] * draft.intervalCount;
+        draft.intervalEndDate = add(draft.intervalStartDate, { [draft.intervalUnit.toLowerCase()]: draft.intervalCount });
         break;
       }
 
       case INTERVAL_COUNT_CHANGE: {
-        const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
-        drug.intervalCount = action.data.count;
-        drug.intervalDurationDays = ToDays[drug.intervalUnit] * drug.intervalCount;
-        drug.intervalEndDate = add(drug.intervalStartDate, { [drug.intervalUnit.toLowerCase()]: drug.intervalCount });
+        draft.intervalCount = action.data.count;
+        draft.intervalDurationDays = ToDays[draft.intervalUnit] * draft.intervalCount;
+        draft.intervalEndDate = add(draft.intervalStartDate, { [draft.intervalUnit.toLowerCase()]: draft.intervalCount });
         break;
       }
 

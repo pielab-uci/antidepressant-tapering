@@ -14,6 +14,7 @@ import {
   SHARE_WITH_PATIENT_EMAIL_REQUEST, TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
 } from '../redux/actions/taperConfig';
 import { messageGenerator } from './utils';
+import SelectInterval from '../components/SelectInterval';
 
 const { TextArea } = Input;
 
@@ -26,12 +27,18 @@ const TaperConfigurationPage = () => {
     projectedSchedule,
     prescribedDrugs,
     showMessageForPatient,
+    intervalStartDate,
+    intervalEndDate,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (showMessageForPatient) {
-      dispatch(changeMessageForPatient(messageGenerator(prescribedDrugs)));
+      dispatch(
+        changeMessageForPatient(
+          messageGenerator(prescribedDrugs, intervalStartDate, intervalEndDate!),
+        ),
+      );
     }
   }, [projectedSchedule]);
 
@@ -73,12 +80,17 @@ const TaperConfigurationPage = () => {
     dispatch(changeMessageForPatient(e.target.value));
   }, []);
 
-  const renderPrescriptionForms = (ids: number[]) => ids.map((id) => <PrescriptionForm key={`PrescriptionForm${id}`}
-                                                                                       drugs={drugs} id={id}/>);
+  const renderPrescriptionForms = (ids: number[]) => {
+    return ids.map(
+      (id) => <PrescriptionForm key={`PrescriptionForm${id}`} drugs={drugs} id={id}/>,
+    );
+  };
 
   return (
     <>
       {renderPrescriptionForms(prescriptionFormIds)}
+      <SelectInterval/>
+      <hr/>
       <Button onClick={addNewPrescriptionForm}>Add Drug</Button>
       <Button onClick={generateSchedule}>Generate schedule</Button>
       <hr/>

@@ -20,11 +20,6 @@ export interface PrescriptionFormState {
   currentDosagesQty: { [key: string]: number };
   nextDosagesQty: { [key: string]: number };
   prescribedDosagesQty: { [key: string]: number };
-  intervalUnit: 'Days'|'Weeks'|'Months';
-  intervalCount: number;
-  intervalStartDate: Date;
-  intervalEndDate: Date | null;
-  intervalDurationDays: number;
 }
 
 export type IPrescriptionFormContext = PrescriptionFormState
@@ -36,9 +31,9 @@ export type IPrescriptionFormContext = PrescriptionFormState
   };
   Next: {
     dosages: typeof initialState.nextDosagesQty,
-    action: (data: { id: number, dosage: { dosage: string, quantity: number } })
+    action: (data: { id: number, dosage: { dosage: string, quantity: number }, intervalDurationDays: number })
     => NextDosageChangeAction
   };
-  dispatch: Dispatch<PrescriptionFormActions>;
+  formActionDispatch: Dispatch<PrescriptionFormActions>;
   id: number;
 };

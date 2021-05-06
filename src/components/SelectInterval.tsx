@@ -1,14 +1,21 @@
 import * as React from 'react';
-import { useRef, useContext, useCallback } from 'react';
+import {
+  useRef, useContext, useCallback, useEffect,
+} from 'react';
 import { format, isAfter } from 'date-fns';
 import { Input, Select } from 'antd';
+import { useDispatch, useSelector } from 'react-redux';
+import { Dispatch } from 'redux';
 import { PrescriptionFormContext } from './PrescriptionForm/PrescriptionForm';
 import {
   intervalCountChange,
   intervalEndDateChange,
   intervalStartDateChange,
   intervalUnitChange,
-} from './PrescriptionForm/actions';
+} from '../redux/actions/taperConfig';
+import { RootState } from '../redux/reducers';
+import { TaperConfigActions, TaperConfigState } from '../redux/reducers/taperConfig';
+import { intervalDurationDaysChange } from './PrescriptionForm/actions';
 
 const { Option } = Select;
 
@@ -17,35 +24,43 @@ const inputStyle = {
 };
 
 const SelectInterval = () => {
+  const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
+  const { formActionDispatch } = useContext(PrescriptionFormContext);
   const {
-    intervalCount,
-    intervalUnit,
-    intervalStartDate,
-    intervalEndDate,
-    dispatch,
-    id,
-  } = useContext(PrescriptionFormContext);
+    intervalCount, intervalUnit,
+    intervalStartDate, intervalEndDate,
+    intervalDurationDays,
+  } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const units = useRef(['Days', 'Weeks', 'Months']);
-  const onIntervalStartDateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(intervalStartDateChange({ id, date: new Date(e.target.value) }));
-  }, []);
 
-  const onIntervalEndDateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    formActionDispatch(intervalDurationDaysChange(intervalDurationDays));
+  }, [intervalDurationDays]);
+
+  const onIntervalStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('SelectInterval.onIntervalStartDateChange');
+    taperConfigActionDispatch(intervalStartDateChange({ date: new Date(e.target.value) }));
+  };
+
+  const onIntervalEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('SelectInterval.onIntervalEndDateChange');
     if (!isAfter(new Date(e.target.value), intervalStartDate)) {
       alert('End date must be after the start date.');
-      dispatch(intervalEndDateChange({ id, date: null }));
+      taperConfigActionDispatch(intervalEndDateChange({ date: null }));
     } else {
-      dispatch(intervalEndDateChange({ id, date: new Date(e.target.value) }));
+      taperConfigActionDispatch(intervalEndDateChange({ date: new Date(e.target.value) }));
     }
-  }, [intervalStartDate]);
+  };
 
-  const onIntervalUnitChange = useCallback((value: 'Days' | 'Weeks' | 'Months') => {
-    dispatch(intervalUnitChange({ id, unit: value }));
-  }, []);
+  const onIntervalUnitChange = (value: 'Days' | 'Weeks' | 'Months') => {
+    console.log('SelectInterval.onIntervalUnitChange');
+    taperConfigActionDispatch(intervalUnitChange({ unit: value }));
+  };
 
-  const onIntervalCountChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(intervalCountChange({ id, count: parseInt(e.target.value, 10) }));
-  }, []);
+  const onIntervalCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('SelectInterval.onIntervalCountChange');
+    taperConfigActionDispatch(intervalCountChange({ count: parseInt(e.target.value, 10) }));
+  };
 
   return (
     <>

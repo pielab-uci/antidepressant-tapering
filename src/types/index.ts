@@ -38,11 +38,6 @@ export interface PrescribedDrug {
   form: string;
   currentDosages: { dosage: string; quantity: number }[];
   nextDosages: { dosage: string; quantity: number }[];
-  intervalStartDate: Date;
-  intervalEndDate: Date | null;
-  intervalCount: number;
-  intervalUnit: 'Days'|'Weeks'|'Months';
-  intervalDurationDays: number;
 }
 
 export interface Drug {

@@ -24,11 +24,8 @@ const TotalQuantities = () => {
   }, [intervalDurationDays]);
 
   const onCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e);
-
-    console.log('e.target.value: ', e.target.value);
     const actionData = {
-      dosage: { dosage: e.target.title, quantity: parseInt(e.target.value, 10) },
+      dosage: { dosage: e.target.title, quantity: parseFloat(e.target.value) },
       id,
       intervalDurationDays,
     };
@@ -52,7 +49,7 @@ const TotalQuantities = () => {
               max={Next.dosages[key] * intervalDurationDays}
               defaultValue={Next.dosages[key] * intervalDurationDays}
               value={prescribedDosagesQty[key]}
-              // step={}
+              step={0.5}
               width={'50px'}
               onChange={onCountChange}/>
           </div>

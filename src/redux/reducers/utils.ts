@@ -45,27 +45,40 @@ const convert = (drugs: PrescribedDrug[]): Converted[] => {
       brand: drug.brand,
       currentDosageSum,
       nextDosageSum,
-      // dates,
       changeAmount: nextDosageSum - currentDosageSum,
       changeRate: nextDosageSum / currentDosageSum,
-      // duration,
       dosageUnit,
       isIncreasing,
       minDosageUnit: drug.minDosageUnit,
-      // endIntervalsDate: drug.intervalEndDate!,
     };
   });
 };
 
 const ceil = (minDosage: number, dosage: number): number => {
-  console.group('ceil called');
   console.log('minDosage: ', minDosage, 'dosage: ', dosage);
-  const floor = Math.floor(dosage / minDosage) * minDosage;
-  const ceiling = Math.floor(dosage / minDosage) * (minDosage + 1);
-  const res = ceiling;
-  console.log('floor: ', floor, 'ceil: ', ceiling, 'res: ', res);
-  console.groupEnd();
-  return res === dosage ? floor : ceiling;
+  if (dosage % minDosage === 0) {
+    console.log('dosage % minDosage === 0');
+    return dosage;
+  }
+
+  if (dosage < minDosage) {
+    console.log('dosage < minDosage');
+    return 0;
+  }
+
+  console.log('dosage > minDosage');
+  let floor = Math.floor(dosage / minDosage) * minDosage;
+  const ceiling = Math.ceil(dosage / minDosage) * minDosage;
+  if (floor === ceiling) {
+    floor -= minDosage;
+    if (floor < 0) {
+      floor = 0;
+    }
+  }
+  console.log('floor: ', floor, 'ceiling: ', ceiling);
+  const res = ceiling === dosage ? floor : ceiling;
+  console.log('res: ', res);
+  return res;
 };
 
 const calcNextDosage = (drug: Converted, dosage: number): number => {

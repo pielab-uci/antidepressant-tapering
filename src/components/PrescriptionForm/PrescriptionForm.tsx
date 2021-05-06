@@ -16,7 +16,6 @@ import {
   FETCH_DRUGS,
   currentDosageChange,
   nextDosageChange,
-  PrescriptionFormActions,
   ChooseFormAction,
   ChooseBrandAction, DrugNameChangeAction, FetchDrugsAction,
 } from './actions';
@@ -29,8 +28,6 @@ import {
   RemoveDrugFormAction,
 } from '../../redux/actions/taperConfig';
 import TotalQuantities from '../TotalQuantities';
-import { RootState } from '../../redux/reducers';
-import { TaperConfigActions, TaperConfigState } from '../../redux/reducers/taperConfig';
 
 const { Option } = Select;
 
@@ -87,10 +84,6 @@ const PrescriptionForm: FC<Props> = ({ id, drugs }) => {
     };
     taperConfigActionDispatch(action);
     formActionDispatch(action);
-    // dispatch({
-    //   type: DRUG_NAME_CHANGE,
-    //   data: { id, name: value },
-    // });
   };
 
   const onBrandChange = (value: string) => {
@@ -101,10 +94,6 @@ const PrescriptionForm: FC<Props> = ({ id, drugs }) => {
 
     formActionDispatch(action);
     taperConfigActionDispatch(action);
-    // dispatch({
-    //   type: CHOOSE_BRAND,
-    //   data: { id, brand: value },
-    // });
   };
 
   const onFormChange = (value: string) => {

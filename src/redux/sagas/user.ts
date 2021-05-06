@@ -16,14 +16,14 @@ import {
 import { Clinician, Patient } from '../../types';
 import { stephen, xiao } from './dummies';
 
-function loginAPI(): { data: Omit<Clinician, 'password'> } {
+function loginAPI(action: LoginRequestAction): { data: Omit<Clinician, 'password'> } {
   return { data: stephen };
 }
 
 function* logIn(action: LoginRequestAction) {
   try {
     yield delay(1000);
-    const result = loginAPI();
+    const result = loginAPI(action);
 
     yield put<LoginSuccessAction>({
       type: LOGIN_SUCCESS,
@@ -38,14 +38,14 @@ function* logIn(action: LoginRequestAction) {
   }
 }
 
-function addPatientAPI(): { data: Omit<Patient, 'password'> } {
+function addPatientAPI(action: AddNewPatientRequest): { data: Omit<Patient, 'password'> } {
   return { data: xiao };
 }
 
 function* addPatient(action: AddNewPatientRequest) {
   try {
     yield delay(1000);
-    const result = addPatientAPI();
+    const result = addPatientAPI(action);
 
     yield put<AddNewPatientSuccess>({
       type: ADD_NEW_PATIENT_SUCCESS,

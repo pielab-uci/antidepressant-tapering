@@ -6,6 +6,7 @@ import { TableRow } from '../../components/ProjectedScheduleTable';
 import { Schedule } from '../../components/ProjectedSchedule';
 
 interface Converted {
+  name: string,
   brand: string,
   currentDosageSum: number,
   nextDosageSum: number,
@@ -16,7 +17,6 @@ interface Converted {
   // endIntervalsDate: Date
 }
 
-// TODO: endIntervalsDate -> simply intervalEndDate
 const scheduleGenerator = (prescribedDrugs: PrescribedDrug[], intervalStartDate: Date, intervalEndDate: Date): Schedule => {
   const validate = (drugs: PrescribedDrug[]): PrescribedDrug[] | null => {
     for (const drug of drugs) {
@@ -44,6 +44,7 @@ const scheduleGenerator = (prescribedDrugs: PrescribedDrug[], intervalStartDate:
       // };
 
       return {
+        name: drug.name,
         brand: drug.brand,
         currentDosageSum,
         nextDosageSum,
@@ -66,7 +67,8 @@ const scheduleGenerator = (prescribedDrugs: PrescribedDrug[], intervalStartDate:
 
     drugs.forEach((drug) => {
       rows.push({
-        Drug: drug.brand,
+        // Drug: drug.brand,
+        Drug: drug.name,
         'Current Dosage': `${drug.currentDosageSum}${drug.dosageUnit}`,
         'Next Dosage': `${drug.nextDosageSum}${drug.dosageUnit}`,
         Dates: `${format(intervalStartDate, 'MM/dd/yyyy')} - ${format(intervalEndDate, 'MM/dd/yyyy')}`,
@@ -77,7 +79,8 @@ const scheduleGenerator = (prescribedDrugs: PrescribedDrug[], intervalStartDate:
       const projectionStartDate = add(intervalEndDate, { days: 1 });
 
       const newRowData = {
-        Drug: drug.brand,
+        // Drug: drug.brand,
+        Drug: drug.name,
         currentDosageSum: drug.nextDosageSum,
         nextDosageSum: drug.nextDosageSum * drug.changeRate,
         startDate: projectionStartDate,
@@ -86,7 +89,8 @@ const scheduleGenerator = (prescribedDrugs: PrescribedDrug[], intervalStartDate:
 
       Array(3).fill(null).forEach(() => {
         rows.push({
-          Drug: drug.brand,
+          // Drug: drug.brand,
+          Drug: drug.name,
           'Current Dosage': `${newRowData.currentDosageSum}${drug.dosageUnit}`,
           'Next Dosage': `${newRowData.nextDosageSum}${drug.dosageUnit}`,
           Dates: `${format(newRowData.startDate, 'MM/dd/yyyy')} - ${format(newRowData.endDate, 'MM/dd/yyyy')}`,
@@ -132,7 +136,7 @@ const scheduleGenerator = (prescribedDrugs: PrescribedDrug[], intervalStartDate:
 
   if (!validate(prescribedDrugs)) {
     return {
-      startDates: {}, endDates: {}, data: [], drugs: [],
+      data: [], drugs: [],
     };
   }
 
@@ -144,16 +148,7 @@ const scheduleGenerator = (prescribedDrugs: PrescribedDrug[], intervalStartDate:
 
   const tableData: (TableRow & { startDate: Date, endDate: Date })[] = sort(drugNames, rows);
 
-  const schedule: Schedule = {
-    startDates: {}, endDates: {}, data: tableData, drugs: [],
-  };
-
-  drugNames.forEach((name) => {
-    const drug = prescribedDrugs.find((prescribed) => prescribed.name === name)!;
-    schedule.startDates[drug.name] = intervalStartDate;
-    schedule.endDates[drug.name] = intervalEndDate!;
-    schedule.drugs.push(name);
-  });
+  const schedule: Schedule = { data: tableData, drugs: drugNames };
 
   return schedule;
 };
@@ -161,11 +156,15 @@ const scheduleGenerator = (prescribedDrugs: PrescribedDrug[], intervalStartDate:
 export type ScheduleChartData = { name: string, data: { time: string, dosage: number }[] }[];
 
 const chartDataConverter = (schedule: Schedule): ScheduleChartData => {
+  console.group('chartDataConverter');
+  console.log('schedule: ', schedule);
+
   const groupByDrug: ScheduleChartData = [];
   schedule.drugs.forEach((drug) => {
     groupByDrug.push({ name: drug, data: [] as { time: string, dosage: number }[] });
   });
 
+  console.log('groupByDrug: ', groupByDrug);
   schedule.data.forEach((row, i) => {
     groupByDrug
       .find((drug) => drug.name === row.Drug)!
@@ -177,12 +176,36 @@ const chartDataConverter = (schedule: Schedule): ScheduleChartData => {
     }
   });
 
-  groupByDrug.forEach((drug) => {
-    // fill in the gap between start dates
-
-  });
-
   return groupByDrug;
 };
 
-export { scheduleGenerator, chartDataConverter };
+const messageGenerator = (drugs: PrescribedDrug[], intervalStartDate: Date, intervalEndDate: Date): string => {
+  return drugs.reduce(
+    (message, drug, drugIdx, arr) => {
+      const dosages = drug.nextDosages.reduce(
+        (str, dosage, dosageIdx, nextDosageArr) => {
+          if (nextDosageArr.length === 1) {
+            return `${dosage.dosage} ${drug.form}`;
+          }
+          if (dosageIdx === nextDosageArr.length - 1) {
+            return `${str} and ${dosage.dosage} ${drug.form}`;
+          }
+          return `${str}, ${dosage.dosage} ${drug.form}`;
+        }, '',
+      );
+
+      const endDate = format(intervalEndDate, 'MMM dd, yyyy');
+      if (arr.length === 1) {
+        return `${message} ${dosages} of ${drug.brand} until ${endDate}.`;
+      }
+
+      if (drugIdx === arr.length - 1) {
+        return `${message} and ${dosages} of ${drug.brand} until ${endDate}.`;
+      }
+
+      return `${message} ${dosages} of ${drug.brand}`;
+    }, 'Take',
+  );
+};
+
+export { scheduleGenerator, chartDataConverter, messageGenerator };

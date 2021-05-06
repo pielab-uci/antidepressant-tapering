@@ -51,7 +51,9 @@ import {
   PrescriptionFormActions,
 } from '../../components/PrescriptionForm/actions';
 import { Schedule } from '../../components/ProjectedSchedule';
-import { chartDataConverter, ScheduleChartData, scheduleGenerator } from './utils';
+import {
+  chartDataConverter, messageGenerator, ScheduleChartData, scheduleGenerator,
+} from './utils';
 
 export interface TaperConfigState {
   drugs: Drug[];
@@ -99,9 +101,7 @@ export const initialState: TaperConfigState = {
     currentDosages: [],
     nextDosages: [],
   }],
-  projectedSchedule: {
-    startDates: {}, endDates: {}, data: [], drugs: [],
-  },
+  projectedSchedule: { data: [], drugs: [] },
   scheduleChartData: [],
 
   intervalStartDate: new Date(),
@@ -187,14 +187,12 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
 
       case GENERATE_SCHEDULE:
         draft.projectedSchedule = scheduleGenerator(draft.prescribedDrugs, draft.intervalStartDate, draft.intervalEndDate!);
-        // draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
+        draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
         draft.showMessageForPatient = true;
         break;
 
       case CLEAR_SCHEDULE:
-        draft.projectedSchedule = {
-          startDates: {}, endDates: {}, data: [], drugs: [],
-        };
+        draft.projectedSchedule = { data: [], drugs: [] };
         draft.scheduleChartData = [];
         draft.showMessageForPatient = false;
         break;
@@ -232,7 +230,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         break;
 
       case CHANGE_MESSAGE_FOR_PATIENT:
-        draft.messageForPatient = action.data;
+        draft.messageForPatient = messageGenerator(draft.prescribedDrugs, action.data.startDate, action.data.endDate);
         break;
 
       case TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT:

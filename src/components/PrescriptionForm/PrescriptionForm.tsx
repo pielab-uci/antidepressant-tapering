@@ -45,12 +45,7 @@ const PrescriptionForm: FC<Props> = ({ id, drugs }) => {
     currentDosagesQty, nextDosagesQty,
   } = state;
 
-  const {
-    intervalStartDate,
-    intervalEndDate,
-  } = useSelector<RootState, TaperConfigState>((rootState) => rootState.taperConfig);
-
-  const [showTotalQuantities, setShowTotalQuantities] = useState(false, `PrescriptionForm-ShowTotalQuantities_${id}`);
+  const [showTotalQuantities, setShowTotalQuantities] = useState(true, `PrescriptionForm-ShowTotalQuantities_${id}`);
 
   useEffect(() => {
     const action = {
@@ -62,12 +57,14 @@ const PrescriptionForm: FC<Props> = ({ id, drugs }) => {
     formActionDispatch(action);
   }, [drugs]);
 
+  /*
   useEffect(() => {
     setShowTotalQuantities(
       ![chosenDrug, chosenBrand, chosenDrugForm,
         intervalStartDate, intervalEndDate].some((el) => el === null),
     );
   }, [chosenDrug, chosenBrand, chosenDrugForm, intervalStartDate, intervalEndDate]);
+   */
 
   const onSubmit = () => {
   };

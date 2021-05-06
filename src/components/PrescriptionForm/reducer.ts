@@ -6,11 +6,6 @@ import {
   NEXT_DOSAGE_CHANGE, PRESCRIBED_QUANTITY_CHANGE,
   PrescriptionFormActions,
 } from './actions';
-import {
-  INTERVAL_COUNT_CHANGE,
-  INTERVAL_END_DATE_CHANGE,
-  INTERVAL_START_DATE_CHANGE, INTERVAL_UNIT_CHANGE,
-} from '../../redux/actions/taperConfig';
 
 export const initialState: PrescriptionFormState = {
   drugs: null,

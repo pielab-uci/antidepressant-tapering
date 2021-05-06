@@ -13,8 +13,6 @@ function fetchPastScheduleDataAPI(currentDosageDate: Date): Schedule {
   // fetch a schedule that was ended most recently if there is
   return {
     data: [],
-    startDates: {},
-    endDates: {},
     drugs: [],
   };
 }

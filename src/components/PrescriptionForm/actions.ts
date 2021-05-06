@@ -86,6 +86,5 @@ export type PrescriptionFormActions =
   | ChooseFormAction
   | CurrentDosageChangeAction
   | NextDosageChangeAction
-  | IntervalConfigActions
   | IntervalDurationDaysChange
   | PrescribedQuantityChange;

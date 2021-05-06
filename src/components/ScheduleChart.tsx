@@ -18,7 +18,7 @@ const ScheduleChart = () => {
         <Tooltip />
         <Legend />
         {scheduleChartData.map((drug) => (
-          <Line dataKey="dosage" data={drug.data} name={drug.name} key={drug.name} />
+          <Line dataKey="dosage" data={drug.data} name={drug.name} key={drug.name} type={'stepAfter'}/>
         ))}
       </LineChart>
     </ResponsiveContainer>

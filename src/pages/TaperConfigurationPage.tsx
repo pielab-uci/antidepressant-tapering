@@ -14,6 +14,7 @@ import {
   SHARE_WITH_PATIENT_EMAIL_REQUEST, TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
 } from '../redux/actions/taperConfig';
 import SelectInterval from '../components/SelectInterval';
+import { messageGenerator } from './utils';
 
 const { TextArea } = Input;
 
@@ -25,6 +26,7 @@ const TaperConfigurationPage = () => {
     shareProjectedScheduleWithPatient,
     projectedSchedule,
     showMessageForPatient,
+    prescribedDrugs,
     intervalStartDate,
     intervalEndDate,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
@@ -34,7 +36,7 @@ const TaperConfigurationPage = () => {
     if (showMessageForPatient) {
       dispatch(
         changeMessageForPatient(
-          { startDate: intervalStartDate, endDate: intervalEndDate! },
+          messageGenerator(prescribedDrugs, intervalStartDate, intervalEndDate!),
         ),
       );
     }

@@ -104,10 +104,10 @@ export interface ToggleShareProjectedScheduleWithPatient {
 export const CHANGE_MESSAGE_FOR_PATIENT = 'CHANGE_MESSAGE_FOR_PATIENT' as const;
 export interface ChangeMessageForPatient {
   type: typeof CHANGE_MESSAGE_FOR_PATIENT,
-  data: { startDate: Date, endDate: Date };
+  data: string;
 }
 
-export const changeMessageForPatient = (data: { startDate: Date, endDate: Date }): ChangeMessageForPatient => ({
+export const changeMessageForPatient = (data:string): ChangeMessageForPatient => ({
   type: CHANGE_MESSAGE_FOR_PATIENT,
   data,
 });

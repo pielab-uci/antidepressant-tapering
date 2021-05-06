@@ -52,7 +52,7 @@ import {
 } from '../../components/PrescriptionForm/actions';
 import { Schedule } from '../../components/ProjectedSchedule';
 import {
-  chartDataConverter, messageGenerator, ScheduleChartData, scheduleGenerator,
+  chartDataConverter, ScheduleChartData, scheduleGenerator,
 } from './utils';
 
 export interface TaperConfigState {
@@ -232,7 +232,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         break;
 
       case CHANGE_MESSAGE_FOR_PATIENT:
-        draft.messageForPatient = messageGenerator(draft.prescribedDrugs, action.data.startDate, action.data.endDate);
+        draft.messageForPatient = action.data;
         break;
 
       case TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT:

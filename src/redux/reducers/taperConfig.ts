@@ -98,6 +98,7 @@ export const initialState: TaperConfigState = {
     name: '',
     brand: '',
     form: '',
+    minDosageUnit: 0,
     currentDosages: [],
     nextDosages: [],
   }],
@@ -174,6 +175,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           name: '',
           brand: '',
           form: '',
+          minDosageUnit: 0,
           currentDosages: [],
           nextDosages: [],
         });
@@ -259,6 +261,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case CHOOSE_FORM: {
         const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
         drug.form = action.data.form;
+        drug.minDosageUnit = action.data.minDosageUnit!;
         drug.currentDosages = [];
         drug.nextDosages = [];
         break;

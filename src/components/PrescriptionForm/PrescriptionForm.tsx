@@ -10,12 +10,24 @@ import {
   PrescriptionFormReducer,
 } from './reducer';
 import {
-  CHOOSE_BRAND, CHOOSE_FORM,
-  DRUG_NAME_CHANGE, FETCH_DRUGS, currentDosageChange, nextDosageChange, PrescriptionFormActions,
+  CHOOSE_BRAND,
+  CHOOSE_FORM,
+  DRUG_NAME_CHANGE,
+  FETCH_DRUGS,
+  currentDosageChange,
+  nextDosageChange,
+  PrescriptionFormActions,
+  ChooseFormAction,
+  ChooseBrandAction, DrugNameChangeAction, FetchDrugsAction,
 } from './actions';
 import { IPrescriptionFormContext, PrescriptionFormState } from './types';
 import { Drug, DrugForm } from '../../types';
-import { CLEAR_SCHEDULE, REMOVE_DRUG_FORM } from '../../redux/actions/taperConfig';
+import {
+  CLEAR_SCHEDULE,
+  ClearScheduleAction,
+  REMOVE_DRUG_FORM,
+  RemoveDrugFormAction,
+} from '../../redux/actions/taperConfig';
 import TotalQuantities from '../TotalQuantities';
 import { RootState } from '../../redux/reducers';
 import { TaperConfigActions, TaperConfigState } from '../../redux/reducers/taperConfig';
@@ -42,16 +54,15 @@ const PrescriptionForm: FC<Props> = ({ id, drugs }) => {
 
   const {
     chosenDrug, chosenBrand, brandOptions, chosenDrugForm, drugFormOptions,
-    currentDosagesQty, nextDosagesQty,
+    currentDosagesQty, nextDosagesQty, minDosageUnit,
   } = state;
 
   const [showTotalQuantities, setShowTotalQuantities] = useState(true, `PrescriptionForm-ShowTotalQuantities_${id}`);
 
   useEffect(() => {
-    const action = {
+    const action: FetchDrugsAction = {
       type: FETCH_DRUGS,
-      data: drugs,
-      id,
+      data: { drugs, id },
     };
     // taperConfigActionDispatch(action);
     formActionDispatch(action);
@@ -70,7 +81,7 @@ const PrescriptionForm: FC<Props> = ({ id, drugs }) => {
   };
 
   const onDrugNameChange = (value: string) => {
-    const action = {
+    const action: DrugNameChangeAction = {
       type: DRUG_NAME_CHANGE,
       data: { name: value, id },
     };
@@ -83,7 +94,7 @@ const PrescriptionForm: FC<Props> = ({ id, drugs }) => {
   };
 
   const onBrandChange = (value: string) => {
-    const action = {
+    const action: ChooseBrandAction = {
       type: CHOOSE_BRAND,
       data: { brand: value, id },
     };
@@ -97,26 +108,29 @@ const PrescriptionForm: FC<Props> = ({ id, drugs }) => {
   };
 
   const onFormChange = (value: string) => {
-    const action = {
+    const action: ChooseFormAction = {
       type: CHOOSE_FORM,
       data: { form: value, id },
     };
 
     formActionDispatch(action);
-    taperConfigActionDispatch(action);
-
-    // dispatch({
-    //   type: CHOOSE_FORM,
-    //   data: { id, form: value },
-    // });
   };
 
+  useEffect(() => {
+    if (chosenDrugForm) {
+      taperConfigActionDispatch<ChooseFormAction>({
+        type: CHOOSE_FORM,
+        data: { form: chosenDrugForm!.form, minDosageUnit, id },
+      });
+    }
+  }, [chosenDrugForm, minDosageUnit]);
+
   const removeDrugForm = () => {
-    taperConfigActionDispatch({
+    taperConfigActionDispatch<RemoveDrugFormAction>({
       type: REMOVE_DRUG_FORM,
       data: id,
     });
-    taperConfigActionDispatch({
+    taperConfigActionDispatch<ClearScheduleAction>({
       type: CLEAR_SCHEDULE,
     });
   };

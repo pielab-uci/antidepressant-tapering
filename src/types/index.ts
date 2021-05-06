@@ -36,6 +36,7 @@ export interface PrescribedDrug {
   name: string;
   brand: string;
   form: string;
+  minDosageUnit: number;
   currentDosages: { dosage: string; quantity: number }[];
   nextDosages: { dosage: string; quantity: number }[];
 }

@@ -1,11 +1,10 @@
 import { Drug } from '../../types';
-import { IntervalConfigActions } from '../../redux/actions/taperConfig';
 
 export const FETCH_DRUGS = 'FETCH_DRUGS' as const;
 
 export interface FetchDrugsAction {
   type: typeof FETCH_DRUGS,
-  data: Drug[];
+  data: { drugs: Drug[], id: number }
 }
 
 export const DRUG_NAME_CHANGE = 'DRUG_NAME_CHANGE' as const;
@@ -26,7 +25,7 @@ export const CHOOSE_FORM = 'CHOOSE_FORM' as const;
 
 export interface ChooseFormAction {
   type: typeof CHOOSE_FORM,
-  data: { id: number; form: string };
+  data: { id: number; form: string, minDosageUnit?: number };
 }
 
 export const CURRENT_DOSAGE_CHANGE = 'CURRENT_DOSAGE_CHANGE' as const;

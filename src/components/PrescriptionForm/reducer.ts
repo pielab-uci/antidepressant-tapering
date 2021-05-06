@@ -15,6 +15,7 @@ export const initialState: PrescriptionFormState = {
   brandOptions: [],
   drugFormOptions: [],
   dosageOptions: [],
+  minDosageUnit: 0,
   currentDosagesQty: {},
   nextDosagesQty: {},
   prescribedDosagesQty: {},
@@ -24,7 +25,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
   return produce(state, (draft) => {
     switch (action.type) {
       case FETCH_DRUGS:
-        draft.drugs = action.data;
+        draft.drugs = action.data.drugs;
         break;
 
       case DRUG_NAME_CHANGE: {
@@ -51,6 +52,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         const chosenDrugForm = draft.drugFormOptions!.find((form) => form.form === action.data.form)!;
         draft.chosenDrugForm = chosenDrugForm;
         draft.dosageOptions = chosenDrugForm.dosages;
+        draft.minDosageUnit = Math.min(...draft.dosageOptions.map((dosage) => parseInt(dosage, 10))) / 2;
         chosenDrugForm.dosages.forEach((dosage) => {
           draft.currentDosagesQty[dosage] = 0;
           draft.nextDosagesQty[dosage] = 0;

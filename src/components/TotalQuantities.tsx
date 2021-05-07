@@ -3,35 +3,33 @@ import {
   useCallback, useContext, useEffect, useMemo,
 } from 'react';
 import { Input } from 'antd';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
 import { PrescriptionFormContext } from './PrescriptionForm/PrescriptionForm';
 import { intervalDurationDaysChange, prescribedQuantityChange } from './PrescriptionForm/actions';
-import { RootState } from '../redux/reducers';
-import { TaperConfigActions, TaperConfigState } from '../redux/reducers/taperConfig';
+import { TaperConfigActions } from '../redux/reducers/taperConfig';
 
 const TotalQuantities = () => {
   const {
     chosenDrug, chosenBrand, chosenDrugForm,
     Next, prescribedDosagesQty, id, formActionDispatch,
+    intervalDurationDays,
   } = useContext(PrescriptionFormContext);
 
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
-  const { intervalDurationDays } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
 
   useEffect(() => {
-    formActionDispatch(intervalDurationDaysChange(intervalDurationDays));
+    formActionDispatch(intervalDurationDaysChange({ durationDays: intervalDurationDays, id }));
   }, [intervalDurationDays]);
 
   const onCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const actionData = {
       dosage: { dosage: e.target.title, quantity: parseFloat(e.target.value) },
       id,
-      intervalDurationDays,
     };
 
     formActionDispatch(prescribedQuantityChange(actionData));
-    taperConfigActionDispatch(prescribedQuantityChange(actionData));
+    taperConfigActionDispatch(prescribedQuantityChange({ ...actionData, intervalDurationDays }));
   };
   // useCallback((e) => {
   // }, [prescribedDosagesQty, intervalDurationDays]);
@@ -46,7 +44,7 @@ const TotalQuantities = () => {
               title={key}
               style={{ display: 'inline-block' }}
               type="number"
-              max={Next.dosages[key] * intervalDurationDays}
+              min={0}
               defaultValue={Next.dosages[key] * intervalDurationDays}
               value={prescribedDosagesQty[key]}
               step={0.5}

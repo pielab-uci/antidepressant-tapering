@@ -13,7 +13,6 @@ import {
   SHARE_WITH_PATIENT_APP_REQUEST,
   SHARE_WITH_PATIENT_EMAIL_REQUEST, TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
 } from '../redux/actions/taperConfig';
-import SelectInterval from '../components/SelectInterval';
 import { messageGenerator } from './utils';
 
 const { TextArea } = Input;
@@ -27,8 +26,6 @@ const TaperConfigurationPage = () => {
     projectedSchedule,
     showMessageForPatient,
     prescribedDrugs,
-    intervalStartDate,
-    intervalEndDate,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const dispatch = useDispatch();
 
@@ -36,7 +33,7 @@ const TaperConfigurationPage = () => {
     if (showMessageForPatient) {
       dispatch(
         changeMessageForPatient(
-          messageGenerator(prescribedDrugs, intervalStartDate, intervalEndDate!),
+          messageGenerator(prescribedDrugs),
         ),
       );
     }
@@ -92,8 +89,8 @@ const TaperConfigurationPage = () => {
       <hr/>
       <Button onClick={addNewPrescriptionForm}>Add Drug</Button>
       <hr/>
-      <SelectInterval/>
-      <hr/>
+      {/* TODO: when to show/hide or activate/deactivate Generate Schedule button */}
+      {/* TODO: on click Generate Schedule button, mark unfilled inputs */}
       <Button onClick={generateSchedule}>Generate schedule</Button>
       <hr/>
       <ProjectedSchedule/>

@@ -4,7 +4,7 @@ const drugs = [
     options:
       [
         {
-          brand: 'generic',
+          brand: 'generic (Prozac / Fluoxetine)',
           forms: [
             {
               form: 'bottle of oral solution',
@@ -39,7 +39,7 @@ const drugs = [
     name: 'Citalopram',
     options: [
       {
-        brand: 'generic',
+        brand: 'generic (Celexa / Citalopram)',
         forms: [
           {
             form: 'ml of oral solution',
@@ -66,7 +66,7 @@ const drugs = [
     name: 'Sertraline',
     options: [
       {
-        brand: 'generic',
+        brand: 'generic (Zoloft / Sertraline)',
         forms: [
           {
             form: 'bottle of oral solution',
@@ -96,7 +96,7 @@ const drugs = [
     name: 'Paroxetine',
     options: [
       {
-        brand: 'generic',
+        brand: 'generic (Brisdelle / Paxil / Paroxetine)',
         forms: [
           {
             form: 'tablet',
@@ -132,7 +132,7 @@ const drugs = [
     name: 'Escitalopram',
     options: [
       {
-        brand: 'generic',
+        brand: 'generic (Lexapro/ Escitalopram)',
         forms: [
           {
             form: 'ml of oral solution',

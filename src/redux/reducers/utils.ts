@@ -11,13 +11,16 @@ interface Converted {
   currentDosageSum: number,
   nextDosageSum: number,
   // dates: { start: Date, end: Date },
+  intervalStartDate: Date,
+  intervalEndDate: Date,
+  intervalCount: number;
+  intervalUnit: 'Days'|'Weeks'|'Months',
   changeRate: number,
   changeAmount: number,
   // duration: { [key in 'days' | 'weeks' | 'months']?: number },
   dosageUnit: RegExpMatchArray,
   minDosageUnit: number,
   isIncreasing: boolean,
-  // endIntervalsDate: Date
 }
 const validate = (drugs: PrescribedDrug[]): PrescribedDrug[] | null => {
   for (const drug of drugs) {
@@ -47,6 +50,10 @@ const convert = (drugs: PrescribedDrug[]): Converted[] => {
       nextDosageSum,
       changeAmount: nextDosageSum - currentDosageSum,
       changeRate: nextDosageSum / currentDosageSum,
+      intervalStartDate: drug.intervalStartDate,
+      intervalEndDate: drug.intervalEndDate!,
+      intervalCount: drug.intervalCount,
+      intervalUnit: drug.intervalUnit,
       dosageUnit,
       isIncreasing,
       minDosageUnit: drug.minDosageUnit,
@@ -90,22 +97,22 @@ const calcNextDosage = (drug: Converted, dosage: number): number => {
   return ceil(drug.minDosageUnit, dosage * drug.changeRate);
 };
 
-const generateTableRows = (drugs: Converted[], intervalStartDate: Date, intervalEndDate: Date): (TableRow & { startDate: Date, endDate: Date })[] => {
+const generateTableRows = (drugs: Converted[]): (TableRow & { startDate: Date, endDate: Date })[] => {
   const rows: (TableRow & { startDate: Date, endDate: Date })[] = [];
-  const durationInDays = { days: differenceInCalendarDays(intervalEndDate, intervalStartDate) };
 
   drugs.forEach((drug) => {
+    const durationInDays = { days: differenceInCalendarDays(drug.intervalEndDate, drug.intervalStartDate) };
     rows.push({
       // Drug: drug.brand,
       Drug: drug.name,
       'Current Dosage': `${drug.currentDosageSum}${drug.dosageUnit}`,
       'Next Dosage': `${drug.nextDosageSum}${drug.dosageUnit}`,
-      Dates: `${format(intervalStartDate, 'MM/dd/yyyy')} - ${format(intervalEndDate, 'MM/dd/yyyy')}`,
-      startDate: intervalStartDate,
-      endDate: intervalEndDate,
+      Dates: `${format(drug.intervalStartDate, 'MM/dd/yyyy')} - ${format(drug.intervalEndDate, 'MM/dd/yyyy')}`,
+      startDate: drug.intervalStartDate,
+      endDate: drug.intervalEndDate,
     });
 
-    const projectionStartDate = add(intervalEndDate, { days: 1 });
+    const projectionStartDate = add(drug.intervalEndDate, { days: 1 });
 
     const newRowData = {
       // Drug: drug.brand,
@@ -164,7 +171,7 @@ const sort = (drugNames: string[], rows: (TableRow & { startDate: Date, endDate:
   }));
 };
 
-const scheduleGenerator = (prescribedDrugs: PrescribedDrug[], intervalStartDate: Date, intervalEndDate: Date): Schedule => {
+const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule => {
   if (!validate(prescribedDrugs)) {
     return {
       data: [], drugs: [],
@@ -175,7 +182,7 @@ const scheduleGenerator = (prescribedDrugs: PrescribedDrug[], intervalStartDate:
 
   const converted: Converted[] = convert(prescribedDrugs);
 
-  const rows: (TableRow & { startDate: Date, endDate: Date })[] = generateTableRows(converted, intervalStartDate, intervalEndDate);
+  const rows: (TableRow & { startDate: Date, endDate: Date })[] = generateTableRows(converted);
 
   const tableData: (TableRow & { startDate: Date, endDate: Date })[] = sort(drugNames, rows);
 

@@ -1,9 +1,16 @@
 import produce from 'immer';
+import { add, differenceInCalendarDays } from 'date-fns';
 import { PrescriptionFormState } from './types';
 import {
   CHOOSE_BRAND,
-  CHOOSE_FORM, CURRENT_DOSAGE_CHANGE, DRUG_NAME_CHANGE, FETCH_DRUGS, INTERVAL_DURATION_IN_DAYS_CHANGE,
-  NEXT_DOSAGE_CHANGE, PRESCRIBED_QUANTITY_CHANGE,
+  CHOOSE_FORM,
+  CURRENT_DOSAGE_CHANGE,
+  DRUG_NAME_CHANGE,
+  FETCH_DRUGS, INTERVAL_COUNT_CHANGE,
+  INTERVAL_DURATION_IN_DAYS_CHANGE, INTERVAL_END_DATE_CHANGE,
+  INTERVAL_START_DATE_CHANGE, INTERVAL_UNIT_CHANGE,
+  NEXT_DOSAGE_CHANGE,
+  PRESCRIBED_QUANTITY_CHANGE,
   PrescriptionFormActions,
 } from './actions';
 
@@ -19,6 +26,11 @@ export const initialState: PrescriptionFormState = {
   currentDosagesQty: {},
   nextDosagesQty: {},
   prescribedDosagesQty: {},
+  intervalStartDate: new Date(),
+  intervalEndDate: null,
+  intervalCount: 0,
+  intervalUnit: 'Days',
+  intervalDurationDays: 0,
 };
 
 export const reducer = (state: PrescriptionFormState, action: PrescriptionFormActions): PrescriptionFormState => {
@@ -26,15 +38,17 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
     switch (action.type) {
       case FETCH_DRUGS:
         draft.drugs = action.data.drugs;
+        draft.brandOptions = draft.drugs.flatMap((drug) => drug.options);
+        // draft.brandOptions = draft.drugs.map((drug) => ({ drug, options: drug.options});
         break;
 
       case DRUG_NAME_CHANGE: {
         const newDrug = draft.drugs!.find((drug) => drug.name === action.data.name)!;
         draft.chosenDrug = newDrug;
+
         draft.chosenBrand = null;
         draft.chosenDrugForm = null;
         draft.drugFormOptions = [];
-        draft.brandOptions = newDrug.options;
         break;
       }
 
@@ -43,6 +57,11 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
           (brand) => brand.brand === action.data.brand,
         )!;
 
+        draft.chosenDrug = draft.drugs!.find((
+          drug,
+        ) => drug.options.find(
+          (option) => option.brand === action.data.brand,
+        ));
         draft.chosenBrand = chosenBrandOption;
         draft.drugFormOptions = chosenBrandOption.forms;
         break;
@@ -69,22 +88,64 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
       case NEXT_DOSAGE_CHANGE:
         if (!(action.data.dosage.quantity < 0)) {
           draft.nextDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;
-          draft.prescribedDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity * action.data.intervalDurationDays;
+          // draft.prescribedDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity * action.data.intervalDurationDays;
+          draft.prescribedDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity * draft.intervalDurationDays;
         }
         break;
 
       case PRESCRIBED_QUANTITY_CHANGE:
-        console.log('PRESCRIBED QUANTITY CHANGE  in PrescriptionForm');
-        if (!(action.data.dosage.quantity < 0)
-          && (action.data.dosage.quantity <= draft.nextDosagesQty[action.data.dosage.dosage] * action.data.intervalDurationDays)) {
+        if (!(action.data.dosage.quantity < 0)) {
           draft.prescribedDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;
         }
         break;
 
-      case INTERVAL_DURATION_IN_DAYS_CHANGE:
-        Object.entries(draft.prescribedDosagesQty).forEach(([k, v]) => {
-          draft.prescribedDosagesQty[k] = draft.nextDosagesQty[k] * action.data!;
+      case INTERVAL_START_DATE_CHANGE:
+        draft.intervalStartDate = action.data.date;
+        draft.intervalUnit = 'Days';
+        if (draft.intervalEndDate) {
+          draft.intervalCount = differenceInCalendarDays(draft.intervalEndDate, draft.intervalStartDate);
+        }
+        draft.intervalDurationDays = draft.intervalCount;
+        Object.keys(draft.prescribedDosagesQty).forEach((key) => {
+          draft.prescribedDosagesQty[key] = draft.nextDosagesQty[key] * draft.intervalDurationDays;
         });
+        break;
+
+      case INTERVAL_END_DATE_CHANGE:
+        draft.intervalEndDate = action.data.date;
+        draft.intervalUnit = 'Days';
+        draft.intervalCount = differenceInCalendarDays(draft.intervalEndDate!, draft.intervalStartDate);
+        draft.intervalDurationDays = draft.intervalCount;
+        Object.keys(draft.prescribedDosagesQty).forEach((key) => {
+          draft.prescribedDosagesQty[key] = draft.nextDosagesQty[key] * draft.intervalDurationDays;
+        });
+        break;
+
+      case INTERVAL_UNIT_CHANGE:
+        draft.intervalUnit = action.data.unit;
+        draft.intervalEndDate = add(draft.intervalStartDate, { [draft.intervalUnit.toLowerCase()]: draft.intervalCount });
+        draft.intervalDurationDays = differenceInCalendarDays(draft.intervalEndDate, draft.intervalStartDate);
+        Object.keys(draft.prescribedDosagesQty).forEach((key) => {
+          draft.prescribedDosagesQty[key] = draft.nextDosagesQty[key] * draft.intervalDurationDays;
+        });
+        break;
+
+      case INTERVAL_COUNT_CHANGE:
+        draft.intervalCount = action.data.count;
+        draft.intervalEndDate = add(draft.intervalStartDate, { [draft.intervalUnit.toLowerCase()]: draft.intervalCount });
+        draft.intervalDurationDays = differenceInCalendarDays(draft.intervalEndDate, draft.intervalStartDate);
+        Object.keys(draft.prescribedDosagesQty).forEach((key) => {
+          draft.prescribedDosagesQty[key] = draft.nextDosagesQty[key] * draft.intervalDurationDays;
+        });
+        break;
+
+      case INTERVAL_DURATION_IN_DAYS_CHANGE:
+        // Object.keys(draft.prescribedDosagesQty).forEach((key) => {
+        //   draft.prescribedDosagesQty[key] = draft.nextDosagesQty[key] * action.data.durationDays;
+        // });
+        // Object.entries(draft.prescribedDosagesQty).forEach(([k, v]) => {
+        //   draft.prescribedDosagesQty[k] = draft.nextDosagesQty[k] * action.data!.durationDays;
+        // });
         break;
     }
   });

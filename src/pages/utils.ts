@@ -1,7 +1,7 @@
 import { add, format } from 'date-fns';
 import { PrescribedDrug } from '../types';
 
-const messageGenerator = (drugs: PrescribedDrug[], intervalStartDate: Date, intervalEndDate: Date): string => {
+const messageGenerator = (drugs: PrescribedDrug[]): string => {
   return drugs.reduce(
     (message, drug, drugIdx, arr) => {
       const dosages = drug.nextDosages.reduce(
@@ -16,7 +16,7 @@ const messageGenerator = (drugs: PrescribedDrug[], intervalStartDate: Date, inte
         }, '',
       );
 
-      const endDate = format(intervalEndDate, 'MMM dd, yyyy');
+      const endDate = format(drug.intervalEndDate!, 'MMM dd, yyyy');
       if (arr.length === 1) {
         return `${message} ${dosages} of ${drug.brand} until ${endDate}.`;
       }

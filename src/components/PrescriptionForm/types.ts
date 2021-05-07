@@ -4,8 +4,8 @@ import {
   initialState,
 } from './reducer';
 import {
-  CurrentDosageChangeAction,
-  NextDosageChangeAction,
+  currentDosageChange,
+  nextDosageChange,
   PrescriptionFormActions,
 } from './actions';
 
@@ -21,19 +21,22 @@ export interface PrescriptionFormState {
   currentDosagesQty: { [key: string]: number };
   nextDosagesQty: { [key: string]: number };
   prescribedDosagesQty: { [key: string]: number };
+  intervalStartDate: Date;
+  intervalEndDate: Date | null;
+  intervalUnit: 'Days'|'Weeks'|'Months';
+  intervalCount: number;
+  intervalDurationDays: number;
 }
 
 export type IPrescriptionFormContext = PrescriptionFormState
 & {
   Current: {
     dosages: typeof initialState.currentDosagesQty,
-    action: (data: { id: number, dosage: { dosage: string, quantity: number } })
-    => CurrentDosageChangeAction
+    action: typeof currentDosageChange
   };
   Next: {
     dosages: typeof initialState.nextDosagesQty,
-    action: (data: { id: number, dosage: { dosage: string, quantity: number }, intervalDurationDays: number })
-    => NextDosageChangeAction
+    action: typeof nextDosageChange
   };
   formActionDispatch: Dispatch<PrescriptionFormActions>;
   id: number;

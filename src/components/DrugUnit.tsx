@@ -1,14 +1,12 @@
 import * as React from 'react';
 import {
-  FC, useCallback, useContext, useEffect,
+  FC, useCallback, useContext,
 } from 'react';
 import { Button } from 'antd';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
 import { PrescriptionFormContext } from './PrescriptionForm/PrescriptionForm';
-import { RootState } from '../redux/reducers';
-import { TaperConfigActions, TaperConfigState } from '../redux/reducers/taperConfig';
-import { intervalDurationDaysChange } from './PrescriptionForm/actions';
+import { TaperConfigActions } from '../redux/reducers/taperConfig';
 
 interface Props {
   form: string;
@@ -18,14 +16,13 @@ interface Props {
 
 const DrugUnit: FC<Props> = ({ time, form, dosage }) => {
   const context = useContext(PrescriptionFormContext);
-  const { formActionDispatch, id } = context;
+  const { formActionDispatch, id, intervalDurationDays } = context;
   const { dosages, action: dosageChangeAction } = context[time];
-  const { intervalDurationDays } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
 
-  useEffect(() => {
-    formActionDispatch(intervalDurationDaysChange(intervalDurationDays));
-  }, [intervalDurationDays]);
+  // useEffect(() => {
+  //   formActionDispatch(intervalDurationDaysChange({ durationDays: intervalDurationDays, id }));
+  // }, [intervalDurationDays]);
 
   const onIncrement = useCallback(() => {
     const actionData = {
@@ -34,10 +31,10 @@ const DrugUnit: FC<Props> = ({ time, form, dosage }) => {
         dosage,
         quantity: dosages[dosage] + 0.5,
       },
-      intervalDurationDays,
+      // intervalDurationDays,
     };
 
-    taperConfigActionDispatch(dosageChangeAction(actionData));
+    taperConfigActionDispatch(dosageChangeAction({ ...actionData, intervalDurationDays }));
     formActionDispatch(dosageChangeAction(actionData));
   }, [dosages, intervalDurationDays]);
 
@@ -48,10 +45,10 @@ const DrugUnit: FC<Props> = ({ time, form, dosage }) => {
         dosage,
         quantity: dosages[dosage] - 0.5,
       },
-      intervalDurationDays,
+      // intervalDurationDays,
     };
 
-    taperConfigActionDispatch(dosageChangeAction(actionData));
+    taperConfigActionDispatch(dosageChangeAction({ ...actionData, intervalDurationDays }));
     formActionDispatch(dosageChangeAction(actionData));
   }, [dosages, intervalDurationDays]);
 

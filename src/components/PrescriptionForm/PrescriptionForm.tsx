@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useEffect, createContext, FC } from 'react';
 import { useReducer, useState } from 'reinspect';
 import { Button, Select } from 'antd';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import Dosages from '../Dosages';
 import {
   initialState,
@@ -28,8 +28,9 @@ import {
   RemoveDrugFormAction,
 } from '../../redux/actions/taperConfig';
 import TotalQuantities from '../TotalQuantities';
+import SelectInterval from '../SelectInterval';
 
-const { Option } = Select;
+const { OptGroup, Option } = Select;
 
 export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
   ...initialState,
@@ -50,7 +51,7 @@ const PrescriptionForm: FC<Props> = ({ id, drugs }) => {
   const [state, formActionDispatch] = useReducer<PrescriptionFormReducer, PrescriptionFormState>(reducer, initialState, (init) => initialState, `PrescriptionFormReducer_${id}`);
 
   const {
-    chosenDrug, chosenBrand, brandOptions, chosenDrugForm, drugFormOptions,
+    chosenDrug, chosenBrand, chosenDrugForm, drugFormOptions,
     currentDosagesQty, nextDosagesQty, minDosageUnit,
   } = state;
 
@@ -96,6 +97,7 @@ const PrescriptionForm: FC<Props> = ({ id, drugs }) => {
     taperConfigActionDispatch(action);
   };
 
+  // TODO: use custom hook instead?
   const onFormChange = (value: string) => {
     const action: ChooseFormAction = {
       type: CHOOSE_FORM,
@@ -144,18 +146,26 @@ const PrescriptionForm: FC<Props> = ({ id, drugs }) => {
       <Button onClick={removeDrugForm}>Remove</Button>
       <form onSubmit={onSubmit}>
         <h3>Drug Name</h3>
-        <Select defaultValue="" value={chosenDrug?.name} onChange={onDrugNameChange} style={{ width: 200 }}>
+        <Select showSearch defaultValue="" value={chosenDrug?.name} onChange={onDrugNameChange} style={{ width: 200 }}>
           {drugs.map((drug) => <Option key={drug.name} value={drug.name}>{drug.name}</Option>)}
         </Select>
 
         <h3>Prescription settings</h3>
         <label>Brand</label>
-        <Select defaultValue="" value={chosenBrand?.brand} onChange={onBrandChange} style={{ width: 200 }}>
-          {brandOptions?.map(
-            (brand) => <Option key={brand.brand} value={brand.brand}>{brand.brand}</Option>,
+        {/* <Select showSearch defaultValue="" value={chosenBrand?.brand} onChange={onBrandChange} style={{ width: 200 }}> */}
+        {/*  {brandOptions?.map( */}
+        {/*    (brand) => <Option key={brand.brand} value={brand.brand}>{brand.brand}</Option>, */}
+        {/*  )} */}
+        {/* </Select> */}
+        <Select showSearch defaultValue="" value={chosenBrand?.brand} onChange={onBrandChange} style={{ width: 200 }}>
+          {drugs.map(
+            (drug) => (<OptGroup key={`${drug.name}_group`} label={drug.name}>
+              {drug.options.map(
+                (option) => <Option key={option.brand} value={option.brand}>{option.brand}</Option>,
+              )}
+            </OptGroup>),
           )}
         </Select>
-
         <label>Form</label>
         <Select defaultValue="" value={chosenDrugForm?.form} onChange={onFormChange} style={{ width: 200 }}>
           {drugFormOptions?.map(
@@ -170,7 +180,8 @@ const PrescriptionForm: FC<Props> = ({ id, drugs }) => {
         <div>Next Dosages</div>
         {renderDosages(chosenDrugForm, 'Next', nextDosagesQty)}
         <hr/>
-
+        <SelectInterval />
+        <hr/>
         {showTotalQuantities && <TotalQuantities/>}
       </form>
       <hr />

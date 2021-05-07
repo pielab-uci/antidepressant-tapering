@@ -36,6 +36,7 @@ export interface PrescribedDrug {
   name: string;
   brand: string;
   form: string;
+  measureUnit: string; // mg or ml..?
   minDosageUnit: number;
   currentDosages: { dosage: string; quantity: number }[];
   nextDosages: { dosage: string; quantity: number }[];
@@ -43,19 +44,4 @@ export interface PrescribedDrug {
   intervalEndDate: Date | null;
   intervalCount: number;
   intervalUnit: 'Days'|'Weeks'|'Months';
-}
-
-export interface Drug {
-  name: string;
-  options: DrugOption[]
-}
-
-export interface DrugOption {
-  brand: string;
-  forms: DrugForm[]
-}
-
-export interface DrugForm {
-  form: string;
-  dosages: string[]
 }

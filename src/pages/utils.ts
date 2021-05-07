@@ -15,17 +15,17 @@ const messageGenerator = (drugs: PrescribedDrug[]): string => {
           return `${str}, ${dosage.dosage} ${drug.form}`;
         }, '',
       );
-
+      const startDate = format(drug.intervalStartDate, 'MMM dd, yyyy');
       const endDate = format(drug.intervalEndDate!, 'MMM dd, yyyy');
+
       if (arr.length === 1) {
-        return `${message} ${dosages} of ${drug.brand} until ${endDate}.`;
+        return `${message} ${dosages} of ${drug.brand} from ${startDate} to ${endDate}.`;
       }
 
       if (drugIdx === arr.length - 1) {
-        return `${message} and ${dosages} of ${drug.brand} until ${endDate}.`;
+        return `${message} and ${dosages} of ${drug.brand} from ${startDate} to ${endDate}.`;
       }
-
-      return `${message} ${dosages} of ${drug.brand}`;
+      return `${message} ${dosages} of ${drug.brand} from ${startDate} to ${endDate},`;
     }, 'Take',
   );
 };

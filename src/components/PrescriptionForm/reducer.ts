@@ -43,12 +43,15 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         break;
 
       case DRUG_NAME_CHANGE: {
-        const newDrug = draft.drugs!.find((drug) => drug.name === action.data.name)!;
-        draft.chosenDrug = newDrug;
+        const chosenDrugIdx = draft.drugs!.findIndex((drug) => drug.name === action.data.name)!;
+        draft.chosenDrug = draft.drugs![chosenDrugIdx];
+        draft.drugs!.splice(0, 0, draft.drugs!.splice(chosenDrugIdx, 1)[0]);
 
         draft.chosenBrand = null;
         draft.chosenDrugForm = null;
         draft.drugFormOptions = [];
+        draft.prescribedDosagesQty = {};
+
         break;
       }
 
@@ -56,14 +59,16 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         const chosenBrandOption = draft.brandOptions!.find(
           (brand) => brand.brand === action.data.brand,
         )!;
-
-        draft.chosenDrug = draft.drugs!.find((
-          drug,
-        ) => drug.options.find(
-          (option) => option.brand === action.data.brand,
-        ));
+        const chosenDrugIdx = draft.drugs!.findIndex((drug) => {
+          return drug.options.find(
+            (option) => option.brand === action.data.brand,
+          );
+        });
+        draft.chosenDrug = draft.drugs![chosenDrugIdx];
+        draft.drugs!.splice(0, 0, draft.drugs!.splice(chosenDrugIdx, 1)[0]);
         draft.chosenBrand = chosenBrandOption;
         draft.drugFormOptions = chosenBrandOption.forms;
+        draft.prescribedDosagesQty = {};
         break;
       }
 
@@ -75,6 +80,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         chosenDrugForm.dosages.forEach((dosage) => {
           draft.currentDosagesQty[dosage] = 0;
           draft.nextDosagesQty[dosage] = 0;
+          draft.prescribedDosagesQty[dosage] = 0;
         });
         break;
       }

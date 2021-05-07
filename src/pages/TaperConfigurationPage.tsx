@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Checkbox, Input } from 'antd';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -19,7 +19,6 @@ const { TextArea } = Input;
 
 const TaperConfigurationPage = () => {
   const {
-    drugs,
     prescriptionFormIds,
     messageForPatient,
     shareProjectedScheduleWithPatient,
@@ -27,6 +26,7 @@ const TaperConfigurationPage = () => {
     showMessageForPatient,
     prescribedDrugs,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
+  const [canGenerateSchedule, setCanGenerateSchedule] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -38,6 +38,18 @@ const TaperConfigurationPage = () => {
       );
     }
   }, [projectedSchedule]);
+
+  useEffect(() => {
+    const condition = !prescribedDrugs.map(
+      (drug) => drug.name
+        && drug.brand
+        && drug.form
+        && drug.intervalEndDate
+        && drug.intervalCount !== 0
+        && drug.nextDosages.length !== 0,
+    ).some((cond) => !cond);
+    setCanGenerateSchedule(condition);
+  }, [prescribedDrugs]);
 
   const toggleShareProjectedSchedule = useCallback(() => {
     dispatch({
@@ -79,7 +91,7 @@ const TaperConfigurationPage = () => {
 
   const renderPrescriptionForms = (ids: number[]) => {
     return ids.map(
-      (id) => <PrescriptionForm key={`PrescriptionForm${id}`} drugs={drugs} id={id}/>,
+      (id) => <PrescriptionForm key={`PrescriptionForm${id}`} id={id}/>,
     );
   };
 
@@ -89,9 +101,8 @@ const TaperConfigurationPage = () => {
       <hr/>
       <Button onClick={addNewPrescriptionForm}>Add Drug</Button>
       <hr/>
-      {/* TODO: when to show/hide or activate/deactivate Generate Schedule button */}
-      {/* TODO: on click Generate Schedule button, mark unfilled inputs */}
-      <Button onClick={generateSchedule}>Generate schedule</Button>
+      {/* TODO: on click Generate Schedule button, mark unfilled inputs..? */}
+      <Button onClick={generateSchedule} disabled={!canGenerateSchedule}>Generate schedule</Button>
       <hr/>
       <ProjectedSchedule/>
       <hr/>

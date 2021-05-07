@@ -18,7 +18,8 @@ interface Converted {
   changeRate: number,
   changeAmount: number,
   // duration: { [key in 'days' | 'weeks' | 'months']?: number },
-  dosageUnit: RegExpMatchArray,
+  // dosageUnit: RegExpMatchArray,
+  measureUnit: string,
   minDosageUnit: number,
   isIncreasing: boolean,
 }
@@ -40,7 +41,8 @@ const convert = (drugs: PrescribedDrug[]): Converted[] => {
       .reduce((acc, d) => acc + parseFloat(d.dosage) * d.quantity, 0);
     const nextDosageSum = drug.nextDosages
       .reduce((acc, d) => acc + parseFloat(d.dosage) * d.quantity, 0);
-    const dosageUnit = drug.currentDosages[0].dosage.match(/[a-z]+/)!;
+    // const dosageUnit = drug.nextDosages[0].dosage.match(/[a-z]+/)!;
+    const { measureUnit } = drug;
     const isIncreasing = currentDosageSum < nextDosageSum;
 
     return {
@@ -54,7 +56,7 @@ const convert = (drugs: PrescribedDrug[]): Converted[] => {
       intervalEndDate: drug.intervalEndDate!,
       intervalCount: drug.intervalCount,
       intervalUnit: drug.intervalUnit,
-      dosageUnit,
+      measureUnit,
       isIncreasing,
       minDosageUnit: drug.minDosageUnit,
     };
@@ -105,8 +107,8 @@ const generateTableRows = (drugs: Converted[]): (TableRow & { startDate: Date, e
     rows.push({
       // Drug: drug.brand,
       Drug: drug.name,
-      'Current Dosage': `${drug.currentDosageSum}${drug.dosageUnit}`,
-      'Next Dosage': `${drug.nextDosageSum}${drug.dosageUnit}`,
+      'Current Dosage': `${drug.currentDosageSum}${drug.measureUnit}`,
+      'Next Dosage': `${drug.nextDosageSum}${drug.measureUnit}`,
       Dates: `${format(drug.intervalStartDate, 'MM/dd/yyyy')} - ${format(drug.intervalEndDate, 'MM/dd/yyyy')}`,
       startDate: drug.intervalStartDate,
       endDate: drug.intervalEndDate,
@@ -128,8 +130,8 @@ const generateTableRows = (drugs: Converted[]): (TableRow & { startDate: Date, e
       rows.push({
         // Drug: drug.brand,
         Drug: drug.name,
-        'Current Dosage': `${newRowData.currentDosageSum}${drug.dosageUnit}`,
-        'Next Dosage': `${newRowData.nextDosageSum}${drug.dosageUnit}`,
+        'Current Dosage': `${newRowData.currentDosageSum}${drug.measureUnit}`,
+        'Next Dosage': `${newRowData.nextDosageSum}${drug.measureUnit}`,
         Dates: `${format(newRowData.startDate, 'MM/dd/yyyy')} - ${format(newRowData.endDate, 'MM/dd/yyyy')}`,
         startDate: newRowData.startDate,
         endDate: newRowData.endDate,
@@ -171,7 +173,9 @@ const sort = (drugNames: string[], rows: (TableRow & { startDate: Date, endDate:
   }));
 };
 
+// TODO: tablet cutting - only in the last row
 const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule => {
+  console.group('scheduleGenerator');
   if (!validate(prescribedDrugs)) {
     return {
       data: [], drugs: [],
@@ -179,19 +183,20 @@ const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule => {
   }
 
   const drugNames = prescribedDrugs.map((drug) => drug.name);
-
+  // const drugNames = prescribedDrugs.map((drug) => drug.brand);
   const converted: Converted[] = convert(prescribedDrugs);
-
+  console.log('converted: ', converted);
   const rows: (TableRow & { startDate: Date, endDate: Date })[] = generateTableRows(converted);
-
+  console.log('rows: ', rows);
   const tableData: (TableRow & { startDate: Date, endDate: Date })[] = sort(drugNames, rows);
-
+  console.log('tableData: ', tableData);
   const schedule: Schedule = { data: tableData, drugs: drugNames };
-
+  console.log('schedule: ', schedule);
+  console.groupEnd();
   return schedule;
 };
 
-export type ScheduleChartData = { name: string, data: { time: string, dosage: number }[] }[];
+export type ScheduleChartData = { name: string, data: { timestamp: number, dosage: number }[] }[];
 
 const chartDataConverter = (schedule: Schedule): ScheduleChartData => {
   const rowsGroupByDrug: { [drug: string]: (TableRow & { startDate: Date; endDate: Date })[] } = {};
@@ -211,14 +216,15 @@ const chartDataConverter = (schedule: Schedule): ScheduleChartData => {
     rows.forEach((row, i) => {
       const chartData = scheduleChartData.find((el) => el.name === k)!;
       chartData.data.push({
-        time: format(row.startDate, 'MM-dd'),
+        timestamp: row.startDate.getTime(),
         dosage: parseFloat(row['Current Dosage']),
       });
 
       if (i === rows.length - 1) {
         chartData.data.push({
-          time: format(row.endDate, 'MM-dd'),
-          dosage: parseFloat(row['Next Dosage']),
+          timestamp: row.endDate.getTime(),
+          // dosage: parseFloat(row['Next Dosage']),
+          dosage: parseFloat(row['Current Dosage']),
         });
       }
     });

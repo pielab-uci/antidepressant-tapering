@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  useCallback, useContext, useEffect, useMemo,
+  useContext, useEffect,
 } from 'react';
 import { Input } from 'antd';
 import { useDispatch } from 'react-redux';
@@ -37,7 +37,8 @@ const TotalQuantities = () => {
     <div>
       <h3>Total number of {chosenDrug?.name}({chosenBrand?.brand}) {chosenDrugForm?.form}</h3>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        {Object.keys(Next.dosages).map((key) => (
+        {/* {Object.keys(Next.dosages).map((key) => ( */}
+        {Object.keys(prescribedDosagesQty).map((key) => (
           <div key={`${id}_${key}_${Next.dosages[key]}`}>
             <h4>{key}:</h4>
             <Input

@@ -1,8 +1,9 @@
 import produce from 'immer';
 import { add, differenceInCalendarDays } from 'date-fns';
 import {
-  Drug, PrescribedDrug, TaperingConfiguration, ToDays,
+  PrescribedDrug, TaperingConfiguration,
 } from '../../types';
+import { Drug } from '../../components/PrescriptionForm/types';
 import {
   ADD_TAPER_CONFIG_FAILURE,
   ADD_TAPER_CONFIG_REQUEST,
@@ -94,6 +95,7 @@ export const initialState: TaperConfigState = {
     name: '',
     brand: '',
     form: '',
+    measureUnit: '',
     minDosageUnit: 0,
     currentDosages: [],
     nextDosages: [],
@@ -174,6 +176,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           name: '',
           brand: '',
           form: '',
+          measureUnit: '',
           minDosageUnit: 0,
           currentDosages: [],
           nextDosages: [],
@@ -183,6 +186,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           intervalUnit: 'Days',
         });
         draft.lastPrescriptionFormId += 1;
+        draft.showMessageForPatient = false;
         break;
 
       case REMOVE_DRUG_FORM:
@@ -249,11 +253,18 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.form = '';
         drug.currentDosages = [];
         drug.nextDosages = [];
+        draft.projectedSchedule = { drugs: [], data: [] };
+        draft.scheduleChartData = [];
         break;
       }
 
       case CHOOSE_BRAND: {
         const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
+        drug.name = draft.drugs.find(
+          (d) => d.options.find(
+            (option) => option.brand === action.data.brand,
+          ),
+        )!.name;
         drug.brand = action.data.brand;
         drug.form = '';
         drug.currentDosages = [];

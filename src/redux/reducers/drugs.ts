@@ -1,4 +1,6 @@
-const drugs = [
+import { Drug } from '../../components/PrescriptionForm/types';
+
+const drugs: Drug[] = [
   {
     name: 'Fluoxetine',
     options:
@@ -9,18 +11,27 @@ const drugs = [
             {
               form: 'bottle of oral solution',
               dosages: ['120ml of 20mg/5ml'],
+              measureUnit: 'ml?',
+              isCuttable: true,
             },
             {
               form: 'capsule',
               dosages: ['10mg', '20mg', '40mg'],
+              measureUnit: 'mg',
+              isCuttable: false,
             },
             {
               form: 'tablet',
               dosages: ['10mg', '20mg', '60mg'],
+              measureUnit: 'mg',
+              isCuttable: true,
+
             },
             {
               form: 'package',
               dosages: ['4 capsules of 90mg'],
+              measureUnit: '4 capsules...?',
+              isCuttable: false,
             },
           ],
         },
@@ -30,6 +41,8 @@ const drugs = [
             {
               form: 'capsule',
               dosages: ['10mg', '20mg', '40mg'],
+              measureUnit: 'mg',
+              isCuttable: false,
             },
           ],
         },
@@ -44,10 +57,14 @@ const drugs = [
           {
             form: 'ml of oral solution',
             dosages: ['75ml (150mg)', '150ml (300mg)', '240ml (480mg)', '300ml (600mg)', '450ml (900mg)'],
+            measureUnit: 'ml?',
+            isCuttable: true,
           },
           {
             form: 'tablet',
             dosages: ['10mg', '20mg', '40mg'],
+            measureUnit: 'mg',
+            isCuttable: true,
           },
         ],
       },
@@ -57,6 +74,8 @@ const drugs = [
           {
             form: 'tablet',
             dosages: ['10mg', '20mg', '40mg'],
+            measureUnit: 'mg',
+            isCuttable: true,
           },
         ],
       },
@@ -71,10 +90,14 @@ const drugs = [
           {
             form: 'bottle of oral solution',
             dosages: ['60ml of 20mg/ml'],
+            measureUnit: 'ml?',
+            isCuttable: true,
           },
           {
             form: 'tablet',
             dosages: ['25mg', '50mg', '100mg'],
+            measureUnit: 'mg',
+            isCuttable: true,
           },
         ],
       },
@@ -84,10 +107,14 @@ const drugs = [
           {
             form: 'bottle of oral solution',
             dosages: ['60ml of 20mg/ml'],
+            measureUnit: 'ml?',
+            isCuttable: true,
           },
           {
             form: 'tablet',
             dosages: ['25mg', '50mg', '100mg'],
+            measureUnit: 'mg',
+            isCuttable: true,
           },
         ],
       },
@@ -101,6 +128,8 @@ const drugs = [
           {
             form: 'tablet',
             dosages: ['10mg', '20mg', '30mg', '40mg'],
+            measureUnit: 'mg',
+            isCuttable: true,
           },
         ],
       },
@@ -110,6 +139,8 @@ const drugs = [
           {
             form: 'package',
             dosages: ['30 capsules of 7.5mg'],
+            measureUnit: 'mg?',
+            isCuttable: true,
           },
         ],
       },
@@ -119,10 +150,14 @@ const drugs = [
           {
             form: 'bottle of oral suspension',
             dosages: ['250ml of 10mg/5ml'],
+            measureUnit: 'ml?',
+            isCuttable: true,
           },
           {
             form: 'tablet',
             dosages: ['10mg', '20mg', '30mg', '40mg'],
+            measureUnit: 'mg',
+            isCuttable: true,
           },
         ],
       },
@@ -137,10 +172,14 @@ const drugs = [
           {
             form: 'ml of oral solution',
             dosages: ['150ml (150mg)', '240ml (240mg)', '300ml (300mg)', '450ml (450mg)', '600ml (600mg)'],
+            measureUnit: 'ml?',
+            isCuttable: true,
           },
           {
             form: 'tablet',
             dosages: ['5mg', '10mg', '20mg'],
+            measureUnit: 'mg',
+            isCuttable: true,
           },
         ],
       },
@@ -150,6 +189,8 @@ const drugs = [
           {
             form: 'tablet',
             dosages: ['5mg', '10mg', '20mg'],
+            measureUnit: 'mg',
+            isCuttable: true,
           },
         ],
       },

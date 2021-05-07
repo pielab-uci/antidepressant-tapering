@@ -1,5 +1,4 @@
 import { Dispatch } from 'react';
-import { Drug, DrugOption, DrugForm } from '../../types';
 import {
   initialState,
 } from './reducer';
@@ -8,6 +7,23 @@ import {
   nextDosageChange,
   PrescriptionFormActions,
 } from './actions';
+
+export interface Drug {
+  name: string;
+  options: DrugOption[]
+}
+
+export interface DrugOption {
+  brand: string;
+  forms: DrugForm[]
+}
+
+export interface DrugForm {
+  form: string;
+  isCuttable: boolean;
+  measureUnit: string;
+  dosages: string[]
+}
 
 export interface PrescriptionFormState {
   drugs: Drug[] | null;
@@ -28,6 +44,7 @@ export interface PrescriptionFormState {
   intervalDurationDays: number;
 }
 
+// TODO: update Current, Next depending on changing form
 export type IPrescriptionFormContext = PrescriptionFormState
 & {
   Current: {

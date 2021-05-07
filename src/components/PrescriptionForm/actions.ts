@@ -1,4 +1,4 @@
-import { Drug } from '../../types';
+import { Drug } from './types';
 
 export const FETCH_DRUGS = 'FETCH_DRUGS' as const;
 

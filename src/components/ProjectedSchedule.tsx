@@ -17,6 +17,8 @@ const ProjectedSchedule = () => {
 
   return (
     <>
+      { projectedSchedule.data.length
+        ? <>
       <h3>Projected Schedule</h3>
       <div>Based on the current rate of reduction we project the following tapering schedule.</div>
       <div style={{ display: 'flex' }}>
@@ -25,6 +27,8 @@ const ProjectedSchedule = () => {
           <ScheduleChart />
         </div>
       </div>
+        </> : <div>No schedule yet</div>
+      }
     </>
   );
 };

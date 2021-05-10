@@ -1,5 +1,22 @@
 import { add, format } from 'date-fns';
 import { PrescribedDrug } from '../types';
+import { Schedule } from '../components/ProjectedSchedule';
+
+// TODO: casing for more natural messages
+const messageGenerateFromSchedule = (schedule: Schedule): string => {
+  return schedule.data
+    .filter((row) => row.selected)
+    .reduce((message, row, i, arr) => {
+      const dosages = Object.entries(row.prescribedDosages)
+        .reduce(
+          (prev, [dosage, qty]) => `${prev} ${qty} ${dosage} ${row.form}`,
+          'Take',
+        );
+      const startDate = format(row.startDate, 'MMM dd, yyyy');
+      const endDate = format(row.endDate, 'MMM dd, yyyy');
+      return `${message} ${dosages}(s) of ${row.Drug} from ${startDate} to ${endDate}.\n`;
+    }, '');
+};
 
 const messageGenerator = (drugs: PrescribedDrug[]): string => {
   return drugs.reduce(
@@ -30,4 +47,4 @@ const messageGenerator = (drugs: PrescribedDrug[]): string => {
   );
 };
 
-export { messageGenerator };
+export { messageGenerator, messageGenerateFromSchedule };

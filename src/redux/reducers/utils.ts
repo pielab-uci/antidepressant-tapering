@@ -14,6 +14,8 @@ interface Converted extends PrescribedDrug {
   isIncreasing: boolean;
 }
 
+export type TableRowData = TableRow & { startDate: Date, endDate: Date, selected: boolean, prescribedDosages: { [dosage: string]: number }, form: string };
+
 const validate = (drugs: PrescribedDrug[]): PrescribedDrug[] | null => {
   for (const drug of drugs) {
     Object.entries(drug).forEach(([k, v]) => {
@@ -74,6 +76,7 @@ const ceil = (minDosage: number, dosage: number): number => {
   return res;
 };
 
+// TODO: Check corner cases in decreasing - same dosages in a row
 const calcNextDosage = (drug: Converted, dosage: number): number => {
   // increasing - change by amount
   if (drug.isIncreasing) {
@@ -83,8 +86,8 @@ const calcNextDosage = (drug: Converted, dosage: number): number => {
   return ceil(drug.minDosageUnit, dosage * drug.changeRate);
 };
 
-const generateTableRows = (drugs: Converted[]): (TableRow & { startDate: Date, endDate: Date })[] => {
-  const rows: (TableRow & { startDate: Date, endDate: Date })[] = [];
+const generateTableRows = (drugs: Converted[]): TableRowData[] => {
+  const rows: TableRowData[] = [];
 
   drugs.forEach((drug) => {
     const durationInDays = { days: differenceInCalendarDays(drug.intervalEndDate, drug.intervalStartDate) };
@@ -99,6 +102,9 @@ const generateTableRows = (drugs: Converted[]): (TableRow & { startDate: Date, e
       startDate: drug.intervalStartDate,
       endDate: drug.intervalEndDate,
       Prescription: prescription,
+      prescribedDosages: drug.prescribedDosages,
+      selected: true,
+      form: drug.form,
     });
 
     const projectionStartDate = add(drug.intervalEndDate, { days: 1 });
@@ -110,6 +116,9 @@ const generateTableRows = (drugs: Converted[]): (TableRow & { startDate: Date, e
       nextDosageSum: calcNextDosage(drug, drug.nextDosageSum),
       startDate: projectionStartDate,
       endDate: add(projectionStartDate, durationInDays),
+      selected: false,
+      form: drug.form,
+
     };
 
     Array(3).fill(null).forEach(() => {
@@ -122,6 +131,9 @@ const generateTableRows = (drugs: Converted[]): (TableRow & { startDate: Date, e
         startDate: newRowData.startDate,
         endDate: newRowData.endDate,
         Prescription: prescription,
+        selected: false,
+        prescribedDosages: drug.prescribedDosages,
+        form: drug.form,
       });
 
       newRowData.currentDosageSum = newRowData.nextDosageSum;
@@ -133,7 +145,7 @@ const generateTableRows = (drugs: Converted[]): (TableRow & { startDate: Date, e
   return rows;
 };
 
-const sort = (drugNames: string[], rows: (TableRow & { startDate: Date, endDate: Date })[]): (TableRow & { startDate: Date, endDate: Date })[] => {
+const sort = (drugNames: string[], rows:TableRowData[]): TableRowData[] => {
   const compare = (a: TableRow & { startDate: Date }, b: TableRow & { startDate: Date }) => {
     if (isBefore(a.startDate, b.startDate)) {
       return -1;
@@ -152,15 +164,16 @@ const sort = (drugNames: string[], rows: (TableRow & { startDate: Date, endDate:
     return 1;
   };
 
-  return rows.sort(compare).map((row) => ({
-    Drug: row.Drug,
-    'Current Dosage': row['Current Dosage'],
-    'Next Dosage': row['Next Dosage'],
-    Dates: row.Dates,
-    startDate: row.startDate,
-    endDate: row.endDate,
-    Prescription: row.Prescription,
-  }));
+  return rows.sort(compare);
+  //   .map((row) => ({
+  //   Drug: row.Drug,
+  //   'Current Dosage': row['Current Dosage'],
+  //   'Next Dosage': row['Next Dosage'],
+  //   Dates: row.Dates,
+  //   startDate: row.startDate,
+  //   endDate: row.endDate,
+  //   Prescription: row.Prescription,
+  // }));
 };
 
 // TODO: tablet cutting - only in the last row
@@ -176,9 +189,9 @@ const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule => {
   // const drugNames = prescribedDrugs.map((drug) => drug.brand);
   const converted: Converted[] = convert(prescribedDrugs);
   console.log('converted: ', converted);
-  const rows: (TableRow & { startDate: Date, endDate: Date })[] = generateTableRows(converted);
+  const rows: TableRowData[] = generateTableRows(converted);
   console.log('rows: ', rows);
-  const tableData: (TableRow & { startDate: Date, endDate: Date })[] = sort(drugNames, rows);
+  const tableData: TableRowData[] = sort(drugNames, rows);
   console.log('tableData: ', tableData);
   const schedule: Schedule = { data: tableData, drugs: drugNames };
   console.log('schedule: ', schedule);

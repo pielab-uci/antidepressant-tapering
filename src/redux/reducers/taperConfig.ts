@@ -56,6 +56,7 @@ import { Schedule } from '../../components/ProjectedSchedule';
 import {
   chartDataConverter, ScheduleChartData, scheduleGenerator,
 } from './utils';
+import { messageGenerateFromSchedule } from '../../pages/utils';
 
 export interface TaperConfigState {
   drugs: Drug[];
@@ -203,6 +204,12 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case GENERATE_SCHEDULE:
         draft.projectedSchedule = scheduleGenerator(draft.prescribedDrugs);
         draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
+        draft.projectedSchedule.data.forEach((row, i) => {
+          if (row.selected) {
+            draft.scheduleSelectedRowKeys.push(i);
+          }
+        });
+        draft.messageForPatient = messageGenerateFromSchedule(draft.projectedSchedule);
         draft.showMessageForPatient = true;
         break;
 
@@ -214,6 +221,12 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
 
       case SCHEDULE_ROW_SELECTED:
         draft.scheduleSelectedRowKeys = action.data;
+        draft.projectedSchedule.data.forEach((row, i) => {
+          if (action.data.includes(i)) {
+            draft.projectedSchedule.data[i].selected = true;
+          }
+        });
+        draft.messageForPatient = messageGenerateFromSchedule(draft.projectedSchedule);
         break;
 
       case SHARE_WITH_PATIENT_APP_REQUEST:

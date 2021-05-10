@@ -30,13 +30,13 @@ const TaperConfigurationPage = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (showMessageForPatient) {
-      dispatch(
-        changeMessageForPatient(
-          messageGenerator(prescribedDrugs),
-        ),
-      );
-    }
+    // if (showMessageForPatient) {
+    //   dispatch(
+    //     changeMessageForPatient(
+    //       messageGenerator(prescribedDrugs),
+    //     ),
+    //   );
+    // }
   }, [projectedSchedule]);
 
   useEffect(() => {

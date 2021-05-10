@@ -4,10 +4,11 @@ import ProjectedScheduleTable, { TableRow } from './ProjectedScheduleTable';
 import ScheduleChart from './ScheduleChart';
 import { RootState } from '../redux/reducers';
 import { TaperConfigState } from '../redux/reducers/taperConfig';
+import { TableRowData } from '../redux/reducers/utils';
 
 export interface Schedule {
   drugs: string[];
-  data: (TableRow & { startDate: Date, endDate: Date })[];
+  data: TableRowData[];
 }
 
 const ProjectedSchedule = () => {

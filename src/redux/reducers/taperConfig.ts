@@ -1,5 +1,6 @@
 import produce from 'immer';
 import { add, differenceInCalendarDays } from 'date-fns';
+import { Key } from 'react';
 import {
   PrescribedDrug, TaperingConfiguration,
 } from '../../types';
@@ -34,7 +35,7 @@ import {
   ToggleShareProjectedScheduleWithPatient,
   TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
   CHANGE_MESSAGE_FOR_PATIENT,
-  ChangeMessageForPatient,
+  ChangeMessageForPatient, ScheduleRowSelectedAction, SCHEDULE_ROW_SELECTED,
 } from '../actions/taperConfig';
 import drugs from './drugs';
 
@@ -48,7 +49,7 @@ import {
   INTERVAL_START_DATE_CHANGE,
   INTERVAL_UNIT_CHANGE, IntervalCountChangeAction, IntervalEndDateChangeAction,
   IntervalStartDateChangeAction, IntervalUnitChangeAction,
-  NEXT_DOSAGE_CHANGE,
+  NEXT_DOSAGE_CHANGE, PRESCRIBED_QUANTITY_CHANGE,
   PrescriptionFormActions,
 } from '../../components/PrescriptionForm/actions';
 import { Schedule } from '../../components/ProjectedSchedule';
@@ -65,6 +66,7 @@ export interface TaperConfigState {
 
   projectedSchedule: Schedule;
   scheduleChartData: ScheduleChartData;
+  scheduleSelectedRowKeys: Key[];
 
   intervalDurationDays: number,
 
@@ -99,6 +101,7 @@ export const initialState: TaperConfigState = {
     minDosageUnit: 0,
     currentDosages: [],
     nextDosages: [],
+    prescribedDosages: {},
     intervalStartDate: new Date(),
     intervalEndDate: null,
     intervalCount: 0,
@@ -106,6 +109,7 @@ export const initialState: TaperConfigState = {
   }],
   projectedSchedule: { data: [], drugs: [] },
   scheduleChartData: [],
+  scheduleSelectedRowKeys: [],
 
   intervalDurationDays: 0,
 
@@ -134,6 +138,7 @@ export type TaperConfigActions =
   | RemoveDrugFormAction
   | GenerateScheduleAction
   | ClearScheduleAction
+  | ScheduleRowSelectedAction
   | ChangeMessageForPatient
   | ToggleShareProjectedScheduleWithPatient
   | ShareWithPatientAppRequest
@@ -180,6 +185,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           minDosageUnit: 0,
           currentDosages: [],
           nextDosages: [],
+          prescribedDosages: {},
           intervalStartDate: new Date(),
           intervalEndDate: null,
           intervalCount: 0,
@@ -204,6 +210,10 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.projectedSchedule = { data: [], drugs: [] };
         draft.scheduleChartData = [];
         draft.showMessageForPatient = false;
+        break;
+
+      case SCHEDULE_ROW_SELECTED:
+        draft.scheduleSelectedRowKeys = action.data;
         break;
 
       case SHARE_WITH_PATIENT_APP_REQUEST:
@@ -306,9 +316,16 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         } else {
           drug.nextDosages[idx] = action.data.dosage;
         }
+
+        drug.prescribedDosages[action.data.dosage.dosage] = action.data.dosage.quantity;
         break;
       }
 
+      case PRESCRIBED_QUANTITY_CHANGE: {
+        const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
+        drug.prescribedDosages[action.data.dosage.dosage] = action.data.dosage.quantity;
+        break;
+      }
       case INTERVAL_START_DATE_CHANGE: {
         const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
         drug.intervalStartDate = action.data.date;

@@ -92,15 +92,14 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         break;
 
       case NEXT_DOSAGE_CHANGE:
-        if (!(action.data.dosage.quantity < 0)) {
+        if (action.data.dosage.quantity >= 0) {
           draft.nextDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;
-          // draft.prescribedDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity * action.data.intervalDurationDays;
           draft.prescribedDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity * draft.intervalDurationDays;
         }
         break;
 
       case PRESCRIBED_QUANTITY_CHANGE:
-        if (!(action.data.dosage.quantity < 0)) {
+        if (action.data.dosage.quantity >= 0) {
           draft.prescribedDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;
         }
         break;

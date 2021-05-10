@@ -5,24 +5,15 @@ import { PrescribedDrug } from '../../types';
 import { TableRow } from '../../components/ProjectedScheduleTable';
 import { Schedule } from '../../components/ProjectedSchedule';
 
-interface Converted {
-  name: string,
-  brand: string,
-  currentDosageSum: number,
-  nextDosageSum: number,
-  // dates: { start: Date, end: Date },
-  intervalStartDate: Date,
-  intervalEndDate: Date,
-  intervalCount: number;
-  intervalUnit: 'Days'|'Weeks'|'Months',
-  changeRate: number,
-  changeAmount: number,
-  // duration: { [key in 'days' | 'weeks' | 'months']?: number },
-  // dosageUnit: RegExpMatchArray,
-  measureUnit: string,
-  minDosageUnit: number,
-  isIncreasing: boolean,
+interface Converted extends PrescribedDrug {
+  intervalEndDate: Date;
+  currentDosageSum: number;
+  nextDosageSum: number;
+  changeRate: number;
+  changeAmount: number;
+  isIncreasing: boolean;
 }
+
 const validate = (drugs: PrescribedDrug[]): PrescribedDrug[] | null => {
   for (const drug of drugs) {
     Object.entries(drug).forEach(([k, v]) => {
@@ -42,23 +33,16 @@ const convert = (drugs: PrescribedDrug[]): Converted[] => {
     const nextDosageSum = drug.nextDosages
       .reduce((acc, d) => acc + parseFloat(d.dosage) * d.quantity, 0);
     // const dosageUnit = drug.nextDosages[0].dosage.match(/[a-z]+/)!;
-    const { measureUnit } = drug;
     const isIncreasing = currentDosageSum < nextDosageSum;
 
     return {
-      name: drug.name,
-      brand: drug.brand,
+      ...drug,
       currentDosageSum,
       nextDosageSum,
       changeAmount: nextDosageSum - currentDosageSum,
       changeRate: nextDosageSum / currentDosageSum,
-      intervalStartDate: drug.intervalStartDate,
       intervalEndDate: drug.intervalEndDate!,
-      intervalCount: drug.intervalCount,
-      intervalUnit: drug.intervalUnit,
-      measureUnit,
       isIncreasing,
-      minDosageUnit: drug.minDosageUnit,
     };
   });
 };
@@ -104,6 +88,8 @@ const generateTableRows = (drugs: Converted[]): (TableRow & { startDate: Date, e
 
   drugs.forEach((drug) => {
     const durationInDays = { days: differenceInCalendarDays(drug.intervalEndDate, drug.intervalStartDate) };
+    const prescription = Object.entries(drug.prescribedDosages)
+      .reduce((res, [dosage, qty]) => `${res} ${qty} * ${dosage} ${drug.form} * ${drug.intervalCount} ${drug.intervalUnit.toLowerCase()}`, '');
     rows.push({
       // Drug: drug.brand,
       Drug: drug.name,
@@ -112,6 +98,7 @@ const generateTableRows = (drugs: Converted[]): (TableRow & { startDate: Date, e
       Dates: `${format(drug.intervalStartDate, 'MM/dd/yyyy')} - ${format(drug.intervalEndDate, 'MM/dd/yyyy')}`,
       startDate: drug.intervalStartDate,
       endDate: drug.intervalEndDate,
+      Prescription: prescription,
     });
 
     const projectionStartDate = add(drug.intervalEndDate, { days: 1 });
@@ -120,7 +107,6 @@ const generateTableRows = (drugs: Converted[]): (TableRow & { startDate: Date, e
       // Drug: drug.brand,
       Drug: drug.name,
       currentDosageSum: drug.nextDosageSum,
-      // nextDosageSum: drug.nextDosageSum * drug.changeRate,
       nextDosageSum: calcNextDosage(drug, drug.nextDosageSum),
       startDate: projectionStartDate,
       endDate: add(projectionStartDate, durationInDays),
@@ -135,6 +121,7 @@ const generateTableRows = (drugs: Converted[]): (TableRow & { startDate: Date, e
         Dates: `${format(newRowData.startDate, 'MM/dd/yyyy')} - ${format(newRowData.endDate, 'MM/dd/yyyy')}`,
         startDate: newRowData.startDate,
         endDate: newRowData.endDate,
+        Prescription: prescription,
       });
 
       newRowData.currentDosageSum = newRowData.nextDosageSum;
@@ -150,7 +137,9 @@ const sort = (drugNames: string[], rows: (TableRow & { startDate: Date, endDate:
   const compare = (a: TableRow & { startDate: Date }, b: TableRow & { startDate: Date }) => {
     if (isBefore(a.startDate, b.startDate)) {
       return -1;
-    } if (a.startDate === b.startDate) {
+    }
+
+    if (a.startDate === b.startDate) {
       return 1;
     }
 
@@ -170,6 +159,7 @@ const sort = (drugNames: string[], rows: (TableRow & { startDate: Date, endDate:
     Dates: row.Dates,
     startDate: row.startDate,
     endDate: row.endDate,
+    Prescription: row.Prescription,
   }));
 };
 

@@ -1,15 +1,17 @@
 import * as React from 'react';
-import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { Key, useCallback, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Table } from 'antd';
 import { RootState } from '../redux/reducers';
 import { TaperConfigState } from '../redux/reducers/taperConfig';
+import { SCHEDULE_ROW_SELECTED, ScheduleRowSelectedAction } from '../redux/actions/taperConfig';
 
 export interface TableRow {
   Drug: string;
   'Current Dosage': string;
   'Next Dosage': string;
   Dates: string;
+  Prescription: string;
 }
 
 const ProjectedScheduleTable = () => {
@@ -18,12 +20,23 @@ const ProjectedScheduleTable = () => {
     { title: 'Current Dosage', dataIndex: 'Current Dosage', key: 'Current Dosage' },
     { title: 'Next Dosage', dataIndex: 'Next Dosage', key: 'Next Dosage' },
     { title: 'Dates', dataIndex: 'Dates', key: 'Dates' },
+    { title: 'Prescription', dataIndex: 'Prescription', key: 'Prescription' },
   ], []);
 
-  const { projectedSchedule } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
+  const {
+    projectedSchedule,
+    scheduleSelectedRowKeys,
+  } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
+  const dispatch = useDispatch();
+  const rowSelectionOnChange = useCallback((selectedRowKeys: Key[]) => {
+    dispatch<ScheduleRowSelectedAction>({ type: SCHEDULE_ROW_SELECTED, data: selectedRowKeys });
+  }, []);
 
   return (
-    <Table columns={columns} dataSource={projectedSchedule.data.map((d, i) => ({ ...d, key: i }))} />
+    <Table columns={columns}
+           dataSource={projectedSchedule.data.map((d, i) => ({ ...d, key: i }))}
+           rowSelection={{ selectedRowKeys: scheduleSelectedRowKeys, onChange: rowSelectionOnChange }}
+    />
   );
 };
 

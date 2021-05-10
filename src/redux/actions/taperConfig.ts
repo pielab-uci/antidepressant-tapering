@@ -1,3 +1,4 @@
+import { Key } from 'react';
 import { TaperingConfiguration } from '../../types';
 
 export const ADD_TAPER_CONFIG_REQUEST = 'ADD_TAPER_CONFIG_REQUEST' as const;
@@ -33,6 +34,7 @@ export interface RemoveDrugFormAction {
 
 export const GENERATE_SCHEDULE = 'GENERATE_SCHEDULE' as const;
 export const CLEAR_SCHEDULE = 'CLEAR_SCHEDULE' as const;
+export const SCHEDULE_ROW_SELECTED = 'SCHEDULE_ROW_SELECTED' as const;
 
 export interface GenerateScheduleAction {
   type: typeof GENERATE_SCHEDULE
@@ -40,6 +42,12 @@ export interface GenerateScheduleAction {
 
 export interface ClearScheduleAction {
   type: typeof CLEAR_SCHEDULE
+}
+
+export interface ScheduleRowSelectedAction {
+  type: typeof SCHEDULE_ROW_SELECTED,
+  // data: (TableRow & { startDate: Date, endDate: Date, key: number })[]
+  data: Key[]
 }
 
 export const FETCH_PAST_SCHEDULE_DATA_REQUEST = 'FETCH_PAST_SCHEDULE_DATA_REQUEST' as const;

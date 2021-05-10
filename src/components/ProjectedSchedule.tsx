@@ -6,8 +6,6 @@ import { RootState } from '../redux/reducers';
 import { TaperConfigState } from '../redux/reducers/taperConfig';
 
 export interface Schedule {
-  // startDates: { [drug: string]: Date },
-  // endDates: { [drug: string]: Date },
   drugs: string[];
   data: (TableRow & { startDate: Date, endDate: Date })[];
 }

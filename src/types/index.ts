@@ -40,6 +40,7 @@ export interface PrescribedDrug {
   minDosageUnit: number;
   currentDosages: { dosage: string; quantity: number }[];
   nextDosages: { dosage: string; quantity: number }[];
+  prescribedDosages: { [dosage: string]: number; };
   intervalStartDate: Date;
   intervalEndDate: Date | null;
   intervalCount: number;

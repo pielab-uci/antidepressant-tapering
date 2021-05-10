@@ -39,8 +39,7 @@ export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
   ...initialState,
   Current: { dosages: initialState.currentDosagesQty, action: currentDosageChange },
   Next: { dosages: initialState.nextDosagesQty, action: nextDosageChange },
-  formActionDispatch: () => {
-  },
+  formActionDispatch: () => {},
   id: -1,
 });
 
@@ -77,8 +76,7 @@ const PrescriptionForm: FC<Props> = ({ id }) => {
   }, [chosenDrug, chosenBrand, chosenDrugForm, intervalStartDate, intervalEndDate]);
    */
 
-  const onSubmit = () => {
-  };
+  const onSubmit = () => {};
 
   const onDrugNameChange = (value: string) => {
     const action: DrugNameChangeAction = {
@@ -128,9 +126,9 @@ const PrescriptionForm: FC<Props> = ({ id }) => {
     });
   };
 
-  const renderDosages = (chosenDrugForm: DrugForm | null | undefined, time: 'Current' | 'Next', dosages: { [key: string]: number }) => (
+  const renderDosages = (drugForm: DrugForm | null | undefined, time: 'Current' | 'Next', dosages: { [key: string]: number }) => (
     <>
-      {chosenDrugForm
+      {drugForm
         ? <Dosages time={time} dosages={dosages} />
         : <div>No drug form selected</div>}
     </>

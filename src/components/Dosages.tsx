@@ -54,14 +54,16 @@ const Dosages: FC<Props> = ({ time, dosages }) => {
         Dosage
       </div>
       <div style={{ display: 'flex' }}>
-        {dosageOptions.map((v) => (
+        {dosageOptions.map((v: { dosage: string; isScored?: boolean }, i) => (
           <DrugUnit
-            key={`${time}_${chosenDrugForm!.form}_${v}`}
+            key={`${time}_${chosenDrugForm!.form}_${v.dosage}`}
             time={time}
             form={chosenDrugForm!.form}
-            dosage={v}
-          />
-        ))}
+            dosage={v.dosage}
+            isScored={v.isScored ? v.isScored : undefined}
+            isMinDosage={i === 0}
+          />))
+        }
       </div>
       <Checkbox checked={allowSplittingUnscored} onChange={toggleAllowSplittingUnscoredCheckbox}>Allow for splitting unscored tablets.</Checkbox>
       {time === 'Next' && dosageDifferencePercent

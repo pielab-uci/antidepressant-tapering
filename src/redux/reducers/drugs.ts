@@ -10,28 +10,24 @@ const drugs: Drug[] = [
           forms: [
             {
               form: 'bottle of oral solution',
-              dosages: ['120ml of 20mg/5ml'],
+              dosages: [{ dosage: '120ml of 20mg/5ml' }],
               measureUnit: 'ml?',
-              isSplittable: true,
             },
             {
               form: 'capsule',
-              dosages: ['10mg', '20mg', '40mg'],
+              dosages: [{ dosage: '10mg' }, { dosage: '20mg' }, { dosage: '40mg' }],
               measureUnit: 'mg',
-              isSplittable: false,
             },
             {
               form: 'tablet',
-              dosages: ['10mg', '20mg', '60mg'],
+              dosages: [{ dosage: '10mg', isScored: true }, { dosage: '20mg', isScored: true }, { dosage: '60mg', isScored: true }],
               measureUnit: 'mg',
-              isSplittable: true,
 
             },
             {
               form: 'package',
-              dosages: ['4 capsules of 90mg'],
+              dosages: [{ dosage: '4 capsules of 90mg' }],
               measureUnit: '4 capsules...?',
-              isSplittable: false,
             },
           ],
         },
@@ -40,9 +36,8 @@ const drugs: Drug[] = [
           forms: [
             {
               form: 'capsule',
-              dosages: ['10mg', '20mg', '40mg'],
+              dosages: [{ dosage: '10mg' }, { dosage: '20mg' }, { dosage: '40mg' }],
               measureUnit: 'mg',
-              isSplittable: false,
             },
           ],
         },
@@ -56,15 +51,21 @@ const drugs: Drug[] = [
         forms: [
           {
             form: 'ml of oral solution',
-            dosages: ['75ml (150mg)', '150ml (300mg)', '240ml (480mg)', '300ml (600mg)', '450ml (900mg)'],
+            dosages: [
+              { dosage: '75ml (150mg)' },
+              { dosage: '150ml (300mg)' },
+              { dosage: '240ml (480mg)' },
+              { dosage: '300ml (600mg)' },
+              { dosage: '450ml (900mg)' }],
             measureUnit: 'ml?',
-            isSplittable: true,
           },
           {
             form: 'tablet',
-            dosages: ['10mg', '20mg', '40mg'],
+            dosages: [
+              { dosage: '10mg', isScored: false },
+              { dosage: '20mg', isScored: true },
+              { dosage: '40mg', isScored: true }],
             measureUnit: 'mg',
-            isSplittable: true,
           },
         ],
       },
@@ -73,9 +74,11 @@ const drugs: Drug[] = [
         forms: [
           {
             form: 'tablet',
-            dosages: ['10mg', '20mg', '40mg'],
+            dosages: [
+              { dosage: '10mg', isScored: false },
+              { dosage: '20mg', isScored: true },
+              { dosage: '40mg', isScored: true }],
             measureUnit: 'mg',
-            isSplittable: true,
           },
         ],
       },
@@ -89,15 +92,16 @@ const drugs: Drug[] = [
         forms: [
           {
             form: 'bottle of oral solution',
-            dosages: ['60ml of 20mg/ml'],
+            dosages: [{ dosage: '60ml of 20mg/ml' }],
             measureUnit: 'ml?',
-            isSplittable: true,
           },
           {
             form: 'tablet',
-            dosages: ['25mg', '50mg', '100mg'],
+            dosages: [
+              { dosage: '25mg', isScored: true },
+              { dosage: '50mg', isScored: true },
+              { dosage: '100mg', isScored: true }],
             measureUnit: 'mg',
-            isSplittable: true,
           },
         ],
       },
@@ -106,15 +110,15 @@ const drugs: Drug[] = [
         forms: [
           {
             form: 'bottle of oral solution',
-            dosages: ['60ml of 20mg/ml'],
+            dosages: [{ dosage: '60ml of 20mg/ml' }],
             measureUnit: 'ml?',
-            isSplittable: true,
           },
           {
             form: 'tablet',
-            dosages: ['25mg', '50mg', '100mg'],
+            dosages: [{ dosage: '25mg', isScored: true },
+              { dosage: '50mg', isScored: true },
+              { dosage: '100mg', isScored: true }],
             measureUnit: 'mg',
-            isSplittable: true,
           },
         ],
       },
@@ -127,9 +131,12 @@ const drugs: Drug[] = [
         forms: [
           {
             form: 'tablet',
-            dosages: ['10mg', '20mg', '30mg', '40mg'],
+            dosages: [
+              { dosage: '10mg', isScored: true },
+              { dosage: '20mg', isScored: true },
+              { dosage: '30mg', isScored: false },
+              { dosage: '40mg', isScored: false }],
             measureUnit: 'mg',
-            isSplittable: true,
           },
         ],
       },
@@ -138,9 +145,8 @@ const drugs: Drug[] = [
         forms: [
           {
             form: 'package',
-            dosages: ['30 capsules of 7.5mg'],
+            dosages: [{ dosage: '30 capsules of 7.5mg' }],
             measureUnit: 'mg?',
-            isSplittable: true,
           },
         ],
       },
@@ -149,15 +155,17 @@ const drugs: Drug[] = [
         forms: [
           {
             form: 'bottle of oral suspension',
-            dosages: ['250ml of 10mg/5ml'],
+            dosages: [{ dosage: '250ml of 10mg/5ml' }],
             measureUnit: 'ml?',
-            isSplittable: true,
           },
           {
             form: 'tablet',
-            dosages: ['10mg', '20mg', '30mg', '40mg'],
+            dosages: [
+              { dosage: '10mg', isScored: true },
+              { dosage: '20mg', isScored: true },
+              { dosage: '30mg', isScored: false },
+              { dosage: '40mg', isScored: false }],
             measureUnit: 'mg',
-            isSplittable: true,
           },
         ],
       },
@@ -171,15 +179,21 @@ const drugs: Drug[] = [
         forms: [
           {
             form: 'ml of oral solution',
-            dosages: ['150ml (150mg)', '240ml (240mg)', '300ml (300mg)', '450ml (450mg)', '600ml (600mg)'],
+            dosages: [
+              { dosage: '150ml (150mg)' },
+              { dosage: '240ml (240mg)' },
+              { dosage: '300ml (300mg)' },
+              { dosage: '450ml (450mg)' },
+              { dosage: '600ml (600mg)' }],
             measureUnit: 'ml?',
-            isSplittable: true,
           },
           {
             form: 'tablet',
-            dosages: ['5mg', '10mg', '20mg'],
+            dosages: [
+              { dosage: '5mg', isScored: false },
+              { dosage: '10mg', isScored: true },
+              { dosage: '20mg', isScored: true }],
             measureUnit: 'mg',
-            isSplittable: true,
           },
         ],
       },
@@ -188,9 +202,11 @@ const drugs: Drug[] = [
         forms: [
           {
             form: 'tablet',
-            dosages: ['5mg', '10mg', '20mg'],
+            dosages: [
+              { dosage: '5mg', isScored: false },
+              { dosage: '10mg', isScored: true },
+              { dosage: '20mg', isScored: true }],
             measureUnit: 'mg',
-            isSplittable: true,
           },
         ],
       },

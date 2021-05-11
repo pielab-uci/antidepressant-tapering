@@ -37,9 +37,8 @@ export interface DrugOption {
 
 export interface DrugForm {
   form: string;
-  isSplittable: boolean;
   measureUnit: string;
-  dosages: string[]
+  dosages: { dosage: string; isScored?: boolean }[];
 }
 
 export interface PrescribedDrug {

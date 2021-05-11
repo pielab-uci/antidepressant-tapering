@@ -129,7 +129,7 @@ const PrescriptionForm: FC<Props> = ({ id }) => {
       taperConfigActionDispatch<ChooseFormAction>({
         type: CHOOSE_FORM,
         data: {
-          form: chosenDrugForm!.form, minDosageUnit, availableDosageOptions: dosageOptions, id,
+          form: chosenDrugForm!.form, minDosageUnit, availableDosageOptions: dosageOptions.map((dosage) => dosage.dosage), id,
         },
       });
     }

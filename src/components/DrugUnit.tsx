@@ -12,39 +12,57 @@ interface Props {
   form: string;
   time: 'Current' | 'Next'
   dosage: string;
+  isScored?: boolean;
+  isMinDosage: boolean;
 }
 
-const DrugUnit: FC<Props> = ({ time, form, dosage }) => {
+const DrugUnit: FC<Props> = ({
+  time, form, dosage, isScored, isMinDosage,
+}) => {
   const context = useContext(PrescriptionFormContext);
   const { formActionDispatch, id, intervalDurationDays } = context;
   const { dosages, dosageChangeAction, allowSplittingUnscored } = context[time];
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
+
+  const quantity = (change: 'increment' | 'decrement', dosages: { [dosage: string]: number }, dosage: string) => {
+    if (isMinDosage) {
+      if (isScored || allowSplittingUnscored) {
+        return change === 'increment' ? dosages[dosage] + 0.5 : dosages[dosage] - 0.5;
+      }
+      return change === 'increment' ? dosages[dosage] + 1 : dosages[dosage] - 1;
+    }
+
+    if (isScored) {
+      return change === 'increment' ? dosages[dosage] + 0.5 : dosages[dosage] - 0.5;
+    }
+    return change === 'increment' ? dosages[dosage] + 1 : dosages[dosage] - 1;
+  };
 
   const onIncrement = useCallback(() => {
     const actionData = {
       id,
       dosage: {
         dosage,
-        quantity: allowSplittingUnscored ? dosages[dosage] + 0.5 : dosages[dosage] + 1,
+        quantity: quantity('increment', dosages, dosage),
       },
     };
 
     taperConfigActionDispatch(dosageChangeAction({ ...actionData, intervalDurationDays }));
     formActionDispatch(dosageChangeAction(actionData));
-  }, [dosages, intervalDurationDays]);
+  }, [dosages, intervalDurationDays, allowSplittingUnscored]);
 
   const onDecrement = useCallback(() => {
     const actionData = {
       id,
       dosage: {
         dosage,
-        quantity: allowSplittingUnscored ? dosages[dosage] - 0.5 : dosages[dosage] - 1,
+        quantity: quantity('decrement', dosages, dosage),
       },
     };
 
     taperConfigActionDispatch(dosageChangeAction({ ...actionData, intervalDurationDays }));
     formActionDispatch(dosageChangeAction(actionData));
-  }, [dosages, intervalDurationDays]);
+  }, [dosages, intervalDurationDays, allowSplittingUnscored]);
 
   return (
     <>

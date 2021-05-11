@@ -17,21 +17,16 @@ interface Props {
 const DrugUnit: FC<Props> = ({ time, form, dosage }) => {
   const context = useContext(PrescriptionFormContext);
   const { formActionDispatch, id, intervalDurationDays } = context;
-  const { dosages, action: dosageChangeAction } = context[time];
+  const { dosages, dosageChangeAction, allowSplittingUnscored } = context[time];
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
-
-  // useEffect(() => {
-  //   formActionDispatch(intervalDurationDaysChange({ durationDays: intervalDurationDays, id }));
-  // }, [intervalDurationDays]);
 
   const onIncrement = useCallback(() => {
     const actionData = {
       id,
       dosage: {
         dosage,
-        quantity: dosages[dosage] + 0.5,
+        quantity: allowSplittingUnscored ? dosages[dosage] + 0.5 : dosages[dosage] + 1,
       },
-      // intervalDurationDays,
     };
 
     taperConfigActionDispatch(dosageChangeAction({ ...actionData, intervalDurationDays }));
@@ -43,9 +38,8 @@ const DrugUnit: FC<Props> = ({ time, form, dosage }) => {
       id,
       dosage: {
         dosage,
-        quantity: dosages[dosage] - 0.5,
+        quantity: allowSplittingUnscored ? dosages[dosage] - 0.5 : dosages[dosage] - 1,
       },
-      // intervalDurationDays,
     };
 
     taperConfigActionDispatch(dosageChangeAction({ ...actionData, intervalDurationDays }));

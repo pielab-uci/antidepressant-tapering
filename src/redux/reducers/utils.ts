@@ -1,5 +1,5 @@
 import {
-  add, differenceInCalendarDays, format, isAfter, isBefore,
+  add, differenceInCalendarDays, format, isBefore,
 } from 'date-fns';
 import { PrescribedDrug } from '../../types';
 import { TableRow } from '../../components/ProjectedScheduleTable';
@@ -14,7 +14,13 @@ interface Converted extends PrescribedDrug {
   isIncreasing: boolean;
 }
 
-export type TableRowData = TableRow & { startDate: Date, endDate: Date, selected: boolean, prescribedDosages: { [dosage: string]: number }, form: string };
+export type TableRowData =
+  TableRow & {
+    startDate: Date,
+    endDate: Date,
+    selected: boolean,
+    prescribedDosages: { [dosage: string]: number },
+    form: string };
 
 const validate = (drugs: PrescribedDrug[]): PrescribedDrug[] | null => {
   for (const drug of drugs) {
@@ -34,7 +40,6 @@ const convert = (drugs: PrescribedDrug[]): Converted[] => {
       .reduce((acc, d) => acc + parseFloat(d.dosage) * d.quantity, 0);
     const nextDosageSum = drug.nextDosages
       .reduce((acc, d) => acc + parseFloat(d.dosage) * d.quantity, 0);
-    // const dosageUnit = drug.nextDosages[0].dosage.match(/[a-z]+/)!;
     const isIncreasing = currentDosageSum < nextDosageSum;
 
     return {
@@ -86,13 +91,43 @@ const calcNextDosage = (drug: Converted, dosage: number): number => {
   return ceil(drug.minDosageUnit, dosage * drug.changeRate);
 };
 
+const calcNextDosageQty = (drug: Converted, dosage: number): { [dosageQty: string]: number } => {
+  const nextDosageQty: { [dosage: string]: number } = {};
+  console.group('calcNextDosageQty');
+  console.log('availableDosageOptions: ', drug.availableDosageOptions);
+
+  let d = dosage;
+  drug.availableDosageOptions
+    .concat()
+    .sort((a, b) => parseFloat(b) - parseFloat(a))
+    .forEach((dos) => {
+      console.log('d: ', d);
+      console.log('dos: ', dos);
+      const quot = Math.floor(d / parseFloat(dos));
+      console.log('quot: ', quot);
+      if (quot >= 1) {
+        nextDosageQty[dos] = quot;
+        d -= quot * parseFloat(dos);
+      }
+    });
+
+  // TODO: handle splitting case here..?
+  if (d > 0) {
+    console.error('error in calcNextDosageQty');
+  }
+  console.log('nextDosageQty: ', nextDosageQty);
+  console.groupEnd();
+  return nextDosageQty;
+};
+
 const generateTableRows = (drugs: Converted[]): TableRowData[] => {
   const rows: TableRowData[] = [];
-
+  console.log('drugs: ', drugs);
   drugs.forEach((drug) => {
     const durationInDays = { days: differenceInCalendarDays(drug.intervalEndDate, drug.intervalStartDate) };
-    const prescription = Object.entries(drug.prescribedDosages)
+    const prescription = (dosageQty: { [dosage: string]: number }) => Object.entries(dosageQty)
       .reduce((res, [dosage, qty]) => `${res} ${qty} * ${dosage} ${drug.form} * ${drug.intervalCount} ${drug.intervalUnit.toLowerCase()}`, '');
+
     rows.push({
       // Drug: drug.brand,
       Drug: drug.name,
@@ -101,7 +136,7 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
       Dates: `${format(drug.intervalStartDate, 'MM/dd/yyyy')} - ${format(drug.intervalEndDate, 'MM/dd/yyyy')}`,
       startDate: drug.intervalStartDate,
       endDate: drug.intervalEndDate,
-      Prescription: prescription,
+      Prescription: prescription(drug.prescribedDosages),
       prescribedDosages: drug.prescribedDosages,
       selected: true,
       form: drug.form,
@@ -114,11 +149,12 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
       Drug: drug.name,
       currentDosageSum: drug.nextDosageSum,
       nextDosageSum: calcNextDosage(drug, drug.nextDosageSum),
+      prescribedDosages: calcNextDosageQty(drug, drug.nextDosageSum),
       startDate: projectionStartDate,
       endDate: add(projectionStartDate, durationInDays),
       selected: false,
       form: drug.form,
-
+      Prescription: '',
     };
 
     Array(3).fill(null).forEach(() => {
@@ -130,18 +166,20 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
         Dates: `${format(newRowData.startDate, 'MM/dd/yyyy')} - ${format(newRowData.endDate, 'MM/dd/yyyy')}`,
         startDate: newRowData.startDate,
         endDate: newRowData.endDate,
-        Prescription: prescription,
+        Prescription: prescription(newRowData.prescribedDosages),
         selected: false,
-        prescribedDosages: drug.prescribedDosages,
+        prescribedDosages: newRowData.prescribedDosages,
         form: drug.form,
       });
 
       newRowData.currentDosageSum = newRowData.nextDosageSum;
       newRowData.nextDosageSum = calcNextDosage(drug, newRowData.nextDosageSum);
+      newRowData.prescribedDosages = calcNextDosageQty(drug, newRowData.nextDosageSum);
       newRowData.startDate = add(newRowData.endDate, { days: 1 });
       newRowData.endDate = add(newRowData.startDate, durationInDays);
     });
   });
+
   return rows;
 };
 
@@ -165,15 +203,6 @@ const sort = (drugNames: string[], rows:TableRowData[]): TableRowData[] => {
   };
 
   return rows.sort(compare);
-  //   .map((row) => ({
-  //   Drug: row.Drug,
-  //   'Current Dosage': row['Current Dosage'],
-  //   'Next Dosage': row['Next Dosage'],
-  //   Dates: row.Dates,
-  //   startDate: row.startDate,
-  //   endDate: row.endDate,
-  //   Prescription: row.Prescription,
-  // }));
 };
 
 // TODO: tablet cutting - only in the last row

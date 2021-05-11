@@ -3,12 +3,13 @@ import { add, differenceInCalendarDays } from 'date-fns';
 import { PrescriptionFormState } from './types';
 import {
   CHOOSE_BRAND,
-  CHOOSE_FORM,
+  CHOOSE_FORM, CURRENT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT,
   CURRENT_DOSAGE_CHANGE,
   DRUG_NAME_CHANGE,
   FETCH_DRUGS, INTERVAL_COUNT_CHANGE,
   INTERVAL_DURATION_IN_DAYS_CHANGE, INTERVAL_END_DATE_CHANGE,
   INTERVAL_START_DATE_CHANGE, INTERVAL_UNIT_CHANGE,
+  NEXT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT,
   NEXT_DOSAGE_CHANGE,
   PRESCRIBED_QUANTITY_CHANGE,
   PrescriptionFormActions,
@@ -25,6 +26,8 @@ export const initialState: PrescriptionFormState = {
   minDosageUnit: 0,
   currentDosagesQty: {},
   nextDosagesQty: {},
+  currentDosageAllowSplittingUnscoredUnit: false,
+  nextDosageAllowSplittingUnscoredUnit: false,
   prescribedDosagesQty: {},
   intervalStartDate: new Date(),
   intervalEndDate: null,
@@ -82,6 +85,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
           draft.nextDosagesQty[dosage] = 0;
           draft.prescribedDosagesQty[dosage] = 0;
         });
+
         break;
       }
 
@@ -101,6 +105,24 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
       case PRESCRIBED_QUANTITY_CHANGE:
         if (action.data.dosage.quantity >= 0) {
           draft.prescribedDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;
+        }
+        break;
+
+      case CURRENT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT:
+        draft.currentDosageAllowSplittingUnscoredUnit = action.data.allow;
+        if (!action.data.allow) {
+          Object.entries(draft.currentDosagesQty).forEach(([k, v]) => {
+            draft.currentDosagesQty[k] = Math.floor(v);
+          });
+        }
+        break;
+
+      case NEXT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT:
+        draft.nextDosageAllowSplittingUnscoredUnit = action.data.allow;
+        if (!action.data.allow) {
+          Object.entries(draft.nextDosagesQty).forEach(([k, v]) => {
+            draft.nextDosagesQty[k] = Math.floor(v);
+          });
         }
         break;
 

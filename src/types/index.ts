@@ -25,10 +25,21 @@ export interface TaperingConfiguration {
   drugs: PrescribedDrug[];
 }
 
-export enum ToDays {
-  'Days' = 1,
-  'Weeks' = 7,
-  'Months' = 30,
+export interface Drug {
+  name: string;
+  options: DrugOption[]
+}
+
+export interface DrugOption {
+  brand: string;
+  forms: DrugForm[]
+}
+
+export interface DrugForm {
+  form: string;
+  isSplittable: boolean;
+  measureUnit: string;
+  dosages: string[]
 }
 
 export interface PrescribedDrug {
@@ -38,9 +49,11 @@ export interface PrescribedDrug {
   form: string;
   measureUnit: string; // mg or ml..?
   minDosageUnit: number;
+  availableDosageOptions: string[];
   currentDosages: { dosage: string; quantity: number }[];
   nextDosages: { dosage: string; quantity: number }[];
   prescribedDosages: { [dosage: string]: number; };
+  allowSplittingUnscoredDosageUnit: boolean;
   intervalStartDate: Date;
   intervalEndDate: Date | null;
   intervalCount: number;

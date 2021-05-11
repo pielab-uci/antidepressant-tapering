@@ -17,11 +17,16 @@ import {
   currentDosageChange,
   nextDosageChange,
   ChooseFormAction,
-  ChooseBrandAction, DrugNameChangeAction, FetchDrugsAction,
+  ChooseBrandAction,
+  DrugNameChangeAction,
+  FetchDrugsAction,
+  currentAllowSplittingUnscoredDosageUnit,
+  nextAllowSplittingUnscoredDosageUnit,
 } from './actions';
+import { IPrescriptionFormContext, PrescriptionFormState } from './types';
 import {
-  Drug, DrugForm, IPrescriptionFormContext, PrescriptionFormState,
-} from './types';
+  DrugForm,
+} from '../../types';
 import {
   CLEAR_SCHEDULE,
   ClearScheduleAction,
@@ -37,8 +42,18 @@ const { OptGroup, Option } = Select;
 
 export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
   ...initialState,
-  Current: { dosages: initialState.currentDosagesQty, action: currentDosageChange },
-  Next: { dosages: initialState.nextDosagesQty, action: nextDosageChange },
+  Current: {
+    dosages: initialState.currentDosagesQty,
+    allowSplittingUnscored: initialState.currentDosageAllowSplittingUnscoredUnit,
+    dosageChangeAction: currentDosageChange,
+    toggleAllowSplittingUnscored: currentAllowSplittingUnscoredDosageUnit,
+  },
+  Next: {
+    dosages: initialState.nextDosagesQty,
+    allowSplittingUnscored: initialState.nextDosageAllowSplittingUnscoredUnit,
+    dosageChangeAction: nextDosageChange,
+    toggleAllowSplittingUnscored: nextAllowSplittingUnscoredDosageUnit,
+  },
   formActionDispatch: () => {},
   id: -1,
 });
@@ -53,7 +68,9 @@ const PrescriptionForm: FC<Props> = ({ id }) => {
 
   const {
     drugs: drugsLocal, chosenDrug, chosenBrand, chosenDrugForm, drugFormOptions,
-    currentDosagesQty, nextDosagesQty, minDosageUnit,
+    currentDosagesQty, nextDosagesQty, minDosageUnit, dosageOptions,
+    currentDosageAllowSplittingUnscoredUnit,
+    nextDosageAllowSplittingUnscoredUnit,
   } = state;
   const { drugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const [showTotalQuantities, setShowTotalQuantities] = useState(true, `PrescriptionForm-ShowTotalQuantities_${id}`);
@@ -111,7 +128,9 @@ const PrescriptionForm: FC<Props> = ({ id }) => {
     if (chosenDrugForm) {
       taperConfigActionDispatch<ChooseFormAction>({
         type: CHOOSE_FORM,
-        data: { form: chosenDrugForm!.form, minDosageUnit, id },
+        data: {
+          form: chosenDrugForm!.form, minDosageUnit, availableDosageOptions: dosageOptions, id,
+        },
       });
     }
   }, [chosenDrugForm, minDosageUnit]);
@@ -138,8 +157,18 @@ const PrescriptionForm: FC<Props> = ({ id }) => {
     <PrescriptionFormContext.Provider value={{
       ...state,
       id,
-      Current: { dosages: currentDosagesQty, action: currentDosageChange },
-      Next: { dosages: nextDosagesQty, action: nextDosageChange },
+      Current: {
+        dosages: currentDosagesQty,
+        allowSplittingUnscored: currentDosageAllowSplittingUnscoredUnit,
+        dosageChangeAction: currentDosageChange,
+        toggleAllowSplittingUnscored: currentAllowSplittingUnscoredDosageUnit,
+      },
+      Next: {
+        dosages: nextDosagesQty,
+        allowSplittingUnscored: nextDosageAllowSplittingUnscoredUnit,
+        dosageChangeAction: nextDosageChange,
+        toggleAllowSplittingUnscored: nextAllowSplittingUnscoredDosageUnit,
+      },
       formActionDispatch,
     }}
     >

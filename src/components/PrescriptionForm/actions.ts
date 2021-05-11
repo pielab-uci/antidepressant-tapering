@@ -1,4 +1,4 @@
-import { Drug } from './types';
+import { Drug } from '../../types';
 
 export const FETCH_DRUGS = 'FETCH_DRUGS' as const;
 
@@ -25,7 +25,7 @@ export const CHOOSE_FORM = 'CHOOSE_FORM' as const;
 
 export interface ChooseFormAction {
   type: typeof CHOOSE_FORM,
-  data: { id: number; form: string, minDosageUnit?: number };
+  data: { id: number; form: string, minDosageUnit?: number, availableDosageOptions?: string[] };
 }
 
 export const CURRENT_DOSAGE_CHANGE = 'CURRENT_DOSAGE_CHANGE' as const;
@@ -63,10 +63,38 @@ export interface PrescribedQuantityChange {
 
 export const prescribedQuantityChange = (data: {
   id: number, dosage: { dosage: string, quantity: number }, intervalDurationDays?: number
-}) => ({
+}): PrescribedQuantityChange => ({
   type: PRESCRIBED_QUANTITY_CHANGE,
   data,
 });
+
+export const CURRENT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT = 'CURRENT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT' as const;
+
+export interface CurrentAllowSplittingUnscoredDosageUnitAction {
+  type: typeof CURRENT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT;
+  data: { id: number, allow: boolean };
+}
+
+export const currentAllowSplittingUnscoredDosageUnit = (data: { id: number, allow: boolean }): CurrentAllowSplittingUnscoredDosageUnitAction => {
+  return {
+    type: CURRENT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT,
+    data,
+  };
+};
+
+export const NEXT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT = 'NEXT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT' as const;
+
+export interface NextAllowSplittingUnscoredDosageUnitAction {
+  type: typeof NEXT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT;
+  data: { id: number, allow: boolean; }
+}
+
+export const nextAllowSplittingUnscoredDosageUnit = (data: { id: number, allow: boolean }): NextAllowSplittingUnscoredDosageUnitAction => {
+  return {
+    type: NEXT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT,
+    data,
+  };
+};
 
 export const INTERVAL_START_DATE_CHANGE = 'INTERVAL_START_DATE_CHANGE' as const;
 
@@ -133,6 +161,8 @@ export type PrescriptionFormActions =
   | ChooseFormAction
   | CurrentDosageChangeAction
   | NextDosageChangeAction
+  | CurrentAllowSplittingUnscoredDosageUnitAction
+  | NextAllowSplittingUnscoredDosageUnitAction
   | IntervalStartDateChangeAction
   | IntervalEndDateChangeAction
   | IntervalUnitChangeAction

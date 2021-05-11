@@ -3,27 +3,12 @@ import {
   initialState,
 } from './reducer';
 import {
-  currentDosageChange,
+  currentAllowSplittingUnscoredDosageUnit,
+  currentDosageChange, nextAllowSplittingUnscoredDosageUnit,
   nextDosageChange,
   PrescriptionFormActions,
 } from './actions';
-
-export interface Drug {
-  name: string;
-  options: DrugOption[]
-}
-
-export interface DrugOption {
-  brand: string;
-  forms: DrugForm[]
-}
-
-export interface DrugForm {
-  form: string;
-  isCuttable: boolean;
-  measureUnit: string;
-  dosages: string[]
-}
+import { Drug, DrugForm, DrugOption } from '../../types';
 
 export interface PrescriptionFormState {
   drugs: Drug[] | null;
@@ -36,6 +21,8 @@ export interface PrescriptionFormState {
   minDosageUnit: number;
   currentDosagesQty: { [key: string]: number };
   nextDosagesQty: { [key: string]: number };
+  currentDosageAllowSplittingUnscoredUnit: boolean;
+  nextDosageAllowSplittingUnscoredUnit: boolean; // TODO: what about bottle of oral solution..?
   prescribedDosagesQty: { [key: string]: number };
   intervalStartDate: Date;
   intervalEndDate: Date | null;
@@ -49,11 +36,15 @@ export type IPrescriptionFormContext = PrescriptionFormState
 & {
   Current: {
     dosages: typeof initialState.currentDosagesQty,
-    action: typeof currentDosageChange
+    allowSplittingUnscored: typeof initialState.currentDosageAllowSplittingUnscoredUnit,
+    dosageChangeAction: typeof currentDosageChange,
+    toggleAllowSplittingUnscored: typeof currentAllowSplittingUnscoredDosageUnit
   };
   Next: {
     dosages: typeof initialState.nextDosagesQty,
-    action: typeof nextDosageChange
+    allowSplittingUnscored: typeof initialState.nextDosageAllowSplittingUnscoredUnit,
+    dosageChangeAction: typeof nextDosageChange,
+    toggleAllowSplittingUnscored: typeof nextAllowSplittingUnscoredDosageUnit
   };
   formActionDispatch: Dispatch<PrescriptionFormActions>;
   id: number;

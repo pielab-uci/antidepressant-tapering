@@ -13,7 +13,6 @@ import {
   SHARE_WITH_PATIENT_APP_REQUEST,
   SHARE_WITH_PATIENT_EMAIL_REQUEST, TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
 } from '../redux/actions/taperConfig';
-import { messageGenerator } from './utils';
 
 const { TextArea } = Input;
 

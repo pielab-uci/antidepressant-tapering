@@ -32,7 +32,6 @@ export interface PrescriptionFormState {
   intervalDurationDays: number;
 }
 
-// TODO: update Current, Next depending on changing form
 export type IPrescriptionFormContext = PrescriptionFormState
 & {
   Current: {

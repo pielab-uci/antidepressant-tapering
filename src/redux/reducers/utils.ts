@@ -230,8 +230,7 @@ const sort = (drugNames: string[], rows:TableRowData[]): TableRowData[] => {
   return rows.sort(compare);
 };
 
-// TODO: tablet cutting - only in the last row
-const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule => {
+export const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule => {
   console.group('scheduleGenerator');
   if (!validate(prescribedDrugs)) {
     return {
@@ -255,7 +254,7 @@ const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule => {
 
 export type ScheduleChartData = { name: string, data: { timestamp: number, dosage: number }[] }[];
 
-const chartDataConverter = (schedule: Schedule): ScheduleChartData => {
+export const chartDataConverter = (schedule: Schedule): ScheduleChartData => {
   const rowsGroupByDrug: { [drug: string]: (TableRow & { startDate: Date; endDate: Date })[] } = {};
 
   schedule.drugs.forEach((drug) => {
@@ -281,8 +280,8 @@ const chartDataConverter = (schedule: Schedule): ScheduleChartData => {
       if (i === rows.length - 1) {
         chartData.data.push({
           timestamp: row.endDate.getTime(),
-          // dosage: parseFloat(row['Next Dosage']),
-          dosage: parseFloat(row['Current Dosage']),
+          dosage: parseFloat(row['Next Dosage']),
+          // dosage: parseFloat(row['Current Dosage']),
         });
       }
     });
@@ -291,4 +290,17 @@ const chartDataConverter = (schedule: Schedule): ScheduleChartData => {
   return scheduleChartData;
 };
 
-export { scheduleGenerator, chartDataConverter };
+export const messageGenerateFromSchedule = (schedule: Schedule): string => {
+  return schedule.data
+    .filter((row) => row.selected)
+    .reduce((message, row, i, arr) => {
+      const dosages = Object.entries(row.prescribedDosages)
+        .reduce(
+          (prev, [dosage, qty]) => `${prev} ${qty} ${dosage} ${row.form}(s)`,
+          'Take',
+        );
+      const startDate = format(row.startDate, 'MMM dd, yyyy');
+      const endDate = format(row.endDate, 'MMM dd, yyyy');
+      return `${message} ${dosages} of ${row.Drug} from ${startDate} to ${endDate}.\n`;
+    }, '');
+};

@@ -55,8 +55,8 @@ import {
 import { Schedule } from '../../components/ProjectedSchedule';
 import {
   chartDataConverter, ScheduleChartData, scheduleGenerator,
+  messageGenerateFromSchedule,
 } from './utils';
-import { messageGenerateFromSchedule } from '../../pages/utils';
 
 export interface TaperConfigState {
   drugs: Drug[];

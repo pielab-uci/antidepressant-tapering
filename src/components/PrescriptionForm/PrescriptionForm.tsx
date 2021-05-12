@@ -67,10 +67,11 @@ const PrescriptionForm: FC<Props> = ({ id }) => {
   const [state, formActionDispatch] = useReducer<PrescriptionFormReducer, PrescriptionFormState>(reducer, initialState, (init) => initialState, `PrescriptionFormReducer_${id}`);
 
   const {
-    drugs: drugsLocal, chosenDrug, chosenBrand, chosenDrugForm, drugFormOptions,
-    currentDosagesQty, nextDosagesQty, minDosageUnit, dosageOptions,
+    drugs: drugsLocal, chosenBrand, chosenDrugForm, drugFormOptions,
+    currentDosagesQty, nextDosagesQty, minDosageUnit,
     currentDosageAllowSplittingUnscoredUnit,
     nextDosageAllowSplittingUnscoredUnit,
+    availableDosageOptions,
   } = state;
   const { drugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const [showTotalQuantities, setShowTotalQuantities] = useState(true, `PrescriptionForm-ShowTotalQuantities_${id}`);
@@ -95,14 +96,14 @@ const PrescriptionForm: FC<Props> = ({ id }) => {
 
   const onSubmit = () => {};
 
-  const onDrugNameChange = (value: string) => {
-    const action: DrugNameChangeAction = {
-      type: DRUG_NAME_CHANGE,
-      data: { name: value, id },
-    };
-    taperConfigActionDispatch(action);
-    formActionDispatch(action);
-  };
+  // const onDrugNameChange = (value: string) => {
+  //   const action: DrugNameChangeAction = {
+  //     type: DRUG_NAME_CHANGE,
+  //     data: { name: value, id },
+  //   };
+  //   taperConfigActionDispatch(action);
+  //   formActionDispatch(action);
+  // };
 
   const onBrandChange = (value: string) => {
     const action: ChooseBrandAction = {
@@ -129,7 +130,7 @@ const PrescriptionForm: FC<Props> = ({ id }) => {
       taperConfigActionDispatch<ChooseFormAction>({
         type: CHOOSE_FORM,
         data: {
-          form: chosenDrugForm!.form, minDosageUnit, availableDosageOptions: dosageOptions.map((dosage) => dosage.dosage), id,
+          form: chosenDrugForm!.form, minDosageUnit, availableDosageOptions, id,
         },
       });
     }
@@ -174,10 +175,10 @@ const PrescriptionForm: FC<Props> = ({ id }) => {
     >
       <Button onClick={removeDrugForm}>Remove</Button>
       <form onSubmit={onSubmit}>
-        <h3>Drug Name</h3>
-        <Select showSearch defaultValue="" value={chosenDrug?.name} onChange={onDrugNameChange} style={{ width: 200 }}>
-          {drugsLocal?.map((drug) => <Option key={drug.name} value={drug.name}>{drug.name}</Option>)}
-        </Select>
+        {/* <h3>Drug Name</h3> */}
+        {/* <Select showSearch defaultValue="" value={chosenDrug?.name} onChange={onDrugNameChange} style={{ width: 200 }}> */}
+        {/*  {drugsLocal?.map((drug) => <Option key={drug.name} value={drug.name}>{drug.name}</Option>)} */}
+        {/* </Select> */}
 
         <h3>Prescription settings</h3>
         <label>Brand</label>

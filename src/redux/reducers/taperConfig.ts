@@ -275,17 +275,17 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.shareProjectedScheduleWithPatient = !draft.shareProjectedScheduleWithPatient;
         break;
 
-      case DRUG_NAME_CHANGE: {
-        const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
-        drug.name = action.data.name;
-        drug.brand = '';
-        drug.form = '';
-        drug.currentDosages = [];
-        drug.nextDosages = [];
-        draft.projectedSchedule = { drugs: [], data: [] };
-        draft.scheduleChartData = [];
-        break;
-      }
+        // case DRUG_NAME_CHANGE: {
+        //   const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
+        //   drug.name = action.data.name;
+        //   drug.brand = '';
+        //   drug.form = '';
+        //   drug.currentDosages = [];
+        //   drug.nextDosages = [];
+        //   draft.projectedSchedule = { drugs: [], data: [] };
+        //   draft.scheduleChartData = [];
+        //   break;
+        // }
 
       case CHOOSE_BRAND: {
         const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
@@ -298,6 +298,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.form = '';
         drug.currentDosages = [];
         drug.nextDosages = [];
+        draft.projectedSchedule = { drugs: [], data: [] };
         break;
       }
 

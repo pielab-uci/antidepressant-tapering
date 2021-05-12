@@ -23,6 +23,7 @@ export const initialState: PrescriptionFormState = {
   brandOptions: [],
   drugFormOptions: [],
   dosageOptions: [],
+  availableDosageOptions: [],
   minDosageUnit: 0,
   currentDosagesQty: {},
   nextDosagesQty: {},
@@ -45,18 +46,18 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         // draft.brandOptions = draft.drugs.map((drug) => ({ drug, options: drug.options});
         break;
 
-      case DRUG_NAME_CHANGE: {
-        const chosenDrugIdx = draft.drugs!.findIndex((drug) => drug.name === action.data.name)!;
-        draft.chosenDrug = draft.drugs![chosenDrugIdx];
-        draft.drugs!.splice(0, 0, draft.drugs!.splice(chosenDrugIdx, 1)[0]);
-
-        draft.chosenBrand = null;
-        draft.chosenDrugForm = null;
-        draft.drugFormOptions = [];
-        draft.prescribedDosagesQty = {};
-
-        break;
-      }
+        // case DRUG_NAME_CHANGE: {
+        //   const chosenDrugIdx = draft.drugs!.findIndex((drug) => drug.name === action.data.name)!;
+        //   draft.chosenDrug = draft.drugs![chosenDrugIdx];
+        //   draft.drugs!.splice(0, 0, draft.drugs!.splice(chosenDrugIdx, 1)[0]);
+        //
+        //   draft.chosenBrand = null;
+        //   draft.chosenDrugForm = null;
+        //   draft.drugFormOptions = [];
+        //   draft.prescribedDosagesQty = {};
+        //
+        //   break;
+        // }
 
       case CHOOSE_BRAND: {
         const chosenBrandOption = draft.brandOptions!.find(
@@ -70,7 +71,10 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.chosenDrug = draft.drugs![chosenDrugIdx];
         draft.drugs!.splice(0, 0, draft.drugs!.splice(chosenDrugIdx, 1)[0]);
         draft.chosenBrand = chosenBrandOption;
+        draft.chosenDrugForm = null;
         draft.drugFormOptions = chosenBrandOption.forms;
+        draft.currentDosagesQty = {};
+        draft.nextDosagesQty = {};
         draft.prescribedDosagesQty = {};
         break;
       }
@@ -80,6 +84,17 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.chosenDrugForm = chosenDrugForm;
         draft.dosageOptions = chosenDrugForm.dosages;
         draft.minDosageUnit = Math.min(...draft.dosageOptions.map((dosage) => parseFloat(dosage.dosage))) / 2;
+        draft.availableDosageOptions = [...new Set(draft.dosageOptions.flatMap((option) => {
+          if (option.isScored) {
+            return [`${parseFloat(option.dosage) / 2}${draft.chosenDrugForm!.measureUnit}`, option.dosage];
+          }
+          return option.dosage;
+        }))];
+
+        draft.currentDosagesQty = {};
+        draft.nextDosagesQty = {};
+        draft.prescribedDosagesQty = {};
+
         chosenDrugForm.dosages.forEach((dosage) => {
           draft.currentDosagesQty[dosage.dosage] = 0;
           draft.nextDosagesQty[dosage.dosage] = 0;

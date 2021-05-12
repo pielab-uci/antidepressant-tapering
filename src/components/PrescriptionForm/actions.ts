@@ -156,7 +156,7 @@ export const intervalDurationDaysChange = (data: { durationDays: number, id: num
 
 export type PrescriptionFormActions =
   | FetchDrugsAction
-  | DrugNameChangeAction
+  // | DrugNameChangeAction
   | ChooseBrandAction
   | ChooseFormAction
   | CurrentDosageChangeAction

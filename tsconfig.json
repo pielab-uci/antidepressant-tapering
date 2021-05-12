@@ -8,7 +8,8 @@
     "jsx": "react",
     "allowJs": true,
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "downlevelIteration": true
   },
   "include":[
     ".eslintrc.js",

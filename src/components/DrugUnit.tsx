@@ -25,12 +25,12 @@ const DrugUnit: FC<Props> = ({
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
 
   const quantity = (change: 'increment' | 'decrement', dosages: { [dosage: string]: number }, dosage: string) => {
-    if (isMinDosage) {
-      if (isScored || allowSplittingUnscored) {
-        return change === 'increment' ? dosages[dosage] + 0.5 : dosages[dosage] - 0.5;
-      }
-      return change === 'increment' ? dosages[dosage] + 1 : dosages[dosage] - 1;
-    }
+    // if (isMinDosage) {
+    //   if (isScored || allowSplittingUnscored) {
+    //     return change === 'increment' ? dosages[dosage] + 0.5 : dosages[dosage] - 0.5;
+    //   }
+    //   return change === 'increment' ? dosages[dosage] + 1 : dosages[dosage] - 1;
+    // }
 
     if (isScored) {
       return change === 'increment' ? dosages[dosage] + 0.5 : dosages[dosage] - 0.5;

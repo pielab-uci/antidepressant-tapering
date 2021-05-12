@@ -18,6 +18,7 @@ export interface PrescriptionFormState {
   brandOptions: DrugOption[] | null;
   drugFormOptions: DrugForm[] | null;
   dosageOptions: { dosage: string, isScored?: boolean }[];
+  availableDosageOptions: string[];
   minDosageUnit: number;
   currentDosagesQty: { [key: string]: number };
   nextDosagesQty: { [key: string]: number };

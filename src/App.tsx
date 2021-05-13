@@ -27,21 +27,21 @@ const App = () => {
       {!me ? <LoginPage />
         : (
           <Router>
-            <div>
+            {/* <div> */}
               <Link to="/">Home</Link>
-            &nbsp;
-              <Link to="/taper-configuration">Taper Configuration</Link>
-            &nbsp;
-              <Link to="/logging-configuration">Logging Configuration</Link>
-            &nbsp;
-              <Link to="/symptom-report">Symptom Report</Link>
-            </div>
+            {/* &nbsp; */}
+            {/*  <Link to="/taper-configuration">Taper Configuration</Link> */}
+            {/* &nbsp; */}
+            {/*  <Link to="/logging-configuration">Logging Configuration</Link> */}
+            {/* &nbsp; */}
+            {/*  <Link to="/symptom-report">Symptom Report</Link> */}
+            {/* </div> */}
             <div>
               <Switch>
-                <Route exact path="/" component={HomePage} />
                 <Route path="/taper-configuration" component={TaperConfigurationPage} />
                 <Route path="/logging-configuration" component={LoggingConfigurationPage} />
                 <Route path="/symptom-report" component={SymptomReportPage} />
+                <Route path="/" component={HomePage} />
               </Switch>
             </div>
           </Router>

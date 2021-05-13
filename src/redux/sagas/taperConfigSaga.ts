@@ -20,7 +20,7 @@ function fetchPastScheduleDataAPI(currentDosageDate: Date): Schedule {
 function* fetchPastScheduleData(action: FetchPastScheduleDataRequest) {
   try {
     yield delay(1000);
-    const result = fetchPastScheduleDataAPI(action.data);
+    // const result = fetchPastScheduleDataAPI(action.data);
 
     yield put<FetchPastScheduleDataSuccess>({
       type: FETCH_PAST_SCHEDULE_DATA_SUCCESS,

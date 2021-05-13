@@ -37,3 +37,22 @@ export interface AddNewPatientFailure {
   type: typeof ADD_NEW_PATIENT_FAILURE,
   error: any;
 }
+
+export const LOAD_PATIENTS_REQUEST = 'LOAD_PATIENTS_REQUEST' as const;
+export const LOAD_PATIENTS_SUCCESS = 'LOAD_PATIENTS_SUCCESS' as const;
+export const LOAD_PATIENTS_FAILURE = 'LOAD_PATIENTS_FAILURE' as const;
+
+export interface LoadPatientsRequestAction {
+  type: typeof LOAD_PATIENTS_REQUEST,
+  data: number; // clinician id
+}
+
+export interface LoadPatientsSuccessAction {
+  type: typeof LOAD_PATIENTS_SUCCESS,
+  data: Omit<Patient, 'password'|'taperConfigurations'>[];
+}
+
+export interface LoadPatientsFailureAction {
+  type: typeof LOAD_PATIENTS_FAILURE,
+  error: any;
+}

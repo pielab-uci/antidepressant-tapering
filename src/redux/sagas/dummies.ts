@@ -1,8 +1,9 @@
-import { Clinician, TaperingConfiguration } from '../../types';
+import { Clinician, Patient, TaperingConfiguration } from '../../types';
 
-export const sally = {
+export const sally: Omit<Patient, 'password'> = {
   id: 1,
   name: 'Sally Johnson',
+  email: 'sallyj@uci.edu',
   taperingConfigurations: [
     {
       id: 1,
@@ -29,9 +30,10 @@ export const sally = {
   ] as TaperingConfiguration[],
 };
 
-export const john = {
+export const john: Omit<Patient, 'password'> = {
   id: 2,
   name: 'John Greenberg',
+  email: 'johng@uci.edu',
   taperingConfigurations: [
     {
       id: 2,
@@ -51,7 +53,7 @@ export const john = {
   ] as TaperingConfiguration[],
 };
 
-export const xiao = {
+export const xiao: Omit<Patient, 'password'> = {
   id: 3, email: 'xiaoz@uci.edu', name: 'Xiao Zhang', taperingConfigurations: [],
 };
 

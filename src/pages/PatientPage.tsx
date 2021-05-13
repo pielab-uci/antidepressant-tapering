@@ -1,19 +1,40 @@
 import * as React from 'react';
-import { FC } from 'react';
-import { Patient } from '../types';
+import {
+  FC, useCallback, useMemo,
+} from 'react';
+import { useSelector } from 'react-redux';
+import { RouteChildrenProps } from 'react-router/ts4.0';
+import { Button } from 'antd';
+import { useHistory } from 'react-router';
+import { UserState } from '../redux/reducers/user';
+import { RootState } from '../redux/reducers';
 
-interface Props {
-  patient: Pick<Patient, 'name'>
-}
-const PatientPage: FC<Props> = ({ patient }) => (
+const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) => {
+  const { me, patients } = useSelector<RootState, UserState>((state) => state.user);
+  const history = useHistory();
+  const patient = useMemo(() => {
+    return patients.find((p) => p.id === parseInt(match!.params.patientId, 10));
+  }, []);
+
+  const onClickNewSchedule = useCallback(() => {
+    history.push(`/taper-configuration/?clinicianId=${me!.id}&patientId=${patient!.id}`);
+  }, []);
+
+  return (
   <>
-    <div>{patient.name}</div>
-    <hr />
-    <div>Schedule</div>
-
-    <button>New Schedule</button>
-    <button>Symptom Tracker</button>
+    {!patient ? <div>No such patient</div>
+      : <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <h4>{patient.name}</h4>
+        <hr/>
+        <div>Schedule</div>
+        <div>Drug(s): Drugs and dosages will appear hear.</div>
+        <div>Taper progress will appear</div>
+        <Button onClick={onClickNewSchedule}>New Schedule</Button>
+        <button disabled={true}>Symptom Tracker</button>
+      </div>
+    }
   </>
-);
+  );
+};
 
 export default PatientPage;

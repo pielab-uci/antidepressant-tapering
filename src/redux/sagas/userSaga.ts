@@ -3,18 +3,25 @@ import {
 } from 'redux-saga/effects';
 import {
   ADD_NEW_PATIENT_FAILURE, ADD_NEW_PATIENT_REQUEST,
-  ADD_NEW_PATIENT_SUCCESS, AddNewPatientFailure,
+  ADD_NEW_PATIENT_SUCCESS,
+  AddNewPatientFailure,
   AddNewPatientRequest,
   AddNewPatientSuccess,
+  LoadPatientsRequestAction,
+  LoadPatientsSuccessAction,
+  LoadPatientsFailureAction,
   LOGIN_FAILURE,
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
   LoginFailureAction,
   LoginRequestAction,
-  LoginSuccessAction,
+  LoginSuccessAction, LOAD_PATIENTS_SUCCESS, LOAD_PATIENTS_FAILURE, LOAD_PATIENTS_REQUEST,
+
 } from '../actions/user';
 import { Clinician, Patient } from '../../types';
-import { stephen, xiao } from './dummies';
+import {
+  stephen, xiao, sally, john,
+} from './dummies';
 
 function loginAPI(action: LoginRequestAction): { data: Omit<Clinician, 'password'> } {
   return { data: stephen };
@@ -60,6 +67,28 @@ function* addPatient(action: AddNewPatientRequest) {
   }
 }
 
+function loadPatientsAPI(action: LoadPatientsRequestAction): { data: Omit<Patient, 'password'>[] } {
+  return { data: [sally, john, xiao] };
+}
+
+function* loadPatients(action: LoadPatientsRequestAction) {
+  try {
+    yield delay(1000);
+    const result = loadPatientsAPI(action);
+
+    yield put<LoadPatientsSuccessAction>({
+      type: LOAD_PATIENTS_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put<LoadPatientsFailureAction>({
+      type: LOAD_PATIENTS_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
 function* watchLogIn() {
   yield takeLatest(LOGIN_REQUEST, logIn);
 }
@@ -68,6 +97,10 @@ function* watchAddPatient() {
   yield takeLatest(ADD_NEW_PATIENT_REQUEST, addPatient);
 }
 
+function* watchLoadPatients() {
+  yield takeLatest(LOAD_PATIENTS_REQUEST, loadPatients);
+}
+
 export default function* userSaga() {
-  yield all([fork(watchLogIn), fork(watchAddPatient)]);
+  yield all([fork(watchLogIn), fork(watchAddPatient), fork(watchLoadPatients)]);
 }

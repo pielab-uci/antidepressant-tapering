@@ -1,9 +1,14 @@
 import produce from 'immer';
 import {
   ADD_NEW_PATIENT_FAILURE,
-  ADD_NEW_PATIENT_REQUEST, ADD_NEW_PATIENT_SUCCESS,
+  ADD_NEW_PATIENT_REQUEST,
+  ADD_NEW_PATIENT_SUCCESS,
   AddNewPatientFailure,
-  AddNewPatientRequest, AddNewPatientSuccess,
+  AddNewPatientRequest,
+  AddNewPatientSuccess, LOAD_PATIENTS_FAILURE, LOAD_PATIENTS_REQUEST, LOAD_PATIENTS_SUCCESS,
+  LoadPatientsFailureAction,
+  LoadPatientsRequestAction,
+  LoadPatientsSuccessAction,
   LOGIN_FAILURE,
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
@@ -11,7 +16,7 @@ import {
   LoginRequestAction,
   LoginSuccessAction,
 } from '../actions/user';
-import { Clinician } from '../../types';
+import { Clinician, Patient } from '../../types';
 
 export interface UserState {
   loggingIn: boolean;
@@ -21,17 +26,28 @@ export interface UserState {
   addedPatient: boolean;
   addPatientError: any;
 
-  me: Omit<Clinician, 'password'>|null
+  loadingPatients: boolean;
+  loadedPatients: boolean;
+  loadPatientsError: any;
+
+  patients: Omit<Patient, 'password'|'taperingConfigurations'>[];
+  me: Omit<Clinician, 'password'>|null;
 }
 
 export const initialState: UserState = {
   loggingIn: false,
   loggedIn: false,
   logInError: null,
+
   addingPatient: false,
   addedPatient: false,
   addPatientError: null,
 
+  loadingPatients: false,
+  loadedPatients: false,
+  loadPatientsError: null,
+
+  patients: [],
   me: null,
 };
 
@@ -41,7 +57,10 @@ type UserReducerAction =
   | LoginFailureAction
   | AddNewPatientRequest
   | AddNewPatientSuccess
-  | AddNewPatientFailure;
+  | AddNewPatientFailure
+  | LoadPatientsRequestAction
+  | LoadPatientsSuccessAction
+  | LoadPatientsFailureAction;
 
 const userReducer = (state: UserState = initialState, action: UserReducerAction): UserState => produce(state, (draft) => {
   switch (action.type) {
@@ -77,6 +96,23 @@ const userReducer = (state: UserState = initialState, action: UserReducerAction)
     case ADD_NEW_PATIENT_FAILURE:
       draft.addingPatient = false;
       draft.addPatientError = action.error;
+      break;
+
+    case LOAD_PATIENTS_REQUEST:
+      draft.loadingPatients = true;
+      draft.loadedPatients = false;
+      draft.loadPatientsError = null;
+      break;
+
+    case LOAD_PATIENTS_SUCCESS:
+      draft.loadingPatients = false;
+      draft.loadedPatients = true;
+      draft.patients = action.data;
+      break;
+
+    case LOAD_PATIENTS_FAILURE:
+      draft.loadingPatients = false;
+      draft.loadPatientsError = action.error;
       break;
 
     default:

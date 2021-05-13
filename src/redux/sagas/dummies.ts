@@ -10,7 +10,7 @@ export const sally: Omit<Patient, 'password'> = {
       clinicianId: 1,
       patientId: 1,
       createdAt: new Date(),
-      drugs: [
+      prescribedDrugs: [
         {
           name: 'Fluoxetine',
           brand: 'Prozac',
@@ -40,7 +40,7 @@ export const john: Omit<Patient, 'password'> = {
       clinicianId: 1,
       patientId: 2,
       createdAt: new Date(),
-      drugs: [
+      prescribedDrugs: [
         {
           name: 'Setraline',
           brand: 'Zoloft',

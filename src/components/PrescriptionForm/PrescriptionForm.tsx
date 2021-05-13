@@ -175,11 +175,6 @@ const PrescriptionForm: FC<Props> = ({ id }) => {
     >
       <Button onClick={removeDrugForm}>Remove</Button>
       <form onSubmit={onSubmit}>
-        {/* <h3>Drug Name</h3> */}
-        {/* <Select showSearch defaultValue="" value={chosenDrug?.name} onChange={onDrugNameChange} style={{ width: 200 }}> */}
-        {/*  {drugsLocal?.map((drug) => <Option key={drug.name} value={drug.name}>{drug.name}</Option>)} */}
-        {/* </Select> */}
-
         <h3>Prescription settings</h3>
         <label>Brand</label>
         <Select showSearch defaultValue="" value={chosenBrand?.brand} onChange={onBrandChange} style={{ width: 200 }}>

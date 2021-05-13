@@ -1,15 +1,18 @@
 import * as React from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import {
+  useCallback, useEffect, useRef, useState,
+} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Checkbox, Input } from 'antd';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { useLocation } from 'react-router';
 import ProjectedSchedule from '../components/ProjectedSchedule';
 import { RootState } from '../redux/reducers';
 import { TaperConfigState } from '../redux/reducers/taperConfig';
 import PrescriptionForm from '../components/PrescriptionForm/PrescriptionForm';
 import {
-  ADD_NEW_DRUG_FORM, changeMessageForPatient,
-  GENERATE_SCHEDULE,
+  ADD_NEW_DRUG_FORM, addOrUpdateTaperConfigRequest, changeMessageForPatient,
+  GENERATE_SCHEDULE, SET_CLINICIAN_PATIENT, SetClinicianPatientAction,
   SHARE_WITH_PATIENT_APP_REQUEST,
   SHARE_WITH_PATIENT_EMAIL_REQUEST, TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
 } from '../redux/actions/taperConfig';
@@ -21,22 +24,18 @@ const TaperConfigurationPage = () => {
     prescriptionFormIds,
     messageForPatient,
     shareProjectedScheduleWithPatient,
-    projectedSchedule,
-    showMessageForPatient,
     prescribedDrugs,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const [canGenerateSchedule, setCanGenerateSchedule] = useState(false);
   const dispatch = useDispatch();
+  const urlSearchParams = useRef<URLSearchParams>(new URLSearchParams(useLocation().search));
 
   useEffect(() => {
-    // if (showMessageForPatient) {
-    //   dispatch(
-    //     changeMessageForPatient(
-    //       messageGenerator(prescribedDrugs),
-    //     ),
-    //   );
-    // }
-  }, [projectedSchedule]);
+    dispatch<SetClinicianPatientAction>({
+      type: SET_CLINICIAN_PATIENT,
+      data: { clinicianId: parseInt(urlSearchParams.current.get('clinicianId')!, 10), patientId: parseInt(urlSearchParams.current!.get('patientId')!, 10) },
+    });
+  }, []);
 
   useEffect(() => {
     const condition = !prescribedDrugs.map(
@@ -88,6 +87,14 @@ const TaperConfigurationPage = () => {
     dispatch(changeMessageForPatient(e.target.value));
   }, []);
 
+  const saveTaperConfiguration = useCallback(() => {
+    dispatch(addOrUpdateTaperConfigRequest({
+      clinicianId: parseInt(urlSearchParams.current.get('clinicianId')!, 10),
+      patientId: parseInt(urlSearchParams.current.get('patientId')!, 10),
+      prescribedDrugs,
+    }));
+  }, [prescribedDrugs]);
+
   const renderPrescriptionForms = (ids: number[]) => {
     return ids.map(
       (id) => <PrescriptionForm key={`PrescriptionForm${id}`} id={id}/>,
@@ -119,6 +126,7 @@ const TaperConfigurationPage = () => {
       <CopyToClipboard text={messageForPatient} onCopy={onCopy}>
         <Button>Copy to Clipboard</Button>
       </CopyToClipboard>
+      <Button onClick={saveTaperConfiguration}>Save configuration</Button>
     </>
   );
 };

@@ -6,12 +6,12 @@ import {
   PrescribedDrug, TaperingConfiguration,
 } from '../../types';
 import {
-  ADD_TAPER_CONFIG_FAILURE,
-  ADD_TAPER_CONFIG_REQUEST,
-  ADD_TAPER_CONFIG_SUCCESS,
-  AddTaperConfigFailureAction,
-  AddTaperConfigRequestAction,
-  AddTaperConfigSuccessAction,
+  ADD_OR_UPDATE_TAPER_CONFIG_FAILURE,
+  ADD_OR_UPDATE_TAPER_CONFIG_REQUEST,
+  ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS,
+  AddOrUpdateTaperConfigFailureAction,
+  AddOrUpdateTaperConfigRequestAction,
+  AddOrUpdateTaperConfigSuccessAction,
   CLEAR_SCHEDULE,
   ClearScheduleAction,
   GENERATE_SCHEDULE,
@@ -35,7 +35,11 @@ import {
   ToggleShareProjectedScheduleWithPatient,
   TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
   CHANGE_MESSAGE_FOR_PATIENT,
-  ChangeMessageForPatient, ScheduleRowSelectedAction, SCHEDULE_ROW_SELECTED,
+  ChangeMessageForPatient,
+  ScheduleRowSelectedAction,
+  SCHEDULE_ROW_SELECTED,
+  SetClinicianPatientAction,
+  SET_CLINICIAN_PATIENT,
 } from '../actions/taperConfig';
 import drugs from './drugs';
 
@@ -43,7 +47,6 @@ import {
   CHOOSE_BRAND,
   CHOOSE_FORM, CURRENT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT,
   CURRENT_DOSAGE_CHANGE,
-  DRUG_NAME_CHANGE,
   INTERVAL_COUNT_CHANGE,
   INTERVAL_END_DATE_CHANGE,
   INTERVAL_START_DATE_CHANGE,
@@ -59,6 +62,8 @@ import {
 } from './utils';
 
 export interface TaperConfigState {
+  clinicianId: number;
+  patientId: number;
   drugs: Drug[];
   taperConfigs: TaperingConfiguration[];
   lastPrescriptionFormId: number;
@@ -90,6 +95,8 @@ export interface TaperConfigState {
 
 export const initialState: TaperConfigState = {
   drugs,
+  clinicianId: -1,
+  patientId: -1,
   taperConfigs: [],
   lastPrescriptionFormId: 0,
   prescriptionFormIds: [0],
@@ -134,9 +141,10 @@ export const initialState: TaperConfigState = {
 };
 
 export type TaperConfigActions =
-  | AddTaperConfigRequestAction
-  | AddTaperConfigSuccessAction
-  | AddTaperConfigFailureAction
+  | SetClinicianPatientAction
+  | AddOrUpdateTaperConfigRequestAction
+  | AddOrUpdateTaperConfigSuccessAction
+  | AddOrUpdateTaperConfigFailureAction
   | AddNewDrugFormAction
   | RemoveDrugFormAction
   | GenerateScheduleAction
@@ -159,19 +167,31 @@ export type TaperConfigActions =
 const taperConfigReducer = (state: TaperConfigState = initialState, action: TaperConfigActions) => {
   return produce(state, (draft) => {
     switch (action.type) {
-      case ADD_TAPER_CONFIG_REQUEST:
+      case SET_CLINICIAN_PATIENT:
+        draft.clinicianId = action.data.clinicianId;
+        draft.patientId = action.data.patientId;
+        break;
+
+      case ADD_OR_UPDATE_TAPER_CONFIG_REQUEST:
         draft.addingTaperConfig = true;
         draft.addedTaperConfig = false;
         draft.addingTaperConfigError = null;
         break;
 
-      case ADD_TAPER_CONFIG_SUCCESS:
+      case ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS: {
         draft.addingTaperConfig = false;
         draft.addedTaperConfig = true;
-        draft.taperConfigs.unshift(action.data);
-        break;
 
-      case ADD_TAPER_CONFIG_FAILURE:
+        let existingConfig = draft.taperConfigs.find((config) => config.id === action.data.id);
+        if (existingConfig) {
+          existingConfig = { ...action.data };
+        } else {
+          draft.taperConfigs.unshift(action.data);
+        }
+        break;
+      }
+
+      case ADD_OR_UPDATE_TAPER_CONFIG_FAILURE:
         draft.addingTaperConfig = false;
         draft.addedTaperConfig = false;
         draft.addingTaperConfigError = action.error;
@@ -274,18 +294,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT:
         draft.shareProjectedScheduleWithPatient = !draft.shareProjectedScheduleWithPatient;
         break;
-
-        // case DRUG_NAME_CHANGE: {
-        //   const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
-        //   drug.name = action.data.name;
-        //   drug.brand = '';
-        //   drug.form = '';
-        //   drug.currentDosages = [];
-        //   drug.nextDosages = [];
-        //   draft.projectedSchedule = { drugs: [], data: [] };
-        //   draft.scheduleChartData = [];
-        //   break;
-        // }
 
       case CHOOSE_BRAND: {
         const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;

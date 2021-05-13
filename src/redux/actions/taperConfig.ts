@@ -1,22 +1,34 @@
 import { Key } from 'react';
-import { TaperingConfiguration } from '../../types';
+import { PrescribedDrug, TaperingConfiguration } from '../../types';
 
-export const ADD_TAPER_CONFIG_REQUEST = 'ADD_TAPER_CONFIG_REQUEST' as const;
-export const ADD_TAPER_CONFIG_SUCCESS = 'ADD_TAPER_CONFIG_SUCCESS' as const;
-export const ADD_TAPER_CONFIG_FAILURE = 'ADD_TAPER_CONFIG_FAILURE' as const;
+export const SET_CLINICIAN_PATIENT = 'SET_CLINICIAN_PATIENT' as const;
 
-export interface AddTaperConfigRequestAction {
-  type: typeof ADD_TAPER_CONFIG_REQUEST,
-  data: any;
+export interface SetClinicianPatientAction {
+  type: typeof SET_CLINICIAN_PATIENT,
+  data: { clinicianId: number, patientId: number }
 }
 
-export interface AddTaperConfigSuccessAction {
-  type: typeof ADD_TAPER_CONFIG_SUCCESS,
+export const ADD_OR_UPDATE_TAPER_CONFIG_REQUEST = 'ADD_TAPER_CONFIG_REQUEST' as const;
+export const ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS = 'ADD_TAPER_CONFIG_SUCCESS' as const;
+export const ADD_OR_UPDATE_TAPER_CONFIG_FAILURE = 'ADD_TAPER_CONFIG_FAILURE' as const;
+
+export interface AddOrUpdateTaperConfigRequestAction {
+  type: typeof ADD_OR_UPDATE_TAPER_CONFIG_REQUEST,
+  data: { clinicianId: number, patientId: number, prescribedDrugs: PrescribedDrug[] };
+}
+
+export const addOrUpdateTaperConfigRequest = (data: { clinicianId: number, patientId: number, prescribedDrugs: PrescribedDrug[] }):AddOrUpdateTaperConfigRequestAction => ({
+  type: ADD_OR_UPDATE_TAPER_CONFIG_REQUEST,
+  data,
+});
+
+export interface AddOrUpdateTaperConfigSuccessAction {
+  type: typeof ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS,
   data: TaperingConfiguration
 }
 
-export interface AddTaperConfigFailureAction {
-  type: typeof ADD_TAPER_CONFIG_FAILURE,
+export interface AddOrUpdateTaperConfigFailureAction {
+  type: typeof ADD_OR_UPDATE_TAPER_CONFIG_FAILURE,
   error: any;
 }
 

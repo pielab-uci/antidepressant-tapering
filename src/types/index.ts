@@ -22,7 +22,7 @@ export interface TaperingConfiguration {
   clinicianId: number;
   patientId: number;
   createdAt: Date;
-  drugs: PrescribedDrug[];
+  prescribedDrugs: PrescribedDrug[];
 }
 
 export interface Drug {

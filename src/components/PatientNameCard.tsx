@@ -4,7 +4,8 @@ import { useHistory, useRouteMatch } from 'react-router';
 import { Patient } from '../types';
 
 interface Props {
-  patient: Omit<Patient, 'password'|'taperingConfigurations'>
+  // patient: Omit<Patient, 'password'|'taperingConfigurations'>
+  patient: Omit<Patient, 'password'>
 }
 
 const PatientNameCard: FC<Props> = ({ patient }) => {

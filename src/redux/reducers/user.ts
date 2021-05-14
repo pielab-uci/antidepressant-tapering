@@ -30,7 +30,8 @@ export interface UserState {
   loadedPatients: boolean;
   loadPatientsError: any;
 
-  patients: Omit<Patient, 'password'|'taperingConfigurations'>[];
+  // patients: Omit<Patient, 'password'|'taperingConfigurations'>[];
+  patients: Omit<Patient, 'password'>[];
   me: Omit<Clinician, 'password'>|null;
 }
 

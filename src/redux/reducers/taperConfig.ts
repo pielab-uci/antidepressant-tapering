@@ -40,6 +40,10 @@ import {
   SCHEDULE_ROW_SELECTED,
   SetClinicianPatientAction,
   SET_CLINICIAN_PATIENT,
+  FETCH_TAPER_CONFIG_REQUEST,
+  FetchTaperConfigRequestAction,
+  FetchTaperConfigSuccessAction,
+  FetchTaperConfigFailureAction, FETCH_TAPER_CONFIG_SUCCESS, FETCH_TAPER_CONFIG_FAILURE,
 } from '../actions/taperConfig';
 import drugs from './drugs';
 
@@ -50,8 +54,7 @@ import {
   INTERVAL_COUNT_CHANGE,
   INTERVAL_END_DATE_CHANGE,
   INTERVAL_START_DATE_CHANGE,
-  INTERVAL_UNIT_CHANGE, IntervalCountChangeAction, IntervalEndDateChangeAction,
-  IntervalStartDateChangeAction, IntervalUnitChangeAction, NEXT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT,
+  INTERVAL_UNIT_CHANGE, NEXT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT,
   NEXT_DOSAGE_CHANGE, PRESCRIBED_QUANTITY_CHANGE,
   PrescriptionFormActions,
 } from '../../components/PrescriptionForm/actions';
@@ -79,6 +82,10 @@ export interface TaperConfigState {
   messageForPatient: string;
   shareProjectedScheduleWithPatient: boolean;
   showMessageForPatient: boolean;
+
+  fetchingTaperConfig: boolean;
+  fetchedTaperConfig: boolean;
+  fetchingTaperConfigError: any;
 
   addingTaperConfig: boolean;
   addedTaperConfig: boolean;
@@ -110,7 +117,8 @@ export const initialState: TaperConfigState = {
     currentDosages: [],
     nextDosages: [],
     availableDosageOptions: [],
-    allowSplittingUnscoredDosageUnit: false,
+    currentAllowSplittingUnscoredDosageUnit: false,
+    nextAllowSplittingUnscoredDosageUnit: false,
     prescribedDosages: {},
     intervalStartDate: new Date(),
     intervalEndDate: null,
@@ -127,6 +135,10 @@ export const initialState: TaperConfigState = {
   shareProjectedScheduleWithPatient: false,
   showMessageForPatient: false,
 
+  fetchingTaperConfig: false,
+  fetchedTaperConfig: false,
+  fetchingTaperConfigError: null,
+
   addingTaperConfig: false,
   addedTaperConfig: false,
   addingTaperConfigError: null,
@@ -142,6 +154,9 @@ export const initialState: TaperConfigState = {
 
 export type TaperConfigActions =
   | SetClinicianPatientAction
+  | FetchTaperConfigRequestAction
+  | FetchTaperConfigSuccessAction
+  | FetchTaperConfigFailureAction
   | AddOrUpdateTaperConfigRequestAction
   | AddOrUpdateTaperConfigSuccessAction
   | AddOrUpdateTaperConfigFailureAction
@@ -158,13 +173,10 @@ export type TaperConfigActions =
   | ShareWithPatientEmailRequest
   | ShareWithPatientEmailSuccess
   | ShareWithPatientEmailFailure
-  | IntervalStartDateChangeAction
-  | IntervalEndDateChangeAction
-  | IntervalUnitChangeAction
-  | IntervalCountChangeAction
   | PrescriptionFormActions;
 
 const taperConfigReducer = (state: TaperConfigState = initialState, action: TaperConfigActions) => {
+  console.log('taperConfigAction: ', action);
   return produce(state, (draft) => {
     switch (action.type) {
       case SET_CLINICIAN_PATIENT:
@@ -182,9 +194,12 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.addingTaperConfig = false;
         draft.addedTaperConfig = true;
 
-        let existingConfig = draft.taperConfigs.find((config) => config.id === action.data.id);
-        if (existingConfig) {
-          existingConfig = { ...action.data };
+        const existingConfigIdx = draft.taperConfigs.findIndex(
+          (config) => config.id === action.data.id,
+        );
+
+        if (existingConfigIdx) {
+          draft.taperConfigs[existingConfigIdx] = { ...action.data };
         } else {
           draft.taperConfigs.unshift(action.data);
         }
@@ -195,6 +210,25 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.addingTaperConfig = false;
         draft.addedTaperConfig = false;
         draft.addingTaperConfigError = action.error;
+        break;
+
+      case FETCH_TAPER_CONFIG_REQUEST:
+        draft.fetchingTaperConfig = true;
+        draft.fetchedTaperConfig = false;
+        draft.fetchingTaperConfigError = null;
+        break;
+
+      case FETCH_TAPER_CONFIG_SUCCESS:
+        draft.fetchingTaperConfig = false;
+        draft.fetchedTaperConfig = true;
+        draft.clinicianId = action.data.clinicianId;
+        draft.patientId = action.data.patientId;
+        draft.prescribedDrugs = action.data.prescribedDrugs;
+        break;
+
+      case FETCH_TAPER_CONFIG_FAILURE:
+        draft.fetchingTaperConfig = false;
+        draft.fetchingTaperConfigError = action.error;
         break;
 
       case ADD_NEW_DRUG_FORM:
@@ -210,7 +244,8 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           nextDosages: [],
           availableDosageOptions: [],
           prescribedDosages: {},
-          allowSplittingUnscoredDosageUnit: false,
+          currentAllowSplittingUnscoredDosageUnit: false,
+          nextAllowSplittingUnscoredDosageUnit: false,
           intervalStartDate: new Date(),
           intervalEndDate: null,
           intervalCount: 0,
@@ -358,13 +393,13 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
 
       case CURRENT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT: {
         const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
-        drug.allowSplittingUnscoredDosageUnit = action.data.allow;
+        drug.currentAllowSplittingUnscoredDosageUnit = action.data.allow;
         break;
       }
 
       case NEXT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT: {
         const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
-        drug.allowSplittingUnscoredDosageUnit = action.data.allow;
+        drug.nextAllowSplittingUnscoredDosageUnit = action.data.allow;
         break;
       }
 

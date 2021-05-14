@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  FC, useCallback, useMemo,
+  FC, useCallback, useEffect, useMemo,
 } from 'react';
 import { useSelector } from 'react-redux';
 import { RouteChildrenProps } from 'react-router/ts4.0';
@@ -20,6 +20,10 @@ const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) =
     history.push(`/taper-configuration/?clinicianId=${me!.id}&patientId=${patient!.id}`);
   }, []);
 
+  const onClickAdjustSchedule = useCallback(() => {
+    history.push(`/taper-configuration/${patient!.taperingConfiguration!.id}`);
+  }, []);
+
   return (
   <>
     {!patient ? <div>No such patient</div>
@@ -29,7 +33,9 @@ const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) =
         <div>Schedule</div>
         <div>Drug(s): Drugs and dosages will appear hear.</div>
         <div>Taper progress will appear</div>
-        <Button onClick={onClickNewSchedule}>New Schedule</Button>
+        { patient.taperingConfiguration
+          ? <Button onClick={onClickAdjustSchedule}>Adjust Schedule</Button>
+          : <Button onClick={onClickNewSchedule}>New Schedule</Button>}
         <button disabled={true}>Symptom Tracker</button>
       </div>
     }

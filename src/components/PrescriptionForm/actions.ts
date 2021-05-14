@@ -1,4 +1,11 @@
-import { Drug } from '../../types';
+import { Drug, PrescribedDrug } from '../../types';
+
+export const LOAD_PRESCRIPTION_DATA = 'LOAD_PRESCRIPTION_DATA' as const;
+
+export interface LoadPrescriptionDataAction {
+  type: typeof LOAD_PRESCRIPTION_DATA,
+  data: PrescribedDrug;
+}
 
 export const FETCH_DRUGS = 'FETCH_DRUGS' as const;
 
@@ -156,6 +163,7 @@ export const intervalDurationDaysChange = (data: { durationDays: number, id: num
 
 export type PrescriptionFormActions =
   | FetchDrugsAction
+  | LoadPrescriptionDataAction
   // | DrugNameChangeAction
   | ChooseBrandAction
   | ChooseFormAction

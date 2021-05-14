@@ -5,16 +5,23 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Checkbox, Input } from 'antd';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { useLocation } from 'react-router';
+import { useLocation, useRouteMatch } from 'react-router';
 import ProjectedSchedule from '../components/ProjectedSchedule';
 import { RootState } from '../redux/reducers';
 import { TaperConfigState } from '../redux/reducers/taperConfig';
 import PrescriptionForm from '../components/PrescriptionForm/PrescriptionForm';
 import {
-  ADD_NEW_DRUG_FORM, addOrUpdateTaperConfigRequest, changeMessageForPatient,
-  GENERATE_SCHEDULE, SET_CLINICIAN_PATIENT, SetClinicianPatientAction,
+  ADD_NEW_DRUG_FORM,
+  addOrUpdateTaperConfigRequest,
+  changeMessageForPatient,
+  FETCH_TAPER_CONFIG_REQUEST,
+  FetchTaperConfigRequestAction,
+  GENERATE_SCHEDULE,
+  SET_CLINICIAN_PATIENT,
+  SetClinicianPatientAction,
   SHARE_WITH_PATIENT_APP_REQUEST,
-  SHARE_WITH_PATIENT_EMAIL_REQUEST, TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
+  SHARE_WITH_PATIENT_EMAIL_REQUEST,
+  TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
 } from '../redux/actions/taperConfig';
 
 const { TextArea } = Input;
@@ -28,13 +35,22 @@ const TaperConfigurationPage = () => {
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const [canGenerateSchedule, setCanGenerateSchedule] = useState(false);
   const dispatch = useDispatch();
+  const match = useRouteMatch<{ id: string }>();
   const urlSearchParams = useRef<URLSearchParams>(new URLSearchParams(useLocation().search));
 
   useEffect(() => {
-    dispatch<SetClinicianPatientAction>({
-      type: SET_CLINICIAN_PATIENT,
-      data: { clinicianId: parseInt(urlSearchParams.current.get('clinicianId')!, 10), patientId: parseInt(urlSearchParams.current!.get('patientId')!, 10) },
-    });
+    if (match.params) {
+      console.log('FETCH_TAPER_CONFIG_REQUEST');
+      dispatch<FetchTaperConfigRequestAction>({
+        type: FETCH_TAPER_CONFIG_REQUEST,
+        data: parseInt(match.params.id, 10),
+      });
+    } else {
+      dispatch<SetClinicianPatientAction>({
+        type: SET_CLINICIAN_PATIENT,
+        data: { clinicianId: parseInt(urlSearchParams.current.get('clinicianId')!, 10), patientId: parseInt(urlSearchParams.current!.get('patientId')!, 10) },
+      });
+    }
   }, []);
 
   useEffect(() => {
@@ -55,6 +71,7 @@ const TaperConfigurationPage = () => {
     });
   }, []);
 
+  // todo: do I need prescriptionFormIds in addition to ids of prescribedDrugs?
   const addNewPrescriptionForm = useCallback(() => {
     dispatch({
       type: ADD_NEW_DRUG_FORM,
@@ -103,7 +120,8 @@ const TaperConfigurationPage = () => {
 
   return (
     <>
-      {renderPrescriptionForms(prescriptionFormIds)}
+       {/* {renderPrescriptionForms(prescriptionFormIds)} */}
+      {renderPrescriptionForms(prescribedDrugs.map((drug) => drug.id))}
       <hr/>
       <Button onClick={addNewPrescriptionForm}>Add Drug</Button>
       <hr/>

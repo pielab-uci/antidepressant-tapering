@@ -49,7 +49,8 @@ export interface LoadPatientsRequestAction {
 
 export interface LoadPatientsSuccessAction {
   type: typeof LOAD_PATIENTS_SUCCESS,
-  data: Omit<Patient, 'password'|'taperConfigurations'>[];
+  // data: Omit<Patient, 'password'|'taperConfigurations'>[];
+  data: Omit<Patient, 'password'>[]
 }
 
 export interface LoadPatientsFailureAction {

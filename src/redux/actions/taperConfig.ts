@@ -62,21 +62,23 @@ export interface ScheduleRowSelectedAction {
   data: Key[]
 }
 
-export const FETCH_PAST_SCHEDULE_DATA_REQUEST = 'FETCH_PAST_SCHEDULE_DATA_REQUEST' as const;
-export const FETCH_PAST_SCHEDULE_DATA_SUCCESS = 'FETCH_PAST_SCHEDULE_DATA_SUCCESS' as const;
-export const FETCH_PAST_SCHEDULE_DATA_FAILURE = 'FETCH_PAST_CHART_DATA_FAILURE' as const;
+export const FETCH_TAPER_CONFIG_REQUEST = 'FETCH_TAPER_CONFIG_REQUEST' as const;
+export const FETCH_TAPER_CONFIG_SUCCESS = 'FETCH_TAPER_CONFIG_SUCCESS' as const;
+export const FETCH_TAPER_CONFIG_FAILURE = 'FETCH_TAPER_CONFIG_FAILURE' as const;
 
-export interface FetchPastScheduleDataRequest {
-  type: typeof FETCH_PAST_SCHEDULE_DATA_REQUEST,
-  data: Date,
+export interface FetchTaperConfigRequestAction {
+  type: typeof FETCH_TAPER_CONFIG_REQUEST,
+  data: number,
 }
 
-export interface FetchPastScheduleDataSuccess {
-  type: typeof FETCH_PAST_SCHEDULE_DATA_SUCCESS
+export interface FetchTaperConfigSuccessAction {
+  type: typeof FETCH_TAPER_CONFIG_SUCCESS
+  data: TaperingConfiguration;
 }
 
-export interface FetchPastScheduleDataFailure {
-  type: typeof FETCH_PAST_SCHEDULE_DATA_FAILURE
+export interface FetchTaperConfigFailureAction {
+  type: typeof FETCH_TAPER_CONFIG_FAILURE
+  error: any;
 }
 
 export const SHARE_WITH_PATIENT_APP_REQUEST = 'SHARE_WITH_PATIENT_APP_REQUEST' as const;

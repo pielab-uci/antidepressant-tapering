@@ -86,7 +86,7 @@ const calcProjectedDosages = (drug: Converted, prescribedDosage: number, length:
         const ceiling = Math.ceil(nextTemp / minDosage) * minDosage;
         console.log('floor: ', floor, 'ceiling: ', ceiling);
 
-        if (i === length - 2 && drug.form === 'tablet' && drug.allowSplittingUnscoredDosageUnit) {
+        if (i === length - 2 && drug.form === 'tablet' && drug.nextAllowSplittingUnscoredDosageUnit) {
           console.log('push ceiling - minDosage/2', ceiling - minDosage / 2);
           res.push(ceiling - minDosage / 2);
         } else if (ceiling === res[i]) {

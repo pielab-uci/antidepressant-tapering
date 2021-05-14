@@ -8,7 +8,7 @@ import {
   DRUG_NAME_CHANGE,
   FETCH_DRUGS, INTERVAL_COUNT_CHANGE,
   INTERVAL_DURATION_IN_DAYS_CHANGE, INTERVAL_END_DATE_CHANGE,
-  INTERVAL_START_DATE_CHANGE, INTERVAL_UNIT_CHANGE,
+  INTERVAL_START_DATE_CHANGE, INTERVAL_UNIT_CHANGE, LOAD_PRESCRIPTION_DATA,
   NEXT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT,
   NEXT_DOSAGE_CHANGE,
   PRESCRIBED_QUANTITY_CHANGE,
@@ -38,6 +38,7 @@ export const initialState: PrescriptionFormState = {
 };
 
 export const reducer = (state: PrescriptionFormState, action: PrescriptionFormActions): PrescriptionFormState => {
+  console.log('action: ', action);
   return produce(state, (draft) => {
     switch (action.type) {
       case FETCH_DRUGS:
@@ -46,18 +47,45 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         // draft.brandOptions = draft.drugs.map((drug) => ({ drug, options: drug.options});
         break;
 
-        // case DRUG_NAME_CHANGE: {
-        //   const chosenDrugIdx = draft.drugs!.findIndex((drug) => drug.name === action.data.name)!;
-        //   draft.chosenDrug = draft.drugs![chosenDrugIdx];
-        //   draft.drugs!.splice(0, 0, draft.drugs!.splice(chosenDrugIdx, 1)[0]);
-        //
-        //   draft.chosenBrand = null;
-        //   draft.chosenDrugForm = null;
-        //   draft.drugFormOptions = [];
-        //   draft.prescribedDosagesQty = {};
-        //
-        //   break;
-        // }
+      case LOAD_PRESCRIPTION_DATA: {
+        const chosenDrug = draft.drugs!.find((drug) => drug.name === action.data.name);
+        const chosenBrand = draft.brandOptions!.find((brand) => brand.brand === action.data.brand)!;
+        const drugFormOptions = chosenBrand.forms;
+        const chosenDrugForm = drugFormOptions!.find((form) => form.form === action.data.form)!;
+        const dosageOptions = chosenDrugForm.dosages;
+        const currentDosagesQty = action.data.currentDosages.reduce(
+          (prev: { [dosage: string]: number }, currentDosage) => {
+            prev[currentDosage.dosage] = currentDosage.quantity;
+            return prev;
+          }, {},
+        );
+        const nextDosagesQty = action.data.nextDosages.reduce(
+          (prev: { [dosage: string]: number }, nextDosage) => {
+            prev[nextDosage.dosage] = nextDosage.quantity;
+            return prev;
+          }, {},
+        );
+
+        draft = {
+          ...draft,
+          ...action.data,
+          chosenDrug,
+          chosenBrand,
+          drugFormOptions,
+          chosenDrugForm,
+          dosageOptions,
+          currentDosagesQty,
+          nextDosagesQty,
+        };
+
+        action.data.currentDosages.forEach((currentDosage) => {
+          draft.currentDosagesQty[currentDosage.dosage] = currentDosage.quantity;
+        });
+        action.data.nextDosages.forEach((nextDosage) => {
+          draft.nextDosagesQty[nextDosage.dosage] = nextDosage.quantity;
+        });
+        break;
+      }
 
       case CHOOSE_BRAND: {
         const chosenBrandOption = draft.brandOptions!.find(

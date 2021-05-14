@@ -21,7 +21,7 @@ import {
   DrugNameChangeAction,
   FetchDrugsAction,
   currentAllowSplittingUnscoredDosageUnit,
-  nextAllowSplittingUnscoredDosageUnit,
+  nextAllowSplittingUnscoredDosageUnit, LOAD_PRESCRIPTION_DATA,
 } from './actions';
 import { IPrescriptionFormContext, PrescriptionFormState } from './types';
 import {
@@ -73,7 +73,7 @@ const PrescriptionForm: FC<Props> = ({ id }) => {
     nextDosageAllowSplittingUnscoredUnit,
     availableDosageOptions,
   } = state;
-  const { drugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
+  const { drugs, prescribedDrugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const [showTotalQuantities, setShowTotalQuantities] = useState(true, `PrescriptionForm-ShowTotalQuantities_${id}`);
 
   useEffect(() => {
@@ -83,7 +83,14 @@ const PrescriptionForm: FC<Props> = ({ id }) => {
     };
     // taperConfigActionDispatch(action);
     formActionDispatch(action);
-  }, []);
+
+    const prescribedDrugIdx = prescribedDrugs.findIndex((drug) => drug.id === id);
+    console.log('prescribedDrugs: ', prescribedDrugs);
+    console.log('prescribedDrugsIdx: ', prescribedDrugIdx);
+    if (prescribedDrugIdx !== -1) {
+      formActionDispatch({ type: LOAD_PRESCRIPTION_DATA, data: prescribedDrugs[prescribedDrugIdx] });
+    }
+  }, [prescribedDrugs]);
 
   /*
   useEffect(() => {

@@ -14,7 +14,8 @@ export interface Patient {
   name: string;
   image?: string;
   patientSignedUp?: boolean; // considering Clinician's adding patient account in the office
-  taperingConfigurations: TaperingConfiguration[];
+  // taperingConfigurations: TaperingConfiguration[];
+  taperingConfiguration: Pick<TaperingConfiguration, 'id'> | null;
 }
 
 export interface TaperingConfiguration {
@@ -52,7 +53,8 @@ export interface PrescribedDrug {
   currentDosages: { dosage: string; quantity: number }[];
   nextDosages: { dosage: string; quantity: number }[];
   prescribedDosages: { [dosage: string]: number; };
-  allowSplittingUnscoredDosageUnit: boolean;
+  currentAllowSplittingUnscoredDosageUnit: boolean;
+  nextAllowSplittingUnscoredDosageUnit: boolean;
   intervalStartDate: Date;
   intervalEndDate: Date | null;
   intervalCount: number;

@@ -25,7 +25,7 @@ import {
 } from './actions';
 import { IPrescriptionFormContext, PrescriptionFormState } from './types';
 import {
-  DrugForm,
+  DrugForm, PrescribedDrug,
 } from '../../types';
 import {
   CLEAR_SCHEDULE,
@@ -39,6 +39,8 @@ import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
 
 const { OptGroup, Option } = Select;
+
+// TODO: considering removing local reducer for PrescriptionForm..?
 
 export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
   ...initialState,
@@ -59,12 +61,12 @@ export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
 });
 
 interface Props {
-  id: number;
+  prescribedDrug: PrescribedDrug;
 }
 
-const PrescriptionForm: FC<Props> = ({ id }) => {
+const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
   const taperConfigActionDispatch = useDispatch();
-  const [state, formActionDispatch] = useReducer<PrescriptionFormReducer, PrescriptionFormState>(reducer, initialState, (init) => initialState, `PrescriptionFormReducer_${id}`);
+  const [state, formActionDispatch] = useReducer<PrescriptionFormReducer, PrescriptionFormState>(reducer, initialState, (init) => initialState, `PrescriptionFormReducer_${prescribedDrug.id}`);
 
   const {
     drugs: drugsLocal, chosenBrand, chosenDrugForm, drugFormOptions,
@@ -74,23 +76,25 @@ const PrescriptionForm: FC<Props> = ({ id }) => {
     availableDosageOptions,
   } = state;
   const { drugs, prescribedDrugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
-  const [showTotalQuantities, setShowTotalQuantities] = useState(true, `PrescriptionForm-ShowTotalQuantities_${id}`);
+  const [showTotalQuantities, setShowTotalQuantities] = useState(true, `PrescriptionForm-ShowTotalQuantities_${prescribedDrug.id}`);
 
   useEffect(() => {
     const action: FetchDrugsAction = {
       type: FETCH_DRUGS,
-      data: { drugs, id },
+      data: { drugs, id: prescribedDrug.id },
     };
     // taperConfigActionDispatch(action);
     formActionDispatch(action);
 
-    const prescribedDrugIdx = prescribedDrugs.findIndex((drug) => drug.id === id);
-    console.log('prescribedDrugs: ', prescribedDrugs);
-    console.log('prescribedDrugsIdx: ', prescribedDrugIdx);
-    if (prescribedDrugIdx !== -1) {
-      formActionDispatch({ type: LOAD_PRESCRIPTION_DATA, data: prescribedDrugs[prescribedDrugIdx] });
-    }
-  }, [prescribedDrugs]);
+    // const prescribedDrugIdx = prescribedDrugs.findIndex((drug) => drug.id === prescribedDrug.id);
+    // console.log('prescribedDrugs: ', prescribedDrugs);
+    // console.log('prescribedDrugsIdx: ', prescribedDrugIdx);
+    // if (prescribedDrugIdx !== -1) {
+    //   formActionDispatch({ type: LOAD_PRESCRIPTION_DATA, data: prescribedDrugs[prescribedDrugIdx] });
+    // }
+    formActionDispatch({ type: LOAD_PRESCRIPTION_DATA, data: prescribedDrug });
+  }, []);
+  // }, [prescribedDrugs]);
 
   /*
   useEffect(() => {
@@ -103,19 +107,10 @@ const PrescriptionForm: FC<Props> = ({ id }) => {
 
   const onSubmit = () => {};
 
-  // const onDrugNameChange = (value: string) => {
-  //   const action: DrugNameChangeAction = {
-  //     type: DRUG_NAME_CHANGE,
-  //     data: { name: value, id },
-  //   };
-  //   taperConfigActionDispatch(action);
-  //   formActionDispatch(action);
-  // };
-
   const onBrandChange = (value: string) => {
     const action: ChooseBrandAction = {
       type: CHOOSE_BRAND,
-      data: { brand: value, id },
+      data: { brand: value, id: prescribedDrug.id },
     };
 
     formActionDispatch(action);
@@ -126,7 +121,7 @@ const PrescriptionForm: FC<Props> = ({ id }) => {
   const onFormChange = (value: string) => {
     const action: ChooseFormAction = {
       type: CHOOSE_FORM,
-      data: { form: value, id },
+      data: { form: value, id: prescribedDrug.id },
     };
 
     formActionDispatch(action);
@@ -137,7 +132,7 @@ const PrescriptionForm: FC<Props> = ({ id }) => {
       taperConfigActionDispatch<ChooseFormAction>({
         type: CHOOSE_FORM,
         data: {
-          form: chosenDrugForm!.form, minDosageUnit, availableDosageOptions, id,
+          form: chosenDrugForm!.form, minDosageUnit, availableDosageOptions, id: prescribedDrug.id,
         },
       });
     }
@@ -146,7 +141,7 @@ const PrescriptionForm: FC<Props> = ({ id }) => {
   const removeDrugForm = () => {
     taperConfigActionDispatch<RemoveDrugFormAction>({
       type: REMOVE_DRUG_FORM,
-      data: id,
+      data: prescribedDrug.id,
     });
     taperConfigActionDispatch<ClearScheduleAction>({
       type: CLEAR_SCHEDULE,
@@ -164,7 +159,7 @@ const PrescriptionForm: FC<Props> = ({ id }) => {
   return (
     <PrescriptionFormContext.Provider value={{
       ...state,
-      id,
+      id: prescribedDrug.id,
       Current: {
         dosages: currentDosagesQty,
         allowSplittingUnscored: currentDosageAllowSplittingUnscoredUnit,
@@ -184,7 +179,7 @@ const PrescriptionForm: FC<Props> = ({ id }) => {
       <form onSubmit={onSubmit}>
         <h3>Prescription settings</h3>
         <label>Brand</label>
-        <Select showSearch defaultValue="" value={chosenBrand?.brand} onChange={onBrandChange} style={{ width: 200 }}>
+        <Select showSearch value={chosenBrand?.brand} onChange={onBrandChange} style={{ width: 200 }}>
           {drugsLocal?.map(
             (drug) => (<OptGroup key={`${drug.name}_group`} label={drug.name}>
               {drug.options.map(
@@ -194,7 +189,7 @@ const PrescriptionForm: FC<Props> = ({ id }) => {
           )}
         </Select>
         <label>Form</label>
-        <Select defaultValue="" value={chosenDrugForm?.form} onChange={onFormChange} style={{ width: 200 }}>
+        <Select value={chosenDrugForm?.form} onChange={onFormChange} style={{ width: 200 }}>
           {drugFormOptions?.map(
             (form) => <Option key={form.form} value={form.form}>{form.form}</Option>,
           )}

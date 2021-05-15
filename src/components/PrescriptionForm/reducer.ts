@@ -66,24 +66,18 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
           }, {},
         );
 
+        draft.chosenDrug = chosenDrug;
+        draft.chosenBrand = chosenBrand;
+        draft.drugFormOptions = drugFormOptions;
+        draft.chosenDrugForm = chosenDrugForm;
+        draft.dosageOptions = dosageOptions;
+        draft.currentDosagesQty = currentDosagesQty;
+        draft.nextDosagesQty = nextDosagesQty;
+
         draft = {
           ...draft,
           ...action.data,
-          chosenDrug,
-          chosenBrand,
-          drugFormOptions,
-          chosenDrugForm,
-          dosageOptions,
-          currentDosagesQty,
-          nextDosagesQty,
         };
-
-        action.data.currentDosages.forEach((currentDosage) => {
-          draft.currentDosagesQty[currentDosage.dosage] = currentDosage.quantity;
-        });
-        action.data.nextDosages.forEach((nextDosage) => {
-          draft.nextDosagesQty[nextDosage.dosage] = nextDosage.quantity;
-        });
         break;
       }
 

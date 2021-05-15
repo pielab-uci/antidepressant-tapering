@@ -5,7 +5,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Checkbox, Input } from 'antd';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { useLocation, useRouteMatch } from 'react-router';
+import { Prompt, useLocation, useRouteMatch } from 'react-router';
 import ProjectedSchedule from '../components/ProjectedSchedule';
 import { RootState } from '../redux/reducers';
 import { TaperConfigState } from '../redux/reducers/taperConfig';
@@ -17,8 +17,8 @@ import {
   FETCH_TAPER_CONFIG_REQUEST,
   FetchTaperConfigRequestAction,
   GENERATE_SCHEDULE,
-  SET_CLINICIAN_PATIENT,
-  SetClinicianPatientAction,
+  INIT_NEW_TAPER_CONFIG,
+  InitTaperConfig, EMPTY_TAPER_CONFIG_PAGE, EmptyTaperConfigPage,
   SHARE_WITH_PATIENT_APP_REQUEST,
   SHARE_WITH_PATIENT_EMAIL_REQUEST,
   TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
@@ -33,10 +33,10 @@ const TaperConfigurationPage = () => {
     messageForPatient,
     shareProjectedScheduleWithPatient,
     prescribedDrugs,
+    isSaved,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const [canGenerateSchedule, setCanGenerateSchedule] = useState(false);
   const dispatch = useDispatch();
-  // const match = useRouteMatch<{ id: string }>();
   const urlSearchParams = useRef<URLSearchParams>(new URLSearchParams(useLocation().search));
 
   useEffect(() => {
@@ -48,20 +48,11 @@ const TaperConfigurationPage = () => {
         data: parseInt(id, 10),
       });
     } else {
-      dispatch<SetClinicianPatientAction>({
-        type: SET_CLINICIAN_PATIENT,
+      dispatch<InitTaperConfig>({
+        type: INIT_NEW_TAPER_CONFIG,
         data: { clinicianId: parseInt(urlSearchParams.current.get('clinicianId')!, 10), patientId: parseInt(urlSearchParams.current!.get('patientId')!, 10) },
       });
     }
-    // if (match.params) {
-    //   console.group('match.params');
-    //   console.log('FETCH_TAPER_CONFIG_REQUEST');
-    //   console.log('match: ', match);
-    //   console.groupEnd();
-    //   dispatch<FetchTaperConfigRequestAction>({
-    //     type: FETCH_TAPER_CONFIG_REQUEST,
-    //     data: parseInt(match.params.id, 10),
-    //   });
   }, []);
 
   useEffect(() => {
@@ -75,6 +66,14 @@ const TaperConfigurationPage = () => {
     ).some((cond) => !cond);
     setCanGenerateSchedule(condition);
   }, [prescribedDrugs]);
+
+  useEffect(() => {
+    return () => {
+      dispatch<EmptyTaperConfigPage>({
+        type: EMPTY_TAPER_CONFIG_PAGE,
+      });
+    };
+  }, []);
 
   const toggleShareProjectedSchedule = useCallback(() => {
     dispatch({
@@ -126,6 +125,9 @@ const TaperConfigurationPage = () => {
   }, [prescribedDrugs]);
 
   const renderPrescriptionForms = (prescribedDrugs: PrescribedDrug[]) => {
+    console.group('renderPrescriptionForms');
+    console.log(prescribedDrugs);
+    console.groupEnd();
     return prescribedDrugs.map(
       (drug) => <PrescriptionForm key={`PrescriptionForm${drug.id}`} prescribedDrug={drug}/>,
     );
@@ -138,6 +140,14 @@ const TaperConfigurationPage = () => {
 
   return (
     <>
+      <Prompt when={!isSaved}
+              message={(location, action) => {
+                console.log('location: ', location);
+                console.log('action: ', action);
+                return 'Are you sure you want to leave?';
+              }
+              }/>
+
        {/* {renderPrescriptionForms(prescriptionFormIds)} */}
       {/* {renderPrescriptionForms(prescribedDrugs.map((drug) => drug.id))} */}
       {prescribedDrugs && renderPrescriptionForms(prescribedDrugs)}

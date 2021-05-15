@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, Switch } from 'react-router';
-import { BrowserRouter, HashRouter } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 import PatientsList from '../components/PatientsList';
 import { LOAD_PATIENTS_REQUEST, LoadPatientsRequestAction } from '../redux/actions/user';

@@ -12,13 +12,11 @@ import {
 import {
   CHOOSE_BRAND,
   CHOOSE_FORM,
-  DRUG_NAME_CHANGE,
   FETCH_DRUGS,
   currentDosageChange,
   nextDosageChange,
   ChooseFormAction,
   ChooseBrandAction,
-  DrugNameChangeAction,
   FetchDrugsAction,
   currentAllowSplittingUnscoredDosageUnit,
   nextAllowSplittingUnscoredDosageUnit, LOAD_PRESCRIPTION_DATA,
@@ -75,7 +73,7 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
     nextDosageAllowSplittingUnscoredUnit,
     availableDosageOptions,
   } = state;
-  const { drugs, prescribedDrugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
+  const { drugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const [showTotalQuantities, setShowTotalQuantities] = useState(true, `PrescriptionForm-ShowTotalQuantities_${prescribedDrug.id}`);
 
   useEffect(() => {
@@ -83,27 +81,13 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
       type: FETCH_DRUGS,
       data: { drugs, id: prescribedDrug.id },
     };
-    // taperConfigActionDispatch(action);
     formActionDispatch(action);
 
-    // const prescribedDrugIdx = prescribedDrugs.findIndex((drug) => drug.id === prescribedDrug.id);
-    // console.log('prescribedDrugs: ', prescribedDrugs);
-    // console.log('prescribedDrugsIdx: ', prescribedDrugIdx);
-    // if (prescribedDrugIdx !== -1) {
-    //   formActionDispatch({ type: LOAD_PRESCRIPTION_DATA, data: prescribedDrugs[prescribedDrugIdx] });
-    // }
-    formActionDispatch({ type: LOAD_PRESCRIPTION_DATA, data: prescribedDrug });
-  }, []);
-  // }, [prescribedDrugs]);
-
-  /*
-  useEffect(() => {
-    setShowTotalQuantities(
-      ![chosenDrug, chosenBrand, chosenDrugForm,
-        intervalStartDate, intervalEndDate].some((el) => el === null),
-    );
-  }, [chosenDrug, chosenBrand, chosenDrugForm, intervalStartDate, intervalEndDate]);
-   */
+    if (prescribedDrug.name !== '') {
+      formActionDispatch({ type: LOAD_PRESCRIPTION_DATA, data: prescribedDrug });
+    }
+  // }, []);
+  }, [prescribedDrug]);
 
   const onSubmit = () => {};
 

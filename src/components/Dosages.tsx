@@ -21,7 +21,7 @@ const Dosages: FC<Props> = ({ time, dosages }) => {
   } = context;
   const taperConfigActionDispatch = useDispatch();
   const { allowSplittingUnscored, toggleAllowSplittingUnscored } = context[time];
-  const unit = Object.keys(dosages)[0].match(/[a-z]+/); // TODO: need to check
+  const unit = chosenDrugForm!.measureUnit;
   const [dosageDifferencePercent, setDosageDifferencePercent] = useState<string | null>(null);
   const calculateDosageSum = (dosages: { [key: string]: number }): number => Object
     .entries(dosages)

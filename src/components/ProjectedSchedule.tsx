@@ -12,7 +12,7 @@ export interface Schedule {
 }
 
 const ProjectedSchedule = () => {
-  const { projectedSchedule } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
+  const { projectedSchedule, scheduleChartData } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
 
   return (
     <>
@@ -23,7 +23,7 @@ const ProjectedSchedule = () => {
       <div style={{ display: 'flex' }}>
         {projectedSchedule.data.length !== 0 && <div style={{ flex: 3 }}><ProjectedScheduleTable /></div>}
         <div style={{ flex: 2 }}>
-          <ScheduleChart />
+          <ScheduleChart scheduleChartData={scheduleChartData}/>
         </div>
       </div>
         </> : <div>No schedule yet</div>

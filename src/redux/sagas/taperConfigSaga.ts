@@ -9,14 +9,19 @@ import {
   AddOrUpdateTaperConfigFailureAction,
   AddOrUpdateTaperConfigRequestAction,
   AddOrUpdateTaperConfigSuccessAction,
+  FETCH_PRESCRIBED_DRUGS_FAILURE, FETCH_PRESCRIBED_DRUGS_REQUEST,
+  FETCH_PRESCRIBED_DRUGS_SUCCESS,
   FETCH_TAPER_CONFIG_FAILURE,
   FETCH_TAPER_CONFIG_REQUEST,
   FETCH_TAPER_CONFIG_SUCCESS,
+  FetchPrescribedDrugsFailureAction,
+  FetchPrescribedDrugsRequestAction,
+  FetchPrescribedDrugsSuccessAction,
   FetchTaperConfigFailureAction,
   FetchTaperConfigRequestAction,
   FetchTaperConfigSuccessAction,
 } from '../actions/taperConfig';
-import { TaperingConfiguration } from '../../types';
+import { PrescribedDrug, TaperingConfiguration } from '../../types';
 
 let taperConfigId = 100;
 
@@ -42,7 +47,7 @@ function* addOrUpdateTaperConfig(action: AddOrUpdateTaperConfigRequestAction) {
     });
   } catch (err) {
     console.error(err);
-    put<AddOrUpdateTaperConfigFailureAction>({
+    yield put<AddOrUpdateTaperConfigFailureAction>({
       type: ADD_OR_UPDATE_TAPER_CONFIG_FAILURE,
       error: err.response.data,
     });
@@ -69,7 +74,7 @@ function fetchTaperConfigAPI(action: FetchTaperConfigRequestAction): { data: Tap
           nextAllowSplittingUnscoredDosageUnit: false,
           currentDosages: [{ dosage: '10mg', quantity: 1 }, { dosage: '20mg', quantity: 2 }],
           nextDosages: [{ dosage: '20mg', quantity: 2 }],
-          prescribedDosages: { '10mg': 3 },
+          prescribedDosages: { '10mg': 3, '20mg': 0, '40mg': 0 },
           intervalStartDate: new Date('2021-05-14T21:00:06.387Z'),
           intervalEndDate: new Date('2021-05-28T21:00:06.387Z'),
           intervalCount: 2,
@@ -85,7 +90,7 @@ function fetchTaperConfigAPI(action: FetchTaperConfigRequestAction): { data: Tap
           currentDosages: [{ dosage: '25mg', quantity: 0.5 }],
           nextDosages: [{ dosage: '25mg', quantity: 1 }],
           availableDosageOptions: ['12.5mg', '25mg', '50mg', '100mg'],
-          prescribedDosages: { '25mg': 1 },
+          prescribedDosages: { '25mg': 1, '50mg': 0, '100mg': 0 },
           currentAllowSplittingUnscoredDosageUnit: false,
           nextAllowSplittingUnscoredDosageUnit: false,
           intervalStartDate: new Date('2021-05-14T21:13:39.673Z'),
@@ -100,8 +105,8 @@ function fetchTaperConfigAPI(action: FetchTaperConfigRequestAction): { data: Tap
 
 function* fetchTaperConfig(action: FetchTaperConfigRequestAction) {
   try {
-    yield delay(1000);
     const result = fetchTaperConfigAPI(action);
+    yield delay(1000);
 
     yield put<FetchTaperConfigSuccessAction>({
       type: FETCH_TAPER_CONFIG_SUCCESS,
@@ -116,8 +121,74 @@ function* fetchTaperConfig(action: FetchTaperConfigRequestAction) {
   }
 }
 
+function fetchPrescribedDrugsAPI(action: FetchPrescribedDrugsRequestAction): { data: PrescribedDrug[] } {
+  return {
+    data: [
+      {
+        id: 0,
+        name: 'Fluoxetine',
+        brand: 'Prozac',
+        form: 'capsule',
+        measureUnit: '',
+        minDosageUnit: 5,
+        availableDosageOptions: ['10mg', '20mg', '40mg'],
+        currentAllowSplittingUnscoredDosageUnit: false,
+        nextAllowSplittingUnscoredDosageUnit: false,
+        currentDosages: [{ dosage: '10mg', quantity: 1 }, { dosage: '20mg', quantity: 2 }],
+        nextDosages: [{ dosage: '20mg', quantity: 2 }],
+        prescribedDosages: { '10mg': 3, '20mg': 0, '40mg': 0 },
+        intervalStartDate: new Date('2021-05-14T21:00:06.387Z'),
+        intervalEndDate: new Date('2021-05-28T21:00:06.387Z'),
+        intervalCount: 2,
+        intervalUnit: 'Weeks',
+      },
+      {
+        id: 1,
+        name: 'Sertraline',
+        brand: 'Zoloft',
+        form: 'tablet',
+        measureUnit: '',
+        minDosageUnit: 12.5,
+        currentDosages: [{ dosage: '25mg', quantity: 0.5 }],
+        nextDosages: [{ dosage: '25mg', quantity: 1 }],
+        availableDosageOptions: ['12.5mg', '25mg', '50mg', '100mg'],
+        prescribedDosages: { '25mg': 1, '50mg': 0, '100mg': 0 },
+        currentAllowSplittingUnscoredDosageUnit: false,
+        nextAllowSplittingUnscoredDosageUnit: false,
+        intervalStartDate: new Date('2021-05-14T21:13:39.673Z'),
+        intervalEndDate: new Date('2021-05-28T21:13:39.673Z'),
+        intervalCount: 2,
+        intervalUnit: 'Weeks',
+      },
+    ],
+  };
+}
+
+function* fetchPrescribedDrugs(action: FetchPrescribedDrugsRequestAction) {
+  try {
+    yield delay(500);
+    const result = fetchPrescribedDrugsAPI(action);
+    console.log('result: ', result);
+
+    yield put<FetchPrescribedDrugsSuccessAction>({
+      type: FETCH_PRESCRIBED_DRUGS_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put<FetchPrescribedDrugsFailureAction>({
+      type: FETCH_PRESCRIBED_DRUGS_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
 function* watchFetchTaperConfig() {
   yield takeLatest(FETCH_TAPER_CONFIG_REQUEST, fetchTaperConfig);
+}
+
+function* watchFetchPrescribedDrugs() {
+  yield takeLatest(FETCH_PRESCRIBED_DRUGS_REQUEST, fetchPrescribedDrugs);
 }
 
 function* watchAddOrUpdateTaperConfig() {
@@ -125,5 +196,9 @@ function* watchAddOrUpdateTaperConfig() {
 }
 
 export default function* taperConfigSaga() {
-  yield all([fork(watchFetchTaperConfig), fork(watchAddOrUpdateTaperConfig)]);
+  yield all([
+    fork(watchFetchTaperConfig),
+    fork(watchFetchPrescribedDrugs),
+    fork(watchAddOrUpdateTaperConfig),
+  ]);
 }

@@ -14,13 +14,6 @@ export interface FetchDrugsAction {
   data: { drugs: Drug[], id: number }
 }
 
-export const DRUG_NAME_CHANGE = 'DRUG_NAME_CHANGE' as const;
-
-export interface DrugNameChangeAction {
-  type: typeof DRUG_NAME_CHANGE;
-  data: { id: number, name: string };
-}
-
 export const CHOOSE_BRAND = 'CHOOSE_BRAND' as const;
 
 export interface ChooseBrandAction {
@@ -164,7 +157,6 @@ export const intervalDurationDaysChange = (data: { durationDays: number, id: num
 export type PrescriptionFormActions =
   | FetchDrugsAction
   | LoadPrescriptionDataAction
-  // | DrugNameChangeAction
   | ChooseBrandAction
   | ChooseFormAction
   | CurrentDosageChangeAction

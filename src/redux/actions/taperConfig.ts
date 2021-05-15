@@ -1,11 +1,24 @@
 import { Key } from 'react';
 import { PrescribedDrug, TaperingConfiguration } from '../../types';
 
-export const SET_CLINICIAN_PATIENT = 'SET_CLINICIAN_PATIENT' as const;
+export const INIT_NEW_TAPER_CONFIG = 'INIT_NEW_TAPER_CONFIG' as const;
 
-export interface SetClinicianPatientAction {
-  type: typeof SET_CLINICIAN_PATIENT,
+export interface InitTaperConfig {
+  type: typeof INIT_NEW_TAPER_CONFIG,
   data: { clinicianId: number, patientId: number }
+}
+
+export const EMPTY_TAPER_CONFIG_PAGE = 'EMPTY_TAPER_CONFIG_PAGE' as const;
+
+export interface EmptyTaperConfigPage {
+  type: typeof EMPTY_TAPER_CONFIG_PAGE,
+  // data: number;
+}
+
+export const EMPTY_PRESCRIBED_DRUGS = 'EMPTY_PRESCRIBED_DRUGS' as const;
+
+export interface EmptyPrescribedDrugs {
+  type: typeof EMPTY_PRESCRIBED_DRUGS
 }
 
 export const ADD_OR_UPDATE_TAPER_CONFIG_REQUEST = 'ADD_TAPER_CONFIG_REQUEST' as const;
@@ -78,6 +91,25 @@ export interface FetchTaperConfigSuccessAction {
 
 export interface FetchTaperConfigFailureAction {
   type: typeof FETCH_TAPER_CONFIG_FAILURE
+  error: any;
+}
+
+export const FETCH_PRESCRIBED_DRUGS_REQUEST = 'FETCH_PRESCRIBED_DRUGS_REQUEST' as const;
+export const FETCH_PRESCRIBED_DRUGS_SUCCESS = 'FETCH_PRESCRIBED_DRUGS_SUCCESS' as const;
+export const FETCH_PRESCRIBED_DRUGS_FAILURE = 'FETCH_PRESCRIBED_DRUGS_FAILURE' as const;
+
+export interface FetchPrescribedDrugsRequestAction {
+  type: typeof FETCH_PRESCRIBED_DRUGS_REQUEST,
+  data: number; // tapering configuration id
+}
+
+export interface FetchPrescribedDrugsSuccessAction {
+  type: typeof FETCH_PRESCRIBED_DRUGS_SUCCESS,
+  data: PrescribedDrug[];
+}
+
+export interface FetchPrescribedDrugsFailureAction {
+  type: typeof FETCH_PRESCRIBED_DRUGS_FAILURE,
   error: any;
 }
 

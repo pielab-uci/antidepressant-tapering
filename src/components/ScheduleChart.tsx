@@ -2,17 +2,20 @@ import * as React from 'react';
 import {
   CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from 'recharts';
-import { useSelector } from 'react-redux';
 import { format } from 'date-fns';
-import { TaperConfigState } from '../redux/reducers/taperConfig';
-import { RootState } from '../redux/reducers';
+import { FC } from 'react';
+import { ScheduleChartData } from '../redux/reducers/utils';
 
-const ScheduleChart = () => {
-  const { scheduleChartData } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
+interface Props {
+  scheduleChartData: ScheduleChartData
+}
+const ScheduleChart: FC<Props> = ({ scheduleChartData }) => {
+  // const { scheduleChartData } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   console.log('scheduleChartData');
   console.log(scheduleChartData);
   return (
-    <ResponsiveContainer width="100%" height="100%">
+    // <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer width={300} height={300}>
       <LineChart data={scheduleChartData} width={300} height={300}>
         <CartesianGrid strokeDasharray="3 3" />
         {/* <XAxis dataKey="time" type="category" allowDuplicatedCategory={false} /> */}

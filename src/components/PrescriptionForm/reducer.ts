@@ -5,7 +5,6 @@ import {
   CHOOSE_BRAND,
   CHOOSE_FORM, CURRENT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT,
   CURRENT_DOSAGE_CHANGE,
-  DRUG_NAME_CHANGE,
   FETCH_DRUGS, INTERVAL_COUNT_CHANGE,
   INTERVAL_DURATION_IN_DAYS_CHANGE, INTERVAL_END_DATE_CHANGE,
   INTERVAL_START_DATE_CHANGE, INTERVAL_UNIT_CHANGE, LOAD_PRESCRIPTION_DATA,
@@ -44,40 +43,33 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
       case FETCH_DRUGS:
         draft.drugs = action.data.drugs;
         draft.brandOptions = draft.drugs.flatMap((drug) => drug.options);
-        // draft.brandOptions = draft.drugs.map((drug) => ({ drug, options: drug.options});
         break;
 
       case LOAD_PRESCRIPTION_DATA: {
-        const chosenDrug = draft.drugs!.find((drug) => drug.name === action.data.name);
-        const chosenBrand = draft.brandOptions!.find((brand) => brand.brand === action.data.brand)!;
-        const drugFormOptions = chosenBrand.forms;
-        const chosenDrugForm = drugFormOptions!.find((form) => form.form === action.data.form)!;
-        const dosageOptions = chosenDrugForm.dosages;
-        const currentDosagesQty = action.data.currentDosages.reduce(
+        draft.chosenDrug = draft.drugs!.find((drug) => drug.name === action.data.name);
+        draft.chosenBrand = draft.brandOptions!.find((brand) => brand.brand === action.data.brand)!;
+        draft.drugFormOptions = draft.chosenBrand.forms;
+        draft.chosenDrugForm = draft.drugFormOptions!.find((form) => form.form === action.data.form)!;
+        draft.dosageOptions = draft.chosenDrugForm.dosages;
+        draft.currentDosagesQty = action.data.currentDosages.reduce(
           (prev: { [dosage: string]: number }, currentDosage) => {
             prev[currentDosage.dosage] = currentDosage.quantity;
             return prev;
           }, {},
         );
-        const nextDosagesQty = action.data.nextDosages.reduce(
+        draft.nextDosagesQty = action.data.nextDosages.reduce(
           (prev: { [dosage: string]: number }, nextDosage) => {
             prev[nextDosage.dosage] = nextDosage.quantity;
             return prev;
           }, {},
         );
-
-        draft.chosenDrug = chosenDrug;
-        draft.chosenBrand = chosenBrand;
-        draft.drugFormOptions = drugFormOptions;
-        draft.chosenDrugForm = chosenDrugForm;
-        draft.dosageOptions = dosageOptions;
-        draft.currentDosagesQty = currentDosagesQty;
-        draft.nextDosagesQty = nextDosagesQty;
-
-        draft = {
-          ...draft,
-          ...action.data,
-        };
+        draft.intervalStartDate = action.data.intervalStartDate;
+        draft.intervalEndDate = action.data.intervalEndDate;
+        draft.intervalCount = action.data.intervalCount;
+        draft.intervalUnit = action.data.intervalUnit;
+        draft.currentDosageAllowSplittingUnscoredUnit = action.data.currentAllowSplittingUnscoredDosageUnit;
+        draft.nextDosageAllowSplittingUnscoredUnit = action.data.nextAllowSplittingUnscoredDosageUnit;
+        draft.prescribedDosagesQty = action.data.prescribedDosages;
         break;
       }
 

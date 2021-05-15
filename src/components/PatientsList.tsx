@@ -4,7 +4,6 @@ import { Patient } from '../types';
 import PatientNameCard from './PatientNameCard';
 
 interface Props {
-  // patients: Omit<Patient, 'password'|'taperingConfigurations'>[]
   patients: Omit<Patient, 'password'>[]
 }
 const PatientsList: FC<Props> = ({ patients }) => (

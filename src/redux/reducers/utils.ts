@@ -55,8 +55,6 @@ const convert = (drugs: PrescribedDrug[]): Converted[] => {
 };
 
 const calcProjectedDosages = (drug: Converted, prescribedDosage: number, length: number): number[] => {
-  console.group('calcProjectedDosages');
-  console.log('length: ', length);
   const res: number[] = [];
   res.push(prescribedDosage);
 
@@ -68,60 +66,41 @@ const calcProjectedDosages = (drug: Converted, prescribedDosage: number, length:
   } else {
     // decreasing
     const minDosage = parseFloat(drug.availableDosageOptions[0]);
-    console.log('minDosage: ', minDosage);
     Array(length - 1).fill(null).forEach((_, i) => {
     // Array(length).fill(null).forEach((_, i) => {
-      console.group('idx: ', i);
-      console.log('res: ', res);
       const nextTemp = drug.changeRate * res[i];
       const remainder = nextTemp % minDosage;
-      console.log('nextTemp: ', nextTemp);
 
       if (remainder === 0) {
-        console.log('remainder === 0');
         res.push(nextTemp);
       } else {
-        console.log('remainder: ', remainder);
         const floor = Math.floor(nextTemp / minDosage) * minDosage;
         const ceiling = Math.ceil(nextTemp / minDosage) * minDosage;
-        console.log('floor: ', floor, 'ceiling: ', ceiling);
 
         if (i === length - 2 && drug.form === 'tablet' && drug.nextAllowSplittingUnscoredDosageUnit) {
-          console.log('push ceiling - minDosage/2', ceiling - minDosage / 2);
           res.push(ceiling - minDosage / 2);
         } else if (ceiling === res[i]) {
-          console.log('push floor', floor);
           res.push(floor);
         } else if (ceiling > nextTemp) {
-          console.log('ceiling > nextTemp, push floor: ', floor);
           res.push(floor);
         } else {
-          console.log('push ceiling: ', ceiling);
           res.push(ceiling);
         }
       }
-      console.groupEnd();
     });
-    console.log('res: ', res);
   }
-  console.groupEnd();
   return res;
 };
 
 const calcNextDosageQty = (drug: Converted, dosage: number): { [dosageQty: string]: number } => {
   const nextDosageQty: { [dosage: string]: number } = {};
-  console.group('calcNextDosageQty');
-  console.log('availableDosageOptions: ', drug.availableDosageOptions);
 
   let d = dosage;
   drug.availableDosageOptions
     .concat()
     .sort((a, b) => parseFloat(b) - parseFloat(a))
     .forEach((dos) => {
-      console.log('d: ', d);
-      console.log('dos: ', dos);
       const quot = Math.floor(d / parseFloat(dos));
-      console.log('quot: ', quot);
       if (quot >= 1) {
         nextDosageQty[dos] = quot;
         d -= quot * parseFloat(dos);
@@ -132,8 +111,6 @@ const calcNextDosageQty = (drug: Converted, dosage: number): { [dosageQty: strin
   if (d > 0) {
     console.error('error in calcNextDosageQty');
   }
-  console.log('nextDosageQty: ', nextDosageQty);
-  console.groupEnd();
   return nextDosageQty;
 };
 

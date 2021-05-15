@@ -21,7 +21,7 @@ const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) =
   }, []);
 
   const onClickAdjustSchedule = useCallback(() => {
-    history.push(`/taper-configuration/${patient!.taperingConfiguration!.id}`);
+    history.push(`/taper-configuration/?id=${patient!.taperingConfiguration!.id}`);
   }, []);
 
   return (

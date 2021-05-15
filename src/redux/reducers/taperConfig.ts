@@ -71,7 +71,7 @@ export interface TaperConfigState {
   taperConfigs: TaperingConfiguration[];
   lastPrescriptionFormId: number;
   prescriptionFormIds: number[];
-  prescribedDrugs: PrescribedDrug[];
+  prescribedDrugs: PrescribedDrug[] | null;
 
   projectedSchedule: Schedule;
   scheduleChartData: ScheduleChartData;
@@ -107,24 +107,25 @@ export const initialState: TaperConfigState = {
   taperConfigs: [],
   lastPrescriptionFormId: 0,
   prescriptionFormIds: [0],
-  prescribedDrugs: [{
-    id: 0,
-    name: '',
-    brand: '',
-    form: '',
-    measureUnit: '',
-    minDosageUnit: 0,
-    currentDosages: [],
-    nextDosages: [],
-    availableDosageOptions: [],
-    currentAllowSplittingUnscoredDosageUnit: false,
-    nextAllowSplittingUnscoredDosageUnit: false,
-    prescribedDosages: {},
-    intervalStartDate: new Date(),
-    intervalEndDate: null,
-    intervalCount: 0,
-    intervalUnit: 'Days',
-  }],
+  // prescribedDrugs: [{
+  //   id: 0,
+  //   name: '',
+  //   brand: '',
+  //   form: '',
+  //   measureUnit: '',
+  //   minDosageUnit: 0,
+  //   currentDosages: [],
+  //   nextDosages: [],
+  //   availableDosageOptions: [],
+  //   currentAllowSplittingUnscoredDosageUnit: false,
+  //   nextAllowSplittingUnscoredDosageUnit: false,
+  //   prescribedDosages: {},
+  //   intervalStartDate: new Date(),
+  //   intervalEndDate: null,
+  //   intervalCount: 0,
+  //   intervalUnit: 'Days',
+  // }],
+  prescribedDrugs: null,
   projectedSchedule: { data: [], drugs: [] },
   scheduleChartData: [],
   scheduleSelectedRowKeys: [],
@@ -233,7 +234,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
 
       case ADD_NEW_DRUG_FORM:
         draft.prescriptionFormIds.push(draft.lastPrescriptionFormId + 1);
-        draft.prescribedDrugs.push({
+        draft.prescribedDrugs!.push({
           id: draft.lastPrescriptionFormId + 1,
           name: '',
           brand: '',
@@ -257,11 +258,11 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
 
       case REMOVE_DRUG_FORM:
         draft.prescriptionFormIds = draft.prescriptionFormIds.filter((id) => id !== action.data);
-        draft.prescribedDrugs = draft.prescribedDrugs.filter((drug) => drug.id !== action.data);
+        draft.prescribedDrugs = draft.prescribedDrugs!.filter((drug) => drug.id !== action.data);
         break;
 
       case GENERATE_SCHEDULE:
-        draft.projectedSchedule = scheduleGenerator(draft.prescribedDrugs);
+        draft.projectedSchedule = scheduleGenerator(draft.prescribedDrugs!);
         draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
         draft.projectedSchedule.data.forEach((row, i) => {
           if (row.selected) {
@@ -331,7 +332,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         break;
 
       case CHOOSE_BRAND: {
-        const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
+        const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         drug.name = draft.drugs.find(
           (d) => d.options.find(
             (option) => option.brand === action.data.brand,
@@ -346,7 +347,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       }
 
       case CHOOSE_FORM: {
-        const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
+        const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         drug.form = action.data.form;
         drug.minDosageUnit = action.data.minDosageUnit!;
         drug.currentDosages = [];
@@ -356,7 +357,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       }
 
       case CURRENT_DOSAGE_CHANGE: {
-        const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
+        const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         const idx = drug.currentDosages.findIndex(
           (curDosage) => curDosage.dosage === action.data.dosage.dosage,
         );
@@ -370,7 +371,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       }
 
       case NEXT_DOSAGE_CHANGE: {
-        const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
+        const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         const idx = drug.nextDosages.findIndex(
           (nextDosage) => nextDosage.dosage === action.data.dosage.dosage,
         );
@@ -386,25 +387,25 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       }
 
       case PRESCRIBED_QUANTITY_CHANGE: {
-        const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
+        const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         drug.prescribedDosages[action.data.dosage.dosage] = action.data.dosage.quantity;
         break;
       }
 
       case CURRENT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT: {
-        const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
+        const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         drug.currentAllowSplittingUnscoredDosageUnit = action.data.allow;
         break;
       }
 
       case NEXT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT: {
-        const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
+        const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         drug.nextAllowSplittingUnscoredDosageUnit = action.data.allow;
         break;
       }
 
       case INTERVAL_START_DATE_CHANGE: {
-        const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
+        const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         drug.intervalStartDate = action.data.date;
 
         if (drug.intervalEndDate) {
@@ -415,7 +416,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       }
 
       case INTERVAL_END_DATE_CHANGE: {
-        const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
+        const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         drug.intervalEndDate = action.data.date;
         drug.intervalUnit = 'Days';
         drug.intervalCount = differenceInCalendarDays(drug.intervalEndDate!, drug.intervalStartDate);
@@ -423,14 +424,14 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       }
 
       case INTERVAL_UNIT_CHANGE: {
-        const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
+        const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         drug.intervalUnit = action.data.unit;
         drug.intervalEndDate = add(drug.intervalStartDate, { [drug.intervalUnit.toLowerCase()]: drug.intervalCount });
         break;
       }
 
       case INTERVAL_COUNT_CHANGE: {
-        const drug = draft.prescribedDrugs.find((d) => d.id === action.data.id)!;
+        const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         drug.intervalCount = action.data.count;
         drug.intervalEndDate = add(drug.intervalStartDate, { [drug.intervalUnit.toLowerCase()]: drug.intervalCount });
         break;

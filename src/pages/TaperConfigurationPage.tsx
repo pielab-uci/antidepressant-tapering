@@ -23,6 +23,7 @@ import {
   SHARE_WITH_PATIENT_EMAIL_REQUEST,
   TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
 } from '../redux/actions/taperConfig';
+import { PrescribedDrug } from '../types';
 
 const { TextArea } = Input;
 
@@ -35,15 +36,16 @@ const TaperConfigurationPage = () => {
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const [canGenerateSchedule, setCanGenerateSchedule] = useState(false);
   const dispatch = useDispatch();
-  const match = useRouteMatch<{ id: string }>();
+  // const match = useRouteMatch<{ id: string }>();
   const urlSearchParams = useRef<URLSearchParams>(new URLSearchParams(useLocation().search));
 
   useEffect(() => {
-    if (match.params) {
-      console.log('FETCH_TAPER_CONFIG_REQUEST');
+    const id = urlSearchParams.current.get('id');
+    console.log('id: ', id);
+    if (id) {
       dispatch<FetchTaperConfigRequestAction>({
         type: FETCH_TAPER_CONFIG_REQUEST,
-        data: parseInt(match.params.id, 10),
+        data: parseInt(id, 10),
       });
     } else {
       dispatch<SetClinicianPatientAction>({
@@ -51,10 +53,19 @@ const TaperConfigurationPage = () => {
         data: { clinicianId: parseInt(urlSearchParams.current.get('clinicianId')!, 10), patientId: parseInt(urlSearchParams.current!.get('patientId')!, 10) },
       });
     }
+    // if (match.params) {
+    //   console.group('match.params');
+    //   console.log('FETCH_TAPER_CONFIG_REQUEST');
+    //   console.log('match: ', match);
+    //   console.groupEnd();
+    //   dispatch<FetchTaperConfigRequestAction>({
+    //     type: FETCH_TAPER_CONFIG_REQUEST,
+    //     data: parseInt(match.params.id, 10),
+    //   });
   }, []);
 
   useEffect(() => {
-    const condition = !prescribedDrugs.map(
+    const condition = !prescribedDrugs?.map(
       (drug) => drug.name
         && drug.brand
         && drug.form
@@ -105,23 +116,31 @@ const TaperConfigurationPage = () => {
   }, []);
 
   const saveTaperConfiguration = useCallback(() => {
-    dispatch(addOrUpdateTaperConfigRequest({
-      clinicianId: parseInt(urlSearchParams.current.get('clinicianId')!, 10),
-      patientId: parseInt(urlSearchParams.current.get('patientId')!, 10),
-      prescribedDrugs,
-    }));
+    if (prescribedDrugs) {
+      dispatch(addOrUpdateTaperConfigRequest({
+        clinicianId: parseInt(urlSearchParams.current.get('clinicianId')!, 10),
+        patientId: parseInt(urlSearchParams.current.get('patientId')!, 10),
+        prescribedDrugs,
+      }));
+    }
   }, [prescribedDrugs]);
 
-  const renderPrescriptionForms = (ids: number[]) => {
-    return ids.map(
-      (id) => <PrescriptionForm key={`PrescriptionForm${id}`} id={id}/>,
+  const renderPrescriptionForms = (prescribedDrugs: PrescribedDrug[]) => {
+    return prescribedDrugs.map(
+      (drug) => <PrescriptionForm key={`PrescriptionForm${drug.id}`} prescribedDrug={drug}/>,
     );
   };
+  // const renderPrescriptionForms = (ids: number[]) => {
+  //   return ids.map(
+  //     (id) => <PrescriptionForm key={`PrescriptionForm${id}`} id={id}/>,
+  //   );
+  // };
 
   return (
     <>
        {/* {renderPrescriptionForms(prescriptionFormIds)} */}
-      {renderPrescriptionForms(prescribedDrugs.map((drug) => drug.id))}
+      {/* {renderPrescriptionForms(prescribedDrugs.map((drug) => drug.id))} */}
+      {prescribedDrugs && renderPrescriptionForms(prescribedDrugs)}
       <hr/>
       <Button onClick={addNewPrescriptionForm}>Add Drug</Button>
       <hr/>

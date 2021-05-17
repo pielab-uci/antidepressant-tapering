@@ -31,13 +31,6 @@ const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) =
       data: parseInt(match!.params.patientId, 10),
     });
 
-    console.log('patient ', currentPatient);
-    if (currentPatient && currentPatient.taperingConfiguration) {
-      dispatch<FetchPrescribedDrugsRequestAction>({
-        type: FETCH_PRESCRIBED_DRUGS_REQUEST,
-        data: currentPatient.taperingConfiguration.id,
-      });
-    }
     return () => {
       dispatch<EmptyPrescribedDrugs>({
         type: EMPTY_PRESCRIBED_DRUGS,
@@ -45,6 +38,15 @@ const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) =
     };
   }, []);
 
+  useEffect(() => {
+    if (currentPatient && currentPatient.taperingConfiguration) {
+      console.log('patient ', currentPatient);
+      dispatch<FetchPrescribedDrugsRequestAction>({
+        type: FETCH_PRESCRIBED_DRUGS_REQUEST,
+        data: currentPatient.taperingConfiguration.id,
+      });
+    }
+  }, [currentPatient]);
   const onClickNewSchedule = useCallback(() => {
     history.push(`/taper-configuration/?clinicianId=${me!.id}&patientId=${currentPatient!.id}`);
   }, [me, currentPatient]);

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  FC, useCallback, useEffect, useMemo, useRef,
+  FC, useCallback, useEffect,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RouteChildrenProps } from 'react-router/ts4.0';
@@ -16,25 +16,26 @@ import {
 import { TaperConfigState } from '../redux/reducers/taperConfig';
 import ScheduleChart from '../components/ScheduleChart';
 import { chartDataConverter, scheduleGenerator } from '../redux/reducers/utils';
-import { Patient } from '../types';
+import { SET_CURRENT_PATIENT, SetCurrentPatientAction } from '../redux/actions/user';
 
 const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) => {
-  const { me, patients } = useSelector<RootState, UserState>((state) => state.user);
+  const { me, currentPatient } = useSelector<RootState, UserState>((state) => state.user);
   const { prescribedDrugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
 
   const dispatch = useDispatch();
   const history = useHistory();
-  // const patient = useRef(patients.find((p) => p.id === parseInt(match!.params.patientId, 10))!);
-  // const patient: <Omit<Patient, 'password'>|null>(null);
-  const patient = patients.find((p) => p.id === parseInt(match!.params.patientId, 10))!;
 
   useEffect(() => {
-    // patient.current = patients.find((p) => p.id === parseInt(match!.params.patientId, 10))!;
-    console.log('patient ', patient);
-    if (patient && patient.taperingConfiguration) {
+    dispatch<SetCurrentPatientAction>({
+      type: SET_CURRENT_PATIENT,
+      data: parseInt(match!.params.patientId, 10),
+    });
+
+    console.log('patient ', currentPatient);
+    if (currentPatient && currentPatient.taperingConfiguration) {
       dispatch<FetchPrescribedDrugsRequestAction>({
         type: FETCH_PRESCRIBED_DRUGS_REQUEST,
-        data: patient.taperingConfiguration.id,
+        data: currentPatient.taperingConfiguration.id,
       });
     }
     return () => {
@@ -45,15 +46,15 @@ const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) =
   }, []);
 
   const onClickNewSchedule = useCallback(() => {
-    history.push(`/taper-configuration/?clinicianId=${me!.id}&patientId=${patient.id}`);
-  }, []);
+    history.push(`/taper-configuration/?clinicianId=${me!.id}&patientId=${currentPatient!.id}`);
+  }, [me, currentPatient]);
 
   const onClickAdjustSchedule = useCallback(() => {
-    history.push(`/taper-configuration/?id=${patient.taperingConfiguration!.id}`);
-  }, []);
+    history.push(`/taper-configuration/?id=${currentPatient!.taperingConfiguration!.id}`);
+  }, [currentPatient]);
 
-  const renderDrugsAndDosages = () => {
-    return !patient.taperingConfiguration
+  const renderDrugsAndDosages = useCallback(() => {
+    return !currentPatient!.taperingConfiguration
       ? <div>Drug(s): Drugs and dosages will appear hear.</div>
       : prescribedDrugs && prescribedDrugs.reduce((prev, prescribedDrug, i, arr) => {
         const dosages = prescribedDrug.nextDosages.reduce(
@@ -61,10 +62,10 @@ const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) =
         );
         return `${prev} ${prescribedDrug.brand} (${dosages})`;
       }, 'Drug(s):');
-  };
+  }, [currentPatient, prescribedDrugs]);
 
-  const renderTaperProgressGraph = () => {
-    if (!patient.taperingConfiguration) {
+  const renderTaperProgressGraph = useCallback(() => {
+    if (!currentPatient!.taperingConfiguration) {
       return <div>Taper progress will appear</div>;
     }
     if (prescribedDrugs) {
@@ -73,19 +74,19 @@ const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) =
         />;
     }
     return <div>Generating a chart..</div>;
-  };
+  }, [currentPatient, prescribedDrugs]);
 
-  const renderButtons = () => {
-    return patient.taperingConfiguration
+  const renderButtons = useCallback(() => {
+    return currentPatient!.taperingConfiguration
       ? <Button onClick={onClickAdjustSchedule}>Adjust Schedule</Button>
       : <Button onClick={onClickNewSchedule}>New Schedule</Button>;
-  };
+  }, [currentPatient]);
 
   return (
   <>
-    {!patient ? <div>No such patient</div>
+    {!currentPatient ? <div>No such patient</div>
       : <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <h4>{patient.name}</h4>
+        <h4>{currentPatient.name}</h4>
         <hr/>
         <h5>Schedule</h5>
         {renderDrugsAndDosages()}

@@ -1,7 +1,6 @@
 import produce from 'immer';
 import { add, differenceInCalendarDays } from 'date-fns';
 import { Key } from 'react';
-import { Empty } from 'antd';
 import {
   Drug,
   PrescribedDrug, TaperingConfiguration,
@@ -216,7 +215,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         break;
 
       case EMPTY_TAPER_CONFIG_PAGE:
-        draft.clinicianId = -1;
         draft.patientId = -1;
         // draft.prescribedDrugs = [];
         draft.prescribedDrugs = null;

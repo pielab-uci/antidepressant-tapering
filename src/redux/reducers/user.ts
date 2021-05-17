@@ -14,7 +14,7 @@ import {
   LOGIN_SUCCESS,
   LoginFailureAction,
   LoginRequestAction,
-  LoginSuccessAction,
+  LoginSuccessAction, SET_CURRENT_PATIENT, SetCurrentPatientAction,
 } from '../actions/user';
 import { Clinician, Patient } from '../../types';
 
@@ -32,6 +32,7 @@ export interface UserState {
 
   // patients: Omit<Patient, 'password'|'taperingConfigurations'>[];
   patients: Omit<Patient, 'password'>[];
+  currentPatient: Omit<Patient, 'password'>|null;
   me: Omit<Clinician, 'password'>|null;
 }
 
@@ -49,6 +50,7 @@ export const initialState: UserState = {
   loadPatientsError: null,
 
   patients: [],
+  currentPatient: null,
   me: null,
 };
 
@@ -61,7 +63,8 @@ type UserReducerAction =
   | AddNewPatientFailure
   | LoadPatientsRequestAction
   | LoadPatientsSuccessAction
-  | LoadPatientsFailureAction;
+  | LoadPatientsFailureAction
+  | SetCurrentPatientAction;
 
 const userReducer = (state: UserState = initialState, action: UserReducerAction): UserState => produce(state, (draft) => {
   switch (action.type) {
@@ -114,6 +117,13 @@ const userReducer = (state: UserState = initialState, action: UserReducerAction)
     case LOAD_PATIENTS_FAILURE:
       draft.loadingPatients = false;
       draft.loadPatientsError = action.error;
+      break;
+
+    case SET_CURRENT_PATIENT:
+      if (action.data === -1) {
+        draft.currentPatient = null;
+      }
+      draft.currentPatient = draft.patients.find((patient) => patient.id === action.data)!;
       break;
 
     default:

@@ -1,6 +1,8 @@
 import * as React from 'react';
-import { Switch, Route } from 'react-router';
-import { Link, HashRouter as Router } from 'react-router-dom';
+// import { Switch, Route } from 'react-router-dom';
+import {
+  Link, HashRouter as Router, Switch, Route,
+} from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import HomePage from './pages/HomePage';
@@ -12,6 +14,8 @@ import { UserState } from './redux/reducers/user';
 import LoginPage from './pages/LoginPage';
 import { LOGIN_REQUEST, LoginRequestAction } from './redux/actions/user';
 import 'antd/dist/antd.css';
+import CheckPatientRoute from './components/CheckPatientRoute';
+import CheckPatientLink from './components/CheckPatientLink';
 
 const App = () => {
   const { me } = useSelector<RootState, UserState>((state) => state.user);
@@ -30,17 +34,17 @@ const App = () => {
              <div>
               <Link to="/">Home</Link>
              &nbsp;
-              <Link to="/taper-configuration">Taper Configuration</Link>
+               <CheckPatientLink to={'/taper-configuration'} title={'Taper Configuration'}/>
              &nbsp;
-              <Link to="/logging-configuration">Logging Configuration</Link>
+               <CheckPatientLink to={'/logging-configuration'} title={'Logging Configuration'}/>
              &nbsp;
-              <Link to="/symptom-report">Symptom Report</Link>
+               <CheckPatientLink to={'/symptom-report'} title={'Symptom Report'}/>
              </div>
             <div>
               <Switch>
-                <Route path="/taper-configuration" component={TaperConfigurationPage} />
-                <Route path="/logging-configuration" component={LoggingConfigurationPage} />
-                <Route path="/symptom-report" component={SymptomReportPage} />
+                <CheckPatientRoute path='/taper-configuration' component={TaperConfigurationPage}/>
+                <CheckPatientRoute path='/logging-configuration' component={LoggingConfigurationPage}/>
+                <CheckPatientRoute path='/symptom-report' component={SymptomReportPage}/>
                 <Route path="/" component={HomePage} />
               </Switch>
             </div>

@@ -4,7 +4,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Route, Switch } from 'react-router';
 import NavBar from '../components/NavBar';
 import PatientsList from '../components/PatientsList';
-import { LOAD_PATIENTS_REQUEST, LoadPatientsRequestAction } from '../redux/actions/user';
+import {
+  LOAD_PATIENTS_REQUEST,
+  LoadPatientsRequestAction,
+  SET_CURRENT_PATIENT,
+  SetCurrentPatientAction,
+} from '../redux/actions/user';
 import { UserState } from '../redux/reducers/user';
 import { RootState } from '../redux/reducers';
 import PatientPage from './PatientPage';
@@ -18,6 +23,7 @@ const HomePage = () => {
       data: me!.id,
     });
   }, [me]);
+
   return (
     <div style={{ width: '800px', height: '600px', border: '1px solid black' }}>
       <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>

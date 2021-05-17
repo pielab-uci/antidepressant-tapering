@@ -57,3 +57,10 @@ export interface LoadPatientsFailureAction {
   type: typeof LOAD_PATIENTS_FAILURE,
   error: any;
 }
+
+export const SET_CURRENT_PATIENT = 'SET_CURRENT_PATIENT' as const;
+
+export interface SetCurrentPatientAction {
+  type: typeof SET_CURRENT_PATIENT,
+  data: number;
+}

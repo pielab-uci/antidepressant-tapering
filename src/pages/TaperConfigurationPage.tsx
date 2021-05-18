@@ -37,6 +37,7 @@ const TaperConfigurationPage = () => {
     isSaved,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const [canGenerateSchedule, setCanGenerateSchedule] = useState(false);
+  const [canSaveConfig, setCanSaveConfig] = useState(false);
   const dispatch = useDispatch();
   const urlSearchParams = useRef<URLSearchParams>(new URLSearchParams(useLocation().search));
 
@@ -71,7 +72,7 @@ const TaperConfigurationPage = () => {
         && drug.nextDosages.length !== 0,
     ).some((cond) => !cond);
     setCanGenerateSchedule(condition);
-
+    setCanSaveConfig(condition);
     if (prescribedDrugs && prescribedDrugs.filter((d) => !d.prevVisit).length === 0) {
       dispatch<AddNewDrugFormAction>({
         type: ADD_NEW_DRUG_FORM,
@@ -186,7 +187,7 @@ const TaperConfigurationPage = () => {
       </Checkbox>
       <Button onClick={shareWithApp}>App</Button>
       <Button onClick={shareWithEmail}>Email</Button>
-      <Button onClick={saveTaperConfiguration}>Save configuration</Button>
+      <Button onClick={saveTaperConfiguration} disabled={!canSaveConfig}>Save configuration</Button>
     </>
   );
 };

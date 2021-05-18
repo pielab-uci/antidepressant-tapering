@@ -17,6 +17,7 @@ import {
   LoginSuccessAction, SET_CURRENT_PATIENT, SetCurrentPatientAction,
 } from '../actions/user';
 import { Clinician, Patient } from '../../types';
+import { ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS, AddOrUpdateTaperConfigSuccessAction } from '../actions/taperConfig';
 
 export interface UserState {
   loggingIn: boolean;
@@ -61,6 +62,7 @@ type UserReducerAction =
   | AddNewPatientRequest
   | AddNewPatientSuccess
   | AddNewPatientFailure
+  | AddOrUpdateTaperConfigSuccessAction
   | LoadPatientsRequestAction
   | LoadPatientsSuccessAction
   | LoadPatientsFailureAction
@@ -124,6 +126,10 @@ const userReducer = (state: UserState = initialState, action: UserReducerAction)
         draft.currentPatient = null;
       }
       draft.currentPatient = draft.patients.find((patient) => patient.id === action.data)!;
+      break;
+
+    case ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS:
+      draft.currentPatient!.taperingConfiguration = action.data;
       break;
 
     default:

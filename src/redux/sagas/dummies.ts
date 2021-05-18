@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import { Clinician, Patient, TaperingConfiguration } from '../../types';
 
 export const sally: Omit<Patient, 'password'> = {
@@ -29,6 +30,7 @@ export const sally: Omit<Patient, 'password'> = {
   //   },
   // ] as TaperingConfiguration[],
   taperingConfiguration: null,
+  recentVisit: new Date(),
 };
 
 export const john: Omit<Patient, 'password'> = {
@@ -53,6 +55,7 @@ export const john: Omit<Patient, 'password'> = {
   //   },
   // ] as TaperingConfiguration[],
   taperingConfiguration: { id: 1 },
+  recentVisit: new Date('2021-05-14T21:13:39.673Z'),
 };
 
 export const xiao: Omit<Patient, 'password'> = {
@@ -61,6 +64,7 @@ export const xiao: Omit<Patient, 'password'> = {
   name: 'Xiao Zhang',
   // taperingConfigurations: [],
   taperingConfiguration: { id: 2 },
+  recentVisit: new Date(),
 };
 
 export const stephen: Omit<Clinician, 'password'> = {

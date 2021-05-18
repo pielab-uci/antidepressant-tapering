@@ -6,7 +6,7 @@ import {
   CHOOSE_FORM, CURRENT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT,
   CURRENT_DOSAGE_CHANGE,
   FETCH_DRUGS, INTERVAL_COUNT_CHANGE,
-  INTERVAL_DURATION_IN_DAYS_CHANGE, INTERVAL_END_DATE_CHANGE,
+  INTERVAL_END_DATE_CHANGE,
   INTERVAL_START_DATE_CHANGE, INTERVAL_UNIT_CHANGE, LOAD_PRESCRIPTION_DATA,
   NEXT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT,
   NEXT_DOSAGE_CHANGE,
@@ -63,6 +63,15 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
             return prev;
           }, {},
         );
+        draft.dosageOptions.forEach((dosage) => {
+          if (!Object.keys(draft.currentDosagesQty).includes(dosage.dosage)) {
+            draft.currentDosagesQty[dosage.dosage] = 0;
+          }
+
+          if (!Object.keys(draft.nextDosagesQty).includes(dosage.dosage)) {
+            draft.nextDosagesQty[dosage.dosage] = 0;
+          }
+        });
         draft.intervalStartDate = action.data.intervalStartDate;
         draft.intervalEndDate = action.data.intervalEndDate;
         draft.intervalCount = action.data.intervalCount;
@@ -193,15 +202,6 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         Object.keys(draft.prescribedDosagesQty).forEach((key) => {
           draft.prescribedDosagesQty[key] = draft.nextDosagesQty[key] * draft.intervalDurationDays;
         });
-        break;
-
-      case INTERVAL_DURATION_IN_DAYS_CHANGE:
-        // Object.keys(draft.prescribedDosagesQty).forEach((key) => {
-        //   draft.prescribedDosagesQty[key] = draft.nextDosagesQty[key] * action.data.durationDays;
-        // });
-        // Object.entries(draft.prescribedDosagesQty).forEach(([k, v]) => {
-        //   draft.prescribedDosagesQty[k] = draft.nextDosagesQty[k] * action.data!.durationDays;
-        // });
         break;
     }
   });

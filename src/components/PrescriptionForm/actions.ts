@@ -144,16 +144,6 @@ export const intervalUnitChange = (data: { unit: 'Days' | 'Weeks' | 'Months', in
   data,
 });
 
-export const INTERVAL_DURATION_IN_DAYS_CHANGE = 'INTERVAL_DURATION_IN_DAYS_CHANGE' as const;
-export interface IntervalDurationDaysChange {
-  type: typeof INTERVAL_DURATION_IN_DAYS_CHANGE,
-  data: { durationDays: number, id: number };
-}
-export const intervalDurationDaysChange = (data: { durationDays: number, id: number }): IntervalDurationDaysChange => ({
-  type: INTERVAL_DURATION_IN_DAYS_CHANGE,
-  data,
-});
-
 export type PrescriptionFormActions =
   | FetchDrugsAction
   | LoadPrescriptionDataAction
@@ -167,5 +157,4 @@ export type PrescriptionFormActions =
   | IntervalEndDateChangeAction
   | IntervalUnitChangeAction
   | IntervalCountChangeAction
-  | IntervalDurationDaysChange
   | PrescribedQuantityChange;

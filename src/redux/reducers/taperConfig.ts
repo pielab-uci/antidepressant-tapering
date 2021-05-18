@@ -79,6 +79,8 @@ export interface TaperConfigState {
   patientId: number;
   drugs: Drug[];
   taperConfigs: TaperingConfiguration[];
+  taperConfigId: number | null;
+  taperConfigCreatedAt: Date | null;
   lastPrescriptionFormId: number;
   prescriptionFormIds: number[];
   prescribedDrugs: PrescribedDrug[] | null;
@@ -120,6 +122,8 @@ export const initialState: TaperConfigState = {
   clinicianId: -1,
   patientId: -1,
   taperConfigs: [],
+  taperConfigId: null,
+  taperConfigCreatedAt: null,
   lastPrescriptionFormId: 0,
   prescriptionFormIds: [0],
   isSaved: false,
@@ -190,6 +194,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case INIT_NEW_TAPER_CONFIG:
         draft.clinicianId = action.data.clinicianId;
         draft.patientId = action.data.patientId;
+        draft.taperConfigCreatedAt = null;
         draft.prescribedDrugs = [{
           id: draft.lastPrescriptionFormId,
           name: '',
@@ -207,6 +212,8 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           intervalEndDate: null,
           intervalCount: 0,
           intervalUnit: 'Days',
+          prevVisit: false,
+          prescribedAt: new Date(),
         }];
         draft.scheduleChartData = [];
         draft.projectedSchedule = { drugs: [], data: [] };
@@ -215,10 +222,13 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         break;
 
       case EMPTY_TAPER_CONFIG_PAGE:
-        draft.patientId = -1;
+        // draft.patientId = -1;
         // draft.prescribedDrugs = [];
-        draft.prescribedDrugs = null;
+        draft.taperConfigId = null;
+        draft.taperConfigCreatedAt = null;
+        // draft.prescribedDrugs = null;
         draft.scheduleChartData = [];
+        draft.prescribedDrugs = draft.prescribedDrugs!.filter((drug) => drug.name !== '');
         draft.projectedSchedule = { drugs: [], data: [] };
         draft.messageForPatient = '';
         break;
@@ -237,15 +247,19 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.addingTaperConfig = false;
         draft.addedTaperConfig = true;
 
-        const existingConfigIdx = draft.taperConfigs.findIndex(
-          (config) => config.id === action.data.id,
-        );
-
-        if (existingConfigIdx) {
-          draft.taperConfigs[existingConfigIdx] = { ...action.data };
-        } else {
-          draft.taperConfigs.unshift(action.data);
-        }
+        // const existingConfigIdx = draft.taperConfigs.findIndex(
+        //   (config) => config.id === action.data.id,
+        // );
+        // if (existingConfigIdx) {
+        //   draft.taperConfigs[existingConfigIdx] = { ...action.data };
+        // } else {
+        //   draft.taperConfigs.unshift(action.data);
+        // }
+        draft.taperConfigId = action.data.id;
+        draft.taperConfigCreatedAt = action.data.createdAt;
+        draft.prescribedDrugs!.forEach((drug) => {
+          drug.prescribedAt = action.data.createdAt;
+        });
         draft.isSaved = true;
         break;
       }
@@ -269,14 +283,17 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.patientId = action.data.patientId;
         draft.prescribedDrugs = action.data.prescribedDrugs;
         draft.projectedSchedule = scheduleGenerator(draft.prescribedDrugs!);
+        // draft.projectedSchedule = scheduleGenerator(
+        //   draft.prescribedDrugs!.filter((prescribedDrug) => !prescribedDrug.prevVisit),
+        // );
         draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
         draft.projectedSchedule.data.forEach((row, i) => {
           if (row.selected) {
             draft.scheduleSelectedRowKeys.push(i);
           }
         });
-        draft.messageForPatient = messageGenerateFromSchedule(draft.projectedSchedule);
-        draft.showMessageForPatient = true;
+        // draft.messageForPatient = messageGenerateFromSchedule(draft.projectedSchedule);
+        // draft.showMessageForPatient = true;
         draft.isSaved = false;
         break;
 
@@ -321,6 +338,8 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           intervalEndDate: null,
           intervalCount: 0,
           intervalUnit: 'Days',
+          prevVisit: false,
+          prescribedAt: new Date(),
         });
         draft.lastPrescriptionFormId += 1;
         draft.showMessageForPatient = false;

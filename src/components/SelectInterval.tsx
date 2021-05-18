@@ -1,17 +1,15 @@
 import * as React from 'react';
 import {
-  useRef, useContext, useCallback, useEffect,
+  useRef, useContext,
 } from 'react';
 import { format, isAfter } from 'date-fns';
 import { Input, Select } from 'antd';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
 import { PrescriptionFormContext } from './PrescriptionForm/PrescriptionForm';
-import { RootState } from '../redux/reducers';
-import { TaperConfigActions, TaperConfigState } from '../redux/reducers/taperConfig';
+import { TaperConfigActions } from '../redux/reducers/taperConfig';
 import {
   intervalCountChange,
-  intervalDurationDaysChange,
   intervalEndDateChange,
   intervalStartDateChange,
   intervalUnitChange,
@@ -29,14 +27,7 @@ const SelectInterval = () => {
     formActionDispatch, intervalCount, intervalUnit,
     intervalStartDate, intervalEndDate, id,
   } = useContext(PrescriptionFormContext);
-  const {
-    intervalDurationDays,
-  } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const units = useRef(['Days', 'Weeks', 'Months']);
-
-  useEffect(() => {
-    formActionDispatch(intervalDurationDaysChange({ durationDays: intervalDurationDays, id }));
-  }, [intervalDurationDays]);
 
   const onIntervalStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log('SelectInterval.onIntervalStartDateChange');

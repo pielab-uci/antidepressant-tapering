@@ -114,19 +114,20 @@ const calcNextDosageQty = (drug: Converted, dosage: number): { [dosageQty: strin
   return nextDosageQty;
 };
 
+const prescription = (drug: Converted, dosageQty: { [dosage: string]: number }) => Object.entries(dosageQty)
+  .filter(([dosage, qty]) => qty !== 0)
+  .reduce((res, [dosage, qty], i, arr) => {
+    if (i === arr.length - 1) {
+      return `${res} ${qty} * ${dosage} ${drug.form} for ${drug.intervalCount + 1} ${drug.intervalUnit.toLowerCase()}`;
+    }
+
+    return `${res} ${qty} * ${dosage} ${drug.form}, `;
+  }, '');
+
 const generateTableRows = (drugs: Converted[]): TableRowData[] => {
   const rows: TableRowData[] = [];
-  console.log('drugs: ', drugs);
   drugs.forEach((drug) => {
     const durationInDays = { days: differenceInCalendarDays(drug.intervalEndDate, drug.intervalStartDate) };
-    const prescription = (dosageQty: { [dosage: string]: number }) => Object.entries(dosageQty)
-      .reduce((res, [dosage, qty], i, arr) => {
-        if (i === arr.length - 1) {
-          return `${res} ${qty} * ${dosage} ${drug.form} for ${drug.intervalCount + 1} ${drug.intervalUnit.toLowerCase()}`;
-        }
-        return `${res} ${qty} * ${dosage} ${drug.form}, `;
-        // return `${res} ${qty} * ${dosage} ${drug.form} * ${drug.intervalCount + 1} ${drug.intervalUnit.toLowerCase()}, `;
-      }, '');
 
     const nextDosages = calcProjectedDosages(drug, drug.nextDosageSum, 4);
 
@@ -138,7 +139,10 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
       Dates: `${format(drug.intervalStartDate, 'MM/dd/yyyy')} - ${format(drug.intervalEndDate, 'MM/dd/yyyy')}`,
       startDate: drug.intervalStartDate,
       endDate: drug.intervalEndDate,
-      Prescription: prescription(drug.prescribedDosages),
+      // Prescription: prescription(drug, drug.prescribedDosages),
+      Prescription: prescription(drug, drug.nextDosages.reduce(
+        (prev, d) => ({ ...prev, [d.dosage]: d.quantity }), {},
+      )),
       prescribedDosages: drug.prescribedDosages,
       selected: true,
       form: drug.form,
@@ -168,7 +172,7 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
         Dates: `${format(newRowData.startDate, 'MM/dd/yyyy')} - ${format(newRowData.endDate, 'MM/dd/yyyy')}`,
         startDate: newRowData.startDate,
         endDate: newRowData.endDate,
-        Prescription: prescription(newRowData.prescribedDosages),
+        Prescription: prescription(drug, newRowData.prescribedDosages),
         selected: false,
         prescribedDosages: newRowData.prescribedDosages,
         form: drug.form,
@@ -273,7 +277,15 @@ export const messageGenerateFromSchedule = (schedule: Schedule): string => {
     .reduce((message, row, i, arr) => {
       const dosages = Object.entries(row.prescribedDosages)
         .reduce(
-          (prev, [dosage, qty]) => `${prev} ${qty} ${dosage} ${row.form}(s)`,
+          (prev, [dosage, qty], dosage_idx, dosages) => {
+            if (dosage_idx === 0) {
+              return `${prev} ${qty} ${dosage} ${row.form}(s)`;
+            }
+            if (dosage_idx === dosages.length - 1) {
+              return `${prev} and ${qty} ${dosage} ${row.form}(s)`;
+            }
+            return `${prev}, ${qty} ${dosage} ${row.form}(s)`;
+          },
           'Take',
         );
       const startDate = format(row.startDate, 'MMM dd, yyyy');

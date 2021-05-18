@@ -5,7 +5,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Checkbox, Input } from 'antd';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { Prompt, useLocation, useRouteMatch } from 'react-router';
+import { Prompt, useLocation } from 'react-router';
 import ProjectedSchedule from '../components/ProjectedSchedule';
 import { RootState } from '../redux/reducers';
 import { TaperConfigState } from '../redux/reducers/taperConfig';
@@ -21,7 +21,7 @@ import {
   InitTaperConfig, EMPTY_TAPER_CONFIG_PAGE, EmptyTaperConfigPage,
   SHARE_WITH_PATIENT_APP_REQUEST,
   SHARE_WITH_PATIENT_EMAIL_REQUEST,
-  TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
+  TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT, AddNewDrugFormAction,
 } from '../redux/actions/taperConfig';
 import { PrescribedDrug } from '../types';
 
@@ -53,6 +53,11 @@ const TaperConfigurationPage = () => {
         data: { clinicianId: parseInt(urlSearchParams.current.get('clinicianId')!, 10), patientId: parseInt(urlSearchParams.current!.get('patientId')!, 10) },
       });
     }
+    return () => {
+      dispatch<EmptyTaperConfigPage>({
+        type: EMPTY_TAPER_CONFIG_PAGE,
+      });
+    };
   }, []);
 
   useEffect(() => {
@@ -65,15 +70,13 @@ const TaperConfigurationPage = () => {
         && drug.nextDosages.length !== 0,
     ).some((cond) => !cond);
     setCanGenerateSchedule(condition);
-  }, [prescribedDrugs]);
 
-  useEffect(() => {
-    return () => {
-      dispatch<EmptyTaperConfigPage>({
-        type: EMPTY_TAPER_CONFIG_PAGE,
+    if (prescribedDrugs && prescribedDrugs.filter((d) => !d.prevVisit).length === 0) {
+      dispatch<AddNewDrugFormAction>({
+        type: ADD_NEW_DRUG_FORM,
       });
-    };
-  }, []);
+    }
+  }, [prescribedDrugs]);
 
   const toggleShareProjectedSchedule = useCallback(() => {
     dispatch({
@@ -128,28 +131,17 @@ const TaperConfigurationPage = () => {
     console.group('renderPrescriptionForms');
     console.log(prescribedDrugs);
     console.groupEnd();
-    return prescribedDrugs.map(
+    const notFromPrevVisit = prescribedDrugs.filter((prescribedDrug) => !prescribedDrug.prevVisit);
+    return notFromPrevVisit.map(
       (drug) => <PrescriptionForm key={`PrescriptionForm${drug.id}`} prescribedDrug={drug}/>,
     );
   };
-  // const renderPrescriptionForms = (ids: number[]) => {
-  //   return ids.map(
-  //     (id) => <PrescriptionForm key={`PrescriptionForm${id}`} id={id}/>,
-  //   );
-  // };
 
   return (
     <>
       <Prompt when={!isSaved}
-              message={(location, action) => {
-                console.log('location: ', location);
-                console.log('action: ', action);
-                return 'Are you sure you want to leave?';
-              }
-              }/>
+              message={'Are you sure you want to leave?'}/>
 
-       {/* {renderPrescriptionForms(prescriptionFormIds)} */}
-      {/* {renderPrescriptionForms(prescribedDrugs.map((drug) => drug.id))} */}
       {prescribedDrugs && renderPrescriptionForms(prescribedDrugs)}
       <hr/>
       <Button onClick={addNewPrescriptionForm}>Add Drug</Button>

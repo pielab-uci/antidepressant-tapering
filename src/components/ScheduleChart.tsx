@@ -7,16 +7,18 @@ import { FC } from 'react';
 import { ScheduleChartData } from '../redux/reducers/utils';
 
 interface Props {
-  scheduleChartData: ScheduleChartData
+  scheduleChartData: ScheduleChartData;
+  width: number;
+  height: number;
 }
-const ScheduleChart: FC<Props> = ({ scheduleChartData }) => {
+const ScheduleChart: FC<Props> = ({ scheduleChartData, width, height }) => {
   // const { scheduleChartData } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   console.log('scheduleChartData');
   console.log(scheduleChartData);
   return (
     // <ResponsiveContainer width="100%" height="100%">
-    <ResponsiveContainer width={300} height={300}>
-      <LineChart data={scheduleChartData} width={300} height={300}>
+    <ResponsiveContainer width={width} height={height}>
+      <LineChart data={scheduleChartData} width={width} height={height}>
         <CartesianGrid strokeDasharray="3 3" />
         {/* <XAxis dataKey="time" type="category" allowDuplicatedCategory={false} /> */}
         <XAxis dataKey="timestamp" type="number" tickFormatter={(time) => format(time, 'MM-dd')} domain={['auto', 'auto']} scale="time" />

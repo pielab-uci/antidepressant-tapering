@@ -1,12 +1,12 @@
 import * as React from 'react';
 import {
-  useContext, useEffect,
+  useContext,
 } from 'react';
 import { Input } from 'antd';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
 import { PrescriptionFormContext } from './PrescriptionForm/PrescriptionForm';
-import { intervalDurationDaysChange, prescribedQuantityChange } from './PrescriptionForm/actions';
+import { prescribedQuantityChange } from './PrescriptionForm/actions';
 import { TaperConfigActions } from '../redux/reducers/taperConfig';
 
 const TotalQuantities = () => {
@@ -17,10 +17,6 @@ const TotalQuantities = () => {
   } = useContext(PrescriptionFormContext);
 
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
-
-  useEffect(() => {
-    formActionDispatch(intervalDurationDaysChange({ durationDays: intervalDurationDays, id }));
-  }, [intervalDurationDays]);
 
   const onCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const actionData = {

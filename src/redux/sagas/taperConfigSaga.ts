@@ -1,7 +1,6 @@
 import {
   all, put, fork, takeLatest, delay,
 } from 'redux-saga/effects';
-import { Schedule } from '../../components/ProjectedSchedule';
 import {
   ADD_OR_UPDATE_TAPER_CONFIG_FAILURE,
   ADD_OR_UPDATE_TAPER_CONFIG_REQUEST,
@@ -60,7 +59,7 @@ function fetchTaperConfigAPI(action: FetchTaperConfigRequestAction): { data: Tap
       id: action.data,
       clinicianId: 1,
       patientId: 1,
-      createdAt: new Date(),
+      createdAt: new Date('2021-05-14T21:00:06.387Z'),
       prescribedDrugs: [
         {
           id: 0,
@@ -79,6 +78,8 @@ function fetchTaperConfigAPI(action: FetchTaperConfigRequestAction): { data: Tap
           intervalEndDate: new Date('2021-05-28T21:00:06.387Z'),
           intervalCount: 2,
           intervalUnit: 'Weeks',
+          prevVisit: true,
+          prescribedAt: new Date('2021-05-14T21:00:06.387Z'),
         },
         {
           id: 1,
@@ -97,6 +98,8 @@ function fetchTaperConfigAPI(action: FetchTaperConfigRequestAction): { data: Tap
           intervalEndDate: new Date('2021-05-28T21:13:39.673Z'),
           intervalCount: 2,
           intervalUnit: 'Weeks',
+          prevVisit: true,
+          prescribedAt: new Date('2021-05-14T21:13:39.673Z'),
         },
       ],
     },
@@ -141,6 +144,8 @@ function fetchPrescribedDrugsAPI(action: FetchPrescribedDrugsRequestAction): { d
         intervalEndDate: new Date('2021-05-28T21:00:06.387Z'),
         intervalCount: 2,
         intervalUnit: 'Weeks',
+        prevVisit: true,
+        prescribedAt: new Date('2021-05-14T21:00:06.387Z'),
       },
       {
         id: 1,
@@ -159,6 +164,8 @@ function fetchPrescribedDrugsAPI(action: FetchPrescribedDrugsRequestAction): { d
         intervalEndDate: new Date('2021-05-28T21:13:39.673Z'),
         intervalCount: 2,
         intervalUnit: 'Weeks',
+        prevVisit: true,
+        prescribedAt: new Date('2021-05-14T21:13:39.673Z'),
       },
     ],
   };

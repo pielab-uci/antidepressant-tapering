@@ -21,16 +21,16 @@ export interface EmptyPrescribedDrugs {
   type: typeof EMPTY_PRESCRIBED_DRUGS
 }
 
-export const ADD_OR_UPDATE_TAPER_CONFIG_REQUEST = 'ADD_TAPER_CONFIG_REQUEST' as const;
-export const ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS = 'ADD_TAPER_CONFIG_SUCCESS' as const;
-export const ADD_OR_UPDATE_TAPER_CONFIG_FAILURE = 'ADD_TAPER_CONFIG_FAILURE' as const;
+export const ADD_OR_UPDATE_TAPER_CONFIG_REQUEST = 'ADD_OR_UPDATE_TAPER_CONFIG_REQUEST' as const;
+export const ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS = 'ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS' as const;
+export const ADD_OR_UPDATE_TAPER_CONFIG_FAILURE = 'ADD_OR_UPDATE_TAPER_CONFIG_FAILURE' as const;
 
 export interface AddOrUpdateTaperConfigRequestAction {
   type: typeof ADD_OR_UPDATE_TAPER_CONFIG_REQUEST,
-  data: { clinicianId: number, patientId: number, prescribedDrugs: PrescribedDrug[] };
+  data: { taperConfigId?: number, clinicianId: number, patientId: number, prescribedDrugs: PrescribedDrug[] };
 }
 
-export const addOrUpdateTaperConfigRequest = (data: { clinicianId: number, patientId: number, prescribedDrugs: PrescribedDrug[] }):AddOrUpdateTaperConfigRequestAction => ({
+export const addOrUpdateTaperConfigRequest = (data: { taperConfigId?: number, clinicianId: number, patientId: number, prescribedDrugs: PrescribedDrug[] }):AddOrUpdateTaperConfigRequestAction => ({
   type: ADD_OR_UPDATE_TAPER_CONFIG_REQUEST,
   data,
 });

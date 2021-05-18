@@ -38,8 +38,6 @@ import { TaperConfigState } from '../../redux/reducers/taperConfig';
 
 const { OptGroup, Option } = Select;
 
-// TODO: considering removing local reducer for PrescriptionForm..?
-
 export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
   ...initialState,
   Current: {
@@ -86,10 +84,8 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
     if (prescribedDrug.name !== '') {
       formActionDispatch({ type: LOAD_PRESCRIPTION_DATA, data: prescribedDrug });
     }
-  // }, []);
-  }, [prescribedDrug]);
-
-  const onSubmit = () => {};
+  }, []);
+  // }, [prescribedDrug]);
 
   const onBrandChange = (value: string) => {
     const action: ChooseBrandAction = {
@@ -160,7 +156,6 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
     }}
     >
       <Button onClick={removeDrugForm}>Remove</Button>
-      <form onSubmit={onSubmit}>
         <h3>Prescription settings</h3>
         <label>Brand</label>
         <Select showSearch value={chosenBrand?.brand} onChange={onBrandChange} style={{ width: 200 }}>
@@ -189,7 +184,6 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
         <SelectInterval />
         <hr/>
         {showTotalQuantities && <TotalQuantities/>}
-      </form>
       <hr />
     </PrescriptionFormContext.Provider>
   );

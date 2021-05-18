@@ -2,13 +2,13 @@ import produce from 'immer';
 import { add, differenceInCalendarDays } from 'date-fns';
 import { PrescriptionFormState } from './types';
 import {
+  ALLOW_SPLITTING_UNSCORED_TABLET,
   CHOOSE_BRAND,
-  CHOOSE_FORM, CURRENT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT,
+  CHOOSE_FORM,
   CURRENT_DOSAGE_CHANGE,
   FETCH_DRUGS, INTERVAL_COUNT_CHANGE,
   INTERVAL_END_DATE_CHANGE,
   INTERVAL_START_DATE_CHANGE, INTERVAL_UNIT_CHANGE, LOAD_PRESCRIPTION_DATA,
-  NEXT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT,
   NEXT_DOSAGE_CHANGE,
   PRESCRIBED_QUANTITY_CHANGE,
   PrescriptionFormActions,
@@ -26,8 +26,7 @@ export const initialState: PrescriptionFormState = {
   minDosageUnit: 0,
   currentDosagesQty: {},
   nextDosagesQty: {},
-  currentDosageAllowSplittingUnscoredUnit: false,
-  nextDosageAllowSplittingUnscoredUnit: false,
+  allowSplittingUnscoredTablet: false,
   prescribedDosagesQty: {},
   intervalStartDate: new Date(),
   intervalEndDate: null,
@@ -76,8 +75,6 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.intervalEndDate = action.data.intervalEndDate;
         draft.intervalCount = action.data.intervalCount;
         draft.intervalUnit = action.data.intervalUnit;
-        draft.currentDosageAllowSplittingUnscoredUnit = action.data.currentAllowSplittingUnscoredDosageUnit;
-        draft.nextDosageAllowSplittingUnscoredUnit = action.data.nextAllowSplittingUnscoredDosageUnit;
         draft.prescribedDosagesQty = action.data.prescribedDosages;
         break;
       }
@@ -96,6 +93,9 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.chosenBrand = chosenBrandOption;
         draft.chosenDrugForm = null;
         draft.drugFormOptions = chosenBrandOption.forms;
+        draft.intervalUnit = 'Days';
+        draft.intervalCount = 0;
+        draft.intervalEndDate = null;
         draft.currentDosagesQty = {};
         draft.nextDosagesQty = {};
         draft.prescribedDosagesQty = {};
@@ -146,18 +146,12 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         }
         break;
 
-      case CURRENT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT:
-        draft.currentDosageAllowSplittingUnscoredUnit = action.data.allow;
+      case ALLOW_SPLITTING_UNSCORED_TABLET:
+        draft.allowSplittingUnscoredTablet = action.data.allow;
         if (!action.data.allow) {
           Object.entries(draft.currentDosagesQty).forEach(([k, v]) => {
             draft.currentDosagesQty[k] = Math.floor(v);
           });
-        }
-        break;
-
-      case NEXT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT:
-        draft.nextDosageAllowSplittingUnscoredUnit = action.data.allow;
-        if (!action.data.allow) {
           Object.entries(draft.nextDosagesQty).forEach(([k, v]) => {
             draft.nextDosagesQty[k] = Math.floor(v);
           });

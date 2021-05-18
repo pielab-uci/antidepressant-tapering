@@ -53,8 +53,7 @@ export interface PrescribedDrug {
   currentDosages: { dosage: string; quantity: number }[];
   nextDosages: { dosage: string; quantity: number }[];
   prescribedDosages: { [dosage: string]: number; };
-  currentAllowSplittingUnscoredDosageUnit: boolean;
-  nextAllowSplittingUnscoredDosageUnit: boolean;
+  allowSplittingUnscoredTablet: boolean;
   prevVisit: boolean;
   intervalStartDate: Date;
   intervalEndDate: Date | null;

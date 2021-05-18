@@ -68,33 +68,17 @@ export const prescribedQuantityChange = (data: {
   data,
 });
 
-export const CURRENT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT = 'CURRENT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT' as const;
+export const ALLOW_SPLITTING_UNSCORED_TABLET = 'ALLOW_SPLITTING_UNSCORED_TABLET' as const;
 
-export interface CurrentAllowSplittingUnscoredDosageUnitAction {
-  type: typeof CURRENT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT;
+export interface AllowSplittingUnscoredTabletAction {
+  type: typeof ALLOW_SPLITTING_UNSCORED_TABLET;
   data: { id: number, allow: boolean };
 }
 
-export const currentAllowSplittingUnscoredDosageUnit = (data: { id: number, allow: boolean }): CurrentAllowSplittingUnscoredDosageUnitAction => {
-  return {
-    type: CURRENT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT,
-    data,
-  };
-};
-
-export const NEXT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT = 'NEXT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT' as const;
-
-export interface NextAllowSplittingUnscoredDosageUnitAction {
-  type: typeof NEXT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT;
-  data: { id: number, allow: boolean; }
-}
-
-export const nextAllowSplittingUnscoredDosageUnit = (data: { id: number, allow: boolean }): NextAllowSplittingUnscoredDosageUnitAction => {
-  return {
-    type: NEXT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT,
-    data,
-  };
-};
+export const toggleAllowSplittingUnscoredTablet = (data: { id: number, allow: boolean }): AllowSplittingUnscoredTabletAction => ({
+  type: ALLOW_SPLITTING_UNSCORED_TABLET,
+  data,
+});
 
 export const INTERVAL_START_DATE_CHANGE = 'INTERVAL_START_DATE_CHANGE' as const;
 
@@ -151,8 +135,7 @@ export type PrescriptionFormActions =
   | ChooseFormAction
   | CurrentDosageChangeAction
   | NextDosageChangeAction
-  | CurrentAllowSplittingUnscoredDosageUnitAction
-  | NextAllowSplittingUnscoredDosageUnitAction
+  | AllowSplittingUnscoredTabletAction
   | IntervalStartDateChangeAction
   | IntervalEndDateChangeAction
   | IntervalUnitChangeAction

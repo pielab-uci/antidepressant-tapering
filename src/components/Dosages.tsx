@@ -20,7 +20,6 @@ const Dosages: FC<Props> = ({ time, dosages }) => {
     formActionDispatch,
   } = context;
   const taperConfigActionDispatch = useDispatch();
-  const { allowSplittingUnscored, toggleAllowSplittingUnscored } = context[time];
   const unit = chosenDrugForm!.measureUnit;
   const [dosageDifferencePercent, setDosageDifferencePercent] = useState<string | null>(null);
   const calculateDosageSum = (dosages: { [key: string]: number }): number => Object
@@ -41,11 +40,6 @@ const Dosages: FC<Props> = ({ time, dosages }) => {
     }
   }, [currentDosagesQty, nextDosagesQty]);
 
-  const toggleAllowSplittingUnscoredCheckbox = (e: CheckboxChangeEvent) => {
-    formActionDispatch(toggleAllowSplittingUnscored({ id, allow: e.target.checked }));
-    taperConfigActionDispatch(toggleAllowSplittingUnscored({ id, allow: e.target.checked }));
-  };
-
   return (
     <>
       <div>
@@ -65,7 +59,6 @@ const Dosages: FC<Props> = ({ time, dosages }) => {
           />))
         }
       </div>
-      <Checkbox checked={allowSplittingUnscored} onChange={toggleAllowSplittingUnscoredCheckbox}>Allow for splitting unscored tablets.</Checkbox>
       {time === 'Next' && dosageDifferencePercent
       && (
       <div style={{ color: 'red' }}>

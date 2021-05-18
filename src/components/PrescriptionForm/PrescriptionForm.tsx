@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { useEffect, createContext, FC } from 'react';
 import { useReducer, useState } from 'reinspect';
-import { Button, Select } from 'antd';
+import { Button, Checkbox, Select } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
+import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import Dosages from '../Dosages';
 import {
   initialState,
@@ -18,8 +19,7 @@ import {
   ChooseFormAction,
   ChooseBrandAction,
   FetchDrugsAction,
-  currentAllowSplittingUnscoredDosageUnit,
-  nextAllowSplittingUnscoredDosageUnit, LOAD_PRESCRIPTION_DATA,
+  LOAD_PRESCRIPTION_DATA, toggleAllowSplittingUnscoredTablet,
 } from './actions';
 import { IPrescriptionFormContext, PrescriptionFormState } from './types';
 import {
@@ -42,15 +42,11 @@ export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
   ...initialState,
   Current: {
     dosages: initialState.currentDosagesQty,
-    allowSplittingUnscored: initialState.currentDosageAllowSplittingUnscoredUnit,
     dosageChangeAction: currentDosageChange,
-    toggleAllowSplittingUnscored: currentAllowSplittingUnscoredDosageUnit,
   },
   Next: {
     dosages: initialState.nextDosagesQty,
-    allowSplittingUnscored: initialState.nextDosageAllowSplittingUnscoredUnit,
     dosageChangeAction: nextDosageChange,
-    toggleAllowSplittingUnscored: nextAllowSplittingUnscoredDosageUnit,
   },
   formActionDispatch: () => {},
   id: -1,
@@ -67,9 +63,7 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
   const {
     drugs: drugsLocal, chosenBrand, chosenDrugForm, drugFormOptions,
     currentDosagesQty, nextDosagesQty, minDosageUnit,
-    currentDosageAllowSplittingUnscoredUnit,
-    nextDosageAllowSplittingUnscoredUnit,
-    availableDosageOptions,
+    availableDosageOptions, allowSplittingUnscoredTablet,
   } = state;
   const { drugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const [showTotalQuantities, setShowTotalQuantities] = useState(true, `PrescriptionForm-ShowTotalQuantities_${prescribedDrug.id}`);
@@ -136,21 +130,22 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
     </>
   );
 
+  const toggleAllowSplittingUnscoredTabletCheckbox = (e: CheckboxChangeEvent) => {
+    formActionDispatch(toggleAllowSplittingUnscoredTablet({ id: prescribedDrug.id, allow: e.target.checked }));
+    taperConfigActionDispatch(toggleAllowSplittingUnscoredTablet({ id: prescribedDrug.id, allow: e.target.checked }));
+  };
+
   return (
     <PrescriptionFormContext.Provider value={{
       ...state,
       id: prescribedDrug.id,
       Current: {
         dosages: currentDosagesQty,
-        allowSplittingUnscored: currentDosageAllowSplittingUnscoredUnit,
         dosageChangeAction: currentDosageChange,
-        toggleAllowSplittingUnscored: currentAllowSplittingUnscoredDosageUnit,
       },
       Next: {
         dosages: nextDosagesQty,
-        allowSplittingUnscored: nextDosageAllowSplittingUnscoredUnit,
         dosageChangeAction: nextDosageChange,
-        toggleAllowSplittingUnscored: nextAllowSplittingUnscoredDosageUnit,
       },
       formActionDispatch,
     }}
@@ -173,6 +168,7 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
             (form) => <Option key={form.form} value={form.form}>{form.form}</Option>,
           )}
         </Select>
+      {chosenDrugForm?.form === 'tablet' && <Checkbox checked={allowSplittingUnscoredTablet} onChange={toggleAllowSplittingUnscoredTabletCheckbox}>Allow splitting unscored tablet</Checkbox>}
         <hr />
 
         <div>Current Dosages</div>

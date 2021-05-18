@@ -3,8 +3,7 @@ import {
   initialState,
 } from './reducer';
 import {
-  currentAllowSplittingUnscoredDosageUnit,
-  currentDosageChange, nextAllowSplittingUnscoredDosageUnit,
+  currentDosageChange,
   nextDosageChange,
   PrescriptionFormActions,
 } from './actions';
@@ -22,8 +21,7 @@ export interface PrescriptionFormState {
   minDosageUnit: number;
   currentDosagesQty: { [key: string]: number };
   nextDosagesQty: { [key: string]: number };
-  currentDosageAllowSplittingUnscoredUnit: boolean;
-  nextDosageAllowSplittingUnscoredUnit: boolean; // TODO: what about bottle of oral solution..?
+  allowSplittingUnscoredTablet: boolean;
   prescribedDosagesQty: { [key: string]: number };
   intervalStartDate: Date;
   intervalEndDate: Date | null;
@@ -36,15 +34,11 @@ export type IPrescriptionFormContext = PrescriptionFormState
 & {
   Current: {
     dosages: typeof initialState.currentDosagesQty,
-    allowSplittingUnscored: typeof initialState.currentDosageAllowSplittingUnscoredUnit,
     dosageChangeAction: typeof currentDosageChange,
-    toggleAllowSplittingUnscored: typeof currentAllowSplittingUnscoredDosageUnit
   };
   Next: {
     dosages: typeof initialState.nextDosagesQty,
-    allowSplittingUnscored: typeof initialState.nextDosageAllowSplittingUnscoredUnit,
     dosageChangeAction: typeof nextDosageChange,
-    toggleAllowSplittingUnscored: typeof nextAllowSplittingUnscoredDosageUnit
   };
   formActionDispatch: Dispatch<PrescriptionFormActions>;
   id: number;

@@ -176,3 +176,9 @@ export const changeNoteAndInstructions = (data: string): ChangeNoteAndInstructio
   type: CHANGE_NOTE_AND_INSTRUCTIONS,
   data,
 });
+
+export const CHECK_INPUTS = 'CHECK_INPUTS' as const;
+export interface CheckInputs {
+  type: typeof CHECK_INPUTS,
+  data: boolean;
+}

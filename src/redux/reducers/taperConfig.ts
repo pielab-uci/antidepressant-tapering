@@ -57,18 +57,19 @@ import {
   EMPTY_PRESCRIBED_DRUGS,
   EmptyPrescribedDrugs,
   ChangeNoteAndInstructions,
-  CHANGE_NOTE_AND_INSTRUCTIONS,
+  CHANGE_NOTE_AND_INSTRUCTIONS, CheckInputs, CHECK_INPUTS,
 } from '../actions/taperConfig';
 import drugs from './drugs';
 
 import {
   CHOOSE_BRAND,
-  CHOOSE_FORM, CURRENT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT,
+  CHOOSE_FORM,
   CURRENT_DOSAGE_CHANGE,
   INTERVAL_COUNT_CHANGE,
   INTERVAL_END_DATE_CHANGE,
   INTERVAL_START_DATE_CHANGE,
-  INTERVAL_UNIT_CHANGE, NEXT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT,
+  INTERVAL_UNIT_CHANGE,
+  ALLOW_SPLITTING_UNSCORED_TABLET,
   NEXT_DOSAGE_CHANGE, PRESCRIBED_QUANTITY_CHANGE,
   PrescriptionFormActions,
 } from '../../components/PrescriptionForm/actions';
@@ -93,6 +94,7 @@ export interface TaperConfigState {
   projectedSchedule: Schedule;
   scheduleChartData: ScheduleChartData;
   scheduleSelectedRowKeys: Key[];
+  isInputComplete: boolean;
 
   intervalDurationDays: number,
 
@@ -137,6 +139,7 @@ export const initialState: TaperConfigState = {
   projectedSchedule: { data: [], drugs: [] },
   scheduleChartData: [],
   scheduleSelectedRowKeys: [],
+  isInputComplete: false,
 
   intervalDurationDays: 0,
 
@@ -188,6 +191,7 @@ export type TaperConfigActions =
   | ChangeMessageForPatient
   | ChangeNoteAndInstructions
   | ToggleShareProjectedScheduleWithPatient
+  | CheckInputs
   | ShareWithPatientAppRequest
   | ShareWithPatientAppSuccess
   | ShareWithPatientAppFailure
@@ -214,8 +218,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           currentDosages: [],
           nextDosages: [],
           availableDosageOptions: [],
-          currentAllowSplittingUnscoredDosageUnit: false,
-          nextAllowSplittingUnscoredDosageUnit: false,
+          allowSplittingUnscoredTablet: false,
           prescribedDosages: {},
           intervalStartDate: new Date(),
           intervalEndDate: null,
@@ -224,6 +227,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           prevVisit: false,
           prescribedAt: new Date(),
         }];
+        draft.isInputComplete = false;
         draft.scheduleChartData = [];
         draft.projectedSchedule = { drugs: [], data: [] };
         draft.messageForPatient = '';
@@ -237,12 +241,14 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.taperConfigCreatedAt = null;
         // draft.prescribedDrugs = null;
         draft.scheduleChartData = [];
+        draft.isInputComplete = false;
         draft.prescribedDrugs = draft.prescribedDrugs!.filter((drug) => drug.name !== '');
         draft.projectedSchedule = { drugs: [], data: [] };
         draft.messageForPatient = '';
         break;
 
       case EMPTY_PRESCRIBED_DRUGS:
+        draft.isInputComplete = false;
         draft.prescribedDrugs = null;
         break;
 
@@ -341,8 +347,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           nextDosages: [],
           availableDosageOptions: [],
           prescribedDosages: {},
-          currentAllowSplittingUnscoredDosageUnit: false,
-          nextAllowSplittingUnscoredDosageUnit: false,
+          allowSplittingUnscoredTablet: false,
           intervalStartDate: new Date(),
           intervalEndDate: null,
           intervalCount: 0,
@@ -350,6 +355,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           prevVisit: false,
           prescribedAt: new Date(),
         });
+        draft.isInputComplete = false;
         draft.lastPrescriptionFormId += 1;
         draft.showMessageForPatient = false;
         draft.isSaved = false;
@@ -359,6 +365,10 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.prescriptionFormIds = draft.prescriptionFormIds.filter((id) => id !== action.data);
         draft.prescribedDrugs = draft.prescribedDrugs!.filter((drug) => drug.id !== action.data);
         draft.isSaved = false;
+        break;
+
+      case CHECK_INPUTS:
+        draft.isInputComplete = action.data;
         break;
 
       case GENERATE_SCHEDULE:
@@ -450,6 +460,11 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.currentDosages = [];
         drug.nextDosages = [];
         draft.projectedSchedule = { drugs: [], data: [] };
+        // set to default
+        // drug.intervalEndDate = null;
+        // drug.intervalCount = 0;
+        // drug.intervalUnit = 'Days';
+        draft.isInputComplete = false;
         draft.isSaved = false;
         break;
       }
@@ -461,6 +476,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.currentDosages = [];
         drug.nextDosages = [];
         drug.availableDosageOptions = action.data.availableDosageOptions!;
+        draft.isInputComplete = false;
         draft.isSaved = false;
         break;
       }
@@ -503,16 +519,9 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         break;
       }
 
-      case CURRENT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT: {
+      case ALLOW_SPLITTING_UNSCORED_TABLET: {
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
-        drug.currentAllowSplittingUnscoredDosageUnit = action.data.allow;
-        draft.isSaved = false;
-        break;
-      }
-
-      case NEXT_ALLOW_SPLITTING_UNSCORED_DOSAGE_UNIT: {
-        const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
-        drug.nextAllowSplittingUnscoredDosageUnit = action.data.allow;
+        drug.allowSplittingUnscoredTablet = action.data.allow;
         draft.isSaved = false;
         break;
       }

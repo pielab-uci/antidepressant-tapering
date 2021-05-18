@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  useCallback, useEffect, useRef, useState,
+  useCallback, useEffect, useRef,
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Checkbox, Input } from 'antd';
@@ -18,10 +18,16 @@ import {
   FetchTaperConfigRequestAction,
   GENERATE_SCHEDULE,
   INIT_NEW_TAPER_CONFIG,
-  InitTaperConfig, EMPTY_TAPER_CONFIG_PAGE, EmptyTaperConfigPage,
+  InitTaperConfig,
+  EMPTY_TAPER_CONFIG_PAGE,
+  EmptyTaperConfigPage,
   SHARE_WITH_PATIENT_APP_REQUEST,
   SHARE_WITH_PATIENT_EMAIL_REQUEST,
-  TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT, AddNewDrugFormAction, changeNoteAndInstructions,
+  TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
+  AddNewDrugFormAction,
+  changeNoteAndInstructions,
+  CLEAR_SCHEDULE,
+  CHECK_INPUTS,
 } from '../redux/actions/taperConfig';
 import { PrescribedDrug } from '../types';
 
@@ -35,9 +41,9 @@ const TaperConfigurationPage = () => {
     shareProjectedScheduleWithPatient,
     prescribedDrugs,
     isSaved,
+    isInputComplete,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
-  const [canGenerateSchedule, setCanGenerateSchedule] = useState(false);
-  const [canSaveConfig, setCanSaveConfig] = useState(false);
+  // const [canGenerateSchedule, setCanGenerateSchedule] = useState<boolean|null>(false);
   const dispatch = useDispatch();
   const urlSearchParams = useRef<URLSearchParams>(new URLSearchParams(useLocation().search));
 
@@ -55,6 +61,7 @@ const TaperConfigurationPage = () => {
         data: { clinicianId: parseInt(urlSearchParams.current.get('clinicianId')!, 10), patientId: parseInt(urlSearchParams.current!.get('patientId')!, 10) },
       });
     }
+
     return () => {
       dispatch<EmptyTaperConfigPage>({
         type: EMPTY_TAPER_CONFIG_PAGE,
@@ -63,22 +70,44 @@ const TaperConfigurationPage = () => {
   }, []);
 
   useEffect(() => {
-    const condition = !prescribedDrugs?.map(
-      (drug) => drug.name
-        && drug.brand
-        && drug.form
-        && drug.intervalEndDate
-        && drug.intervalCount !== 0
-        && drug.nextDosages.length !== 0,
-    ).some((cond) => !cond);
-    setCanGenerateSchedule(condition);
-    setCanSaveConfig(condition);
     if (prescribedDrugs && prescribedDrugs.filter((d) => !d.prevVisit).length === 0) {
       dispatch<AddNewDrugFormAction>({
         type: ADD_NEW_DRUG_FORM,
       });
     }
   }, [prescribedDrugs]);
+
+  useEffect(() => {
+    const inputIsComplete = (prescribedDrugs !== null
+      && prescribedDrugs.length !== 0
+      && prescribedDrugs.map(
+        (drug) => drug.name !== ''
+          && drug.brand !== ''
+          && drug.form !== ''
+          && drug.intervalEndDate !== null
+          && drug.intervalCount !== 0
+          && drug.nextDosages.length !== 0,
+      ).every((cond) => cond));
+    console.groupEnd();
+    console.log('inputIsComplete: ', inputIsComplete);
+    dispatch({
+      type: CHECK_INPUTS,
+      data: inputIsComplete,
+    });
+  }, [prescribedDrugs]);
+
+  useEffect(() => {
+    if (isInputComplete) {
+      console.log('Input is complete. Generate Schedule');
+      // dispatch({
+      //   type: GENERATE_SCHEDULE,
+      // });
+    } else {
+      dispatch({
+        type: CLEAR_SCHEDULE,
+      });
+    }
+  }, [isInputComplete]);
 
   const toggleShareProjectedSchedule = useCallback(() => {
     dispatch({
@@ -90,12 +119,6 @@ const TaperConfigurationPage = () => {
   const addNewPrescriptionForm = useCallback(() => {
     dispatch({
       type: ADD_NEW_DRUG_FORM,
-    });
-  }, []);
-
-  const generateSchedule = useCallback(() => {
-    dispatch({
-      type: GENERATE_SCHEDULE,
     });
   }, []);
 
@@ -118,6 +141,7 @@ const TaperConfigurationPage = () => {
   const onNotesAndInstructionCopied = useCallback(() => {
     alert('Notes and Instructions copied.');
   }, []);
+
   const onChangeMessageForPatient = useCallback((e) => {
     dispatch(changeMessageForPatient(e.target.value));
   }, []);
@@ -157,9 +181,6 @@ const TaperConfigurationPage = () => {
       <hr/>
       <Button onClick={addNewPrescriptionForm}>Add Drug</Button>
       <hr/>
-      {/* TODO: on click Generate Schedule button, mark unfilled inputs..? */}
-      <Button onClick={generateSchedule} disabled={!canGenerateSchedule}>Generate schedule</Button>
-      <hr/>
       <ProjectedSchedule/>
       <hr/>
 
@@ -187,7 +208,7 @@ const TaperConfigurationPage = () => {
       </Checkbox>
       <Button onClick={shareWithApp}>App</Button>
       <Button onClick={shareWithEmail}>Email</Button>
-      <Button onClick={saveTaperConfiguration} disabled={!canSaveConfig}>Save configuration</Button>
+      <Button onClick={saveTaperConfiguration} disabled={!isInputComplete}>Save configuration</Button>
     </>
   );
 };

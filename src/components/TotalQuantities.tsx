@@ -31,9 +31,8 @@ const TotalQuantities = () => {
   // }, [prescribedDosagesQty, intervalDurationDays]);
   return (
     <div>
-      <h3>Total number of {chosenDrug?.name}({chosenBrand?.brand}) {chosenDrugForm?.form}</h3>
+      <h3>Prescription of {chosenDrug?.name}({chosenBrand?.brand}) {chosenDrugForm?.form} for upcoming interval</h3>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        {/* {Object.keys(Next.dosages).map((key) => ( */}
         {Object.keys(prescribedDosagesQty).map((key) => (
           <div key={`${id}_${key}_${Next.dosages[key]}`}>
             <h4>{key}:</h4>

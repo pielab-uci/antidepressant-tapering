@@ -5,14 +5,22 @@ import { PrescribedDrug } from '../../types';
 import { TableRow } from '../../components/ProjectedScheduleTable';
 import { Schedule } from '../../components/ProjectedSchedule';
 
-interface Converted extends PrescribedDrug {
+type Converted = PrescribedDrug & {
   intervalEndDate: Date;
   currentDosageSum: number;
   nextDosageSum: number;
   changeRate: number;
   changeAmount: number;
   isIncreasing: boolean;
-}
+};
+// interface Converted extends PrescribedDrug {
+//   intervalEndDate: Date;
+//   currentDosageSum: number;
+//   nextDosageSum: number;
+//   changeRate: number;
+//   changeAmount: number;
+//   isIncreasing: boolean;
+// }
 
 export type TableRowData =
   TableRow & {
@@ -77,7 +85,7 @@ const calcProjectedDosages = (drug: Converted, prescribedDosage: number, length:
         const floor = Math.floor(nextTemp / minDosage) * minDosage;
         const ceiling = Math.ceil(nextTemp / minDosage) * minDosage;
 
-        if (i === length - 2 && drug.form === 'tablet' && drug.nextAllowSplittingUnscoredDosageUnit) {
+        if (i === length - 2 && drug.form === 'tablet' && drug.allowSplittingUnscoredTablet) {
           res.push(ceiling - minDosage / 2);
         } else if (ceiling === res[i]) {
           res.push(floor);
@@ -164,25 +172,27 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
     };
 
     Array(3).fill(null).forEach((_, i) => {
-      rows.push({
-        // Drug: drug.brand,
-        Drug: drug.name,
-        'Current Dosage': `${newRowData.currentDosageSum}${drug.measureUnit}`,
-        'Next Dosage': `${newRowData.nextDosageSum}${drug.measureUnit}`,
-        Dates: `${format(newRowData.startDate, 'MM/dd/yyyy')} - ${format(newRowData.endDate, 'MM/dd/yyyy')}`,
-        startDate: newRowData.startDate,
-        endDate: newRowData.endDate,
-        Prescription: prescription(drug, newRowData.prescribedDosages),
-        selected: false,
-        prescribedDosages: newRowData.prescribedDosages,
-        form: drug.form,
-      });
+      if (newRowData.currentDosageSum !== 0) {
+        rows.push({
+          // Drug: drug.brand,
+          Drug: drug.name,
+          'Current Dosage': `${newRowData.currentDosageSum}${drug.measureUnit}`,
+          'Next Dosage': `${newRowData.nextDosageSum}${drug.measureUnit}`,
+          Dates: `${format(newRowData.startDate, 'MM/dd/yyyy')} - ${format(newRowData.endDate, 'MM/dd/yyyy')}`,
+          startDate: newRowData.startDate,
+          endDate: newRowData.endDate,
+          Prescription: prescription(drug, newRowData.prescribedDosages),
+          selected: false,
+          prescribedDosages: newRowData.prescribedDosages,
+          form: drug.form,
+        });
 
-      newRowData.currentDosageSum = newRowData.nextDosageSum;
-      newRowData.nextDosageSum = nextDosages[i + 2];
-      newRowData.prescribedDosages = calcNextDosageQty(drug, newRowData.nextDosageSum);
-      newRowData.startDate = add(newRowData.endDate, { days: 1 });
-      newRowData.endDate = add(newRowData.startDate, durationInDays);
+        newRowData.currentDosageSum = newRowData.nextDosageSum;
+        newRowData.nextDosageSum = nextDosages[i + 2];
+        newRowData.prescribedDosages = calcNextDosageQty(drug, newRowData.nextDosageSum);
+        newRowData.startDate = add(newRowData.endDate, { days: 1 });
+        newRowData.endDate = add(newRowData.startDate, durationInDays);
+      }
     });
   });
 

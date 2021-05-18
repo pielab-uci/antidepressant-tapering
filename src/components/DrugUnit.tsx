@@ -20,8 +20,10 @@ const DrugUnit: FC<Props> = ({
   time, form, dosage, isScored, isMinDosage,
 }) => {
   const context = useContext(PrescriptionFormContext);
-  const { formActionDispatch, id, intervalDurationDays } = context;
-  const { dosages, dosageChangeAction, allowSplittingUnscored } = context[time];
+  const {
+    formActionDispatch, id, intervalDurationDays, allowSplittingUnscoredTablet,
+  } = context;
+  const { dosages, dosageChangeAction } = context[time];
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
 
   const quantity = (change: 'increment' | 'decrement', dosages: { [dosage: string]: number }, dosage: string) => {
@@ -49,7 +51,7 @@ const DrugUnit: FC<Props> = ({
 
     taperConfigActionDispatch(dosageChangeAction({ ...actionData, intervalDurationDays }));
     formActionDispatch(dosageChangeAction(actionData));
-  }, [dosages, intervalDurationDays, allowSplittingUnscored]);
+  }, [dosages, intervalDurationDays, allowSplittingUnscoredTablet]);
 
   const onDecrement = useCallback(() => {
     const actionData = {
@@ -62,7 +64,7 @@ const DrugUnit: FC<Props> = ({
 
     taperConfigActionDispatch(dosageChangeAction({ ...actionData, intervalDurationDays }));
     formActionDispatch(dosageChangeAction(actionData));
-  }, [dosages, intervalDurationDays, allowSplittingUnscored]);
+  }, [dosages, intervalDurationDays, allowSplittingUnscoredTablet]);
 
   return (
     <>

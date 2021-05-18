@@ -53,7 +53,11 @@ import {
   FetchPrescribedDrugsFailureAction,
   FETCH_PRESCRIBED_DRUGS_REQUEST,
   FETCH_PRESCRIBED_DRUGS_SUCCESS,
-  FETCH_PRESCRIBED_DRUGS_FAILURE, EMPTY_PRESCRIBED_DRUGS, EmptyPrescribedDrugs,
+  FETCH_PRESCRIBED_DRUGS_FAILURE,
+  EMPTY_PRESCRIBED_DRUGS,
+  EmptyPrescribedDrugs,
+  ChangeNoteAndInstructions,
+  CHANGE_NOTE_AND_INSTRUCTIONS,
 } from '../actions/taperConfig';
 import drugs from './drugs';
 
@@ -93,6 +97,8 @@ export interface TaperConfigState {
   intervalDurationDays: number,
 
   messageForPatient: string;
+  noteAndInstructionsForPatient: string;
+
   shareProjectedScheduleWithPatient: boolean;
   showMessageForPatient: boolean;
 
@@ -135,6 +141,8 @@ export const initialState: TaperConfigState = {
   intervalDurationDays: 0,
 
   messageForPatient: '',
+  noteAndInstructionsForPatient: '',
+
   shareProjectedScheduleWithPatient: false,
   showMessageForPatient: false,
 
@@ -178,6 +186,7 @@ export type TaperConfigActions =
   | ClearScheduleAction
   | ScheduleRowSelectedAction
   | ChangeMessageForPatient
+  | ChangeNoteAndInstructions
   | ToggleShareProjectedScheduleWithPatient
   | ShareWithPatientAppRequest
   | ShareWithPatientAppSuccess
@@ -419,6 +428,10 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
 
       case CHANGE_MESSAGE_FOR_PATIENT:
         draft.messageForPatient = action.data;
+        break;
+
+      case CHANGE_NOTE_AND_INSTRUCTIONS:
+        draft.noteAndInstructionsForPatient = action.data;
         break;
 
       case TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT:

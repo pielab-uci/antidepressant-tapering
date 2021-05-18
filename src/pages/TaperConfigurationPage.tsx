@@ -21,7 +21,7 @@ import {
   InitTaperConfig, EMPTY_TAPER_CONFIG_PAGE, EmptyTaperConfigPage,
   SHARE_WITH_PATIENT_APP_REQUEST,
   SHARE_WITH_PATIENT_EMAIL_REQUEST,
-  TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT, AddNewDrugFormAction,
+  TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT, AddNewDrugFormAction, changeNoteAndInstructions,
 } from '../redux/actions/taperConfig';
 import { PrescribedDrug } from '../types';
 
@@ -31,6 +31,7 @@ const TaperConfigurationPage = () => {
   const {
     prescriptionFormIds,
     messageForPatient,
+    noteAndInstructionsForPatient,
     shareProjectedScheduleWithPatient,
     prescribedDrugs,
     isSaved,
@@ -109,12 +110,19 @@ const TaperConfigurationPage = () => {
     });
   }, []);
 
-  const onCopy = useCallback(() => {
+  const onMessageCopied = useCallback(() => {
     alert('Message copied.');
   }, []);
 
+  const onNotesAndInstructionCopied = useCallback(() => {
+    alert('Notes and Instructions copied.');
+  }, []);
   const onChangeMessageForPatient = useCallback((e) => {
     dispatch(changeMessageForPatient(e.target.value));
+  }, []);
+
+  const onChangeNoteAndInstructions = useCallback((e) => {
+    dispatch(changeNoteAndInstructions(e.target.value));
   }, []);
 
   const saveTaperConfiguration = useCallback(() => {
@@ -137,6 +145,8 @@ const TaperConfigurationPage = () => {
     );
   };
 
+  const noteAndInstructionsPlaceholder = useRef('e.g., If you experience severe withdrawal symptoms, go back to the previous dosage. / call your provider / come back to provider\'s office.');
+
   return (
     <>
       <Prompt when={!isSaved}
@@ -157,14 +167,25 @@ const TaperConfigurationPage = () => {
         value={messageForPatient}
         defaultValue={messageForPatient}
         onChange={onChangeMessageForPatient}/>
+      <CopyToClipboard text={messageForPatient} onCopy={onMessageCopied}>
+        <Button>Copy to Clipboard</Button>
+      </CopyToClipboard>
+
+      <h3>Note & Instructions</h3>
+      <TextArea value={noteAndInstructionsForPatient}
+                defaultValue={noteAndInstructionsForPatient}
+                onChange={onChangeNoteAndInstructions}
+                placeholder={noteAndInstructionsPlaceholder.current}
+      />
+      <CopyToClipboard text={noteAndInstructionsForPatient} onCopy={onNotesAndInstructionCopied}>
+        <Button>Copy to Clipboard</Button>
+      </CopyToClipboard>
+
       <Checkbox checked={shareProjectedScheduleWithPatient} onChange={toggleShareProjectedSchedule}>
         Share projected schedule
       </Checkbox>
       <Button onClick={shareWithApp}>App</Button>
       <Button onClick={shareWithEmail}>Email</Button>
-      <CopyToClipboard text={messageForPatient} onCopy={onCopy}>
-        <Button>Copy to Clipboard</Button>
-      </CopyToClipboard>
       <Button onClick={saveTaperConfiguration}>Save configuration</Button>
     </>
   );

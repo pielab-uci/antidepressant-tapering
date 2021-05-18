@@ -165,3 +165,14 @@ export const changeMessageForPatient = (data:string): ChangeMessageForPatient =>
   type: CHANGE_MESSAGE_FOR_PATIENT,
   data,
 });
+
+export const CHANGE_NOTE_AND_INSTRUCTIONS = 'CHANGE_NOTE_AND_INSTRUCTIONS' as const;
+export interface ChangeNoteAndInstructions {
+  type: typeof CHANGE_NOTE_AND_INSTRUCTIONS,
+  data: string;
+}
+
+export const changeNoteAndInstructions = (data: string): ChangeNoteAndInstructions => ({
+  type: CHANGE_NOTE_AND_INSTRUCTIONS,
+  data,
+});

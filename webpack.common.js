@@ -19,7 +19,7 @@ module.exports = {
   output: {
     filename: '[name].js',
     path: path.join(__dirname, 'dist'),
-    publicPath: '/',
+    publicPath: '/antidepressant-tapering',
   },
 
   plugins: [ new HtmlWebpackPlugin({

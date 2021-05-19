@@ -5,11 +5,11 @@ import {
   ALLOW_SPLITTING_UNSCORED_TABLET,
   CHOOSE_BRAND,
   CHOOSE_FORM,
-  CURRENT_DOSAGE_CHANGE,
+  PRIOR_DOSAGE_CHANGE,
   FETCH_DRUGS, INTERVAL_COUNT_CHANGE,
   INTERVAL_END_DATE_CHANGE,
   INTERVAL_START_DATE_CHANGE, INTERVAL_UNIT_CHANGE, LOAD_PRESCRIPTION_DATA,
-  NEXT_DOSAGE_CHANGE,
+  UPCOMING_DOSAGE_CHANGE,
   PRESCRIBED_QUANTITY_CHANGE,
   PrescriptionFormActions,
 } from './actions';
@@ -50,13 +50,13 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.drugFormOptions = draft.chosenBrand.forms;
         draft.chosenDrugForm = draft.drugFormOptions!.find((form) => form.form === action.data.form)!;
         draft.dosageOptions = draft.chosenDrugForm.dosages;
-        draft.currentDosagesQty = action.data.currentDosages.reduce(
+        draft.currentDosagesQty = action.data.priorDosages.reduce(
           (prev: { [dosage: string]: number }, currentDosage) => {
             prev[currentDosage.dosage] = currentDosage.quantity;
             return prev;
           }, {},
         );
-        draft.nextDosagesQty = action.data.nextDosages.reduce(
+        draft.nextDosagesQty = action.data.upcomingDosages.reduce(
           (prev: { [dosage: string]: number }, nextDosage) => {
             prev[nextDosage.dosage] = nextDosage.quantity;
             return prev;
@@ -127,13 +127,13 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         break;
       }
 
-      case CURRENT_DOSAGE_CHANGE:
+      case PRIOR_DOSAGE_CHANGE:
         if (action.data.dosage.quantity >= 0) {
           draft.currentDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;
         }
         break;
 
-      case NEXT_DOSAGE_CHANGE:
+      case UPCOMING_DOSAGE_CHANGE:
         if (action.data.dosage.quantity >= 0) {
           draft.nextDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;
           draft.prescribedDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity * draft.intervalDurationDays;

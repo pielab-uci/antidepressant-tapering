@@ -68,7 +68,7 @@ const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) =
     return !currentPatient!.taperingConfiguration
       ? <div>Drug(s): Drugs and dosages will appear hear.</div>
       : prescribedDrugs && prescribedDrugs.reduce((prev, prescribedDrug, i, arr) => {
-        const dosages = prescribedDrug.nextDosages.reduce(
+        const dosages = prescribedDrug.upcomingDosages.reduce(
           (prevDosageStr, dosage) => `${prevDosageStr}${dosage.quantity} * ${dosage.dosage}`, '',
         );
         return `${prev} ${prescribedDrug.brand} (${dosages})`;

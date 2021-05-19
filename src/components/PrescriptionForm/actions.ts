@@ -28,29 +28,29 @@ export interface ChooseFormAction {
   data: { id: number; form: string, minDosageUnit?: number, availableDosageOptions?: string[] };
 }
 
-export const CURRENT_DOSAGE_CHANGE = 'CURRENT_DOSAGE_CHANGE' as const;
+export const PRIOR_DOSAGE_CHANGE = 'PRIOR_DOSAGE_CHANGE' as const;
 
-export interface CurrentDosageChangeAction {
-  type: typeof CURRENT_DOSAGE_CHANGE;
+export interface PriorDosageChangeAction {
+  type: typeof PRIOR_DOSAGE_CHANGE;
   data: { id: number, dosage: { dosage: string, quantity: number } };
 }
 
-export const currentDosageChange = (data: { id: number, dosage: { dosage: string, quantity: number } }): CurrentDosageChangeAction => ({
-  type: CURRENT_DOSAGE_CHANGE,
+export const priorDosageChange = (data: { id: number, dosage: { dosage: string, quantity: number } }): PriorDosageChangeAction => ({
+  type: PRIOR_DOSAGE_CHANGE,
   data,
 });
 
-export const NEXT_DOSAGE_CHANGE = 'NEXT_DOSAGE_CHANGE' as const;
+export const UPCOMING_DOSAGE_CHANGE = 'UPCOMING_DOSAGE_CHANGE' as const;
 
-export interface NextDosageChangeAction {
-  type: typeof NEXT_DOSAGE_CHANGE;
+export interface UpcomingDosageChangeAction {
+  type: typeof UPCOMING_DOSAGE_CHANGE;
   data: { id: number, dosage: { dosage: string, quantity: number }, intervalDurationDays?: number };
 }
 
-export const nextDosageChange = (data: {
+export const upcomingDosageChange = (data: {
   id: number, dosage: { dosage: string, quantity: number }, intervalDurationDays?: number
-}): NextDosageChangeAction => ({
-  type: NEXT_DOSAGE_CHANGE,
+}): UpcomingDosageChangeAction => ({
+  type: UPCOMING_DOSAGE_CHANGE,
   data,
 });
 
@@ -133,8 +133,8 @@ export type PrescriptionFormActions =
   | LoadPrescriptionDataAction
   | ChooseBrandAction
   | ChooseFormAction
-  | CurrentDosageChangeAction
-  | NextDosageChangeAction
+  | PriorDosageChangeAction
+  | UpcomingDosageChangeAction
   | AllowSplittingUnscoredTabletAction
   | IntervalStartDateChangeAction
   | IntervalEndDateChangeAction

@@ -14,8 +14,8 @@ import {
   CHOOSE_BRAND,
   CHOOSE_FORM,
   FETCH_DRUGS,
-  currentDosageChange,
-  nextDosageChange,
+  priorDosageChange,
+  upcomingDosageChange,
   ChooseFormAction,
   ChooseBrandAction,
   FetchDrugsAction,
@@ -40,13 +40,13 @@ const { OptGroup, Option } = Select;
 
 export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
   ...initialState,
-  Current: {
+  Prior: {
     dosages: initialState.currentDosagesQty,
-    dosageChangeAction: currentDosageChange,
+    dosageChangeAction: priorDosageChange,
   },
-  Next: {
+  Upcoming: {
     dosages: initialState.nextDosagesQty,
-    dosageChangeAction: nextDosageChange,
+    dosageChangeAction: upcomingDosageChange,
   },
   formActionDispatch: () => {},
   id: -1,
@@ -122,7 +122,7 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
     });
   };
 
-  const renderDosages = (drugForm: DrugForm | null | undefined, time: 'Current' | 'Next', dosages: { [key: string]: number }) => (
+  const renderDosages = (drugForm: DrugForm | null | undefined, time: 'Prior' | 'Upcoming', dosages: { [key: string]: number }) => (
     <>
       {drugForm
         ? <Dosages time={time} dosages={dosages} />
@@ -139,13 +139,13 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
     <PrescriptionFormContext.Provider value={{
       ...state,
       id: prescribedDrug.id,
-      Current: {
+      Prior: {
         dosages: currentDosagesQty,
-        dosageChangeAction: currentDosageChange,
+        dosageChangeAction: priorDosageChange,
       },
-      Next: {
+      Upcoming: {
         dosages: nextDosagesQty,
-        dosageChangeAction: nextDosageChange,
+        dosageChangeAction: upcomingDosageChange,
       },
       formActionDispatch,
     }}
@@ -171,11 +171,11 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
       {chosenDrugForm?.form === 'tablet' && <Checkbox checked={allowSplittingUnscoredTablet} onChange={toggleAllowSplittingUnscoredTabletCheckbox}>Allow splitting unscored tablet</Checkbox>}
         <hr />
 
-        <div>Current Dosages</div>
-        {renderDosages(chosenDrugForm, 'Current', currentDosagesQty)}
+        <div>Prior Dosages</div>
+        {renderDosages(chosenDrugForm, 'Prior', currentDosagesQty)}
         <hr />
-        <div>Next Dosages</div>
-        {renderDosages(chosenDrugForm, 'Next', nextDosagesQty)}
+        <div>Upcoming interval Dosages</div>
+        {renderDosages(chosenDrugForm, 'Upcoming', nextDosagesQty)}
         <hr/>
         <SelectInterval />
         <hr/>

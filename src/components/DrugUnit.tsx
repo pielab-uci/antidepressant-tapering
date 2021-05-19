@@ -10,7 +10,7 @@ import { TaperConfigActions } from '../redux/reducers/taperConfig';
 
 interface Props {
   form: string;
-  time: 'Current' | 'Next'
+  time: 'Prior' | 'Upcoming'
   dosage: string;
   isScored?: boolean;
   isMinDosage: boolean;

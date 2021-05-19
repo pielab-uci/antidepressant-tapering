@@ -82,7 +82,7 @@ const TaperConfigurationPage = () => {
           && drug.form !== ''
           && drug.intervalEndDate !== null
           && drug.intervalCount !== 0
-          && drug.nextDosages.length !== 0,
+          && drug.upcomingDosages.length !== 0,
       ).every((cond) => cond);
   }, []);
 

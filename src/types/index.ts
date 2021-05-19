@@ -50,8 +50,8 @@ export interface PrescribedDrug {
   measureUnit: string; // mg or ml..?
   minDosageUnit: number;
   availableDosageOptions: string[];
-  currentDosages: { dosage: string; quantity: number }[];
-  nextDosages: { dosage: string; quantity: number }[];
+  priorDosages: { dosage: string; quantity: number }[];
+  upcomingDosages: { dosage: string; quantity: number }[];
   prescribedDosages: { [dosage: string]: number; };
   allowSplittingUnscoredTablet: boolean;
   prevVisit: boolean;

@@ -3,8 +3,8 @@ import {
   initialState,
 } from './reducer';
 import {
-  currentDosageChange,
-  nextDosageChange,
+  priorDosageChange,
+  upcomingDosageChange,
   PrescriptionFormActions,
 } from './actions';
 import { Drug, DrugForm, DrugOption } from '../../types';
@@ -32,13 +32,13 @@ export interface PrescriptionFormState {
 
 export type IPrescriptionFormContext = PrescriptionFormState
 & {
-  Current: {
+  Prior: {
     dosages: typeof initialState.currentDosagesQty,
-    dosageChangeAction: typeof currentDosageChange,
+    dosageChangeAction: typeof priorDosageChange,
   };
-  Next: {
+  Upcoming: {
     dosages: typeof initialState.nextDosagesQty,
-    dosageChangeAction: typeof nextDosageChange,
+    dosageChangeAction: typeof upcomingDosageChange,
   };
   formActionDispatch: Dispatch<PrescriptionFormActions>;
   id: number;

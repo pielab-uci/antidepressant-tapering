@@ -44,9 +44,9 @@ const validate = (drugs: PrescribedDrug[]): PrescribedDrug[] | null => {
 
 const convert = (drugs: PrescribedDrug[]): Converted[] => {
   return drugs.map((drug) => {
-    const currentDosageSum = drug.currentDosages
+    const currentDosageSum = drug.priorDosages
       .reduce((acc, d) => acc + parseFloat(d.dosage) * d.quantity, 0);
-    const nextDosageSum = drug.nextDosages
+    const nextDosageSum = drug.upcomingDosages
       .reduce((acc, d) => acc + parseFloat(d.dosage) * d.quantity, 0);
     const isIncreasing = currentDosageSum < nextDosageSum;
 
@@ -148,7 +148,7 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
       startDate: drug.intervalStartDate,
       endDate: drug.intervalEndDate,
       // Prescription: prescription(drug, drug.prescribedDosages),
-      Prescription: prescription(drug, drug.nextDosages.reduce(
+      Prescription: prescription(drug, drug.upcomingDosages.reduce(
         (prev, d) => ({ ...prev, [d.dosage]: d.quantity }), {},
       )),
       prescribedDosages: drug.prescribedDosages,
@@ -309,4 +309,4 @@ export const validateCompletePrescribedDrug = (drug: PrescribedDrug) => drug.nam
   && drug.form !== ''
   && drug.intervalEndDate !== null
   && drug.intervalCount !== 0
-  && drug.nextDosages.length !== 0;
+  && drug.upcomingDosages.length !== 0;

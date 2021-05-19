@@ -2,14 +2,12 @@ import * as React from 'react';
 import {
   FC, useCallback, useContext, useEffect, useState,
 } from 'react';
-import { Checkbox } from 'antd';
-import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { useDispatch } from 'react-redux';
 import DrugUnit from './DrugUnit';
 import { PrescriptionFormContext } from './PrescriptionForm/PrescriptionForm';
 
 interface Props {
-  time: 'Current' | 'Next';
+  time: 'Prior' | 'Upcoming';
   dosages: { [key: string]: number }
 }
 
@@ -27,7 +25,7 @@ const Dosages: FC<Props> = ({ time, dosages }) => {
     .reduce((acc, [dosage, count]) => acc + parseFloat(dosage) * count, 0);
 
   useEffect(() => {
-    if (time === 'Next') {
+    if (time === 'Upcoming') {
       const currentDosageSum = calculateDosageSum(currentDosagesQty);
       const nextDosageSum = calculateDosageSum(nextDosagesQty);
       if (currentDosageSum === 0) {
@@ -59,7 +57,7 @@ const Dosages: FC<Props> = ({ time, dosages }) => {
           />))
         }
       </div>
-      {time === 'Next' && dosageDifferencePercent
+      {time === 'Upcoming' && dosageDifferencePercent
       && (
       <div style={{ color: 'red' }}>
         {dosageDifferencePercent}

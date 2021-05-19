@@ -64,19 +64,19 @@ import drugs from './drugs';
 import {
   CHOOSE_BRAND,
   CHOOSE_FORM,
-  CURRENT_DOSAGE_CHANGE,
+  PRIOR_DOSAGE_CHANGE,
   INTERVAL_COUNT_CHANGE,
   INTERVAL_END_DATE_CHANGE,
   INTERVAL_START_DATE_CHANGE,
   INTERVAL_UNIT_CHANGE,
   ALLOW_SPLITTING_UNSCORED_TABLET,
-  NEXT_DOSAGE_CHANGE, PRESCRIBED_QUANTITY_CHANGE,
+  UPCOMING_DOSAGE_CHANGE, PRESCRIBED_QUANTITY_CHANGE,
   PrescriptionFormActions,
 } from '../../components/PrescriptionForm/actions';
 import { Schedule } from '../../components/ProjectedSchedule';
 import {
   chartDataConverter, ScheduleChartData, scheduleGenerator,
-  messageGenerateFromSchedule, validateCompletePrescribedDrug,
+  messageGenerateFromSchedule,
 } from './utils';
 
 export interface TaperConfigState {
@@ -216,8 +216,8 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           form: '',
           measureUnit: '',
           minDosageUnit: 0,
-          currentDosages: [],
-          nextDosages: [],
+          priorDosages: [],
+          upcomingDosages: [],
           availableDosageOptions: [],
           allowSplittingUnscoredTablet: false,
           prescribedDosages: {},
@@ -345,8 +345,8 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           form: '',
           measureUnit: '',
           minDosageUnit: 0,
-          currentDosages: [],
-          nextDosages: [],
+          priorDosages: [],
+          upcomingDosages: [],
           availableDosageOptions: [],
           prescribedDosages: {},
           allowSplittingUnscoredTablet: false,
@@ -460,8 +460,8 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         )!.name;
         drug.brand = action.data.brand;
         drug.form = '';
-        drug.currentDosages = [];
-        drug.nextDosages = [];
+        drug.priorDosages = [];
+        drug.upcomingDosages = [];
         draft.projectedSchedule = { drugs: [], data: [] };
         // set to default
         // drug.intervalEndDate = null;
@@ -476,39 +476,39 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         drug.form = action.data.form;
         drug.minDosageUnit = action.data.minDosageUnit!;
-        drug.currentDosages = [];
-        drug.nextDosages = [];
+        drug.priorDosages = [];
+        drug.upcomingDosages = [];
         drug.availableDosageOptions = action.data.availableDosageOptions!;
         draft.isInputComplete = false;
         draft.isSaved = false;
         break;
       }
 
-      case CURRENT_DOSAGE_CHANGE: {
+      case PRIOR_DOSAGE_CHANGE: {
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
-        const idx = drug.currentDosages.findIndex(
+        const idx = drug.priorDosages.findIndex(
           (curDosage) => curDosage.dosage === action.data.dosage.dosage,
         );
 
         if (idx === -1) {
-          drug.currentDosages.push(action.data.dosage);
+          drug.priorDosages.push(action.data.dosage);
         } else {
-          drug.currentDosages[idx] = action.data.dosage;
+          drug.priorDosages[idx] = action.data.dosage;
         }
         draft.isSaved = false;
         break;
       }
 
-      case NEXT_DOSAGE_CHANGE: {
+      case UPCOMING_DOSAGE_CHANGE: {
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
-        const idx = drug.nextDosages.findIndex(
+        const idx = drug.upcomingDosages.findIndex(
           (nextDosage) => nextDosage.dosage === action.data.dosage.dosage,
         );
 
         if (idx === -1) {
-          drug.nextDosages.push(action.data.dosage);
+          drug.upcomingDosages.push(action.data.dosage);
         } else {
-          drug.nextDosages[idx] = action.data.dosage;
+          drug.upcomingDosages[idx] = action.data.dosage;
         }
         drug.prescribedDosages[action.data.dosage.dosage] = action.data.dosage.quantity;
         draft.isSaved = false;

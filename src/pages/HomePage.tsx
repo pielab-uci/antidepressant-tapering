@@ -7,8 +7,6 @@ import PatientsList from '../components/PatientsList';
 import {
   LOAD_PATIENTS_REQUEST,
   LoadPatientsRequestAction,
-  SET_CURRENT_PATIENT,
-  SetCurrentPatientAction,
 } from '../redux/actions/user';
 import { UserState } from '../redux/reducers/user';
 import { RootState } from '../redux/reducers';
@@ -17,6 +15,7 @@ import PatientPage from './PatientPage';
 const HomePage = () => {
   const dispatch = useDispatch();
   const { me, patients } = useSelector<RootState, UserState>((state) => state.user);
+
   useEffect(() => {
     dispatch<LoadPatientsRequestAction>({
       type: LOAD_PATIENTS_REQUEST,

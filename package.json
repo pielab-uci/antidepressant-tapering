@@ -2,6 +2,7 @@
   "name": "tapering-antidepressant",
   "version": "1.0.0",
   "description": "",
+  "homepage": "https://frmh0313.github.io/antidepressant-tapering",
   "dependencies": {
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.3.0",
@@ -47,6 +48,7 @@
     "eslint-webpack-plugin": "^2.5.4",
     "html-webpack-plugin": "^5.3.1",
     "style-loader": "^2.0.0",
+    "terser-webpack-plugin": "^5.1.2",
     "webpack": "^5.35.1",
     "webpack-cli": "^4.6.0",
     "webpack-dev-server": "^3.11.2",
@@ -55,6 +57,7 @@
   "scripts": {
     "dev": "webpack serve --config webpack.dev.js --stats-error-details",
     "build": "cross-env NODE_ENV=production webpack --config webpack.prod.js",
+    "prod": "cross-env NODE_ENV=production webpack serve --config webpack.prod.js",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
   },

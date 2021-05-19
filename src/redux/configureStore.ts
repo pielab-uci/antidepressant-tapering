@@ -13,7 +13,8 @@ interface SagaStore extends Store<RootState, AnyAction> {
 
 const sagaMiddleware = createSagaMiddleware();
 const middlewares: Middleware[] = [sagaMiddleware];
-const enhancer = process.env.NODE_ENV === 'production' ? compose(applyMiddleware(...middlewares))
+const enhancer = process.env.NODE_ENV === 'production'
+  ? compose(applyMiddleware(...middlewares))
   : composeWithDevTools(applyMiddleware(...middlewares));
 
 const store = createStore(reducer, enhancer);

@@ -19,7 +19,9 @@ module.exports = {
   output: {
     filename: '[name].js',
     path: path.join(__dirname, 'dist'),
-    publicPath: '/antidepressant-tapering',
+    // publicPath: process.env.NODE_ENV === 'production' ? '/antidepressant-tapering' : '/dist/',
+    // publicPath: '/dist/',
+    // publicPath: '/',
   },
 
   plugins: [ new HtmlWebpackPlugin({

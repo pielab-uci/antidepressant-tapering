@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  useCallback, useEffect, useRef,
+  useCallback, useEffect, useMemo, useRef,
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Checkbox, Input } from 'antd';
@@ -43,7 +43,6 @@ const TaperConfigurationPage = () => {
     isSaved,
     isInputComplete,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
-  // const [canGenerateSchedule, setCanGenerateSchedule] = useState<boolean|null>(false);
   const dispatch = useDispatch();
   const urlSearchParams = useRef<URLSearchParams>(new URLSearchParams(useLocation().search));
 
@@ -58,7 +57,10 @@ const TaperConfigurationPage = () => {
     } else {
       dispatch<InitTaperConfig>({
         type: INIT_NEW_TAPER_CONFIG,
-        data: { clinicianId: parseInt(urlSearchParams.current.get('clinicianId')!, 10), patientId: parseInt(urlSearchParams.current!.get('patientId')!, 10) },
+        data: {
+          clinicianId: parseInt(urlSearchParams.current.get('clinicianId')!, 10),
+          patientId: parseInt(urlSearchParams.current!.get('patientId')!, 10),
+        },
       });
     }
 
@@ -69,39 +71,39 @@ const TaperConfigurationPage = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (prescribedDrugs && prescribedDrugs.filter((d) => !d.prevVisit).length === 0) {
-      dispatch<AddNewDrugFormAction>({
-        type: ADD_NEW_DRUG_FORM,
-      });
-    }
-  }, [prescribedDrugs]);
+  const validateCompleteInputs = useCallback((drugs: PrescribedDrug[] | null) => {
+    console.log('drugs: ', drugs);
 
-  useEffect(() => {
-    const inputIsComplete = (prescribedDrugs !== null
-      && prescribedDrugs.length !== 0
-      && prescribedDrugs.map(
+    return drugs !== null
+      && drugs.length !== 0
+      && drugs.map(
         (drug) => drug.name !== ''
           && drug.brand !== ''
           && drug.form !== ''
           && drug.intervalEndDate !== null
           && drug.intervalCount !== 0
           && drug.nextDosages.length !== 0,
-      ).every((cond) => cond));
-    console.groupEnd();
-    console.log('inputIsComplete: ', inputIsComplete);
+      ).every((cond) => cond);
+  }, []);
+
+  useEffect(() => {
+    if (prescribedDrugs && prescribedDrugs.filter((d) => !d.prevVisit).length === 0) {
+      dispatch<AddNewDrugFormAction>({
+        type: ADD_NEW_DRUG_FORM,
+      });
+    }
+
     dispatch({
       type: CHECK_INPUTS,
-      data: inputIsComplete,
+      data: validateCompleteInputs(prescribedDrugs),
     });
   }, [prescribedDrugs]);
 
   useEffect(() => {
-    if (isInputComplete) {
-      console.log('Input is complete. Generate Schedule');
-      // dispatch({
-      //   type: GENERATE_SCHEDULE,
-      // });
+    if (validateCompleteInputs(prescribedDrugs)) {
+      dispatch({
+        type: GENERATE_SCHEDULE,
+      });
     } else {
       dispatch({
         type: CLEAR_SCHEDULE,

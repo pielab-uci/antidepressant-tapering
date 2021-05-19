@@ -303,3 +303,10 @@ export const messageGenerateFromSchedule = (schedule: Schedule): string => {
       return `${message} ${dosages} of ${row.Drug} from ${startDate} to ${endDate}.\n`;
     }, '');
 };
+
+export const validateCompletePrescribedDrug = (drug: PrescribedDrug) => drug.name !== ''
+  && drug.brand !== ''
+  && drug.form !== ''
+  && drug.intervalEndDate !== null
+  && drug.intervalCount !== 0
+  && drug.nextDosages.length !== 0;

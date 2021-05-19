@@ -76,7 +76,7 @@ import {
 import { Schedule } from '../../components/ProjectedSchedule';
 import {
   chartDataConverter, ScheduleChartData, scheduleGenerator,
-  messageGenerateFromSchedule,
+  messageGenerateFromSchedule, validateCompletePrescribedDrug,
 } from './utils';
 
 export interface TaperConfigState {
@@ -208,6 +208,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.clinicianId = action.data.clinicianId;
         draft.patientId = action.data.patientId;
         draft.taperConfigCreatedAt = null;
+        draft.lastPrescriptionFormId += 1;
         draft.prescribedDrugs = [{
           id: draft.lastPrescriptionFormId,
           name: '',
@@ -301,6 +302,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         // draft.projectedSchedule = scheduleGenerator(
         //   draft.prescribedDrugs!.filter((prescribedDrug) => !prescribedDrug.prevVisit),
         // );
+        draft.lastPrescriptionFormId = Math.max(...action.data.prescribedDrugs.map((drug) => drug.id));
         draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
         draft.projectedSchedule.data.forEach((row, i) => {
           if (row.selected) {
@@ -371,7 +373,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.isInputComplete = action.data;
         break;
 
-      case GENERATE_SCHEDULE:
+      case GENERATE_SCHEDULE: {
         draft.projectedSchedule = scheduleGenerator(draft.prescribedDrugs!);
         draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
         draft.projectedSchedule.data.forEach((row, i) => {
@@ -383,6 +385,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.showMessageForPatient = true;
         draft.isSaved = false;
         break;
+      }
 
       case CLEAR_SCHEDULE:
         draft.projectedSchedule = { data: [], drugs: [] };

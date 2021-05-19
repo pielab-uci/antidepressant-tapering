@@ -31,7 +31,7 @@ module.exports = {
     project: ['tsconfig.json'],
     tsconfigRootDir: __dirname,
   },
-  ignorePatterns: ['webpack.config.js'],
+  ignorePatterns: ['webpack.dev.js', 'webpack.common.js', 'webpack.prod.js'],
   plugins: [
     'react',
     '@typescript-eslint',

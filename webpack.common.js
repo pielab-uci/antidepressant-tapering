@@ -1,10 +1,7 @@
-const path = require('path');
+const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
-  mode: 'development',
-  devtool: 'source-map',
-  // devtool: "eval",
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
   },
@@ -22,7 +19,7 @@ module.exports = {
   output: {
     filename: '[name].js',
     path: path.join(__dirname, 'dist'),
-    publicPath: '/dist/',
+    publicPath: '/',
   },
 
   plugins: [ new HtmlWebpackPlugin({
@@ -30,13 +27,4 @@ module.exports = {
     title: 'Supporting Tapering Antidepressants',
     template: './src/index.html'
   }) ],
-
-  devServer: {
-    hot: true,
-    publicPath: '/dist/',
-    historyApiFallback: {
-      index: './dist/index.html'
-    },
-    writeToDisk: true,
-  },
-};
+}

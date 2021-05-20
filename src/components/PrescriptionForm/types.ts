@@ -19,8 +19,8 @@ export interface PrescriptionFormState {
   dosageOptions: { dosage: string, isScored?: boolean }[];
   availableDosageOptions: string[];
   minDosageUnit: number;
-  currentDosagesQty: { [key: string]: number };
-  nextDosagesQty: { [key: string]: number };
+  priorDosagesQty: { [key: string]: number };
+  upcomingDosagesQty: { [key: string]: number };
   allowSplittingUnscoredTablet: boolean;
   prescribedDosagesQty: { [key: string]: number };
   intervalStartDate: Date;
@@ -33,11 +33,11 @@ export interface PrescriptionFormState {
 export type IPrescriptionFormContext = PrescriptionFormState
 & {
   Prior: {
-    dosages: typeof initialState.currentDosagesQty,
+    dosages: typeof initialState.priorDosagesQty,
     dosageChangeAction: typeof priorDosageChange,
   };
   Upcoming: {
-    dosages: typeof initialState.nextDosagesQty,
+    dosages: typeof initialState.upcomingDosagesQty,
     dosageChangeAction: typeof upcomingDosageChange,
   };
   formActionDispatch: Dispatch<PrescriptionFormActions>;

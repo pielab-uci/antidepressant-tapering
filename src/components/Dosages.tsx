@@ -14,7 +14,7 @@ interface Props {
 const Dosages: FC<Props> = ({ time, dosages }) => {
   const context = useContext(PrescriptionFormContext);
   const {
-    chosenDrugForm, dosageOptions, currentDosagesQty, nextDosagesQty, id,
+    chosenDrugForm, dosageOptions, priorDosagesQty, upcomingDosagesQty, id,
     formActionDispatch,
   } = context;
   const taperConfigActionDispatch = useDispatch();
@@ -26,8 +26,8 @@ const Dosages: FC<Props> = ({ time, dosages }) => {
 
   useEffect(() => {
     if (time === 'Upcoming') {
-      const currentDosageSum = calculateDosageSum(currentDosagesQty);
-      const nextDosageSum = calculateDosageSum(nextDosagesQty);
+      const currentDosageSum = calculateDosageSum(priorDosagesQty);
+      const nextDosageSum = calculateDosageSum(upcomingDosagesQty);
       if (currentDosageSum === 0) {
         setDosageDifferencePercent(null);
       } else {
@@ -36,7 +36,7 @@ const Dosages: FC<Props> = ({ time, dosages }) => {
         );
       }
     }
-  }, [currentDosagesQty, nextDosagesQty]);
+  }, [priorDosagesQty, upcomingDosagesQty]);
 
   return (
     <>

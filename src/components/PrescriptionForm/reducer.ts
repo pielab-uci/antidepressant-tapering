@@ -24,8 +24,8 @@ export const initialState: PrescriptionFormState = {
   dosageOptions: [],
   availableDosageOptions: [],
   minDosageUnit: 0,
-  currentDosagesQty: {},
-  nextDosagesQty: {},
+  priorDosagesQty: {},
+  upcomingDosagesQty: {},
   allowSplittingUnscoredTablet: false,
   prescribedDosagesQty: {},
   intervalStartDate: new Date(),
@@ -50,25 +50,25 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.drugFormOptions = draft.chosenBrand.forms;
         draft.chosenDrugForm = draft.drugFormOptions!.find((form) => form.form === action.data.form)!;
         draft.dosageOptions = draft.chosenDrugForm.dosages;
-        draft.currentDosagesQty = action.data.priorDosages.reduce(
+        draft.priorDosagesQty = action.data.priorDosages.reduce(
           (prev: { [dosage: string]: number }, currentDosage) => {
             prev[currentDosage.dosage] = currentDosage.quantity;
             return prev;
           }, {},
         );
-        draft.nextDosagesQty = action.data.upcomingDosages.reduce(
+        draft.upcomingDosagesQty = action.data.upcomingDosages.reduce(
           (prev: { [dosage: string]: number }, nextDosage) => {
             prev[nextDosage.dosage] = nextDosage.quantity;
             return prev;
           }, {},
         );
         draft.dosageOptions.forEach((dosage) => {
-          if (!Object.keys(draft.currentDosagesQty).includes(dosage.dosage)) {
-            draft.currentDosagesQty[dosage.dosage] = 0;
+          if (!Object.keys(draft.priorDosagesQty).includes(dosage.dosage)) {
+            draft.priorDosagesQty[dosage.dosage] = 0;
           }
 
-          if (!Object.keys(draft.nextDosagesQty).includes(dosage.dosage)) {
-            draft.nextDosagesQty[dosage.dosage] = 0;
+          if (!Object.keys(draft.upcomingDosagesQty).includes(dosage.dosage)) {
+            draft.upcomingDosagesQty[dosage.dosage] = 0;
           }
         });
         draft.intervalStartDate = action.data.intervalStartDate;
@@ -96,8 +96,8 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.intervalUnit = 'Days';
         draft.intervalCount = 0;
         draft.intervalEndDate = null;
-        draft.currentDosagesQty = {};
-        draft.nextDosagesQty = {};
+        draft.priorDosagesQty = {};
+        draft.upcomingDosagesQty = {};
         draft.prescribedDosagesQty = {};
         break;
       }
@@ -114,13 +114,13 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
           return option.dosage;
         }))];
 
-        draft.currentDosagesQty = {};
-        draft.nextDosagesQty = {};
+        draft.priorDosagesQty = {};
+        draft.upcomingDosagesQty = {};
         draft.prescribedDosagesQty = {};
 
         chosenDrugForm.dosages.forEach((dosage) => {
-          draft.currentDosagesQty[dosage.dosage] = 0;
-          draft.nextDosagesQty[dosage.dosage] = 0;
+          draft.priorDosagesQty[dosage.dosage] = 0;
+          draft.upcomingDosagesQty[dosage.dosage] = 0;
           draft.prescribedDosagesQty[dosage.dosage] = 0;
         });
 
@@ -129,13 +129,13 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
 
       case PRIOR_DOSAGE_CHANGE:
         if (action.data.dosage.quantity >= 0) {
-          draft.currentDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;
+          draft.priorDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;
         }
         break;
 
       case UPCOMING_DOSAGE_CHANGE:
         if (action.data.dosage.quantity >= 0) {
-          draft.nextDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;
+          draft.upcomingDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;
           draft.prescribedDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity * draft.intervalDurationDays;
         }
         break;
@@ -149,11 +149,11 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
       case ALLOW_SPLITTING_UNSCORED_TABLET:
         draft.allowSplittingUnscoredTablet = action.data.allow;
         if (!action.data.allow) {
-          Object.entries(draft.currentDosagesQty).forEach(([k, v]) => {
-            draft.currentDosagesQty[k] = Math.floor(v);
+          Object.entries(draft.priorDosagesQty).forEach(([k, v]) => {
+            draft.priorDosagesQty[k] = Math.floor(v);
           });
-          Object.entries(draft.nextDosagesQty).forEach(([k, v]) => {
-            draft.nextDosagesQty[k] = Math.floor(v);
+          Object.entries(draft.upcomingDosagesQty).forEach(([k, v]) => {
+            draft.upcomingDosagesQty[k] = Math.floor(v);
           });
         }
         break;
@@ -166,7 +166,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         }
         draft.intervalDurationDays = draft.intervalCount;
         Object.keys(draft.prescribedDosagesQty).forEach((key) => {
-          draft.prescribedDosagesQty[key] = draft.nextDosagesQty[key] * draft.intervalDurationDays;
+          draft.prescribedDosagesQty[key] = draft.upcomingDosagesQty[key] * draft.intervalDurationDays;
         });
         break;
 
@@ -176,7 +176,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.intervalCount = differenceInCalendarDays(draft.intervalEndDate!, draft.intervalStartDate);
         draft.intervalDurationDays = draft.intervalCount;
         Object.keys(draft.prescribedDosagesQty).forEach((key) => {
-          draft.prescribedDosagesQty[key] = draft.nextDosagesQty[key] * draft.intervalDurationDays;
+          draft.prescribedDosagesQty[key] = draft.upcomingDosagesQty[key] * draft.intervalDurationDays;
         });
         break;
 
@@ -185,7 +185,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.intervalEndDate = add(draft.intervalStartDate, { [draft.intervalUnit.toLowerCase()]: draft.intervalCount });
         draft.intervalDurationDays = differenceInCalendarDays(draft.intervalEndDate, draft.intervalStartDate);
         Object.keys(draft.prescribedDosagesQty).forEach((key) => {
-          draft.prescribedDosagesQty[key] = draft.nextDosagesQty[key] * draft.intervalDurationDays;
+          draft.prescribedDosagesQty[key] = draft.upcomingDosagesQty[key] * draft.intervalDurationDays;
         });
         break;
 
@@ -194,7 +194,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.intervalEndDate = add(draft.intervalStartDate, { [draft.intervalUnit.toLowerCase()]: draft.intervalCount });
         draft.intervalDurationDays = differenceInCalendarDays(draft.intervalEndDate, draft.intervalStartDate);
         Object.keys(draft.prescribedDosagesQty).forEach((key) => {
-          draft.prescribedDosagesQty[key] = draft.nextDosagesQty[key] * draft.intervalDurationDays;
+          draft.prescribedDosagesQty[key] = draft.upcomingDosagesQty[key] * draft.intervalDurationDays;
         });
         break;
     }

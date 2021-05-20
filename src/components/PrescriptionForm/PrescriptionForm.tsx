@@ -41,11 +41,11 @@ const { OptGroup, Option } = Select;
 export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
   ...initialState,
   Prior: {
-    dosages: initialState.currentDosagesQty,
+    dosages: initialState.priorDosagesQty,
     dosageChangeAction: priorDosageChange,
   },
   Upcoming: {
-    dosages: initialState.nextDosagesQty,
+    dosages: initialState.upcomingDosagesQty,
     dosageChangeAction: upcomingDosageChange,
   },
   formActionDispatch: () => {},
@@ -62,7 +62,7 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
 
   const {
     drugs: drugsLocal, chosenBrand, chosenDrugForm, drugFormOptions,
-    currentDosagesQty, nextDosagesQty, minDosageUnit,
+    priorDosagesQty, upcomingDosagesQty, minDosageUnit,
     availableDosageOptions, allowSplittingUnscoredTablet,
   } = state;
   const { drugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
@@ -140,11 +140,11 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
       ...state,
       id: prescribedDrug.id,
       Prior: {
-        dosages: currentDosagesQty,
+        dosages: priorDosagesQty,
         dosageChangeAction: priorDosageChange,
       },
       Upcoming: {
-        dosages: nextDosagesQty,
+        dosages: upcomingDosagesQty,
         dosageChangeAction: upcomingDosageChange,
       },
       formActionDispatch,
@@ -172,10 +172,10 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
         <hr />
 
         <div>Prior Dosages</div>
-        {renderDosages(chosenDrugForm, 'Prior', currentDosagesQty)}
+        {renderDosages(chosenDrugForm, 'Prior', priorDosagesQty)}
         <hr />
         <div>Upcoming interval Dosages</div>
-        {renderDosages(chosenDrugForm, 'Upcoming', nextDosagesQty)}
+        {renderDosages(chosenDrugForm, 'Upcoming', upcomingDosagesQty)}
         <hr/>
         <SelectInterval />
         <hr/>

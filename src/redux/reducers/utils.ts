@@ -7,20 +7,12 @@ import { Schedule } from '../../components/ProjectedSchedule';
 
 type Converted = PrescribedDrug & {
   intervalEndDate: Date;
-  currentDosageSum: number;
-  nextDosageSum: number;
+  priorDosageSum: number;
+  upcomingDosageSum: number;
   changeRate: number;
   changeAmount: number;
   isIncreasing: boolean;
 };
-// interface Converted extends PrescribedDrug {
-//   intervalEndDate: Date;
-//   currentDosageSum: number;
-//   nextDosageSum: number;
-//   changeRate: number;
-//   changeAmount: number;
-//   isIncreasing: boolean;
-// }
 
 export type TableRowData =
   TableRow & {
@@ -34,7 +26,8 @@ const validate = (drugs: PrescribedDrug[]): PrescribedDrug[] | null => {
   for (const drug of drugs) {
     Object.entries(drug).forEach(([k, v]) => {
       if (v === null) {
-        alert(`Please check ${k} of ${drug.name}.`);
+        // alert(`Please check ${k} of ${drug.name}.`);
+        console.error(`Check ${k} of ${drug.name}.`);
         return null;
       }
     });
@@ -44,18 +37,18 @@ const validate = (drugs: PrescribedDrug[]): PrescribedDrug[] | null => {
 
 const convert = (drugs: PrescribedDrug[]): Converted[] => {
   return drugs.map((drug) => {
-    const currentDosageSum = drug.priorDosages
+    const priorDosageSum = drug.priorDosages
       .reduce((acc, d) => acc + parseFloat(d.dosage) * d.quantity, 0);
-    const nextDosageSum = drug.upcomingDosages
+    const upcomingDosageSum = drug.upcomingDosages
       .reduce((acc, d) => acc + parseFloat(d.dosage) * d.quantity, 0);
-    const isIncreasing = currentDosageSum < nextDosageSum;
+    const isIncreasing = priorDosageSum < upcomingDosageSum;
 
     return {
       ...drug,
-      currentDosageSum,
-      nextDosageSum,
-      changeAmount: nextDosageSum - currentDosageSum,
-      changeRate: nextDosageSum / currentDosageSum,
+      priorDosageSum,
+      upcomingDosageSum,
+      changeAmount: upcomingDosageSum - priorDosageSum,
+      changeRate: upcomingDosageSum / priorDosageSum,
       intervalEndDate: drug.intervalEndDate!,
       isIncreasing,
     };
@@ -101,7 +94,7 @@ const calcProjectedDosages = (drug: Converted, prescribedDosage: number, length:
 };
 
 const calcNextDosageQty = (drug: Converted, dosage: number): { [dosageQty: string]: number } => {
-  const nextDosageQty: { [dosage: string]: number } = {};
+  const upcomingDosageQty: { [dosage: string]: number } = {};
 
   let d = dosage;
   drug.availableDosageOptions
@@ -110,7 +103,7 @@ const calcNextDosageQty = (drug: Converted, dosage: number): { [dosageQty: strin
     .forEach((dos) => {
       const quot = Math.floor(d / parseFloat(dos));
       if (quot >= 1) {
-        nextDosageQty[dos] = quot;
+        upcomingDosageQty[dos] = quot;
         d -= quot * parseFloat(dos);
       }
     });
@@ -119,7 +112,7 @@ const calcNextDosageQty = (drug: Converted, dosage: number): { [dosageQty: strin
   if (d > 0) {
     console.error('error in calcNextDosageQty');
   }
-  return nextDosageQty;
+  return upcomingDosageQty;
 };
 
 const prescription = (drug: Converted, dosageQty: { [dosage: string]: number }) => Object.entries(dosageQty)
@@ -137,13 +130,13 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
   drugs.forEach((drug) => {
     const durationInDays = { days: differenceInCalendarDays(drug.intervalEndDate, drug.intervalStartDate) };
 
-    const nextDosages = calcProjectedDosages(drug, drug.nextDosageSum, 4);
+    const upcomingDosages = calcProjectedDosages(drug, drug.upcomingDosageSum, 4);
 
     rows.push({
       // Drug: drug.brand,
       Drug: drug.name,
-      'Current Dosage': `${drug.currentDosageSum}${drug.measureUnit}`,
-      'Next Dosage': `${nextDosages[0]}${drug.measureUnit}`,
+      'Current Dosage': `${drug.priorDosageSum}${drug.measureUnit}`,
+      'Next Dosage': `${upcomingDosages[0]}${drug.measureUnit}`,
       Dates: `${format(drug.intervalStartDate, 'MM/dd/yyyy')} - ${format(drug.intervalEndDate, 'MM/dd/yyyy')}`,
       startDate: drug.intervalStartDate,
       endDate: drug.intervalEndDate,
@@ -161,9 +154,9 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
     const newRowData = {
       // Drug: drug.brand,
       Drug: drug.name,
-      currentDosageSum: drug.nextDosageSum,
-      nextDosageSum: nextDosages[1],
-      prescribedDosages: calcNextDosageQty(drug, nextDosages[1]),
+      currentDosageSum: drug.upcomingDosageSum,
+      nextDosageSum: upcomingDosages[1],
+      prescribedDosages: calcNextDosageQty(drug, upcomingDosages[1]),
       startDate: projectionStartDate,
       endDate: add(projectionStartDate, durationInDays),
       selected: false,
@@ -188,7 +181,7 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
         });
 
         newRowData.currentDosageSum = newRowData.nextDosageSum;
-        newRowData.nextDosageSum = nextDosages[i + 2];
+        newRowData.nextDosageSum = upcomingDosages[i + 2];
         newRowData.prescribedDosages = calcNextDosageQty(drug, newRowData.nextDosageSum);
         newRowData.startDate = add(newRowData.endDate, { days: 1 });
         newRowData.endDate = add(newRowData.startDate, durationInDays);
@@ -303,10 +296,3 @@ export const messageGenerateFromSchedule = (schedule: Schedule): string => {
       return `${message} ${dosages} of ${row.Drug} from ${startDate} to ${endDate}.\n`;
     }, '');
 };
-
-export const validateCompletePrescribedDrug = (drug: PrescribedDrug) => drug.name !== ''
-  && drug.brand !== ''
-  && drug.form !== ''
-  && drug.intervalEndDate !== null
-  && drug.intervalCount !== 0
-  && drug.upcomingDosages.length !== 0;

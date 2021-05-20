@@ -24,11 +24,6 @@ const drugs: Drug[] = [
               measureUnit: 'mg',
 
             },
-            {
-              form: 'package',
-              dosages: [{ dosage: '4 capsules of 90mg' }],
-              measureUnit: '4 capsules...?',
-            },
           ],
         },
         {

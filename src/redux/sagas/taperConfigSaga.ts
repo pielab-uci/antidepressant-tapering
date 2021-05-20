@@ -2,13 +2,15 @@ import {
   all, put, fork, takeLatest, delay, select,
 } from 'redux-saga/effects';
 import {
+  ADD_NEW_DRUG_FORM,
   ADD_OR_UPDATE_TAPER_CONFIG_FAILURE,
   ADD_OR_UPDATE_TAPER_CONFIG_REQUEST,
-  ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS,
+  ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS, AddNewDrugFormAction,
   AddOrUpdateTaperConfigFailureAction,
   AddOrUpdateTaperConfigRequestAction,
-  AddOrUpdateTaperConfigSuccessAction,
-  FETCH_PRESCRIBED_DRUGS_FAILURE, FETCH_PRESCRIBED_DRUGS_REQUEST,
+  AddOrUpdateTaperConfigSuccessAction, CLEAR_SCHEDULE, ClearScheduleAction,
+  FETCH_PRESCRIBED_DRUGS_FAILURE,
+  FETCH_PRESCRIBED_DRUGS_REQUEST,
   FETCH_PRESCRIBED_DRUGS_SUCCESS,
   FETCH_TAPER_CONFIG_FAILURE,
   FETCH_TAPER_CONFIG_REQUEST,
@@ -19,10 +21,37 @@ import {
   FetchTaperConfigFailureAction,
   FetchTaperConfigRequestAction,
   FetchTaperConfigSuccessAction,
+  GENERATE_SCHEDULE,
+  GenerateScheduleAction,
 } from '../actions/taperConfig';
 import { PrescribedDrug, TaperingConfiguration } from '../../types';
+import { completePrescribedDrugs } from '../reducers/utils';
+import { TaperConfigState } from '../reducers/taperConfig';
+import {
+  ALLOW_SPLITTING_UNSCORED_TABLET,
+  CHOOSE_BRAND,
+  CHOOSE_FORM, INTERVAL_COUNT_CHANGE, INTERVAL_END_DATE_CHANGE, INTERVAL_START_DATE_CHANGE, INTERVAL_UNIT_CHANGE,
+  PRIOR_DOSAGE_CHANGE,
+  UPCOMING_DOSAGE_CHANGE,
+} from '../../components/PrescriptionForm/actions';
 
 let taperConfigId = 100;
+
+function* generateOrClearSchedule() {
+  const taperConfigState: TaperConfigState = yield select((state) => state.taperConfig);
+
+  const validPrescribedDrugsInputs = completePrescribedDrugs(taperConfigState.prescribedDrugs);
+  if (validPrescribedDrugsInputs.length !== 0) {
+    yield put<GenerateScheduleAction>({
+      type: GENERATE_SCHEDULE,
+      data: validPrescribedDrugsInputs,
+    });
+  } else {
+    yield put<ClearScheduleAction>({
+      type: CLEAR_SCHEDULE,
+    });
+  }
+}
 
 function addOrUpdateTaperConfigAPI(action: AddOrUpdateTaperConfigRequestAction): { data: TaperingConfiguration } {
   taperConfigId += 1;
@@ -51,6 +80,10 @@ function* addOrUpdateTaperConfig(action: AddOrUpdateTaperConfigRequestAction) {
       error: err.response.data,
     });
   }
+}
+
+function* watchAddOrUpdateTaperConfig() {
+  yield takeLatest(ADD_OR_UPDATE_TAPER_CONFIG_REQUEST, addOrUpdateTaperConfig);
 }
 
 function fetchTaperConfigAPI(action: FetchTaperConfigRequestAction): { data: TaperingConfiguration } {
@@ -113,6 +146,16 @@ function* fetchTaperConfig(action: FetchTaperConfigRequestAction) {
       type: FETCH_TAPER_CONFIG_SUCCESS,
       data: result.data,
     });
+
+    const taperConfigState: TaperConfigState = yield select((state) => state.taperConfig);
+
+    if (taperConfigState.prescribedDrugs?.filter((drug) => !drug.prevVisit).length === 0) {
+      yield put<AddNewDrugFormAction>({
+        type: ADD_NEW_DRUG_FORM,
+      });
+    }
+
+    yield generateOrClearSchedule();
   } catch (err) {
     console.error(err);
     yield put<FetchTaperConfigFailureAction>({
@@ -120,6 +163,10 @@ function* fetchTaperConfig(action: FetchTaperConfigRequestAction) {
       error: err.response.data,
     });
   }
+}
+
+function* watchFetchTaperConfig() {
+  yield takeLatest(FETCH_TAPER_CONFIG_REQUEST, fetchTaperConfig);
 }
 
 function fetchPrescribedDrugsAPI(action: FetchPrescribedDrugsRequestAction): { data: PrescribedDrug[] } {
@@ -177,6 +224,16 @@ function* fetchPrescribedDrugs(action: FetchPrescribedDrugsRequestAction) {
       type: FETCH_PRESCRIBED_DRUGS_SUCCESS,
       data: result.data,
     });
+
+    const taperConfigState: TaperConfigState = yield select((state) => state.taperConfig);
+
+    if (taperConfigState.prescribedDrugs?.filter((drug) => !drug.prevVisit).length === 0) {
+      yield put<AddNewDrugFormAction>({
+        type: ADD_NEW_DRUG_FORM,
+      });
+    }
+
+    generateOrClearSchedule();
   } catch (err) {
     console.error(err);
     yield put<FetchPrescribedDrugsFailureAction>({
@@ -186,16 +243,16 @@ function* fetchPrescribedDrugs(action: FetchPrescribedDrugsRequestAction) {
   }
 }
 
-function* watchFetchTaperConfig() {
-  yield takeLatest(FETCH_TAPER_CONFIG_REQUEST, fetchTaperConfig);
-}
-
 function* watchFetchPrescribedDrugs() {
   yield takeLatest(FETCH_PRESCRIBED_DRUGS_REQUEST, fetchPrescribedDrugs);
 }
 
-function* watchAddOrUpdateTaperConfig() {
-  yield takeLatest(ADD_OR_UPDATE_TAPER_CONFIG_REQUEST, addOrUpdateTaperConfig);
+function* watchTaperConfigFormChange() {
+  console.log('watchTaperConfigFormChange');
+  yield takeLatest([CHOOSE_BRAND, CHOOSE_FORM, PRIOR_DOSAGE_CHANGE,
+    ALLOW_SPLITTING_UNSCORED_TABLET, UPCOMING_DOSAGE_CHANGE, INTERVAL_START_DATE_CHANGE,
+    INTERVAL_END_DATE_CHANGE, INTERVAL_UNIT_CHANGE, INTERVAL_COUNT_CHANGE],
+  generateOrClearSchedule);
 }
 
 export default function* taperConfigSaga() {
@@ -203,5 +260,6 @@ export default function* taperConfigSaga() {
     fork(watchFetchTaperConfig),
     fork(watchFetchPrescribedDrugs),
     fork(watchAddOrUpdateTaperConfig),
+    fork(watchTaperConfigFormChange),
   ]);
 }

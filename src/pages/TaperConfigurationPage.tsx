@@ -18,7 +18,7 @@ import {
   FetchTaperConfigRequestAction,
   GENERATE_SCHEDULE,
   INIT_NEW_TAPER_CONFIG,
-  InitTaperConfig,
+  InitTaperConfigAction,
   EMPTY_TAPER_CONFIG_PAGE,
   EmptyTaperConfigPage,
   SHARE_WITH_PATIENT_APP_REQUEST,
@@ -53,7 +53,7 @@ const TaperConfigurationPage = () => {
         data: parseInt(id, 10),
       });
     } else {
-      dispatch<InitTaperConfig>({
+      dispatch<InitTaperConfigAction>({
         type: INIT_NEW_TAPER_CONFIG,
         data: {
           clinicianId: parseInt(urlSearchParams.current.get('clinicianId')!, 10),
@@ -68,14 +68,6 @@ const TaperConfigurationPage = () => {
       });
     };
   }, []);
-
-  useEffect(() => {
-    if (prescribedDrugs && prescribedDrugs.filter((d) => !d.prevVisit).length === 0) {
-      dispatch<AddNewDrugFormAction>({
-        type: ADD_NEW_DRUG_FORM,
-      });
-    }
-  }, [prescribedDrugs]);
 
   const toggleShareProjectedSchedule = useCallback(() => {
     dispatch({

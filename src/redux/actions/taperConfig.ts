@@ -1,13 +1,24 @@
 import { Key } from 'react';
 import { PrescribedDrug, TaperingConfiguration } from '../../types';
 
+export const GENERATE_SCHEDULE = 'GENERATE_SCHEDULE' as const;
+export const CLEAR_SCHEDULE = 'CLEAR_SCHEDULE' as const;
+
+export interface GenerateScheduleAction {
+  type: typeof GENERATE_SCHEDULE,
+  data: PrescribedDrug[]
+}
+
+export interface ClearScheduleAction {
+  type: typeof CLEAR_SCHEDULE
+}
+
 export const INIT_NEW_TAPER_CONFIG = 'INIT_NEW_TAPER_CONFIG' as const;
 
-export interface InitTaperConfig {
+export interface InitTaperConfigAction {
   type: typeof INIT_NEW_TAPER_CONFIG,
   data: { clinicianId: number, patientId: number }
 }
-
 export const EMPTY_TAPER_CONFIG_PAGE = 'EMPTY_TAPER_CONFIG_PAGE' as const;
 
 export interface EmptyTaperConfigPage {
@@ -57,17 +68,7 @@ export interface RemoveDrugFormAction {
   data: number;
 }
 
-export const GENERATE_SCHEDULE = 'GENERATE_SCHEDULE' as const;
-export const CLEAR_SCHEDULE = 'CLEAR_SCHEDULE' as const;
 export const SCHEDULE_ROW_SELECTED = 'SCHEDULE_ROW_SELECTED' as const;
-
-export interface GenerateScheduleAction {
-  type: typeof GENERATE_SCHEDULE
-}
-
-export interface ClearScheduleAction {
-  type: typeof CLEAR_SCHEDULE
-}
 
 export interface ScheduleRowSelectedAction {
   type: typeof SCHEDULE_ROW_SELECTED,

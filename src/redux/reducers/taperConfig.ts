@@ -38,7 +38,7 @@ import {
   ChangeMessageForPatient,
   ScheduleRowSelectedAction,
   SCHEDULE_ROW_SELECTED,
-  InitTaperConfig,
+  InitTaperConfigAction,
   INIT_NEW_TAPER_CONFIG,
   FETCH_TAPER_CONFIG_REQUEST,
   FetchTaperConfigRequestAction,
@@ -76,7 +76,7 @@ import {
 import { Schedule } from '../../components/ProjectedSchedule';
 import {
   chartDataConverter, ScheduleChartData, scheduleGenerator,
-  messageGenerateFromSchedule, validateCompleteInputs,
+  messageGenerateFromSchedule, validateCompleteInputs, isCompleteDrugInput,
 } from './utils';
 
 export interface TaperConfigState {
@@ -95,7 +95,6 @@ export interface TaperConfigState {
   scheduleChartData: ScheduleChartData;
   scheduleSelectedRowKeys: Key[];
   isInputComplete: boolean;
-  isScheduleGenerated: boolean;
 
   intervalDurationDays: number,
 
@@ -142,7 +141,6 @@ export const initialState: TaperConfigState = {
   scheduleChartData: [],
   scheduleSelectedRowKeys: [],
   isInputComplete: false,
-  isScheduleGenerated: false,
 
   intervalDurationDays: 0,
 
@@ -174,7 +172,7 @@ export const initialState: TaperConfigState = {
 };
 
 export type TaperConfigActions =
-  | InitTaperConfig
+  | InitTaperConfigAction
   | EmptyTaperConfigPage
   | EmptyPrescribedDrugs
   | FetchTaperConfigRequestAction
@@ -203,6 +201,26 @@ export type TaperConfigActions =
   | ShareWithPatientEmailFailure
   | PrescriptionFormActions;
 
+const emptyPrescribedDrug = (id: number): PrescribedDrug => ({
+  id,
+  name: '',
+  brand: '',
+  form: '',
+  measureUnit: '',
+  minDosageUnit: 0,
+  priorDosages: [],
+  upcomingDosages: [],
+  availableDosageOptions: [],
+  allowSplittingUnscoredTablet: false,
+  prescribedDosages: {},
+  intervalStartDate: new Date(),
+  intervalEndDate: null,
+  intervalCount: 0,
+  intervalUnit: 'Days',
+  prevVisit: false,
+  prescribedAt: new Date(),
+});
+
 const taperConfigReducer = (state: TaperConfigState = initialState, action: TaperConfigActions) => {
   console.log('taperConfigAction: ', action);
   return produce(state, (draft) => {
@@ -212,41 +230,16 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.patientId = action.data.patientId;
         draft.taperConfigCreatedAt = null;
         draft.lastPrescriptionFormId += 1;
-        draft.prescribedDrugs = [{
-          id: draft.lastPrescriptionFormId,
-          name: '',
-          brand: '',
-          form: '',
-          measureUnit: '',
-          minDosageUnit: 0,
-          priorDosages: [],
-          upcomingDosages: [],
-          availableDosageOptions: [],
-          allowSplittingUnscoredTablet: false,
-          prescribedDosages: {},
-          intervalStartDate: new Date(),
-          intervalEndDate: null,
-          intervalCount: 0,
-          intervalUnit: 'Days',
-          prevVisit: false,
-          prescribedAt: new Date(),
-        }];
-        draft.isInputComplete = false;
-        draft.scheduleChartData = [];
-        draft.projectedSchedule = { drugs: [], data: [] };
-        draft.messageForPatient = '';
+        draft.prescribedDrugs = [emptyPrescribedDrug(draft.lastPrescriptionFormId)];
         draft.isSaved = false;
         break;
 
       case EMPTY_TAPER_CONFIG_PAGE:
-        // draft.patientId = -1;
-        // draft.prescribedDrugs = [];
         draft.taperConfigId = null;
         draft.taperConfigCreatedAt = null;
-        // draft.prescribedDrugs = null;
         draft.scheduleChartData = [];
         draft.isInputComplete = false;
-        draft.prescribedDrugs = draft.prescribedDrugs!.filter((drug) => drug.name !== '');
+        draft.prescribedDrugs = draft.prescribedDrugs!.filter((drug) => isCompleteDrugInput(drug));
         draft.projectedSchedule = { drugs: [], data: [] };
         draft.messageForPatient = '';
         break;
@@ -265,15 +258,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS: {
         draft.addingTaperConfig = false;
         draft.addedTaperConfig = true;
-
-        // const existingConfigIdx = draft.taperConfigs.findIndex(
-        //   (config) => config.id === action.data.id,
-        // );
-        // if (existingConfigIdx) {
-        //   draft.taperConfigs[existingConfigIdx] = { ...action.data };
-        // } else {
-        //   draft.taperConfigs.unshift(action.data);
-        // }
         draft.taperConfigId = action.data.id;
         draft.taperConfigCreatedAt = action.data.createdAt;
         draft.prescribedDrugs!.forEach((drug) => {
@@ -301,19 +285,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.clinicianId = action.data.clinicianId;
         draft.patientId = action.data.patientId;
         draft.prescribedDrugs = action.data.prescribedDrugs;
-        draft.projectedSchedule = scheduleGenerator(draft.prescribedDrugs!);
-        // draft.projectedSchedule = scheduleGenerator(
-        //   draft.prescribedDrugs!.filter((prescribedDrug) => !prescribedDrug.prevVisit),
-        // );
         draft.lastPrescriptionFormId = Math.max(...action.data.prescribedDrugs.map((drug) => drug.id));
-        draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
-        draft.projectedSchedule.data.forEach((row, i) => {
-          if (row.selected) {
-            draft.scheduleSelectedRowKeys.push(i);
-          }
-        });
-        // draft.messageForPatient = messageGenerateFromSchedule(draft.projectedSchedule);
-        // draft.showMessageForPatient = true;
         draft.isSaved = false;
         break;
 
@@ -341,25 +313,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
 
       case ADD_NEW_DRUG_FORM:
         draft.prescriptionFormIds.push(draft.lastPrescriptionFormId + 1);
-        draft.prescribedDrugs!.push({
-          id: draft.lastPrescriptionFormId + 1,
-          name: '',
-          brand: '',
-          form: '',
-          measureUnit: '',
-          minDosageUnit: 0,
-          priorDosages: [],
-          upcomingDosages: [],
-          availableDosageOptions: [],
-          prescribedDosages: {},
-          allowSplittingUnscoredTablet: false,
-          intervalStartDate: new Date(),
-          intervalEndDate: null,
-          intervalCount: 0,
-          intervalUnit: 'Days',
-          prevVisit: false,
-          prescribedAt: new Date(),
-        });
+        draft.prescribedDrugs!.push(emptyPrescribedDrug(draft.lastPrescriptionFormId + 1));
         draft.isInputComplete = false;
         draft.lastPrescriptionFormId += 1;
         draft.showMessageForPatient = false;
@@ -372,31 +326,17 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.isSaved = false;
         break;
 
-      case CHECK_INPUTS:
-        draft.isInputComplete = action.data;
-        break;
-
       case GENERATE_SCHEDULE: {
-        if (validateCompleteInputs(draft.prescribedDrugs!)) {
-          draft.projectedSchedule = scheduleGenerator(draft.prescribedDrugs!);
-          draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
-          draft.projectedSchedule.data.forEach((row, i) => {
-            if (row.selected) {
-              draft.scheduleSelectedRowKeys.push(i);
-            }
-          });
-          draft.messageForPatient = messageGenerateFromSchedule(draft.projectedSchedule);
-          draft.showMessageForPatient = true;
-          draft.isSaved = false;
-          draft.isScheduleGenerated = true;
-        } else {
-          draft.projectedSchedule = { data: [], drugs: [] };
-          draft.scheduleChartData = [];
-          draft.messageForPatient = '';
-          draft.showMessageForPatient = false;
-          draft.isSaved = false;
-          draft.isScheduleGenerated = false;
-        }
+        draft.projectedSchedule = scheduleGenerator(action.data);
+        draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
+        draft.projectedSchedule.data.forEach((row, i) => {
+          if (row.selected) {
+            draft.scheduleSelectedRowKeys.push(i);
+          }
+        });
+        draft.messageForPatient = messageGenerateFromSchedule(draft.projectedSchedule);
+        draft.showMessageForPatient = true;
+        draft.isSaved = false;
         break;
       }
 
@@ -475,11 +415,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.form = '';
         drug.priorDosages = [];
         drug.upcomingDosages = [];
-        draft.projectedSchedule = { drugs: [], data: [] };
-        // set to default
-        // drug.intervalEndDate = null;
-        // drug.intervalCount = 0;
-        // drug.intervalUnit = 'Days';
         draft.isInputComplete = false;
         draft.isSaved = false;
         break;

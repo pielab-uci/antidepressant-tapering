@@ -26,8 +26,6 @@ import {
   TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
   AddNewDrugFormAction,
   changeNoteAndInstructions,
-  CLEAR_SCHEDULE,
-  CHECK_INPUTS,
 } from '../redux/actions/taperConfig';
 import { PrescribedDrug } from '../types';
 
@@ -71,45 +69,13 @@ const TaperConfigurationPage = () => {
     };
   }, []);
 
-  const validateCompleteInputs = useCallback((drugs: PrescribedDrug[] | null) => {
-    console.log('drugs: ', drugs);
-
-    return drugs !== null
-      && drugs.length !== 0
-      && drugs.map(
-        (drug) => drug.name !== ''
-          && drug.brand !== ''
-          && drug.form !== ''
-          && drug.intervalEndDate !== null
-          && drug.intervalCount !== 0
-          && drug.upcomingDosages.length !== 0,
-      ).every((cond) => cond);
-  }, []);
-
   useEffect(() => {
     if (prescribedDrugs && prescribedDrugs.filter((d) => !d.prevVisit).length === 0) {
       dispatch<AddNewDrugFormAction>({
         type: ADD_NEW_DRUG_FORM,
       });
     }
-
-    dispatch({
-      type: CHECK_INPUTS,
-      data: validateCompleteInputs(prescribedDrugs),
-    });
   }, [prescribedDrugs]);
-
-  useEffect(() => {
-    if (validateCompleteInputs(prescribedDrugs)) {
-      dispatch({
-        type: GENERATE_SCHEDULE,
-      });
-    } else {
-      dispatch({
-        type: CLEAR_SCHEDULE,
-      });
-    }
-  }, [isInputComplete]);
 
   const toggleShareProjectedSchedule = useCallback(() => {
     dispatch({

@@ -1,5 +1,7 @@
 import produce from 'immer';
-import { add, differenceInCalendarDays } from 'date-fns';
+import {
+  add, differenceInCalendarDays, format, sub,
+} from 'date-fns';
 import { PrescriptionFormState } from './types';
 import {
   ALLOW_SPLITTING_UNSCORED_TABLET,
@@ -159,10 +161,11 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         break;
 
       case INTERVAL_START_DATE_CHANGE:
-        draft.intervalStartDate = action.data.date;
+        // draft.intervalStartDate = action.data.date;
+        draft.intervalStartDate = new Date(action.data.date.valueOf() + action.data.date.getTimezoneOffset() * 60 * 1000);
         draft.intervalUnit = 'Days';
         if (draft.intervalEndDate) {
-          draft.intervalCount = differenceInCalendarDays(draft.intervalEndDate, draft.intervalStartDate);
+          draft.intervalCount = differenceInCalendarDays(draft.intervalEndDate, draft.intervalStartDate) + 1;
         }
         draft.intervalDurationDays = draft.intervalCount;
         Object.keys(draft.prescribedDosagesQty).forEach((key) => {
@@ -173,8 +176,8 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
       case INTERVAL_END_DATE_CHANGE:
         draft.intervalEndDate = action.data.date;
         draft.intervalUnit = 'Days';
-        draft.intervalCount = differenceInCalendarDays(draft.intervalEndDate!, draft.intervalStartDate);
-        draft.intervalDurationDays = draft.intervalCount;
+        draft.intervalDurationDays = differenceInCalendarDays(draft.intervalEndDate!, draft.intervalStartDate) + 1;
+        draft.intervalCount = draft.intervalDurationDays;
         Object.keys(draft.prescribedDosagesQty).forEach((key) => {
           draft.prescribedDosagesQty[key] = draft.upcomingDosagesQty[key] * draft.intervalDurationDays;
         });
@@ -182,8 +185,8 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
 
       case INTERVAL_UNIT_CHANGE:
         draft.intervalUnit = action.data.unit;
-        draft.intervalEndDate = add(draft.intervalStartDate, { [draft.intervalUnit.toLowerCase()]: draft.intervalCount });
-        draft.intervalDurationDays = differenceInCalendarDays(draft.intervalEndDate, draft.intervalStartDate);
+        draft.intervalEndDate = sub(add(draft.intervalStartDate, { [draft.intervalUnit.toLowerCase()]: draft.intervalCount }), { days: 1 });
+        draft.intervalDurationDays = differenceInCalendarDays(draft.intervalEndDate, draft.intervalStartDate) + 1;
         Object.keys(draft.prescribedDosagesQty).forEach((key) => {
           draft.prescribedDosagesQty[key] = draft.upcomingDosagesQty[key] * draft.intervalDurationDays;
         });
@@ -191,8 +194,15 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
 
       case INTERVAL_COUNT_CHANGE:
         draft.intervalCount = action.data.count;
-        draft.intervalEndDate = add(draft.intervalStartDate, { [draft.intervalUnit.toLowerCase()]: draft.intervalCount });
-        draft.intervalDurationDays = differenceInCalendarDays(draft.intervalEndDate, draft.intervalStartDate);
+        if (draft.intervalCount === 0) {
+          draft.intervalEndDate = null;
+          draft.intervalDurationDays = 0;
+        } else {
+          draft.intervalEndDate = add(draft.intervalStartDate, {
+            [draft.intervalUnit.toLowerCase()]: draft.intervalCount > 0 ? draft.intervalCount - 1 : 0,
+          });
+          draft.intervalDurationDays = differenceInCalendarDays(draft.intervalEndDate, draft.intervalStartDate) + 1;
+        }
         Object.keys(draft.prescribedDosagesQty).forEach((key) => {
           draft.prescribedDosagesQty[key] = draft.upcomingDosagesQty[key] * draft.intervalDurationDays;
         });

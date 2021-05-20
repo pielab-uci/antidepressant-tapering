@@ -1,5 +1,5 @@
 import {
-  all, put, fork, takeLatest, delay,
+  all, put, fork, takeLatest, delay, select,
 } from 'redux-saga/effects';
 import {
   ADD_OR_UPDATE_TAPER_CONFIG_FAILURE,

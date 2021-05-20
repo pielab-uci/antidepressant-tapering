@@ -22,18 +22,31 @@ export type TableRowData =
     prescribedDosages: { [dosage: string]: number },
     form: string };
 
-const validate = (drugs: PrescribedDrug[]): PrescribedDrug[] | null => {
-  for (const drug of drugs) {
-    Object.entries(drug).forEach(([k, v]) => {
-      if (v === null) {
-        // alert(`Please check ${k} of ${drug.name}.`);
-        console.error(`Check ${k} of ${drug.name}.`);
-        return null;
-      }
-    });
-  }
-  return drugs;
+export const validateCompleteInputs = (drugs: PrescribedDrug[]): boolean => {
+  const isCompleteDrugInput = (drug: PrescribedDrug) => drug.name !== ''
+    && drug.brand !== ''
+    && drug.form !== ''
+    && drug.intervalEndDate !== null
+    && drug.intervalCount !== 0
+    && drug.upcomingDosages.length !== 0;
+
+  return drugs
+    .map((drug) => isCompleteDrugInput(drug))
+    .every((cond) => cond);
 };
+
+// const validate = (drugs: PrescribedDrug[]): PrescribedDrug[] | null => {
+//   for (const drug of drugs) {
+//     Object.entries(drug).forEach(([k, v]) => {
+//       if (v === null) {
+//         // alert(`Please check ${k} of ${drug.name}.`);
+//         console.error(`Check ${k} of ${drug.name}.`);
+//         return null;
+//       }
+//     });
+//   }
+//   return drugs;
+// };
 
 const convert = (drugs: PrescribedDrug[]): Converted[] => {
   return drugs.map((drug) => {
@@ -213,11 +226,11 @@ const sort = (drugNames: string[], rows:TableRowData[]): TableRowData[] => {
 
 export const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule => {
   console.group('scheduleGenerator');
-  if (!validate(prescribedDrugs)) {
-    return {
-      data: [], drugs: [],
-    };
-  }
+  // if (!validate(prescribedDrugs)) {
+  //   return {
+  //     data: [], drugs: [],
+  //   };
+  // }
 
   const drugNames = prescribedDrugs.map((drug) => drug.name);
   // const drugNames = prescribedDrugs.map((drug) => drug.brand);

@@ -128,6 +128,12 @@ export const intervalUnitChange = (data: { unit: 'Days' | 'Weeks' | 'Months', in
   data,
 });
 
+export type IntervalActions =
+  | IntervalStartDateChangeAction
+  | IntervalEndDateChangeAction
+  | IntervalUnitChangeAction
+  | IntervalCountChangeAction;
+
 export type PrescriptionFormActions =
   | FetchDrugsAction
   | LoadPrescriptionDataAction
@@ -136,8 +142,5 @@ export type PrescriptionFormActions =
   | PriorDosageChangeAction
   | UpcomingDosageChangeAction
   | AllowSplittingUnscoredTabletAction
-  | IntervalStartDateChangeAction
-  | IntervalEndDateChangeAction
-  | IntervalUnitChangeAction
-  | IntervalCountChangeAction
+  | IntervalActions
   | PrescribedQuantityChange;

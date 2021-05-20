@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { add, differenceInCalendarDays } from 'date-fns';
+import { add, differenceInCalendarDays, sub } from 'date-fns';
 import { Key } from 'react';
 import {
   Drug,
@@ -76,7 +76,7 @@ import {
 import { Schedule } from '../../components/ProjectedSchedule';
 import {
   chartDataConverter, ScheduleChartData, scheduleGenerator,
-  messageGenerateFromSchedule,
+  messageGenerateFromSchedule, validateCompleteInputs,
 } from './utils';
 
 export interface TaperConfigState {
@@ -95,6 +95,7 @@ export interface TaperConfigState {
   scheduleChartData: ScheduleChartData;
   scheduleSelectedRowKeys: Key[];
   isInputComplete: boolean;
+  isScheduleGenerated: boolean;
 
   intervalDurationDays: number,
 
@@ -136,10 +137,12 @@ export const initialState: TaperConfigState = {
   prescriptionFormIds: [0],
   isSaved: false,
   prescribedDrugs: null,
+
   projectedSchedule: { data: [], drugs: [] },
   scheduleChartData: [],
   scheduleSelectedRowKeys: [],
   isInputComplete: false,
+  isScheduleGenerated: false,
 
   intervalDurationDays: 0,
 
@@ -374,16 +377,26 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         break;
 
       case GENERATE_SCHEDULE: {
-        draft.projectedSchedule = scheduleGenerator(draft.prescribedDrugs!);
-        draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
-        draft.projectedSchedule.data.forEach((row, i) => {
-          if (row.selected) {
-            draft.scheduleSelectedRowKeys.push(i);
-          }
-        });
-        draft.messageForPatient = messageGenerateFromSchedule(draft.projectedSchedule);
-        draft.showMessageForPatient = true;
-        draft.isSaved = false;
+        if (validateCompleteInputs(draft.prescribedDrugs!)) {
+          draft.projectedSchedule = scheduleGenerator(draft.prescribedDrugs!);
+          draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
+          draft.projectedSchedule.data.forEach((row, i) => {
+            if (row.selected) {
+              draft.scheduleSelectedRowKeys.push(i);
+            }
+          });
+          draft.messageForPatient = messageGenerateFromSchedule(draft.projectedSchedule);
+          draft.showMessageForPatient = true;
+          draft.isSaved = false;
+          draft.isScheduleGenerated = true;
+        } else {
+          draft.projectedSchedule = { data: [], drugs: [] };
+          draft.scheduleChartData = [];
+          draft.messageForPatient = '';
+          draft.showMessageForPatient = false;
+          draft.isSaved = false;
+          draft.isScheduleGenerated = false;
+        }
         break;
       }
 
@@ -545,7 +558,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         drug.intervalEndDate = action.data.date;
         drug.intervalUnit = 'Days';
-        drug.intervalCount = differenceInCalendarDays(drug.intervalEndDate!, drug.intervalStartDate);
+        drug.intervalCount = differenceInCalendarDays(drug.intervalEndDate!, drug.intervalStartDate) + 1;
         draft.isSaved = false;
         break;
       }
@@ -553,7 +566,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case INTERVAL_UNIT_CHANGE: {
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         drug.intervalUnit = action.data.unit;
-        drug.intervalEndDate = add(drug.intervalStartDate, { [drug.intervalUnit.toLowerCase()]: drug.intervalCount });
+        drug.intervalEndDate = sub(add(drug.intervalStartDate, { [drug.intervalUnit.toLowerCase()]: drug.intervalCount }), { days: 1 });
         draft.isSaved = false;
         break;
       }

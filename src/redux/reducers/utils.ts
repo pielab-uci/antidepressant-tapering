@@ -135,8 +135,7 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
     rows.push({
       // Drug: drug.brand,
       Drug: drug.name,
-      'Current Dosage': `${drug.priorDosageSum}${drug.measureUnit}`,
-      'Next Dosage': `${upcomingDosages[0]}${drug.measureUnit}`,
+      Dosage: `${upcomingDosages[0]}${drug.measureUnit}`,
       Dates: `${format(drug.intervalStartDate, 'MM/dd/yyyy')} - ${format(drug.intervalEndDate, 'MM/dd/yyyy')}`,
       startDate: drug.intervalStartDate,
       endDate: drug.intervalEndDate,
@@ -154,8 +153,7 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
     const newRowData = {
       // Drug: drug.brand,
       Drug: drug.name,
-      currentDosageSum: drug.upcomingDosageSum,
-      nextDosageSum: upcomingDosages[1],
+      upcomingDosageSum: upcomingDosages[1],
       prescribedDosages: calcNextDosageQty(drug, upcomingDosages[1]),
       startDate: projectionStartDate,
       endDate: add(projectionStartDate, durationInDays),
@@ -165,12 +163,12 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
     };
 
     Array(3).fill(null).forEach((_, i) => {
-      if (newRowData.currentDosageSum !== 0) {
+      // if (newRowData.priorDosageSum !== 0) {
+      if (newRowData.upcomingDosageSum !== 0) {
         rows.push({
           // Drug: drug.brand,
           Drug: drug.name,
-          'Current Dosage': `${newRowData.currentDosageSum}${drug.measureUnit}`,
-          'Next Dosage': `${newRowData.nextDosageSum}${drug.measureUnit}`,
+          Dosage: `${newRowData.upcomingDosageSum}${drug.measureUnit}`,
           Dates: `${format(newRowData.startDate, 'MM/dd/yyyy')} - ${format(newRowData.endDate, 'MM/dd/yyyy')}`,
           startDate: newRowData.startDate,
           endDate: newRowData.endDate,
@@ -180,9 +178,8 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
           form: drug.form,
         });
 
-        newRowData.currentDosageSum = newRowData.nextDosageSum;
-        newRowData.nextDosageSum = upcomingDosages[i + 2];
-        newRowData.prescribedDosages = calcNextDosageQty(drug, newRowData.nextDosageSum);
+        newRowData.upcomingDosageSum = upcomingDosages[i + 2];
+        newRowData.prescribedDosages = calcNextDosageQty(drug, newRowData.upcomingDosageSum);
         newRowData.startDate = add(newRowData.endDate, { days: 1 });
         newRowData.endDate = add(newRowData.startDate, durationInDays);
       }
@@ -257,15 +254,13 @@ export const chartDataConverter = (schedule: Schedule): ScheduleChartData => {
       const chartData = scheduleChartData.find((el) => el.name === k)!;
       chartData.data.push({
         timestamp: row.startDate.getTime(),
-        // dosage: parseFloat(row['Current Dosage']),
-        dosage: parseFloat(row['Next Dosage']),
+        dosage: parseFloat(row.Dosage),
       });
 
       if (i === rows.length - 1) {
         chartData.data.push({
           timestamp: row.endDate.getTime(),
-          dosage: parseFloat(row['Next Dosage']),
-          // dosage: parseFloat(row['Current Dosage']),
+          dosage: parseFloat(row.Dosage),
         });
       }
     });

@@ -26,13 +26,13 @@ const Dosages: FC<Props> = ({ time, dosages }) => {
 
   useEffect(() => {
     if (time === 'Upcoming') {
-      const currentDosageSum = calculateDosageSum(priorDosagesQty);
-      const nextDosageSum = calculateDosageSum(upcomingDosagesQty);
-      if (currentDosageSum === 0) {
+      const priorDosageSum = calculateDosageSum(priorDosagesQty);
+      const upcomingDosageSum = calculateDosageSum(upcomingDosagesQty);
+      if (priorDosageSum === 0) {
         setDosageDifferencePercent(null);
       } else {
         setDosageDifferencePercent(
-          ((nextDosageSum - currentDosageSum) / currentDosageSum * 100).toFixed(2),
+          ((upcomingDosageSum - priorDosageSum) / priorDosageSum * 100).toFixed(2),
         );
       }
     }

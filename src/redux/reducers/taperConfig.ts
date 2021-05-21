@@ -57,7 +57,7 @@ import {
   EMPTY_PRESCRIBED_DRUGS,
   EmptyPrescribedDrugs,
   ChangeNoteAndInstructions,
-  CHANGE_NOTE_AND_INSTRUCTIONS, CheckInputs, CHECK_INPUTS,
+  CHANGE_NOTE_AND_INSTRUCTIONS,
 } from '../actions/taperConfig';
 import drugs from './drugs';
 
@@ -192,7 +192,6 @@ export type TaperConfigActions =
   | ChangeMessageForPatient
   | ChangeNoteAndInstructions
   | ToggleShareProjectedScheduleWithPatient
-  | CheckInputs
   | ShareWithPatientAppRequest
   | ShareWithPatientAppSuccess
   | ShareWithPatientAppFailure

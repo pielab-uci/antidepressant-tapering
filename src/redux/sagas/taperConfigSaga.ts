@@ -233,7 +233,7 @@ function* fetchPrescribedDrugs(action: FetchPrescribedDrugsRequestAction) {
       });
     }
 
-    generateOrClearSchedule();
+    yield generateOrClearSchedule();
   } catch (err) {
     console.error(err);
     yield put<FetchPrescribedDrugsFailureAction>({

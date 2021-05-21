@@ -1,18 +1,18 @@
 import {
-  add, differenceInCalendarDays, format, isBefore,
+  add, areIntervalsOverlapping, differenceInCalendarDays, format, isAfter, isBefore, isSameDay, sub,
 } from 'date-fns';
 import { PrescribedDrug } from '../../types';
 import { TableRow } from '../../components/ProjectedScheduleTable';
 import { Schedule } from '../../components/ProjectedSchedule';
 
-type Converted = PrescribedDrug & {
+interface Converted extends PrescribedDrug {
   intervalEndDate: Date;
   priorDosageSum: number;
   upcomingDosageSum: number;
   changeRate: number;
   changeAmount: number;
   isIncreasing: boolean;
-};
+}
 
 export type TableRowData =
   TableRow & {
@@ -20,6 +20,7 @@ export type TableRowData =
     endDate: Date,
     selected: boolean,
     prescribedDosages: { [dosage: string]: number },
+    addedInCurrentVisit: boolean,
     form: string };
 
 export const isCompleteDrugInput = (drug: PrescribedDrug) => drug.name !== ''
@@ -39,6 +40,25 @@ export const validateCompleteInputs = (drugs: PrescribedDrug[]|null|undefined): 
   return !(drugs === null || drugs === undefined) && drugs
     .map((drug) => isCompleteDrugInput(drug))
     .every((cond) => cond);
+};
+
+const rowIntervalOverlapping = (prev: TableRowData, current: TableRowData) => {
+  console.group('rowIntervalOverlapping');
+  console.log('prev: ', prev);
+  console.log('current: ', current);
+  console.groupEnd();
+
+  return prev.Drug === current.Drug
+  && (areIntervalsOverlapping(
+    { start: prev.startDate, end: prev.endDate },
+    { start: current.startDate, end: current.endDate },
+    { inclusive: true },
+  ));
+};
+
+const rowIntervalIsAfter = (prev: TableRowData, current: TableRowData) => {
+  return prev.Drug === current.Drug
+  && isAfter(current.startDate, prev.endDate);
 };
 
 const convert = (drugs: PrescribedDrug[]): Converted[] => {
@@ -148,6 +168,7 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
         (prev, d) => ({ ...prev, [d.dosage]: d.quantity }), {},
       )),
       prescribedDosages: drug.prescribedDosages,
+      addedInCurrentVisit: !drug.prevVisit,
       selected: true,
       form: drug.form,
     });
@@ -175,6 +196,7 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
           endDate: newRowData.endDate,
           Prescription: prescription(drug, newRowData.prescribedDosages),
           selected: false,
+          addedInCurrentVisit: !drug.prevVisit,
           prescribedDosages: newRowData.prescribedDosages,
           form: drug.form,
         });
@@ -188,6 +210,28 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
   });
 
   return rows;
+};
+
+const checkIntervalOverlappingRows = (rows: TableRowData[]): TableRowData[] => {
+  const rowsAddedInCurrentVisit = rows.filter((row) => row.addedInCurrentVisit);
+  const rowsFromPreviousVisits = rows.filter((row) => !row.addedInCurrentVisit);
+
+  rowsAddedInCurrentVisit.forEach((fromCurrent) => {
+    rowsFromPreviousVisits.forEach((fromPrev, i, arr) => {
+      if (rowIntervalOverlapping(fromPrev, fromCurrent)) {
+        fromPrev.endDate = sub(fromCurrent.startDate, { days: 1 });
+        if (isBefore(fromPrev.endDate, fromPrev.startDate)) {
+          arr.splice(i, 1);
+        }
+      }
+
+      if (rowIntervalIsAfter(fromPrev, fromCurrent)) {
+        arr.splice(i, 1);
+      }
+    });
+  });
+
+  return [...rowsFromPreviousVisits, ...rowsAddedInCurrentVisit];
 };
 
 const sort = (drugNames: string[], rows:TableRowData[]): TableRowData[] => {
@@ -214,18 +258,20 @@ const sort = (drugNames: string[], rows:TableRowData[]): TableRowData[] => {
 
 export const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule => {
   console.group('scheduleGenerator');
-
   const drugNames = prescribedDrugs.map((drug) => drug.name);
+
+  console.log('prescribedDrugs: ', prescribedDrugs);
   const converted: Converted[] = convert(prescribedDrugs);
   console.log('converted: ', converted);
   const rows: TableRowData[] = generateTableRows(converted);
   console.log('rows: ', rows);
-  const tableData: TableRowData[] = sort(drugNames, rows);
-  console.log('tableData: ', tableData);
-  const schedule: Schedule = { data: tableData, drugs: drugNames };
-  console.log('schedule: ', schedule);
+  const intervalOverlapCheckedRows: TableRowData[] = checkIntervalOverlappingRows(rows);
+  console.log('intervalOverlapCheckedRows: ', intervalOverlapCheckedRows);
+  const tableDataSorted : TableRowData[] = sort(drugNames, intervalOverlapCheckedRows);
+  console.log('tableData: ', tableDataSorted);
   console.groupEnd();
-  return schedule;
+
+  return { data: tableDataSorted, drugs: drugNames };
 };
 
 export type ScheduleChartData = { name: string, data: { timestamp: number, dosage: number }[] }[];

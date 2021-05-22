@@ -16,7 +16,7 @@ interface Props {
   isMinDosage: boolean;
 }
 
-const DrugUnit: FC<Props> = ({
+const CapsuleOrTabletUnit: FC<Props> = ({
   time, form, dosage, isScored, isMinDosage,
 }) => {
   const context = useContext(PrescriptionFormContext);
@@ -81,4 +81,4 @@ const DrugUnit: FC<Props> = ({
   );
 };
 
-export default DrugUnit;
+export default CapsuleOrTabletUnit;

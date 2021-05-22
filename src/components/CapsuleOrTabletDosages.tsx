@@ -2,27 +2,25 @@ import * as React from 'react';
 import {
   FC, useCallback, useContext, useEffect, useState,
 } from 'react';
-import { useDispatch } from 'react-redux';
-import DrugUnit from './DrugUnit';
+import CapsuleOrTabletUnit from './CapsuleOrTabletUnit';
 import { PrescriptionFormContext } from './PrescriptionForm/PrescriptionForm';
+import { CapsuleTabletDosage } from '../types';
 
 interface Props {
   time: 'Prior' | 'Upcoming';
   dosages: { [key: string]: number }
 }
 
-const Dosages: FC<Props> = ({ time, dosages }) => {
+const CapsuleOrTabletDosages: FC<Props> = ({ time, dosages }) => {
   const context = useContext(PrescriptionFormContext);
   const {
-    chosenDrugForm, dosageOptions, priorDosagesQty, upcomingDosagesQty, id,
-    formActionDispatch,
+    chosenDrugForm, dosageOptions, priorDosagesQty, upcomingDosagesQty,
   } = context;
-  const taperConfigActionDispatch = useDispatch();
   const unit = chosenDrugForm!.measureUnit;
   const [dosageDifferencePercent, setDosageDifferencePercent] = useState<string | null>(null);
-  const calculateDosageSum = (dosages: { [key: string]: number }): number => Object
+  const calculateDosageSum = useCallback((dosages: { [key: string]: number }): number => Object
     .entries(dosages)
-    .reduce((acc, [dosage, count]) => acc + parseFloat(dosage) * count, 0);
+    .reduce((acc, [dosage, count]) => acc + parseFloat(dosage) * count, 0), []);
 
   useEffect(() => {
     if (time === 'Upcoming') {
@@ -46,8 +44,9 @@ const Dosages: FC<Props> = ({ time, dosages }) => {
         Dosage
       </div>
       <div style={{ display: 'flex' }}>
-        {dosageOptions.map((v: { dosage: string; isScored?: boolean }, i) => (
-          <DrugUnit
+        {(dosageOptions as CapsuleTabletDosage[])
+          .map((v: { dosage: string; isScored?: boolean }, i) => (
+          <CapsuleOrTabletUnit
             key={`${time}_${chosenDrugForm!.form}_${v.dosage}`}
             time={time}
             form={chosenDrugForm!.form}
@@ -74,4 +73,4 @@ const Dosages: FC<Props> = ({ time, dosages }) => {
   );
 };
 
-export default Dosages;
+export default CapsuleOrTabletDosages;

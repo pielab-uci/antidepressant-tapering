@@ -4,7 +4,7 @@ import { useReducer, useState } from 'reinspect';
 import { Button, Checkbox, Select } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
-import Dosages from '../Dosages';
+import CapsuleOrTabletDosages from '../CapsuleOrTabletDosages';
 import {
   initialState,
   reducer,
@@ -23,7 +23,8 @@ import {
 } from './actions';
 import { IPrescriptionFormContext, PrescriptionFormState } from './types';
 import {
-  DrugForm, PrescribedDrug,
+  CapsuleTabletForm,
+  DrugForm, isCapsuleOrTablet, OralForm, PrescribedDrug,
 } from '../../types';
 import {
   CLEAR_SCHEDULE,
@@ -35,6 +36,7 @@ import TotalQuantities from '../TotalQuantities';
 import SelectInterval from '../SelectInterval';
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
+import OralFormDosage from '../OralFormDosage';
 
 const { OptGroup, Option } = Select;
 
@@ -101,6 +103,7 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
     formActionDispatch(action);
   };
 
+  // TODO: need to refactor..? can be handled in redux saga instead of using useEffect..?
   useEffect(() => {
     if (chosenDrugForm) {
       taperConfigActionDispatch<ChooseFormAction>({
@@ -122,13 +125,18 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
     });
   };
 
-  const renderDosages = (drugForm: DrugForm | null | undefined, time: 'Prior' | 'Upcoming', dosages: { [key: string]: number }) => (
-    <>
-      {drugForm
-        ? <Dosages time={time} dosages={dosages} />
-        : <div>No drug form selected</div>}
-    </>
-  );
+  const renderDosages = (drugForm: DrugForm | null | undefined, time: 'Prior' | 'Upcoming', dosages: { [key: string]: number }) => {
+    // TODO: render drug dosage depending on its form
+    if (!drugForm) {
+      return <div>No drug form selected.</div>;
+    }
+
+    if (isCapsuleOrTablet(drugForm)) {
+      return <CapsuleOrTabletDosages time={time} dosages={dosages} />;
+    }
+
+    return <OralFormDosage time={time} />;
+  };
 
   const toggleAllowSplittingUnscoredTabletCheckbox = (e: CheckboxChangeEvent) => {
     formActionDispatch(toggleAllowSplittingUnscoredTablet({ id: prescribedDrug.id, allow: e.target.checked }));
@@ -165,16 +173,14 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
         <label>Form</label>
         <Select value={chosenDrugForm?.form} onChange={onFormChange} style={{ width: 200 }}>
           {drugFormOptions?.map(
-            (form) => <Option key={form.form} value={form.form}>{form.form}</Option>,
+            (form: CapsuleTabletForm | OralForm) => <Option key={form.form} value={form.form}>{form.form}</Option>,
           )}
         </Select>
       {chosenDrugForm?.form === 'tablet' && <Checkbox checked={allowSplittingUnscoredTablet} onChange={toggleAllowSplittingUnscoredTabletCheckbox}>Allow splitting unscored tablet</Checkbox>}
         <hr />
 
-        <div>Prior Dosages</div>
         {renderDosages(chosenDrugForm, 'Prior', priorDosagesQty)}
         <hr />
-        <div>Upcoming interval Dosages</div>
         {renderDosages(chosenDrugForm, 'Upcoming', upcomingDosagesQty)}
         <hr/>
         <SelectInterval />

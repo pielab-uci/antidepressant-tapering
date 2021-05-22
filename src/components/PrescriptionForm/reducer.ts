@@ -15,6 +15,8 @@ import {
   PRESCRIBED_QUANTITY_CHANGE,
   PrescriptionFormActions,
 } from './actions';
+import { CapsuleTabletDosage, isCapsuleOrTablet } from '../../types';
+import CapsuleOrTabletDosages from '../CapsuleOrTabletDosages';
 
 export const initialState: PrescriptionFormState = {
   drugs: null,
@@ -50,7 +52,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.chosenDrug = draft.drugs!.find((drug) => drug.name === action.data.name);
         draft.chosenBrand = draft.brandOptions!.find((brand) => brand.brand === action.data.brand)!;
         draft.drugFormOptions = draft.chosenBrand.forms;
-        draft.chosenDrugForm = draft.drugFormOptions!.find((form) => form.form === action.data.form)!;
+        draft.chosenDrugForm = draft.drugFormOptions.find((form) => form.form === action.data.form)!;
         draft.dosageOptions = draft.chosenDrugForm.dosages;
         draft.priorDosagesQty = action.data.priorDosages.reduce(
           (prev: { [dosage: string]: number }, currentDosage) => {
@@ -64,15 +66,18 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
             return prev;
           }, {},
         );
-        draft.dosageOptions.forEach((dosage) => {
-          if (!Object.keys(draft.priorDosagesQty).includes(dosage.dosage)) {
-            draft.priorDosagesQty[dosage.dosage] = 0;
-          }
 
-          if (!Object.keys(draft.upcomingDosagesQty).includes(dosage.dosage)) {
-            draft.upcomingDosagesQty[dosage.dosage] = 0;
-          }
-        });
+        if (isCapsuleOrTablet(draft.chosenDrugForm)) {
+          (draft.dosageOptions as CapsuleTabletDosage[]).forEach((dosage) => {
+            if (!Object.keys(draft.priorDosagesQty).includes(dosage.dosage)) {
+              draft.priorDosagesQty[dosage.dosage] = 0;
+            }
+
+            if (!Object.keys(draft.upcomingDosagesQty).includes(dosage.dosage)) {
+              draft.upcomingDosagesQty[dosage.dosage] = 0;
+            }
+          });
+        }
         draft.intervalStartDate = action.data.intervalStartDate;
         draft.intervalEndDate = action.data.intervalEndDate;
         draft.intervalCount = action.data.intervalCount;
@@ -107,24 +112,28 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
       case CHOOSE_FORM: {
         const chosenDrugForm = draft.drugFormOptions!.find((form) => form.form === action.data.form)!;
         draft.chosenDrugForm = chosenDrugForm;
-        draft.dosageOptions = chosenDrugForm.dosages;
-        draft.minDosageUnit = Math.min(...draft.dosageOptions.map((dosage) => parseFloat(dosage.dosage))) / 2;
-        draft.availableDosageOptions = [...new Set(draft.dosageOptions.flatMap((option) => {
-          if (option.isScored) {
-            return [`${parseFloat(option.dosage) / 2}${draft.chosenDrugForm!.measureUnit}`, option.dosage];
-          }
-          return option.dosage;
-        }))];
+        if (isCapsuleOrTablet(chosenDrugForm)) {
+          draft.dosageOptions = chosenDrugForm.dosages;
+          draft.minDosageUnit = Math.min(...draft.dosageOptions.map((dosage) => parseFloat(dosage.dosage))) / 2;
+          draft.availableDosageOptions = [...new Set(draft.dosageOptions.flatMap((option) => {
+            if (option.isScored) {
+              return [`${parseFloat(option.dosage) / 2}${draft.chosenDrugForm!.measureUnit}`, option.dosage];
+            }
+            return option.dosage;
+          }))];
 
-        draft.priorDosagesQty = {};
-        draft.upcomingDosagesQty = {};
-        draft.prescribedDosagesQty = {};
+          draft.priorDosagesQty = {};
+          draft.upcomingDosagesQty = {};
+          draft.prescribedDosagesQty = {};
 
-        chosenDrugForm.dosages.forEach((dosage) => {
-          draft.priorDosagesQty[dosage.dosage] = 0;
-          draft.upcomingDosagesQty[dosage.dosage] = 0;
-          draft.prescribedDosagesQty[dosage.dosage] = 0;
-        });
+          chosenDrugForm.dosages.forEach((dosage) => {
+            draft.priorDosagesQty[dosage.dosage] = 0;
+            draft.upcomingDosagesQty[dosage.dosage] = 0;
+            draft.prescribedDosagesQty[dosage.dosage] = 0;
+          });
+        } else {
+
+        }
 
         break;
       }

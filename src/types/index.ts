@@ -36,18 +36,40 @@ export interface DrugOption {
   forms: DrugForm[]
 }
 
-export interface DrugForm {
+export interface CapsuleTabletForm {
   form: string;
   measureUnit: string;
-  dosages: { dosage: string; isScored?: boolean }[];
+  dosages: CapsuleTabletDosage[];
 }
+
+export interface OralForm {
+  form: string;
+  measureUnit: string;
+  dosages: OralDosage;
+}
+
+export type DrugForm = CapsuleTabletForm | OralForm;
+
+export interface CapsuleTabletDosage {
+  dosage: string;
+  isScored?: boolean;
+}
+
+export interface OralDosage {
+  rate: { mg: number, ml: number },
+  bottles: string[]
+}
+
+export const isCapsuleOrTablet = (form: DrugForm): form is CapsuleTabletForm => {
+  return form.form === 'tablet' || form.form === 'capsule';
+};
 
 export interface PrescribedDrug {
   id: number;
   name: string;
   brand: string;
   form: string;
-  measureUnit: string; // mg or ml..?
+  measureUnit: string; // TODO: remove measureUnit variable
   minDosageUnit: number;
   availableDosageOptions: string[];
   priorDosages: { dosage: string; quantity: number }[];

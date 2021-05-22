@@ -1,4 +1,6 @@
-import { Drug } from '../../types';
+import {
+  CapsuleTabletForm, Drug, OralDosage, OralForm,
+} from '../../types';
 
 const drugs: Drug[] = [
   {
@@ -9,21 +11,21 @@ const drugs: Drug[] = [
           brand: 'generic (Prozac / Fluoxetine)',
           forms: [
             {
-              form: 'bottle of oral solution',
-              dosages: [{ dosage: '120ml of 20mg/5ml' }],
-              measureUnit: 'ml?',
-            },
+              // form: 'bottle of oral solution',
+              form: 'oral solution',
+              dosages: { bottles: ['120ml'], rate: { mg: 4, ml: 1 } } as OralDosage,
+              measureUnit: 'mg',
+            } as OralForm,
             {
               form: 'capsule',
               dosages: [{ dosage: '10mg' }, { dosage: '20mg' }, { dosage: '40mg' }],
               measureUnit: 'mg',
-            },
+            } as CapsuleTabletForm,
             {
               form: 'tablet',
               dosages: [{ dosage: '10mg', isScored: true }, { dosage: '20mg', isScored: true }, { dosage: '60mg', isScored: true }],
               measureUnit: 'mg',
-
-            },
+            } as CapsuleTabletForm,
           ],
         },
         {
@@ -33,7 +35,7 @@ const drugs: Drug[] = [
               form: 'capsule',
               dosages: [{ dosage: '10mg' }, { dosage: '20mg' }, { dosage: '40mg' }],
               measureUnit: 'mg',
-            },
+            } as CapsuleTabletForm,
           ],
         },
       ],
@@ -45,15 +47,15 @@ const drugs: Drug[] = [
         brand: 'generic (Celexa / Citalopram)',
         forms: [
           {
-            form: 'ml of oral solution',
-            dosages: [
-              { dosage: '75ml (150mg)' },
-              { dosage: '150ml (300mg)' },
-              { dosage: '240ml (480mg)' },
-              { dosage: '300ml (600mg)' },
-              { dosage: '450ml (900mg)' }],
-            measureUnit: 'ml?',
-          },
+            // form: 'ml of oral solution',
+            form: 'oral solution',
+            dosages: {
+              rate: { ml: 1, mg: 2 },
+              bottles: ['75ml', '150ml', '240ml', '300ml', '450ml',
+              ],
+            },
+            measureUnit: 'mg',
+          } as OralForm,
           {
             form: 'tablet',
             dosages: [
@@ -61,7 +63,7 @@ const drugs: Drug[] = [
               { dosage: '20mg', isScored: true },
               { dosage: '40mg', isScored: true }],
             measureUnit: 'mg',
-          },
+          } as CapsuleTabletForm,
         ],
       },
       {
@@ -74,7 +76,7 @@ const drugs: Drug[] = [
               { dosage: '20mg', isScored: true },
               { dosage: '40mg', isScored: true }],
             measureUnit: 'mg',
-          },
+          } as CapsuleTabletForm,
         ],
       },
     ],
@@ -86,10 +88,13 @@ const drugs: Drug[] = [
         brand: 'generic (Zoloft / Sertraline)',
         forms: [
           {
-            form: 'bottle of oral solution',
-            dosages: [{ dosage: '60ml of 20mg/ml' }],
-            measureUnit: 'ml?',
-          },
+            form: 'oral solution',
+            dosages: {
+              rate: { ml: 1, mg: 20 },
+              bottles: ['60ml'],
+            },
+            measureUnit: 'mg',
+          } as OralForm,
           {
             form: 'tablet',
             dosages: [
@@ -97,24 +102,27 @@ const drugs: Drug[] = [
               { dosage: '50mg', isScored: true },
               { dosage: '100mg', isScored: true }],
             measureUnit: 'mg',
-          },
+          } as CapsuleTabletForm,
         ],
       },
       {
         brand: 'Zoloft',
         forms: [
           {
-            form: 'bottle of oral solution',
-            dosages: [{ dosage: '60ml of 20mg/ml' }],
-            measureUnit: 'ml?',
-          },
+            form: 'oral solution',
+            dosages: {
+              rate: { ml: 1, mg: 20 },
+              bottles: ['60ml'],
+            },
+            measureUnit: 'ml',
+          } as OralForm,
           {
             form: 'tablet',
             dosages: [{ dosage: '25mg', isScored: true },
               { dosage: '50mg', isScored: true },
               { dosage: '100mg', isScored: true }],
             measureUnit: 'mg',
-          },
+          } as CapsuleTabletForm,
         ],
       },
     ],
@@ -132,27 +140,20 @@ const drugs: Drug[] = [
               { dosage: '30mg', isScored: false },
               { dosage: '40mg', isScored: false }],
             measureUnit: 'mg',
-          },
-        ],
-      },
-      {
-        brand: 'Brisdelle',
-        forms: [
-          {
-            form: 'package',
-            dosages: [{ dosage: '30 capsules of 7.5mg' }],
-            measureUnit: 'mg?',
-          },
+          } as CapsuleTabletForm,
         ],
       },
       {
         brand: 'Paxil',
         forms: [
           {
-            form: 'bottle of oral suspension',
-            dosages: [{ dosage: '250ml of 10mg/5ml' }],
-            measureUnit: 'ml?',
-          },
+            form: 'oral suspension',
+            dosages: {
+              rate: { ml: 1, mg: 2 },
+              bottles: ['250ml'],
+            },
+            measureUnit: 'ml',
+          } as OralForm,
           {
             form: 'tablet',
             dosages: [
@@ -161,7 +162,7 @@ const drugs: Drug[] = [
               { dosage: '30mg', isScored: false },
               { dosage: '40mg', isScored: false }],
             measureUnit: 'mg',
-          },
+          } as CapsuleTabletForm,
         ],
       },
     ],
@@ -173,15 +174,14 @@ const drugs: Drug[] = [
         brand: 'generic (Lexapro/ Escitalopram)',
         forms: [
           {
-            form: 'ml of oral solution',
-            dosages: [
-              { dosage: '150ml (150mg)' },
-              { dosage: '240ml (240mg)' },
-              { dosage: '300ml (300mg)' },
-              { dosage: '450ml (450mg)' },
-              { dosage: '600ml (600mg)' }],
-            measureUnit: 'ml?',
-          },
+            // form: 'ml of oral solution',
+            form: 'oral solution',
+            dosages: {
+              rate: { ml: 1, mg: 1 },
+              bottles: ['150ml', '240ml', '300ml', '450ml', '600ml'],
+            },
+            measureUnit: 'mg',
+          } as OralForm,
           {
             form: 'tablet',
             dosages: [
@@ -189,7 +189,7 @@ const drugs: Drug[] = [
               { dosage: '10mg', isScored: true },
               { dosage: '20mg', isScored: true }],
             measureUnit: 'mg',
-          },
+          } as CapsuleTabletForm,
         ],
       },
       {
@@ -202,7 +202,7 @@ const drugs: Drug[] = [
               { dosage: '10mg', isScored: true },
               { dosage: '20mg', isScored: true }],
             measureUnit: 'mg',
-          },
+          } as CapsuleTabletForm,
         ],
       },
     ],

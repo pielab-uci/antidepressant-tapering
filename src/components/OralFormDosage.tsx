@@ -8,10 +8,10 @@ import { Dispatch } from 'redux';
 import { PrescriptionFormContext } from './PrescriptionForm/PrescriptionForm';
 import { TaperConfigActions } from '../redux/reducers/taperConfig';
 import { OralDosage } from '../types';
+import { useDosageSumAndDifferenceMessage } from '../hooks/useDosageSumDifference';
 
 interface Props {
   time: 'Prior'|'Upcoming'
-  // dosages: { [key: string]: number }
 }
 
 const inputStyle = {
@@ -21,12 +21,13 @@ const inputStyle = {
 const OralFormDosage: FC<Props> = ({ time }) => {
   const context = useContext(PrescriptionFormContext);
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
-  const { formActionDispatch, id, chosenDrugForm } = context;
+  const {
+    formActionDispatch, id, chosenDrugForm, priorDosagesQty, upcomingDosagesQty,
+  } = context;
   const { dosages, dosageChangeAction } = context[time];
   const dosage = useRef('1mg');
   const [mlDosage, setmlDosage] = useState(dosages['1mg']); // TODO: bring OralDosage - rate
-  const [dosageDifference, setDosageDifference] = useState<string|null>(null);
-  const calculateDosageSum = () => {};
+  const [dosageDifferenceMessage, calculateDosageSum] = useDosageSumAndDifferenceMessage(time, priorDosagesQty, upcomingDosagesQty);
 
   const mgOnChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const mg = parseInt(e.target.value, 10);
@@ -41,8 +42,7 @@ const OralFormDosage: FC<Props> = ({ time }) => {
   const mlOnChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const ml = parseInt(e.target.value, 10);
     setmlDosage(ml);
-
-    const mg = ml * (chosenDrugForm!.dosages as OralDosage).rate.ml / (chosenDrugForm!.dosages as OralDosage).rate.mg;
+    const mg = ml / (chosenDrugForm!.dosages as OralDosage).rate.ml * (chosenDrugForm!.dosages as OralDosage).rate.mg;
     const actionData = { id, dosage: { dosage: dosage.current, quantity: mg } };
     formActionDispatch(dosageChangeAction(actionData));
     taperConfigActionDispatch(dosageChangeAction(actionData));
@@ -57,12 +57,17 @@ const OralFormDosage: FC<Props> = ({ time }) => {
       <Input type='number' value={dosages['1mg']} onChange={mgOnChange} min={0} style={inputStyle}/> mg =
       <Input type='number' value={mlDosage} onChange={mlOnChange} min={0} style={inputStyle}/> ml
     </div>
-    {time === 'Upcoming' && dosageDifference
+    {time === 'Upcoming' && dosageDifferenceMessage
     && (
       <div style={{ color: 'red' }}>
-        {dosageDifference}
+        {dosageDifferenceMessage}
       </div>
     )}
+    <div>
+      Total: {calculateDosageSum(dosages)}
+      {' '}
+      {chosenDrugForm!.measureUnit}
+    </div>
     </>
   );
 };

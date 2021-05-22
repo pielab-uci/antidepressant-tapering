@@ -5,6 +5,7 @@ import {
 import CapsuleOrTabletUnit from './CapsuleOrTabletUnit';
 import { PrescriptionFormContext } from './PrescriptionForm/PrescriptionForm';
 import { CapsuleTabletDosage } from '../types';
+import { useDosageSumAndDifferenceMessage } from '../hooks/useDosageSumDifference';
 
 interface Props {
   time: 'Prior' | 'Upcoming';
@@ -16,25 +17,7 @@ const CapsuleOrTabletDosages: FC<Props> = ({ time, dosages }) => {
   const {
     chosenDrugForm, dosageOptions, priorDosagesQty, upcomingDosagesQty,
   } = context;
-  const unit = chosenDrugForm!.measureUnit;
-  const [dosageDifferencePercent, setDosageDifferencePercent] = useState<string | null>(null);
-  const calculateDosageSum = useCallback((dosages: { [key: string]: number }): number => Object
-    .entries(dosages)
-    .reduce((acc, [dosage, count]) => acc + parseFloat(dosage) * count, 0), []);
-
-  useEffect(() => {
-    if (time === 'Upcoming') {
-      const priorDosageSum = calculateDosageSum(priorDosagesQty);
-      const upcomingDosageSum = calculateDosageSum(upcomingDosagesQty);
-      if (priorDosageSum === 0) {
-        setDosageDifferencePercent(null);
-      } else {
-        setDosageDifferencePercent(
-          ((upcomingDosageSum - priorDosageSum) / priorDosageSum * 100).toFixed(2),
-        );
-      }
-    }
-  }, [priorDosagesQty, upcomingDosagesQty]);
+  const [dosageDifferenceMessage, calculateDosageSum] = useDosageSumAndDifferenceMessage(time, priorDosagesQty, upcomingDosagesQty);
 
   return (
     <>
@@ -56,18 +39,17 @@ const CapsuleOrTabletDosages: FC<Props> = ({ time, dosages }) => {
           />))
         }
       </div>
-      {time === 'Upcoming' && dosageDifferencePercent
+      {time === 'Upcoming' && dosageDifferenceMessage
       && (
       <div style={{ color: 'red' }}>
-        {dosageDifferencePercent}
-        % change
+        {dosageDifferenceMessage}
       </div>
       )}
       <div>
         Total:
         {calculateDosageSum(dosages)}
         {' '}
-        {unit}
+        {chosenDrugForm!.measureUnit}
       </div>
     </>
   );

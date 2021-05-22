@@ -478,11 +478,11 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
 
       case INTERVAL_START_DATE_CHANGE: {
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
-        drug.intervalStartDate = action.data.date;
+        drug.intervalStartDate = new Date(action.data.date.valueOf() + action.data.date.getTimezoneOffset() * 60 * 1000);
 
         if (drug.intervalEndDate) {
           drug.intervalUnit = 'Days';
-          drug.intervalCount = differenceInCalendarDays(drug.intervalEndDate, drug.intervalStartDate);
+          drug.intervalCount = differenceInCalendarDays(drug.intervalEndDate, drug.intervalStartDate) + 1;
         }
         draft.isSaved = false;
         break;
@@ -500,7 +500,10 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case INTERVAL_UNIT_CHANGE: {
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         drug.intervalUnit = action.data.unit;
-        drug.intervalEndDate = sub(add(drug.intervalStartDate, { [drug.intervalUnit.toLowerCase()]: drug.intervalCount }), { days: 1 });
+        drug.intervalEndDate = sub(
+          add(drug.intervalStartDate, { [drug.intervalUnit.toLowerCase()]: drug.intervalCount }),
+          { days: 1 },
+        );
         draft.isSaved = false;
         break;
       }
@@ -508,7 +511,10 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case INTERVAL_COUNT_CHANGE: {
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         drug.intervalCount = action.data.count;
-        drug.intervalEndDate = add(drug.intervalStartDate, { [drug.intervalUnit.toLowerCase()]: drug.intervalCount });
+        drug.intervalEndDate = sub(
+          add(drug.intervalStartDate, { [drug.intervalUnit.toLowerCase()]: drug.intervalCount }),
+          { days: 1 },
+        );
         draft.isSaved = false;
         break;
       }

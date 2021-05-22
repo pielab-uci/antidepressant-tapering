@@ -21,6 +21,8 @@ export type TableRowData =
     selected: boolean,
     prescribedDosages: { [dosage: string]: number },
     addedInCurrentVisit: boolean,
+    intervalCount: number,
+    intervalUnit: 'Days'|'Weeks'|'Months',
     form: string };
 
 export const isCompleteDrugInput = (drug: PrescribedDrug) => drug.name !== ''
@@ -35,30 +37,26 @@ export const completePrescribedDrugs = (drugs: PrescribedDrug[]|null|undefined):
 };
 
 export const validateCompleteInputs = (drugs: PrescribedDrug[]|null|undefined): boolean => {
-  console.log('drugs: ', drugs);
-
   return !(drugs === null || drugs === undefined) && drugs
     .map((drug) => isCompleteDrugInput(drug))
     .every((cond) => cond);
 };
 
 const rowIntervalOverlapping = (prev: TableRowData, current: TableRowData) => {
-  console.group('rowIntervalOverlapping');
-  console.log('prev: ', prev);
-  console.log('current: ', current);
-  console.groupEnd();
+  const res = prev.Drug === current.Drug
+    && (areIntervalsOverlapping(
+      { start: prev.startDate, end: prev.endDate },
+      { start: current.startDate, end: current.endDate },
+      { inclusive: true },
+    ));
 
-  return prev.Drug === current.Drug
-  && (areIntervalsOverlapping(
-    { start: prev.startDate, end: prev.endDate },
-    { start: current.startDate, end: current.endDate },
-    { inclusive: true },
-  ));
+  return res;
 };
 
-const rowIntervalIsAfter = (prev: TableRowData, current: TableRowData) => {
-  return prev.Drug === current.Drug
-  && isAfter(current.startDate, prev.endDate);
+const rowIntervalIsAfter = (fromPrev: TableRowData, fromCurrent: TableRowData) => {
+  const res = fromPrev.Drug === fromCurrent.Drug
+    && isAfter(fromPrev.startDate, fromCurrent.endDate);
+  return res;
 };
 
 const convert = (drugs: PrescribedDrug[]): Converted[] => {
@@ -141,20 +139,23 @@ const calcNextDosageQty = (drug: Converted, dosage: number): { [dosageQty: strin
   return upcomingDosageQty;
 };
 
-const prescription = (drug: Converted, dosageQty: { [dosage: string]: number }) => Object.entries(dosageQty)
+type PrescriptionFunction = (args: { form: string, intervalCount: number, intervalUnit: 'Days'|'Weeks'|'Months' }, dosageQty: { [dosage: string]:number }) => string;
+const prescription: PrescriptionFunction = (
+  { form, intervalCount, intervalUnit }, dosageQty,
+) => Object.entries(dosageQty)
   .filter(([dosage, qty]) => qty !== 0)
   .reduce((res, [dosage, qty], i, arr) => {
     if (i === arr.length - 1) {
-      return `${res} ${qty} * ${dosage} ${drug.form} for ${drug.intervalCount + 1} ${drug.intervalUnit.toLowerCase()}`;
+      return `${res} ${qty} * ${dosage} ${form} for ${intervalCount} ${intervalUnit.toLowerCase()}`;
     }
 
-    return `${res} ${qty} * ${dosage} ${drug.form}, `;
+    return `${res} ${qty} * ${dosage} ${form}, `;
   }, '');
 
 const generateTableRows = (drugs: Converted[]): TableRowData[] => {
   const rows: TableRowData[] = [];
   drugs.forEach((drug) => {
-    const durationInDays = { days: differenceInCalendarDays(drug.intervalEndDate, drug.intervalStartDate) };
+    const durationInDaysCount = { days: differenceInCalendarDays(drug.intervalEndDate, drug.intervalStartDate) + 1 };
 
     const upcomingDosages = calcProjectedDosages(drug, drug.upcomingDosageSum, 4);
 
@@ -164,26 +165,30 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
       Dates: `${format(drug.intervalStartDate, 'MM/dd/yyyy')} - ${format(drug.intervalEndDate, 'MM/dd/yyyy')}`,
       startDate: drug.intervalStartDate,
       endDate: drug.intervalEndDate,
-      Prescription: prescription(drug, drug.upcomingDosages.reduce(
+      Prescription: prescription({ ...drug }, drug.upcomingDosages.reduce(
         (prev, d) => ({ ...prev, [d.dosage]: d.quantity }), {},
       )),
       prescribedDosages: drug.prescribedDosages,
       addedInCurrentVisit: !drug.prevVisit,
-      selected: true,
+      selected: !drug.prevVisit,
       form: drug.form,
+      intervalCount: drug.intervalCount,
+      intervalUnit: drug.intervalUnit,
     });
 
     const projectionStartDate = add(drug.intervalEndDate, { days: 1 });
-
+    const newEndDate = sub(add(projectionStartDate, durationInDaysCount), { days: 1 });
     const newRowData = {
       Drug: drug.name,
       upcomingDosageSum: upcomingDosages[1],
       prescribedDosages: calcNextDosageQty(drug, upcomingDosages[1]),
       startDate: projectionStartDate,
-      endDate: add(projectionStartDate, durationInDays),
+      endDate: newEndDate,
       selected: false,
       form: drug.form,
       Prescription: '',
+      intervalCount: drug.intervalCount,
+      intervalUnit: drug.intervalUnit,
     };
 
     Array(3).fill(null).forEach((_, i) => {
@@ -194,17 +199,19 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
           Dates: `${format(newRowData.startDate, 'MM/dd/yyyy')} - ${format(newRowData.endDate, 'MM/dd/yyyy')}`,
           startDate: newRowData.startDate,
           endDate: newRowData.endDate,
-          Prescription: prescription(drug, newRowData.prescribedDosages),
+          Prescription: prescription({ ...drug }, newRowData.prescribedDosages),
           selected: false,
           addedInCurrentVisit: !drug.prevVisit,
           prescribedDosages: newRowData.prescribedDosages,
+          intervalCount: drug.intervalCount,
+          intervalUnit: drug.intervalUnit,
           form: drug.form,
         });
 
         newRowData.upcomingDosageSum = upcomingDosages[i + 2];
         newRowData.prescribedDosages = calcNextDosageQty(drug, newRowData.upcomingDosageSum);
         newRowData.startDate = add(newRowData.endDate, { days: 1 });
-        newRowData.endDate = add(newRowData.startDate, durationInDays);
+        newRowData.endDate = sub(add(newRowData.startDate, durationInDaysCount), { days: 1 });
       }
     });
   });
@@ -220,6 +227,11 @@ const checkIntervalOverlappingRows = (rows: TableRowData[]): TableRowData[] => {
     rowsFromPreviousVisits.forEach((fromPrev, i, arr) => {
       if (rowIntervalOverlapping(fromPrev, fromCurrent)) {
         fromPrev.endDate = sub(fromCurrent.startDate, { days: 1 });
+        fromPrev.Dates = `${format(fromPrev.startDate, 'MM/dd/yyyy')} - ${format(fromPrev.endDate, 'MM/dd/yyyy')}`;
+        fromPrev.intervalUnit = 'Days';
+        fromPrev.intervalCount = differenceInCalendarDays(fromPrev.endDate, fromPrev.startDate) + 1;
+        fromPrev.Prescription = prescription({ form: fromPrev.form, intervalCount: fromPrev.intervalCount, intervalUnit: fromPrev.intervalUnit }, fromPrev.prescribedDosages);
+
         if (isBefore(fromPrev.endDate, fromPrev.startDate)) {
           arr.splice(i, 1);
         }
@@ -258,9 +270,9 @@ const sort = (drugNames: string[], rows:TableRowData[]): TableRowData[] => {
 
 export const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule => {
   console.group('scheduleGenerator');
+  console.log('prescribedDrugs: ', prescribedDrugs);
   const drugNames = prescribedDrugs.map((drug) => drug.name);
 
-  console.log('prescribedDrugs: ', prescribedDrugs);
   const converted: Converted[] = convert(prescribedDrugs);
   console.log('converted: ', converted);
   const rows: TableRowData[] = generateTableRows(converted);
@@ -269,6 +281,7 @@ export const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule =
   console.log('intervalOverlapCheckedRows: ', intervalOverlapCheckedRows);
   const tableDataSorted : TableRowData[] = sort(drugNames, intervalOverlapCheckedRows);
   console.log('tableData: ', tableDataSorted);
+
   console.groupEnd();
 
   return { data: tableDataSorted, drugs: drugNames };

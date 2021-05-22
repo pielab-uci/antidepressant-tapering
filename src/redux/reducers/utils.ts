@@ -306,9 +306,11 @@ export const chartDataConverter = (schedule: Schedule): ScheduleChartData => {
     scheduleChartData.push({ name: k, data: [] });
     rows.forEach((row, i) => {
       const chartData = scheduleChartData.find((el) => el.name === k)!;
-      chartData.data.push({
-        timestamp: row.startDate.getTime(),
-        dosage: parseFloat(row.Dosage),
+      Array(differenceInCalendarDays(row.endDate, row.startDate) + 1).fill(null).forEach((_, j) => {
+        chartData.data.push({
+          timestamp: add(row.startDate, { days: j }).getTime(),
+          dosage: parseFloat(row.Dosage),
+        });
       });
 
       if (i === rows.length - 1) {

@@ -23,7 +23,7 @@ const ScheduleChart: FC<Props> = ({ scheduleChartData, width, height }) => {
         {/* <XAxis dataKey="time" type="category" allowDuplicatedCategory={false} /> */}
         <XAxis dataKey="timestamp" type="number" tickFormatter={(time) => format(time, 'MM-dd')} domain={['auto', 'auto']} scale="time" />
         <YAxis dataKey="dosage" />
-        <Tooltip labelFormatter={(time: number) => format(time, 'MM-dd')}/>
+        <Tooltip formatter={(value: number) => `${value}mg`} labelFormatter={(time: number) => format(time, 'MM-dd')}/>
         <Legend />
         {scheduleChartData.map((drug) => (
           <Line dataKey="dosage" data={drug.data} name={drug.name} key={drug.name} type={'stepAfter'}/>

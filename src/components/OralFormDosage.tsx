@@ -26,7 +26,7 @@ const OralFormDosage: FC<Props> = ({ time }) => {
   } = context;
   const { dosages, dosageChangeAction } = context[time];
   const dosage = useRef('1mg');
-  const [mlDosage, setmlDosage] = useState(dosages['1mg']); // TODO: bring OralDosage - rate
+  const [mlDosage, setmlDosage] = useState(dosages['1mg']);
   const [dosageDifferenceMessage, calculateDosageSum] = useDosageSumAndDifferenceMessage(time, priorDosagesQty, upcomingDosagesQty);
 
   const mgOnChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {

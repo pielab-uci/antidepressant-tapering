@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  FC, useCallback, useContext, useEffect, useState,
+  FC, useContext,
 } from 'react';
 import CapsuleOrTabletUnit from './CapsuleOrTabletUnit';
 import { PrescriptionFormContext } from './PrescriptionForm/PrescriptionForm';

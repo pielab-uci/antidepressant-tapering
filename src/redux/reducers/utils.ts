@@ -140,14 +140,20 @@ const calcNextDosageQty = (drug: Converted, dosage: number): { [dosageQty: strin
   return upcomingDosageQty;
 };
 
-type PrescriptionFunction = (args: { form: string, intervalCount: number, intervalUnit: 'Days'|'Weeks'|'Months' }, dosageQty: { [dosage: string]:number }) => string;
+type PrescriptionFunction = (args: { form: string, intervalCount: number, intervalUnit: 'Days'|'Weeks'|'Months', oralDosageInfo?: OralDosage | null }, dosageQty: { [dosage: string]:number }) => string;
 const prescription: PrescriptionFunction = (
-  { form, intervalCount, intervalUnit }, dosageQty,
+  {
+    form, intervalCount, intervalUnit, oralDosageInfo,
+  }, dosageQty,
 ) => Object.entries(dosageQty)
   .filter(([dosage, qty]) => qty !== 0)
   .reduce((res, [dosage, qty], i, arr) => {
     if (i === arr.length - 1) {
-      return `${res} ${qty} * ${dosage} ${form} for ${intervalCount} ${intervalUnit.toLowerCase()}`;
+      return `${res} ${qty}mg ${form} for ${intervalCount} ${intervalUnit.toLowerCase()}`;
+    }
+
+    if (oralDosageInfo) {
+      return `${res} ${dosage} (${qty / oralDosageInfo.rate.mg * oralDosageInfo.rate.ml}ml) ${form} for ${intervalCount} ${intervalUnit.toLowerCase()}`;
     }
 
     return `${res} ${qty} * ${dosage} ${form}, `;

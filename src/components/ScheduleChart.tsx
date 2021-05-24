@@ -12,7 +12,6 @@ interface Props {
   height: number;
 }
 const ScheduleChart: FC<Props> = ({ scheduleChartData, width, height }) => {
-  // const { scheduleChartData } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   console.log('scheduleChartData');
   console.log(scheduleChartData);
   return (
@@ -20,7 +19,6 @@ const ScheduleChart: FC<Props> = ({ scheduleChartData, width, height }) => {
     <ResponsiveContainer width={width} height={height}>
       <LineChart data={scheduleChartData} width={width} height={height}>
         <CartesianGrid strokeDasharray="3 3" />
-        {/* <XAxis dataKey="time" type="category" allowDuplicatedCategory={false} /> */}
         <XAxis dataKey="timestamp" type="number" tickFormatter={(time) => format(time, 'MM-dd')} domain={['auto', 'auto']} scale="time" />
         <YAxis dataKey="dosage" />
         <Tooltip formatter={(value: number) => `${value}mg`} labelFormatter={(time: number) => format(time, 'MM-dd')}/>

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 type Type = (time: 'Prior'|'Upcoming', priorDosageQty: { [dosage: string]: number }, upcomingDosageQty: { [dosage: string]: number }) => [(string|null), (dosages: { [dosage: string]: number }) => number];
+
 export const useDosageSumAndDifferenceMessage: Type = (time, priorDosageQty, upcomingDosageQty) => {
   const [dosageDifferenceMessage, setDosageDifferenceMessage] = useState<string|null>(null);
 

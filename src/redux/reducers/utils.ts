@@ -332,6 +332,9 @@ export const messageGenerateFromSchedule = (schedule: Schedule): string => {
       const dosages = Object.entries(row.prescribedDosages)
         .reduce(
           (prev, [dosage, qty], dosage_idx, dosages) => {
+            if (qty === 0) {
+              return prev;
+            }
             if (dosage_idx === 0) {
               return `${prev} ${qty} ${dosage} ${row.form}(s)`;
             }

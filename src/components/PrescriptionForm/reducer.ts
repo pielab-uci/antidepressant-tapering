@@ -132,7 +132,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
             draft.prescribedDosagesQty[dosage.dosage] = 0;
           });
         } else {
-
+          draft.availableDosageOptions = ['1mg'];
         }
 
         break;

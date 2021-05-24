@@ -329,24 +329,29 @@ export const messageGenerateFromSchedule = (schedule: Schedule): string => {
   return schedule.data
     .filter((row) => row.selected)
     .reduce((message, row, i, arr) => {
-      const dosages = Object.entries(row.prescribedDosages)
-        .reduce(
-          (prev, [dosage, qty], dosage_idx, dosages) => {
-            if (qty === 0) {
-              return prev;
-            }
-            if (dosage_idx === 0) {
-              return `${prev} ${qty} ${dosage} ${row.form}(s)`;
-            }
-            if (dosage_idx === dosages.length - 1) {
-              return `${prev} and ${qty} ${dosage} ${row.form}(s)`;
-            }
-            return `${prev}, ${qty} ${dosage} ${row.form}(s)`;
-          },
-          'Take',
-        );
       const startDate = format(row.startDate, 'MMM dd, yyyy');
       const endDate = format(row.endDate, 'MMM dd, yyyy');
-      return `${message} ${dosages} of ${row.Drug} from ${startDate} to ${endDate}.\n`;
+      if (row.form === 'capsule' || row.form === 'tablet') {
+        const dosages = Object.entries(row.prescribedDosages)
+          .reduce(
+            (prev, [dosage, qty], dosage_idx, dosages) => {
+              if (qty === 0) {
+                return prev;
+              }
+              if (dosage_idx === 0) {
+                return `${prev} ${qty} ${dosage} ${row.form}(s)`;
+              }
+              if (dosage_idx === dosages.length - 1) {
+                return `${prev} and ${qty} ${dosage} ${row.form}(s)`;
+              }
+              return `${prev}, ${qty} ${dosage} ${row.form}(s)`;
+            },
+            'Take',
+          );
+        return `${message} ${dosages} of ${row.Drug} from ${startDate} to ${endDate}.\n`;
+      }
+
+      // in case of oral solution/suspension
+      return `Take ${message} ${row.prescribedDosages['1mg']}mg of ${row.Drug} from ${startDate} to ${endDate}.\n`;
     }, '');
 };

@@ -16,7 +16,6 @@ import {
   PrescriptionFormActions,
 } from './actions';
 import { CapsuleTabletDosage, isCapsuleOrTablet } from '../../types';
-import CapsuleOrTabletDosages from '../CapsuleOrTabletDosages';
 
 export const initialState: PrescriptionFormState = {
   drugs: null,
@@ -31,6 +30,7 @@ export const initialState: PrescriptionFormState = {
   priorDosagesQty: {},
   upcomingDosagesQty: {},
   allowSplittingUnscoredTablet: false,
+  oralDosageInfo: null,
   prescribedDosagesQty: {},
   intervalStartDate: new Date(),
   intervalEndDate: null,
@@ -77,6 +77,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
               draft.upcomingDosagesQty[dosage.dosage] = 0;
             }
           });
+          draft.oralDosageInfo = null;
         }
         draft.intervalStartDate = action.data.intervalStartDate;
         draft.intervalEndDate = action.data.intervalEndDate;
@@ -125,6 +126,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
           draft.priorDosagesQty = {};
           draft.upcomingDosagesQty = {};
           draft.prescribedDosagesQty = {};
+          draft.oralDosageInfo = null;
 
           chosenDrugForm.dosages.forEach((dosage) => {
             draft.priorDosagesQty[dosage.dosage] = 0;
@@ -133,6 +135,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
           });
         } else {
           draft.availableDosageOptions = ['1mg'];
+          draft.oralDosageInfo = chosenDrugForm.dosages;
         }
 
         break;

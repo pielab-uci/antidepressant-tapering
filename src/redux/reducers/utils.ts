@@ -1,7 +1,7 @@
 import {
   add, areIntervalsOverlapping, differenceInCalendarDays, format, isAfter, isBefore, isSameDay, sub,
 } from 'date-fns';
-import { PrescribedDrug } from '../../types';
+import { OralDosage, PrescribedDrug } from '../../types';
 import { TableRow } from '../../components/ProjectedScheduleTable';
 import { Schedule } from '../../components/ProjectedSchedule';
 
@@ -23,6 +23,7 @@ export type TableRowData =
     addedInCurrentVisit: boolean,
     intervalCount: number,
     intervalUnit: 'Days'|'Weeks'|'Months',
+    oralDosageInfo?: OralDosage,
     form: string };
 
 export const isCompleteDrugInput = (drug: PrescribedDrug) => drug.name !== ''
@@ -174,6 +175,7 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
       form: drug.form,
       intervalCount: drug.intervalCount,
       intervalUnit: drug.intervalUnit,
+      oralDosageInfo: drug.oralDosageInfo ? drug.oralDosageInfo : undefined,
     });
 
     const projectionStartDate = add(drug.intervalEndDate, { days: 1 });
@@ -189,6 +191,7 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
       Prescription: '',
       intervalCount: drug.intervalCount,
       intervalUnit: drug.intervalUnit,
+      oralDosageInfo: drug.oralDosageInfo ? drug.oralDosageInfo : undefined,
     };
 
     Array(3).fill(null).forEach((_, i) => {
@@ -206,6 +209,7 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
           intervalCount: drug.intervalCount,
           intervalUnit: drug.intervalUnit,
           form: drug.form,
+          oralDosageInfo: drug.oralDosageInfo ? drug.oralDosageInfo : undefined,
         });
 
         newRowData.upcomingDosageSum = upcomingDosages[i + 2];
@@ -352,6 +356,6 @@ export const messageGenerateFromSchedule = (schedule: Schedule): string => {
       }
 
       // in case of oral solution/suspension
-      return `Take ${message} ${row.prescribedDosages['1mg']}mg of ${row.Drug} from ${startDate} to ${endDate}.\n`;
+      return `Take ${message} ${row.prescribedDosages['1mg']}mg of ${row.Drug} (${row.prescribedDosages['1mg'] / row.oralDosageInfo!.rate.mg * row.oralDosageInfo!.rate.ml}ml) from ${startDate} to ${endDate}.\n`;
     }, '');
 };

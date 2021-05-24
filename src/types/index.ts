@@ -82,4 +82,5 @@ export interface PrescribedDrug {
   intervalCount: number;
   intervalUnit: 'Days'|'Weeks'|'Months';
   prescribedAt: Date;
+  oralDosageInfo?: OralDosage | null;
 }

@@ -26,6 +26,7 @@ export interface PrescriptionFormState {
   upcomingDosagesQty: { [key: string]: number };
   allowSplittingUnscoredTablet: boolean;
   prescribedDosagesQty: { [key: string]: number };
+  oralDosageInfo: { rate: { mg: number, ml: number }, bottles: string[] } | null;
   intervalStartDate: Date;
   intervalEndDate: Date | null;
   intervalUnit: 'Days'|'Weeks'|'Months';

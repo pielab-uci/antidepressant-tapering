@@ -1,4 +1,4 @@
-import { Drug, PrescribedDrug } from '../../types';
+import { Drug, OralDosage, PrescribedDrug } from '../../types';
 
 export const LOAD_PRESCRIPTION_DATA = 'LOAD_PRESCRIPTION_DATA' as const;
 
@@ -25,7 +25,7 @@ export const CHOOSE_FORM = 'CHOOSE_FORM' as const;
 
 export interface ChooseFormAction {
   type: typeof CHOOSE_FORM,
-  data: { id: number; form: string, minDosageUnit?: number, availableDosageOptions?: string[] };
+  data: { id: number; form: string, minDosageUnit?: number, availableDosageOptions?: string[], oralDosageInfo?: OralDosage|null };
 }
 
 export const PRIOR_DOSAGE_CHANGE = 'PRIOR_DOSAGE_CHANGE' as const;

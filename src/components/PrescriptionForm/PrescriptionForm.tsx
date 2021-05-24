@@ -66,6 +66,7 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
     drugs: drugsLocal, chosenBrand, chosenDrugForm, drugFormOptions,
     priorDosagesQty, upcomingDosagesQty, minDosageUnit,
     availableDosageOptions, allowSplittingUnscoredTablet,
+    oralDosageInfo,
   } = state;
   const { drugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const [showTotalQuantities, setShowTotalQuantities] = useState(true, `PrescriptionForm-ShowTotalQuantities_${prescribedDrug.id}`);
@@ -109,7 +110,11 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
       taperConfigActionDispatch<ChooseFormAction>({
         type: CHOOSE_FORM,
         data: {
-          form: chosenDrugForm!.form, minDosageUnit, availableDosageOptions, id: prescribedDrug.id,
+          form: chosenDrugForm!.form,
+          minDosageUnit,
+          availableDosageOptions,
+          id: prescribedDrug.id,
+          oralDosageInfo: isCapsuleOrTablet(chosenDrugForm) ? null : oralDosageInfo,
         },
       });
     }

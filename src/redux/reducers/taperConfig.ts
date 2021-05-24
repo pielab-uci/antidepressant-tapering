@@ -428,6 +428,10 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.availableDosageOptions = action.data.availableDosageOptions!;
         draft.isInputComplete = false;
         draft.isSaved = false;
+
+        if (drug.form === 'oral solution' || drug.form === 'oral suspension') {
+          drug.oralDosageInfo = action.data.oralDosageInfo;
+        }
         break;
       }
 

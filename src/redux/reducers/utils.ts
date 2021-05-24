@@ -118,26 +118,31 @@ const calcProjectedDosages = (drug: Converted, prescribedDosage: number, length:
   return res;
 };
 
-const calcNextDosageQty = (drug: Converted, dosage: number): { [dosageQty: string]: number } => {
-  const upcomingDosageQty: { [dosage: string]: number } = {};
+export const calcMinimumQuantityForDosage = (availableOptions: string[], dosage: number): { [dosageQty: string]: number } => {
+  const dosages: { [dosage: string]: number } = {};
 
   let d = dosage;
-  drug.availableDosageOptions
+  availableOptions
     .concat()
     .sort((a, b) => parseFloat(b) - parseFloat(a))
     .forEach((dos) => {
       const quot = Math.floor(d / parseFloat(dos));
       if (quot >= 1) {
-        upcomingDosageQty[dos] = quot;
+        dosages[dos] = quot;
         d -= quot * parseFloat(dos);
       }
     });
 
   // TODO: handle splitting case here..?
   if (d > 0) {
-    console.error('error in calcNextDosageQty');
+    console.error('error in calcMinimumQuantityForDosage');
   }
-  return upcomingDosageQty;
+
+  if (Object.values(dosages).every((qty) => qty === 0)) {
+    dosages[availableOptions[0]] = 1;
+  }
+
+  return dosages;
 };
 
 type PrescriptionFunction = (args: { form: string, intervalCount: number, intervalUnit: 'Days'|'Weeks'|'Months', oralDosageInfo?: OralDosage | null }, dosageQty: { [dosage: string]:number }) => string;
@@ -189,7 +194,7 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
     const newRowData = {
       Drug: drug.name,
       upcomingDosageSum: upcomingDosages[1],
-      prescribedDosages: calcNextDosageQty(drug, upcomingDosages[1]),
+      prescribedDosages: calcMinimumQuantityForDosage(drug.availableDosageOptions, upcomingDosages[1]),
       startDate: projectionStartDate,
       endDate: newEndDate,
       selected: false,
@@ -219,7 +224,7 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
         });
 
         newRowData.upcomingDosageSum = upcomingDosages[i + 2];
-        newRowData.prescribedDosages = calcNextDosageQty(drug, newRowData.upcomingDosageSum);
+        newRowData.prescribedDosages = calcMinimumQuantityForDosage(drug.availableDosageOptions, newRowData.upcomingDosageSum);
         newRowData.startDate = add(newRowData.endDate, { days: 1 });
         newRowData.endDate = sub(add(newRowData.startDate, durationInDaysCount), { days: 1 });
       }

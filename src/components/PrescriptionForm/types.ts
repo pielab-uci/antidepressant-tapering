@@ -8,7 +8,7 @@ import {
   PrescriptionFormActions,
 } from './actions';
 import {
-  CapsuleTabletDosage,
+  CapsuleOrTabletDosage,
   Drug, DrugForm, DrugOption, OralDosage,
 } from '../../types';
 
@@ -19,7 +19,7 @@ export interface PrescriptionFormState {
   chosenDrugForm: DrugForm | null| undefined;
   brandOptions: DrugOption[] | null;
   drugFormOptions: DrugForm[] | null;
-  dosageOptions: CapsuleTabletDosage[]| OralDosage;
+  dosageOptions: CapsuleOrTabletDosage[]| OralDosage;
   availableDosageOptions: string[];
   minDosageUnit: number;
   priorDosagesQty: { [key: string]: number };

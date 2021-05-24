@@ -23,7 +23,7 @@ import {
 } from './actions';
 import { IPrescriptionFormContext, PrescriptionFormState } from './types';
 import {
-  CapsuleTabletForm,
+  CapsuleOrTabletForm,
   DrugForm, isCapsuleOrTablet, OralForm, PrescribedDrug,
 } from '../../types';
 import {
@@ -32,7 +32,7 @@ import {
   REMOVE_DRUG_FORM,
   RemoveDrugFormAction,
 } from '../../redux/actions/taperConfig';
-import TotalQuantities from '../TotalQuantities';
+import PrescribedDosageQuantities from '../PrescribedDosageQuantities';
 import SelectInterval from '../SelectInterval';
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
@@ -178,7 +178,7 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
         <label>Form</label>
         <Select value={chosenDrugForm?.form} onChange={onFormChange} style={{ width: 200 }}>
           {drugFormOptions?.map(
-            (form: CapsuleTabletForm | OralForm) => <Option key={form.form} value={form.form}>{form.form}</Option>,
+            (form: CapsuleOrTabletForm | OralForm) => <Option key={form.form} value={form.form}>{form.form}</Option>,
           )}
         </Select>
       {chosenDrugForm?.form === 'tablet' && <Checkbox checked={allowSplittingUnscoredTablet} onChange={toggleAllowSplittingUnscoredTabletCheckbox}>Allow splitting unscored tablet</Checkbox>}
@@ -190,7 +190,7 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
         <hr/>
         <SelectInterval />
         <hr/>
-        {showTotalQuantities && <TotalQuantities/>}
+        {showTotalQuantities && <PrescribedDosageQuantities/>}
       <hr />
     </PrescriptionFormContext.Provider>
   );

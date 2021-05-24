@@ -2,7 +2,7 @@ import produce from 'immer';
 import { add, differenceInCalendarDays, sub } from 'date-fns';
 import { Key } from 'react';
 import {
-  Drug,
+  Drug, isCapsuleOrTablet,
   PrescribedDrug, TaperingConfiguration,
 } from '../../types';
 import {
@@ -76,7 +76,7 @@ import {
 import { Schedule } from '../../components/ProjectedSchedule';
 import {
   chartDataConverter, ScheduleChartData, scheduleGenerator,
-  messageGenerateFromSchedule, validateCompleteInputs, isCompleteDrugInput,
+  messageGenerateFromSchedule, validateCompleteInputs, isCompleteDrugInput, calcMinimumQuantityForDosage,
 } from './utils';
 
 export interface TaperConfigState {
@@ -461,7 +461,15 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         } else {
           drug.upcomingDosages[idx] = action.data.dosage;
         }
+
+        // if (isCapsuleOrTablet(drug)) {
         drug.prescribedDosages[action.data.dosage.dosage] = action.data.dosage.quantity;
+        // } else {
+        //   const upcomingDosageSum = drug.upcomingDosages
+        //     .reduce((acc, d) => acc + parseFloat(d.dosage) * d.quantity, 0) / drug.oralDosageInfo!.rate.mg * drug.oralDosageInfo!.rate.ml;
+        //   drug.prescribedDosages = calcMinimumQuantityForDosage(drug.availableDosageOptions, upcomingDosageSum);
+        // }
+
         draft.isSaved = false;
         break;
       }

@@ -4,7 +4,7 @@ import {
 } from 'react';
 import CapsuleOrTabletUnit from './CapsuleOrTabletUnit';
 import { PrescriptionFormContext } from './PrescriptionForm/PrescriptionForm';
-import { CapsuleTabletDosage } from '../types';
+import { CapsuleOrTabletDosage } from '../types';
 import { useDosageSumAndDifferenceMessage } from '../hooks/useDosageSumDifference';
 
 interface Props {
@@ -27,7 +27,7 @@ const CapsuleOrTabletDosages: FC<Props> = ({ time, dosages }) => {
         Dosage
       </div>
       <div style={{ display: 'flex' }}>
-        {(dosageOptions as CapsuleTabletDosage[])
+        {(dosageOptions as CapsuleOrTabletDosage[])
           .map((v: { dosage: string; isScored?: boolean }, i) => (
           <CapsuleOrTabletUnit
             key={`${time}_${chosenDrugForm!.form}_${v.dosage}`}

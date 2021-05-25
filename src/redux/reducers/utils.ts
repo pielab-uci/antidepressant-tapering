@@ -116,6 +116,12 @@ const calcProjectedDosages = (drug: Converted, prescribedDosage: number, length:
 };
 
 export const calcMinimumQuantityForDosage = (availableOptions: string[], dosage: number): { [dosageQty: string]: number } => {
+  if (dosage === 0) {
+    return availableOptions.reduce((prev: { [p: string]: number }, option) => {
+      prev[option] = 0;
+      return prev;
+    }, {});
+  }
   const dosages: { [dosage: string]: number } = {};
 
   let d = dosage;
@@ -130,12 +136,13 @@ export const calcMinimumQuantityForDosage = (availableOptions: string[], dosage:
       }
     });
 
-  if (d > 0) {
-    console.error('error in calcMinimumQuantityForDosage');
-  }
-
   if (Object.values(dosages).every((qty) => qty === 0)) {
     dosages[availableOptions[0]] = 1;
+    d = 0;
+  }
+
+  if (d > 0) {
+    dosages[availableOptions[0]] += 1;
   }
 
   return dosages;

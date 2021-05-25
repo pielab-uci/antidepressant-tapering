@@ -1,12 +1,12 @@
 import * as React from 'react';
 import {
-  useCallback, useEffect, useMemo, useRef,
+  useCallback, useEffect, useRef,
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Checkbox, Input } from 'antd';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { Prompt, useLocation } from 'react-router';
-import ProjectedSchedule from '../components/ProjectedSchedule';
+import ProjectedSchedule from '../components/Schedule/ProjectedSchedule';
 import { RootState } from '../redux/reducers';
 import { TaperConfigState } from '../redux/reducers/taperConfig';
 import PrescriptionForm from '../components/PrescriptionForm/PrescriptionForm';
@@ -16,7 +16,6 @@ import {
   changeMessageForPatient,
   FETCH_TAPER_CONFIG_REQUEST,
   FetchTaperConfigRequestAction,
-  GENERATE_SCHEDULE,
   INIT_NEW_TAPER_CONFIG,
   InitTaperConfigAction,
   EMPTY_TAPER_CONFIG_PAGE,
@@ -24,7 +23,6 @@ import {
   SHARE_WITH_PATIENT_APP_REQUEST,
   SHARE_WITH_PATIENT_EMAIL_REQUEST,
   TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
-  AddNewDrugFormAction,
   changeNoteAndInstructions,
 } from '../redux/actions/taperConfig';
 import { PrescribedDrug } from '../types';
@@ -33,7 +31,6 @@ const { TextArea } = Input;
 
 const TaperConfigurationPage = () => {
   const {
-    prescriptionFormIds,
     messageForPatient,
     noteAndInstructionsForPatient,
     shareProjectedScheduleWithPatient,
@@ -57,7 +54,7 @@ const TaperConfigurationPage = () => {
         type: INIT_NEW_TAPER_CONFIG,
         data: {
           clinicianId: parseInt(urlSearchParams.current.get('clinicianId')!, 10),
-          patientId: parseInt(urlSearchParams.current!.get('patientId')!, 10),
+          patientId: parseInt(urlSearchParams.current.get('patientId')!, 10),
         },
       });
     }
@@ -75,7 +72,6 @@ const TaperConfigurationPage = () => {
     });
   }, []);
 
-  // todo: do I need prescriptionFormIds in addition to ids of prescribedDrugs?
   const addNewPrescriptionForm = useCallback(() => {
     dispatch({
       type: ADD_NEW_DRUG_FORM,

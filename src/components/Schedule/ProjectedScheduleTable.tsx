@@ -2,9 +2,9 @@ import * as React from 'react';
 import { Key, useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Table } from 'antd';
-import { RootState } from '../redux/reducers';
-import { TaperConfigState } from '../redux/reducers/taperConfig';
-import { SCHEDULE_ROW_SELECTED, ScheduleRowSelectedAction } from '../redux/actions/taperConfig';
+import { RootState } from '../../redux/reducers';
+import { TaperConfigState } from '../../redux/reducers/taperConfig';
+import { SCHEDULE_ROW_SELECTED, ScheduleRowSelectedAction } from '../../redux/actions/taperConfig';
 
 export interface TableRow {
   Drug: string;

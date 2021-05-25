@@ -4,7 +4,9 @@ import { useReducer, useState } from 'reinspect';
 import { Button, Checkbox, Select } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
-import CapsuleOrTabletDosages from '../CapsuleOrTabletDosages';
+import {
+  CapsuleOrTabletDosages, PrescribedDosageQuantities, SelectInterval, OralFormDosage,
+} from '.';
 import {
   initialState,
   reducer,
@@ -23,7 +25,7 @@ import {
 } from './actions';
 import { IPrescriptionFormContext, PrescriptionFormState } from './types';
 import {
-  CapsuleTabletForm,
+  CapsuleOrTabletForm,
   DrugForm, isCapsuleOrTablet, OralForm, PrescribedDrug,
 } from '../../types';
 import {
@@ -32,11 +34,9 @@ import {
   REMOVE_DRUG_FORM,
   RemoveDrugFormAction,
 } from '../../redux/actions/taperConfig';
-import TotalQuantities from '../TotalQuantities';
-import SelectInterval from '../SelectInterval';
+
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
-import OralFormDosage from '../OralFormDosage';
 
 const { OptGroup, Option } = Select;
 
@@ -66,6 +66,7 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
     drugs: drugsLocal, chosenBrand, chosenDrugForm, drugFormOptions,
     priorDosagesQty, upcomingDosagesQty, minDosageUnit,
     availableDosageOptions, allowSplittingUnscoredTablet,
+    oralDosageInfo,
   } = state;
   const { drugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const [showTotalQuantities, setShowTotalQuantities] = useState(true, `PrescriptionForm-ShowTotalQuantities_${prescribedDrug.id}`);
@@ -109,7 +110,11 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
       taperConfigActionDispatch<ChooseFormAction>({
         type: CHOOSE_FORM,
         data: {
-          form: chosenDrugForm!.form, minDosageUnit, availableDosageOptions, id: prescribedDrug.id,
+          form: chosenDrugForm!.form,
+          minDosageUnit,
+          availableDosageOptions,
+          id: prescribedDrug.id,
+          oralDosageInfo: isCapsuleOrTablet(chosenDrugForm) ? null : oralDosageInfo,
         },
       });
     }
@@ -173,7 +178,7 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
         <label>Form</label>
         <Select value={chosenDrugForm?.form} onChange={onFormChange} style={{ width: 200 }}>
           {drugFormOptions?.map(
-            (form: CapsuleTabletForm | OralForm) => <Option key={form.form} value={form.form}>{form.form}</Option>,
+            (form: CapsuleOrTabletForm | OralForm) => <Option key={form.form} value={form.form}>{form.form}</Option>,
           )}
         </Select>
       {chosenDrugForm?.form === 'tablet' && <Checkbox checked={allowSplittingUnscoredTablet} onChange={toggleAllowSplittingUnscoredTabletCheckbox}>Allow splitting unscored tablet</Checkbox>}
@@ -185,7 +190,7 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
         <hr/>
         <SelectInterval />
         <hr/>
-        {showTotalQuantities && <TotalQuantities/>}
+        {showTotalQuantities && <PrescribedDosageQuantities/>}
       <hr />
     </PrescriptionFormContext.Provider>
   );

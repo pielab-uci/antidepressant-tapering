@@ -2,8 +2,7 @@ import produce from 'immer';
 import { add, differenceInCalendarDays, sub } from 'date-fns';
 import { Key } from 'react';
 import {
-  Drug,
-  PrescribedDrug, TaperingConfiguration,
+  Drug, PrescribedDrug, TaperingConfiguration,
 } from '../../types';
 import {
   ADD_OR_UPDATE_TAPER_CONFIG_FAILURE,
@@ -73,10 +72,10 @@ import {
   UPCOMING_DOSAGE_CHANGE, PRESCRIBED_QUANTITY_CHANGE,
   PrescriptionFormActions,
 } from '../../components/PrescriptionForm/actions';
-import { Schedule } from '../../components/ProjectedSchedule';
+import { Schedule } from '../../components/Schedule/ProjectedSchedule';
 import {
   chartDataConverter, ScheduleChartData, scheduleGenerator,
-  messageGenerateFromSchedule, validateCompleteInputs, isCompleteDrugInput,
+  messageGenerateFromSchedule, isCompleteDrugInput,
 } from './utils';
 
 export interface TaperConfigState {
@@ -205,7 +204,7 @@ const emptyPrescribedDrug = (id: number): PrescribedDrug => ({
   name: '',
   brand: '',
   form: '',
-  measureUnit: '',
+  measureUnit: 'mg',
   minDosageUnit: 0,
   priorDosages: [],
   upcomingDosages: [],
@@ -412,10 +411,14 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         )!.name;
         drug.brand = action.data.brand;
         drug.form = '';
+        drug.oralDosageInfo = null;
         drug.priorDosages = [];
         drug.upcomingDosages = [];
+        drug.prescribedDosages = {};
         draft.isInputComplete = false;
         draft.isSaved = false;
+        draft.messageForPatient = '';
+        draft.showMessageForPatient = false;
         break;
       }
 
@@ -425,9 +428,16 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.minDosageUnit = action.data.minDosageUnit!;
         drug.priorDosages = [];
         drug.upcomingDosages = [];
+        drug.prescribedDosages = {};
         drug.availableDosageOptions = action.data.availableDosageOptions!;
         draft.isInputComplete = false;
         draft.isSaved = false;
+
+        if (drug.form === 'oral solution' || drug.form === 'oral suspension') {
+          drug.oralDosageInfo = action.data.oralDosageInfo;
+        } else {
+          drug.oralDosageInfo = null;
+        }
         break;
       }
 
@@ -457,7 +467,15 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         } else {
           drug.upcomingDosages[idx] = action.data.dosage;
         }
+
+        // if (isCapsuleOrTablet(drug)) {
         drug.prescribedDosages[action.data.dosage.dosage] = action.data.dosage.quantity;
+        // } else {
+        //   const upcomingDosageSum = drug.upcomingDosages
+        //     .reduce((acc, d) => acc + parseFloat(d.dosage) * d.quantity, 0) / drug.oralDosageInfo!.rate.mg * drug.oralDosageInfo!.rate.ml;
+        //   drug.prescribedDosages = calcMinimumQuantityForDosage(drug.availableDosageOptions, upcomingDosageSum);
+        // }
+
         draft.isSaved = false;
         break;
       }

@@ -36,10 +36,10 @@ export interface DrugOption {
   forms: DrugForm[]
 }
 
-export interface CapsuleTabletForm {
+export interface CapsuleOrTabletForm {
   form: string;
   measureUnit: string;
-  dosages: CapsuleTabletDosage[];
+  dosages: CapsuleOrTabletDosage[];
 }
 
 export interface OralForm {
@@ -48,9 +48,9 @@ export interface OralForm {
   dosages: OralDosage;
 }
 
-export type DrugForm = CapsuleTabletForm | OralForm;
+export type DrugForm = CapsuleOrTabletForm | OralForm;
 
-export interface CapsuleTabletDosage {
+export interface CapsuleOrTabletDosage {
   dosage: string;
   isScored?: boolean;
 }
@@ -60,7 +60,7 @@ export interface OralDosage {
   bottles: string[]
 }
 
-export const isCapsuleOrTablet = (form: DrugForm): form is CapsuleTabletForm => {
+export const isCapsuleOrTablet = (form: DrugForm | PrescribedDrug): form is CapsuleOrTabletForm => {
   return form.form === 'tablet' || form.form === 'capsule';
 };
 
@@ -82,4 +82,5 @@ export interface PrescribedDrug {
   intervalCount: number;
   intervalUnit: 'Days'|'Weeks'|'Months';
   prescribedAt: Date;
+  oralDosageInfo?: OralDosage | null;
 }

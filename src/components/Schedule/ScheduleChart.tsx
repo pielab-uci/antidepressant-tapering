@@ -4,7 +4,7 @@ import {
 } from 'recharts';
 import { format } from 'date-fns';
 import { FC } from 'react';
-import { ScheduleChartData } from '../redux/reducers/utils';
+import { ScheduleChartData } from '../../redux/reducers/utils';
 
 interface Props {
   scheduleChartData: ScheduleChartData;

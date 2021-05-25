@@ -1,5 +1,4 @@
 import * as React from 'react';
-// import { Switch, Route } from 'react-router-dom';
 import {
   Link, HashRouter as Router, Switch, Route,
 } from 'react-router-dom';

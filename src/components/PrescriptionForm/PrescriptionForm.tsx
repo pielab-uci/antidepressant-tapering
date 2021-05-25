@@ -4,7 +4,9 @@ import { useReducer, useState } from 'reinspect';
 import { Button, Checkbox, Select } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
-import CapsuleOrTabletDosages from './CapsuleOrTabletDosages';
+import {
+  CapsuleOrTabletDosages, PrescribedDosageQuantities, SelectInterval, OralFormDosage,
+} from '.';
 import {
   initialState,
   reducer,
@@ -32,11 +34,9 @@ import {
   REMOVE_DRUG_FORM,
   RemoveDrugFormAction,
 } from '../../redux/actions/taperConfig';
-import PrescribedDosageQuantities from './PrescribedDosageQuantities';
-import SelectInterval from './SelectInterval';
+
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
-import OralFormDosage from './OralFormDosage';
 
 const { OptGroup, Option } = Select;
 

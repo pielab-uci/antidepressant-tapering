@@ -411,10 +411,14 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         )!.name;
         drug.brand = action.data.brand;
         drug.form = '';
+        drug.oralDosageInfo = null;
         drug.priorDosages = [];
         drug.upcomingDosages = [];
+        drug.prescribedDosages = {};
         draft.isInputComplete = false;
         draft.isSaved = false;
+        draft.messageForPatient = '';
+        draft.showMessageForPatient = false;
         break;
       }
 
@@ -424,12 +428,15 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.minDosageUnit = action.data.minDosageUnit!;
         drug.priorDosages = [];
         drug.upcomingDosages = [];
+        drug.prescribedDosages = {};
         drug.availableDosageOptions = action.data.availableDosageOptions!;
         draft.isInputComplete = false;
         draft.isSaved = false;
 
         if (drug.form === 'oral solution' || drug.form === 'oral suspension') {
           drug.oralDosageInfo = action.data.oralDosageInfo;
+        } else {
+          drug.oralDosageInfo = null;
         }
         break;
       }

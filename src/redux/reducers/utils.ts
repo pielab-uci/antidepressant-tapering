@@ -163,7 +163,7 @@ const prescription: PrescriptionFunction = (
       }
 
       if (i === arr.length - 1) {
-        return `${res} ${qty}mg ${form} for ${intervalCount} ${intervalUnit.toLowerCase()}`;
+        return `${res} ${qty} * ${dosage} ${form} for ${intervalCount} ${intervalUnit.toLowerCase()}`;
       }
 
       return `${res} ${qty} * ${dosage} ${form}, `;
@@ -368,10 +368,10 @@ export const messageGenerateFromSchedule = (schedule: Schedule): string => {
             },
             'Take',
           );
-        return `${message} ${dosages} of ${row.Drug} from ${startDate} to ${endDate}.\n`;
+        return `${message}${dosages} of ${row.Drug} from ${startDate} to ${endDate}.\n`;
       }
 
       // in case of oral solution/suspension
-      return `Take ${message} ${row.prescribedDosages['1mg']}mg of ${row.Drug} (${row.prescribedDosages['1mg'] / row.oralDosageInfo!.rate.mg * row.oralDosageInfo!.rate.ml}ml) from ${startDate} to ${endDate}.\n`;
+      return `Take ${message} ${row.prescribedDosages['1mg']}mg (${row.prescribedDosages['1mg'] / row.oralDosageInfo!.rate.mg * row.oralDosageInfo!.rate.ml}ml) of ${row.Drug} from ${startDate} to ${endDate}.\n`;
     }, '');
 };

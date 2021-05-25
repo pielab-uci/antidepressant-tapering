@@ -14,7 +14,7 @@ import {
   FetchPrescribedDrugsRequestAction,
 } from '../redux/actions/taperConfig';
 import { TaperConfigState } from '../redux/reducers/taperConfig';
-import ScheduleChart from '../components/ScheduleChart';
+import ScheduleChart from '../components/Schedule/ScheduleChart';
 import { chartDataConverter, completePrescribedDrugs, scheduleGenerator } from '../redux/reducers/utils';
 import { SET_CURRENT_PATIENT, SetCurrentPatientAction } from '../redux/actions/user';
 

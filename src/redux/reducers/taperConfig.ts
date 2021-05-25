@@ -2,8 +2,7 @@ import produce from 'immer';
 import { add, differenceInCalendarDays, sub } from 'date-fns';
 import { Key } from 'react';
 import {
-  Drug, isCapsuleOrTablet,
-  PrescribedDrug, TaperingConfiguration,
+  Drug, PrescribedDrug, TaperingConfiguration,
 } from '../../types';
 import {
   ADD_OR_UPDATE_TAPER_CONFIG_FAILURE,
@@ -73,10 +72,10 @@ import {
   UPCOMING_DOSAGE_CHANGE, PRESCRIBED_QUANTITY_CHANGE,
   PrescriptionFormActions,
 } from '../../components/PrescriptionForm/actions';
-import { Schedule } from '../../components/ProjectedSchedule';
+import { Schedule } from '../../components/Schedule/ProjectedSchedule';
 import {
   chartDataConverter, ScheduleChartData, scheduleGenerator,
-  messageGenerateFromSchedule, validateCompleteInputs, isCompleteDrugInput, calcMinimumQuantityForDosage,
+  messageGenerateFromSchedule, isCompleteDrugInput,
 } from './utils';
 
 export interface TaperConfigState {

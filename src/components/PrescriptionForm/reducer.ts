@@ -1,6 +1,6 @@
 import produce from 'immer';
 import {
-  add, differenceInCalendarDays, format, sub,
+  add, differenceInCalendarDays, sub,
 } from 'date-fns';
 import { PrescriptionFormState } from './types';
 import {
@@ -208,7 +208,6 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         break;
 
       case INTERVAL_END_DATE_CHANGE:
-        // draft.intervalEndDate = action.data.date;
         if (action.data.date) {
           draft.intervalEndDate = new Date(action.data.date.valueOf() + action.data.date?.getTimezoneOffset() * 60 * 1000);
         } else {

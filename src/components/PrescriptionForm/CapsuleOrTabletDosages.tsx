@@ -3,9 +3,9 @@ import {
   FC, useContext,
 } from 'react';
 import CapsuleOrTabletUnit from './CapsuleOrTabletUnit';
-import { PrescriptionFormContext } from './PrescriptionForm/PrescriptionForm';
-import { CapsuleOrTabletDosage } from '../types';
-import { useDosageSumAndDifferenceMessage } from '../hooks/useDosageSumDifference';
+import { PrescriptionFormContext } from './PrescriptionForm';
+import { CapsuleOrTabletDosage } from '../../types';
+import { useDosageSumAndDifferenceMessage } from '../../hooks/useDosageSumDifference';
 
 interface Props {
   time: 'Prior' | 'Upcoming';

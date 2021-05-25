@@ -6,10 +6,10 @@ import {
 import { Input } from 'antd';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
-import { PrescriptionFormContext } from './PrescriptionForm/PrescriptionForm';
-import { prescribedQuantityChange } from './PrescriptionForm/actions';
-import { TaperConfigActions } from '../redux/reducers/taperConfig';
-import { DrugForm, isCapsuleOrTablet } from '../types';
+import { PrescriptionFormContext } from './PrescriptionForm';
+import { prescribedQuantityChange } from './actions';
+import { TaperConfigActions } from '../../redux/reducers/taperConfig';
+import { DrugForm, isCapsuleOrTablet } from '../../types';
 
 const PrescribedDosageQuantities = () => {
   const {
@@ -29,9 +29,6 @@ const PrescribedDosageQuantities = () => {
     formActionDispatch(prescribedQuantityChange(actionData));
     taperConfigActionDispatch(prescribedQuantityChange({ ...actionData, intervalDurationDays }));
   };
-
-  // useCallback((e) => {
-  // }, [prescribedDosagesQty, intervalDurationDays]);
 
   const renderQuantities = useCallback((chosenDrugForm: DrugForm | null | undefined, prescribedDosagesQty: { [dosage: string]: number }) => {
     if (chosenDrugForm) {

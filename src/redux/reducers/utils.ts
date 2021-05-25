@@ -1,9 +1,9 @@
 import {
-  add, areIntervalsOverlapping, differenceInCalendarDays, format, isAfter, isBefore, isSameDay, sub,
+  add, areIntervalsOverlapping, differenceInCalendarDays, format, isAfter, isBefore, sub,
 } from 'date-fns';
 import { OralDosage, PrescribedDrug } from '../../types';
-import { TableRow } from '../../components/ProjectedScheduleTable';
-import { Schedule } from '../../components/ProjectedSchedule';
+import { TableRow } from '../../components/Schedule/ProjectedScheduleTable';
+import { Schedule } from '../../components/Schedule/ProjectedSchedule';
 
 interface Converted extends PrescribedDrug {
   intervalEndDate: Date;
@@ -44,20 +44,17 @@ export const validateCompleteInputs = (drugs: PrescribedDrug[]|null|undefined): 
 };
 
 const rowIntervalOverlapping = (prev: TableRowData, current: TableRowData) => {
-  const res = prev.Drug === current.Drug
+  return prev.Drug === current.Drug
     && (areIntervalsOverlapping(
       { start: prev.startDate, end: prev.endDate },
       { start: current.startDate, end: current.endDate },
       { inclusive: true },
     ));
-
-  return res;
 };
 
 const rowIntervalIsAfter = (fromPrev: TableRowData, fromCurrent: TableRowData) => {
-  const res = fromPrev.Drug === fromCurrent.Drug
+  return fromPrev.Drug === fromCurrent.Drug
     && isAfter(fromPrev.startDate, fromCurrent.endDate);
-  return res;
 };
 
 const convert = (drugs: PrescribedDrug[]): Converted[] => {
@@ -133,7 +130,6 @@ export const calcMinimumQuantityForDosage = (availableOptions: string[], dosage:
       }
     });
 
-  // TODO: handle splitting case here..?
   if (d > 0) {
     console.error('error in calcMinimumQuantityForDosage');
   }

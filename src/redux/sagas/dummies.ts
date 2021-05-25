@@ -1,5 +1,4 @@
-import { format } from 'date-fns';
-import { Clinician, Patient, TaperingConfiguration } from '../../types';
+import { Clinician, Patient } from '../../types';
 
 export const sally: Omit<Patient, 'password'> = {
   id: 1,

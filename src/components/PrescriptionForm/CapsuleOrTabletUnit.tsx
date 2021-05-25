@@ -5,8 +5,8 @@ import {
 import { Button } from 'antd';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
-import { PrescriptionFormContext } from './PrescriptionForm/PrescriptionForm';
-import { TaperConfigActions } from '../redux/reducers/taperConfig';
+import { PrescriptionFormContext } from './PrescriptionForm';
+import { TaperConfigActions } from '../../redux/reducers/taperConfig';
 
 interface Props {
   form: string;

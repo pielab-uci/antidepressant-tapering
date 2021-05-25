@@ -245,6 +245,9 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case EMPTY_PRESCRIBED_DRUGS:
         draft.isInputComplete = false;
         draft.prescribedDrugs = null;
+        draft.projectedSchedule = { drugs: [], data: [] };
+        draft.messageForPatient = '';
+        draft.scheduleChartData = [];
         break;
 
       case ADD_OR_UPDATE_TAPER_CONFIG_REQUEST:

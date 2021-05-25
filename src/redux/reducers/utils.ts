@@ -153,20 +153,22 @@ const prescription: PrescriptionFunction = (
   {
     form, intervalCount, intervalUnit, oralDosageInfo,
   }, dosageQty,
-) => Object.entries(dosageQty)
-  .filter(([dosage, qty]) => qty !== 0)
-  .reduce((res, [dosage, qty], i, arr) => {
-    if (i === arr.length - 1) {
-      return `${res} ${qty}mg ${form} for ${intervalCount} ${intervalUnit.toLowerCase()}`;
-    }
+) => {
+  console.log('oralDosageInfo: ', oralDosageInfo);
+  return Object.entries(dosageQty)
+    .filter(([dosage, qty]) => qty !== 0)
+    .reduce((res, [dosage, qty], i, arr) => {
+      if (oralDosageInfo) {
+        return `${res} ${qty / oralDosageInfo.rate.mg * oralDosageInfo.rate.ml}ml ${form} for ${intervalCount} ${intervalUnit.toLowerCase()}`;
+      }
 
-    if (oralDosageInfo) {
-      return `${res} ${dosage} (${qty / oralDosageInfo.rate.mg * oralDosageInfo.rate.ml}ml) ${form} for ${intervalCount} ${intervalUnit.toLowerCase()}`;
-    }
+      if (i === arr.length - 1) {
+        return `${res} ${qty}mg ${form} for ${intervalCount} ${intervalUnit.toLowerCase()}`;
+      }
 
-    return `${res} ${qty} * ${dosage} ${form}, `;
-  }, '');
-
+      return `${res} ${qty} * ${dosage} ${form}, `;
+    }, '');
+};
 const generateTableRows = (drugs: Converted[]): TableRowData[] => {
   const rows: TableRowData[] = [];
   drugs.forEach((drug) => {

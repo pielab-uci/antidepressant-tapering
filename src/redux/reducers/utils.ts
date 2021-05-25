@@ -372,6 +372,6 @@ export const messageGenerateFromSchedule = (schedule: Schedule): string => {
       }
 
       // in case of oral solution/suspension
-      return `Take ${message} ${row.prescribedDosages['1mg']}mg (${row.prescribedDosages['1mg'] / row.oralDosageInfo!.rate.mg * row.oralDosageInfo!.rate.ml}ml) of ${row.Drug} from ${startDate} to ${endDate}.\n`;
+      return `${message}Take ${row.prescribedDosages['1mg']}mg (${row.prescribedDosages['1mg'] / row.oralDosageInfo!.rate.mg * row.oralDosageInfo!.rate.ml}ml) of ${row.Drug} from ${startDate} to ${endDate}.\n`;
     }, '');
 };

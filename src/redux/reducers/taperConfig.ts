@@ -330,6 +330,9 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case GENERATE_SCHEDULE: {
         draft.projectedSchedule = scheduleGenerator(action.data);
         draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
+        draft.scheduleSelectedRowKeys = draft.projectedSchedule.data
+          .map((row, i) => (row.selected ? i : null))
+          .filter((key) => key !== null) as number[];
         draft.projectedSchedule.data.forEach((row, i) => {
           if (row.selected) {
             draft.scheduleSelectedRowKeys.push(i);
@@ -344,6 +347,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case CLEAR_SCHEDULE:
         draft.projectedSchedule = { data: [], drugs: [] };
         draft.scheduleChartData = [];
+        draft.scheduleSelectedRowKeys = [];
         draft.showMessageForPatient = false;
         draft.isSaved = false;
         break;
@@ -435,12 +439,14 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.availableDosageOptions = action.data.availableDosageOptions!;
         draft.isInputComplete = false;
         draft.isSaved = false;
+        draft.messageForPatient = '';
 
         if (drug.form === 'oral solution' || drug.form === 'oral suspension') {
           drug.oralDosageInfo = action.data.oralDosageInfo;
         } else {
           drug.oralDosageInfo = null;
         }
+
         break;
       }
 

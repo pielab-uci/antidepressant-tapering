@@ -31,8 +31,8 @@ const { TextArea } = Input;
 
 const TaperConfigurationPage = () => {
   const {
-    messageForPatient,
-    noteAndInstructionsForPatient,
+    instructionsForPatient,
+    instructionsForPharmacy,
     shareProjectedScheduleWithPatient,
     prescribedDrugs,
     isSaved,
@@ -102,7 +102,7 @@ const TaperConfigurationPage = () => {
     dispatch(changeMessageForPatient(e.target.value));
   }, []);
 
-  const onChangeNoteAndInstructions = useCallback((e) => {
+  const onChangeInstructionsForPharmacy = useCallback((e) => {
     dispatch(changeNoteAndInstructions(e.target.value));
   }, []);
 
@@ -126,7 +126,7 @@ const TaperConfigurationPage = () => {
     );
   };
 
-  const noteAndInstructionsPlaceholder = useRef('e.g., If you experience severe withdrawal symptoms, go back to the previous dosage. / call your provider / come back to provider\'s office.');
+  const instructionsForPatientPlaceholder = useRef('e.g., If you experience severe withdrawal symptoms, go back to the previous dosage. / call your provider / come back to provider\'s office.');
 
   return (
     <>
@@ -140,22 +140,25 @@ const TaperConfigurationPage = () => {
       <ProjectedSchedule/>
       <hr/>
 
-      <h3>Share with Patient</h3>
-      <TextArea
-        value={messageForPatient}
-        defaultValue={messageForPatient}
-        onChange={onChangeMessageForPatient}/>
-      <CopyToClipboard text={messageForPatient} onCopy={onMessageCopied}>
+      <h3>Instructions for Pharmacy</h3>
+      <TextArea value={instructionsForPharmacy}
+                defaultValue={instructionsForPharmacy}
+                onChange={onChangeInstructionsForPharmacy}
+                rows={6}
+      />
+      <CopyToClipboard text={instructionsForPharmacy} onCopy={onNotesAndInstructionCopied}>
         <Button>Copy to Clipboard</Button>
       </CopyToClipboard>
 
-      <h3>Note & Instructions</h3>
-      <TextArea value={noteAndInstructionsForPatient}
-                defaultValue={noteAndInstructionsForPatient}
-                onChange={onChangeNoteAndInstructions}
-                placeholder={noteAndInstructionsPlaceholder.current}
+      <h3>Instructions for Patients</h3>
+      <TextArea
+        value={instructionsForPatient}
+        defaultValue={instructionsForPatient}
+        onChange={onChangeMessageForPatient}
+        placeholder={instructionsForPatientPlaceholder.current}
+        rows={6}
       />
-      <CopyToClipboard text={noteAndInstructionsForPatient} onCopy={onNotesAndInstructionCopied}>
+      <CopyToClipboard text={instructionsForPatient} onCopy={onMessageCopied}>
         <Button>Copy to Clipboard</Button>
       </CopyToClipboard>
 

@@ -2,7 +2,7 @@ import produce from 'immer';
 import { add, differenceInCalendarDays, sub } from 'date-fns';
 import { Key } from 'react';
 import {
-  Drug, PrescribedDrug, TaperingConfiguration,
+  Drug, isCapsuleOrTablet, PrescribedDrug, TaperingConfiguration,
 } from '../../types';
 import {
   ADD_OR_UPDATE_TAPER_CONFIG_FAILURE,
@@ -74,8 +74,13 @@ import {
 } from '../../components/PrescriptionForm/actions';
 import { Schedule } from '../../components/Schedule/ProjectedSchedule';
 import {
-  chartDataConverter, ScheduleChartData, scheduleGenerator,
-  messageGenerateFromSchedule, isCompleteDrugInput,
+  chartDataConverter,
+  ScheduleChartData,
+  scheduleGenerator,
+  generateInstructionsForPatientFromSchedule,
+  isCompleteDrugInput,
+  generateInstructionsForPharmacy,
+  calcMinimumQuantityForDosage,
 } from './utils';
 
 export interface TaperConfigState {
@@ -97,11 +102,11 @@ export interface TaperConfigState {
 
   intervalDurationDays: number,
 
-  messageForPatient: string;
-  noteAndInstructionsForPatient: string;
+  instructionsForPatient: string;
+  instructionsForPharmacy: string;
 
   shareProjectedScheduleWithPatient: boolean;
-  showMessageForPatient: boolean;
+  showInstructionsForPatient: boolean;
 
   fetchingTaperConfig: boolean;
   fetchedTaperConfig: boolean;
@@ -143,11 +148,11 @@ export const initialState: TaperConfigState = {
 
   intervalDurationDays: 0,
 
-  messageForPatient: '',
-  noteAndInstructionsForPatient: '',
+  instructionsForPatient: '',
+  instructionsForPharmacy: '',
 
   shareProjectedScheduleWithPatient: false,
-  showMessageForPatient: false,
+  showInstructionsForPatient: false,
 
   fetchingTaperConfig: false,
   fetchedTaperConfig: false,
@@ -239,14 +244,14 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.isInputComplete = false;
         draft.prescribedDrugs = draft.prescribedDrugs!.filter((drug) => isCompleteDrugInput(drug));
         draft.projectedSchedule = { drugs: [], data: [] };
-        draft.messageForPatient = '';
+        draft.instructionsForPatient = '';
         break;
 
       case EMPTY_PRESCRIBED_DRUGS:
         draft.isInputComplete = false;
         draft.prescribedDrugs = null;
         draft.projectedSchedule = { drugs: [], data: [] };
-        draft.messageForPatient = '';
+        draft.instructionsForPatient = '';
         draft.scheduleChartData = [];
         break;
 
@@ -317,7 +322,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.prescribedDrugs!.push(emptyPrescribedDrug(draft.lastPrescriptionFormId + 1));
         draft.isInputComplete = false;
         draft.lastPrescriptionFormId += 1;
-        draft.showMessageForPatient = false;
+        draft.showInstructionsForPatient = false;
         draft.isSaved = false;
         break;
 
@@ -338,8 +343,9 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
             draft.scheduleSelectedRowKeys.push(i);
           }
         });
-        draft.messageForPatient = messageGenerateFromSchedule(draft.projectedSchedule);
-        draft.showMessageForPatient = true;
+        draft.instructionsForPatient = generateInstructionsForPatientFromSchedule(draft.projectedSchedule);
+        draft.instructionsForPharmacy = generateInstructionsForPharmacy(draft.prescribedDrugs);
+        draft.showInstructionsForPatient = true;
         draft.isSaved = false;
         break;
       }
@@ -348,7 +354,9 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.projectedSchedule = { data: [], drugs: [] };
         draft.scheduleChartData = [];
         draft.scheduleSelectedRowKeys = [];
-        draft.showMessageForPatient = false;
+        draft.showInstructionsForPatient = false;
+        draft.instructionsForPharmacy = '';
+        draft.instructionsForPatient = '';
         draft.isSaved = false;
         break;
 
@@ -361,48 +369,16 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
             draft.projectedSchedule.data[i].selected = false;
           }
         });
-        draft.messageForPatient = messageGenerateFromSchedule(draft.projectedSchedule);
+        draft.instructionsForPatient = generateInstructionsForPatientFromSchedule(draft.projectedSchedule);
         draft.isSaved = false;
         break;
 
-      case SHARE_WITH_PATIENT_APP_REQUEST:
-        draft.sharingWithPatientApp = true;
-        draft.sharedWithPatientApp = false;
-        draft.sharingWithPatientAppError = null;
-        break;
-
-      case SHARE_WITH_PATIENT_APP_SUCCESS:
-        draft.sharingWithPatientApp = false;
-        draft.sharedWithPatientApp = true;
-        break;
-
-      case SHARE_WITH_PATIENT_APP_FAILURE:
-        draft.sharingWithPatientApp = false;
-        draft.sharingWithPatientAppError = action.error;
-        break;
-
-      case SHARE_WITH_PATIENT_EMAIL_REQUEST:
-        draft.sharingWithPatientEmail = true;
-        draft.sharedWithPatientEmail = false;
-        draft.sharingWithPatientEmailError = null;
-        break;
-
-      case SHARE_WITH_PATIENT_EMAIL_SUCCESS:
-        draft.sharingWithPatientEmail = false;
-        draft.sharedWithPatientEmail = true;
-        break;
-
-      case SHARE_WITH_PATIENT_EMAIL_FAILURE:
-        draft.sharingWithPatientEmail = false;
-        draft.sharingWithPatientEmailError = action.error;
-        break;
-
       case CHANGE_MESSAGE_FOR_PATIENT:
-        draft.messageForPatient = action.data;
+        draft.instructionsForPatient = action.data;
         break;
 
       case CHANGE_NOTE_AND_INSTRUCTIONS:
-        draft.noteAndInstructionsForPatient = action.data;
+        draft.instructionsForPharmacy = action.data;
         break;
 
       case TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT:
@@ -424,8 +400,9 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.prescribedDosages = {};
         draft.isInputComplete = false;
         draft.isSaved = false;
-        draft.messageForPatient = '';
-        draft.showMessageForPatient = false;
+        draft.instructionsForPatient = '';
+        draft.instructionsForPharmacy = '';
+        draft.showInstructionsForPatient = false;
         break;
       }
 
@@ -439,7 +416,8 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.availableDosageOptions = action.data.availableDosageOptions!;
         draft.isInputComplete = false;
         draft.isSaved = false;
-        draft.messageForPatient = '';
+        draft.instructionsForPatient = '';
+        draft.instructionsForPharmacy = '';
 
         if (drug.form === 'oral solution' || drug.form === 'oral suspension') {
           drug.oralDosageInfo = action.data.oralDosageInfo;
@@ -477,13 +455,12 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           drug.upcomingDosages[idx] = action.data.dosage;
         }
 
-        // if (isCapsuleOrTablet(drug)) {
-        drug.prescribedDosages[action.data.dosage.dosage] = action.data.dosage.quantity;
-        // } else {
-        //   const upcomingDosageSum = drug.upcomingDosages
-        //     .reduce((acc, d) => acc + parseFloat(d.dosage) * d.quantity, 0) / drug.oralDosageInfo!.rate.mg * drug.oralDosageInfo!.rate.ml;
-        //   drug.prescribedDosages = calcMinimumQuantityForDosage(drug.availableDosageOptions, upcomingDosageSum);
-        // }
+        if (isCapsuleOrTablet(drug)) {
+          drug.prescribedDosages[action.data.dosage.dosage] = action.data.dosage.quantity;
+        } else {
+          const dosageSum = drug.upcomingDosages[0].quantity / drug.oralDosageInfo!.rate.mg * drug.oralDosageInfo!.rate.ml;
+          drug.prescribedDosages = calcMinimumQuantityForDosage(drug.oralDosageInfo!.bottles, dosageSum);
+        }
 
         draft.isSaved = false;
         break;
@@ -545,6 +522,38 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.isSaved = false;
         break;
       }
+
+      case SHARE_WITH_PATIENT_APP_REQUEST:
+        draft.sharingWithPatientApp = true;
+        draft.sharedWithPatientApp = false;
+        draft.sharingWithPatientAppError = null;
+        break;
+
+      case SHARE_WITH_PATIENT_APP_SUCCESS:
+        draft.sharingWithPatientApp = false;
+        draft.sharedWithPatientApp = true;
+        break;
+
+      case SHARE_WITH_PATIENT_APP_FAILURE:
+        draft.sharingWithPatientApp = false;
+        draft.sharingWithPatientAppError = action.error;
+        break;
+
+      case SHARE_WITH_PATIENT_EMAIL_REQUEST:
+        draft.sharingWithPatientEmail = true;
+        draft.sharedWithPatientEmail = false;
+        draft.sharingWithPatientEmailError = null;
+        break;
+
+      case SHARE_WITH_PATIENT_EMAIL_SUCCESS:
+        draft.sharingWithPatientEmail = false;
+        draft.sharedWithPatientEmail = true;
+        break;
+
+      case SHARE_WITH_PATIENT_EMAIL_FAILURE:
+        draft.sharingWithPatientEmail = false;
+        draft.sharingWithPatientEmailError = action.error;
+        break;
 
       default:
         return state;

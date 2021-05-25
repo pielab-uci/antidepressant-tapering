@@ -345,7 +345,7 @@ export const chartDataConverter = (schedule: Schedule): ScheduleChartData => {
   return scheduleChartData;
 };
 
-export const messageGenerateFromSchedule = (schedule: Schedule): string => {
+export const generateInstructionsForPatientFromSchedule = (schedule: Schedule): string => {
   return schedule.data
     .filter((row) => row.selected)
     .reduce((message, row, i, arr) => {
@@ -374,4 +374,26 @@ export const messageGenerateFromSchedule = (schedule: Schedule): string => {
       // in case of oral solution/suspension
       return `${message}Take ${row.prescribedDosages['1mg']}mg (${row.prescribedDosages['1mg'] / row.oralDosageInfo!.rate.mg * row.oralDosageInfo!.rate.ml}ml) of ${row.Drug} from ${startDate} to ${endDate}.\n`;
     }, '');
+};
+
+export const generateInstructionsForPharmacy = (prescribedDrugs: PrescribedDrug[]|null): string => {
+  if (prescribedDrugs === null) {
+    return '';
+  }
+
+  return prescribedDrugs.reduce((instruction, drug, i, drugs) => {
+    const instructionForADrug = Object.entries(drug.prescribedDosages)
+      .filter(([dosage, qty]) => qty !== 0)
+      .reduce((acc, [dosage, qty], j, dosages) => {
+        if (j === dosages.length - 1) {
+          return `${acc}${qty} * ${dosage} ${drug.form} ${drug.brand}.`;
+        }
+        return `${acc}${qty} * ${dosage} ${drug.form} ${drug.brand},`;
+      }, '');
+
+    if (i === drugs.length - 1) {
+      return `${instruction} ${instructionForADrug}`;
+    }
+    return `${instruction} ${instructionForADrug},`;
+  }, '');
 };

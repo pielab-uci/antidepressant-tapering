@@ -136,6 +136,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
           });
         } else {
           draft.availableDosageOptions = ['1mg'];
+          draft.regularDosageOptions = null;
           draft.oralDosageInfo = chosenDrugForm.dosages;
           draft.priorDosagesQty['1mg'] = 0;
           draft.upcomingDosagesQty['1mg'] = 0;

@@ -17,7 +17,7 @@ const CapsuleOrTabletDosages: FC<Props> = ({ time, dosages }) => {
   const {
     chosenDrugForm, dosageOptions, priorDosagesQty, upcomingDosagesQty,
   } = context;
-  const [dosageDifferenceMessage, calculateDosageSum] = useDosageSumAndDifferenceMessage(time, priorDosagesQty, upcomingDosagesQty);
+  const [dosageDifferenceMessage, dosageSum] = useDosageSumAndDifferenceMessage(time, priorDosagesQty, upcomingDosagesQty);
 
   return (
     <>
@@ -47,7 +47,7 @@ const CapsuleOrTabletDosages: FC<Props> = ({ time, dosages }) => {
       )}
       <div>
         Total:
-        {calculateDosageSum(dosages)}
+        {dosageSum}
         {' '}
         {chosenDrugForm!.measureUnit}
       </div>

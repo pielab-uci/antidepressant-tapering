@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
+import { DrugForm } from '../types';
 
-type Type = (time: 'Prior'|'Upcoming', priorDosageQty: { [dosage: string]: number }, upcomingDosageQty: { [dosage: string]: number }) => [(string|null), (dosages: { [dosage: string]: number }) => number];
+type Type = (time: 'Prior'|'Upcoming', priorDosageQty: { [dosage: string]: number }, upcomingDosageQty: { [dosage: string]: number }) => [(string|null), number];
 
 export const useDosageSumAndDifferenceMessage: Type = (time, priorDosageQty, upcomingDosageQty) => {
   const [dosageDifferenceMessage, setDosageDifferenceMessage] = useState<string|null>(null);
@@ -9,11 +10,12 @@ export const useDosageSumAndDifferenceMessage: Type = (time, priorDosageQty, upc
     .entries(dosages)
     .reduce((acc, [dosage, count]) => acc + parseFloat(dosage) * count, 0), []);
 
-  useEffect(() => {
-    if (time === 'Upcoming') {
-      const priorDosageSum = calculateDosageSum(priorDosageQty);
-      const upcomingDosageSum = calculateDosageSum(upcomingDosageQty);
+  const [dosageSum, setDosageSum] = useState(0);
 
+  useEffect(() => {
+    const priorDosageSum = calculateDosageSum(priorDosageQty);
+    const upcomingDosageSum = calculateDosageSum(upcomingDosageQty);
+    if (time === 'Upcoming') {
       if (priorDosageSum === 0) {
         setDosageDifferenceMessage(null);
       }
@@ -25,8 +27,11 @@ export const useDosageSumAndDifferenceMessage: Type = (time, priorDosageQty, upc
       } else {
         setDosageDifferenceMessage(null);
       }
+      setDosageSum(upcomingDosageSum);
+    } else {
+      setDosageSum(priorDosageSum);
     }
   }, [priorDosageQty, upcomingDosageQty]);
 
-  return [dosageDifferenceMessage, calculateDosageSum];
+  return [dosageDifferenceMessage, dosageSum];
 };

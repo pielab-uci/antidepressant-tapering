@@ -27,6 +27,7 @@ export const initialState: PrescriptionFormState = {
   drugFormOptions: [],
   dosageOptions: [],
   availableDosageOptions: [],
+  regularDosageOptions: [],
   minDosageUnit: 0,
   priorDosagesQty: {},
   upcomingDosagesQty: {},
@@ -115,6 +116,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         if (isCapsuleOrTablet(chosenDrugForm)) {
           draft.dosageOptions = chosenDrugForm.dosages;
           draft.minDosageUnit = Math.min(...draft.dosageOptions.map((dosage) => parseFloat(dosage.dosage))) / 2;
+          draft.regularDosageOptions = draft.dosageOptions.map((option) => option.dosage);
           draft.availableDosageOptions = [...new Set(draft.dosageOptions.flatMap((option) => {
             if (option.isScored) {
               return [`${parseFloat(option.dosage) / 2}${draft.chosenDrugForm!.measureUnit}`, option.dosage];
@@ -134,6 +136,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
           });
         } else {
           draft.availableDosageOptions = ['1mg'];
+          draft.regularDosageOptions = null;
           draft.oralDosageInfo = chosenDrugForm.dosages;
           draft.priorDosagesQty['1mg'] = 0;
           draft.upcomingDosagesQty['1mg'] = 0;
@@ -159,7 +162,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
               draft.prescribedDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity * draft.intervalDurationDays;
             } else {
               const dosageSum = draft.upcomingDosagesQty['1mg'] * draft.intervalDurationDays / draft.oralDosageInfo!.rate.mg * draft.oralDosageInfo!.rate.ml;
-              draft.prescribedDosagesQty = calcMinimumQuantityForDosage(draft.chosenDrugForm.dosages.bottles, dosageSum);
+              draft.prescribedDosagesQty = calcMinimumQuantityForDosage(draft.chosenDrugForm.dosages.bottles, dosageSum, null);
             }
           }
         }
@@ -198,7 +201,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
             });
           } else {
             const dosageSum = draft.upcomingDosagesQty['1mg'] * draft.intervalDurationDays / draft.oralDosageInfo!.rate.mg * draft.oralDosageInfo!.rate.ml;
-            draft.prescribedDosagesQty = calcMinimumQuantityForDosage(draft.chosenDrugForm.dosages.bottles, dosageSum);
+            draft.prescribedDosagesQty = calcMinimumQuantityForDosage(draft.chosenDrugForm.dosages.bottles, dosageSum, null);
           }
         } // else..?
 
@@ -222,7 +225,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
             // oral form
             // dosageSum -> must be in ml
             const dosageSum = draft.upcomingDosagesQty['1mg'] * draft.intervalDurationDays / draft.oralDosageInfo!.rate.mg * draft.oralDosageInfo!.rate.ml;
-            draft.prescribedDosagesQty = calcMinimumQuantityForDosage(draft.chosenDrugForm.dosages.bottles, dosageSum);
+            draft.prescribedDosagesQty = calcMinimumQuantityForDosage(draft.chosenDrugForm.dosages.bottles, dosageSum, null);
           }
         }
         break;
@@ -239,7 +242,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
             });
           } else {
             const dosageSum = draft.upcomingDosagesQty['1mg'] * draft.intervalDurationDays / draft.oralDosageInfo!.rate.mg * draft.oralDosageInfo!.rate.ml;
-            draft.prescribedDosagesQty = calcMinimumQuantityForDosage(draft.chosenDrugForm.dosages.bottles, dosageSum);
+            draft.prescribedDosagesQty = calcMinimumQuantityForDosage(draft.chosenDrugForm.dosages.bottles, dosageSum, null);
           }
         }
         break;
@@ -263,7 +266,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
             });
           } else {
             const dosageSum = draft.upcomingDosagesQty['1mg'] * draft.intervalDurationDays / draft.oralDosageInfo!.rate.mg * draft.oralDosageInfo!.rate.ml;
-            draft.prescribedDosagesQty = calcMinimumQuantityForDosage(draft.chosenDrugForm.dosages.bottles, dosageSum);
+            draft.prescribedDosagesQty = calcMinimumQuantityForDosage(draft.chosenDrugForm.dosages.bottles, dosageSum, null);
           }
         }
         break;

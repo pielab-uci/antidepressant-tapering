@@ -21,6 +21,7 @@ export interface PrescriptionFormState {
   drugFormOptions: DrugForm[] | null;
   dosageOptions: CapsuleOrTabletDosage[]| OralDosage;
   availableDosageOptions: string[];
+  regularDosageOptions: string[]|null;
   minDosageUnit: number;
   priorDosagesQty: { [key: string]: number };
   upcomingDosagesQty: { [key: string]: number };

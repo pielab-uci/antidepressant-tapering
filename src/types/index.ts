@@ -72,6 +72,7 @@ export interface PrescribedDrug {
   measureUnit: string; // TODO: remove measureUnit variable?
   minDosageUnit: number;
   availableDosageOptions: string[];
+  regularDosageOptions: string[]|null;
   priorDosages: { dosage: string; quantity: number }[];
   upcomingDosages: { dosage: string; quantity: number }[];
   prescribedDosages: { [dosage: string]: number; };

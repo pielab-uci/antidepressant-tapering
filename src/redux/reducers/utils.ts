@@ -115,26 +115,61 @@ const calcProjectedDosages = (drug: Converted, prescribedDosage: number, length:
   return res;
 };
 
-export const calcMinimumQuantityForDosage = (availableOptions: string[], dosage: number): { [dosageQty: string]: number } => {
-  if (dosage === 0) {
-    return availableOptions.reduce((prev: { [p: string]: number }, option) => {
-      prev[option] = 0;
-      return prev;
-    }, {});
-  }
+const subtractDosageOptionsFromDosage = (dosage: number, dosageOptions: string[]): [number, { [dosage: string]: number }] => {
   const dosages: { [dosage: string]: number } = {};
-
   let d = dosage;
-  availableOptions
-    .concat()
+  dosageOptions.concat()
     .sort((a, b) => parseFloat(b) - parseFloat(a))
     .forEach((dos) => {
-      const quot = Math.floor(d / parseFloat(dos));
+      const quot = Math.floor(dosage / parseFloat(dos));
       if (quot >= 1) {
         dosages[dos] = quot;
         d -= quot * parseFloat(dos);
       }
     });
+
+  return [d, dosages];
+};
+
+export const calcMinimumQuantityForDosage = (availableOptions: string[], dosage: number, regularDosageOptions: string[]|null): { [dosageQty: string]: number } => {
+  if (dosage === 0) {
+    const putZeros = (prev: { [p: string]: number }, option: string) => {
+      prev[option] = 0;
+      return prev;
+    };
+
+    if (regularDosageOptions) {
+      return regularDosageOptions.reduce(putZeros, {});
+    }
+    return availableOptions.reduce(putZeros, {});
+  }
+
+  if (regularDosageOptions) { // in case of tablet or capsules
+    const [d, dosages] = subtractDosageOptionsFromDosage(dosage, regularDosageOptions);
+
+    if (d > 0) {
+      const splittingOption = availableOptions.find((option) => parseFloat(option) === d);
+      if (!splittingOption) {
+        console.error('dosage case not covered.');
+        return dosages;
+      }
+
+      const dosageToAdd = regularDosageOptions.find((dos) => parseFloat(splittingOption) / parseFloat(dos) === 0.5);
+      if (!dosageToAdd) {
+        console.error('dosage case not covered. - no dosage to split');
+        return dosages;
+      }
+      if (dosages[dosageToAdd]) {
+        dosages[dosageToAdd] += 0.5;
+      } else {
+        dosages[dosageToAdd] = 0.5;
+      }
+    }
+    return dosages;
+  }
+
+  // oral solution / suspense
+  let [d, dosages] = subtractDosageOptionsFromDosage(dosage, availableOptions);
 
   if (Object.values(dosages).every((qty) => qty === 0)) {
     dosages[availableOptions[0]] = 1;
@@ -144,7 +179,6 @@ export const calcMinimumQuantityForDosage = (availableOptions: string[], dosage:
   if (d > 0) {
     dosages[availableOptions[0]] += 1;
   }
-
   return dosages;
 };
 
@@ -199,7 +233,7 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
     const newRowData = {
       Drug: drug.name,
       upcomingDosageSum: upcomingDosages[1],
-      prescribedDosages: calcMinimumQuantityForDosage(drug.availableDosageOptions, upcomingDosages[1]),
+      prescribedDosages: calcMinimumQuantityForDosage(drug.availableDosageOptions, upcomingDosages[1], drug.regularDosageOptions),
       startDate: projectionStartDate,
       endDate: newEndDate,
       selected: false,
@@ -229,7 +263,7 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
         });
 
         newRowData.upcomingDosageSum = upcomingDosages[i + 2];
-        newRowData.prescribedDosages = calcMinimumQuantityForDosage(drug.availableDosageOptions, newRowData.upcomingDosageSum);
+        newRowData.prescribedDosages = calcMinimumQuantityForDosage(drug.availableDosageOptions, newRowData.upcomingDosageSum, drug.regularDosageOptions);
         newRowData.startDate = add(newRowData.endDate, { days: 1 });
         newRowData.endDate = sub(add(newRowData.startDate, durationInDaysCount), { days: 1 });
       }
@@ -386,7 +420,7 @@ export const generateInstructionsForPharmacy = (prescribedDrugs: PrescribedDrug[
       .filter(([dosage, qty]) => qty !== 0)
       .reduce((acc, [dosage, qty], j, dosages) => {
         if (j === dosages.length - 1) {
-          return `${acc}${qty} * ${dosage} ${drug.form} ${drug.brand}.`;
+          return `${acc}${qty} * ${dosage} ${drug.form} ${drug.brand}.\n`;
         }
         return `${acc}${qty} * ${dosage} ${drug.form} ${drug.brand},`;
       }, '');

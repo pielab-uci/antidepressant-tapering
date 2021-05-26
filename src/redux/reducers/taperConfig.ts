@@ -214,6 +214,7 @@ const emptyPrescribedDrug = (id: number): PrescribedDrug => ({
   priorDosages: [],
   upcomingDosages: [],
   availableDosageOptions: [],
+  regularDosageOptions: [],
   allowSplittingUnscoredTablet: false,
   prescribedDosages: {},
   intervalStartDate: new Date(),
@@ -414,6 +415,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.upcomingDosages = [];
         drug.prescribedDosages = {};
         drug.availableDosageOptions = action.data.availableDosageOptions!;
+        drug.regularDosageOptions = action.data.regularDosageOptions!;
         draft.isInputComplete = false;
         draft.isSaved = false;
         draft.instructionsForPatient = '';
@@ -459,7 +461,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           drug.prescribedDosages[action.data.dosage.dosage] = action.data.dosage.quantity;
         } else {
           const dosageSum = drug.upcomingDosages[0].quantity / drug.oralDosageInfo!.rate.mg * drug.oralDosageInfo!.rate.ml;
-          drug.prescribedDosages = calcMinimumQuantityForDosage(drug.oralDosageInfo!.bottles, dosageSum);
+          drug.prescribedDosages = calcMinimumQuantityForDosage(drug.oralDosageInfo!.bottles, dosageSum, null);
         }
 
         draft.isSaved = false;

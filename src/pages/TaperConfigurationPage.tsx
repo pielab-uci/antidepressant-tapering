@@ -26,6 +26,7 @@ import {
   changeNoteAndInstructions,
 } from '../redux/actions/taperConfig';
 import { PrescribedDrug } from '../types';
+import PrescribedDosageQuantities from '../components/PrescribedDosageQuantities';
 
 const { TextArea } = Input;
 
@@ -126,6 +127,10 @@ const TaperConfigurationPage = () => {
     );
   };
 
+  const renderPrescribedQuantites = (prescribedDrugs: PrescribedDrug[]) => {
+    return prescribedDrugs.map((drug) => <PrescribedDosageQuantities key={`$PrescribedDosageQty${drug.id}`} prescribedDrug={drug}/>);
+  };
+
   const instructionsForPatientPlaceholder = useRef('e.g., If you experience severe withdrawal symptoms, go back to the previous dosage. / call your provider / come back to provider\'s office.');
 
   return (
@@ -139,6 +144,9 @@ const TaperConfigurationPage = () => {
       <hr/>
       <ProjectedSchedule/>
       <hr/>
+
+      <h3>Prescription for Upcoming interval</h3>
+      {prescribedDrugs && renderPrescribedQuantites(prescribedDrugs)}
 
       <h3>Instructions for Pharmacy</h3>
       <TextArea value={instructionsForPharmacy}

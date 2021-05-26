@@ -5,7 +5,7 @@ import { Button, Checkbox, Select } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import {
-  CapsuleOrTabletDosages, PrescribedDosageQuantities, SelectInterval, OralFormDosage,
+  CapsuleOrTabletDosages, SelectInterval, OralFormDosage,
 } from '.';
 import {
   initialState,
@@ -69,7 +69,6 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
     oralDosageInfo, regularDosageOptions,
   } = state;
   const { drugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
-  const [showTotalQuantities, setShowTotalQuantities] = useState(true, `PrescriptionForm-ShowTotalQuantities_${prescribedDrug.id}`);
 
   useEffect(() => {
     const action: FetchDrugsAction = {
@@ -191,7 +190,6 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
         <hr/>
         <SelectInterval />
         <hr/>
-        {showTotalQuantities && <PrescribedDosageQuantities/>}
       <hr />
     </PrescriptionFormContext.Provider>
   );

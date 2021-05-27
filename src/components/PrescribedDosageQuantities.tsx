@@ -13,6 +13,7 @@ import { isCapsuleOrTablet, PrescribedDrug } from '../types';
 interface Props {
   prescribedDrug: PrescribedDrug;
 }
+
 const PrescribedDosageQuantities: FC<Props> = ({ prescribedDrug }) => {
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
 
@@ -24,7 +25,10 @@ const PrescribedDosageQuantities: FC<Props> = ({ prescribedDrug }) => {
 
     // formActionDispatch(prescribedQuantityChange(actionData));
     // TODO: add intervalDurationDays to PrescribedDrug
-    taperConfigActionDispatch(prescribedQuantityChange({ ...actionData, intervalDurationDays: prescribedDrug.intervalDurationDays }));
+    taperConfigActionDispatch(prescribedQuantityChange({
+      ...actionData,
+      intervalDurationDays: prescribedDrug.intervalDurationDays,
+    }));
   };
 
   const qtyOrZero = useCallback((prescribedDrug: PrescribedDrug, dosage: string): number => {
@@ -33,56 +37,46 @@ const PrescribedDosageQuantities: FC<Props> = ({ prescribedDrug }) => {
       : 0;
   }, []);
 
-  const renderQuantities = useCallback(() => {
-    if (isCapsuleOrTablet(prescribedDrug)) {
-      return (
-          <>
-            {prescribedDrug.regularDosageOptions!.map((dosage) => (
-              <div key={`${prescribedDrug.id}_${dosage}_${prescribedDrug.prescribedDosages[dosage]}`}>
-                <h4>{dosage}:</h4>
-                <Input
-                  title={dosage}
-                  style={{ display: 'inline-block' }}
-                  type="number"
-                  min={0}
-                  defaultValue={qtyOrZero(prescribedDrug, dosage)}
-                  value={prescribedDrug.prescribedDosages[dosage]}
-                  step={0.5}
-                  width={'50px'}
-                  onChange={onCountChange}/>
-              </div>
-            ))}
-          </>
-      );
-    }
-
+  const renderOptions = useCallback((options: string[]) => {
     return (
-        <>
-          {prescribedDrug.availableDosageOptions.map((bottle) => (
-            <div key={`${prescribedDrug.id}_${bottle}`}>
-              <h4>{bottle}:</h4>
-              <Input title={bottle}
-                     style={{ display: 'inline-block' }}
-                     type="number"
-                     min={0}
-                     defaultValue={qtyOrZero(prescribedDrug, bottle)}
-                     value={prescribedDrug.prescribedDosages[bottle]}
-                     step={1}
-                     width={'50px'}
-                     onChange={onCountChange}/>
-            </div>
-          ))}
-        </>
+      <>
+        {options.map((option) => (
+          <div key={`${prescribedDrug.id}_${option}_${prescribedDrug.prescribedDosages[option]}`}>
+            <h4>{option}:</h4>
+            <Input
+              title={option}
+              style={{ display: 'inline-block' }}
+              type="number"
+              min={0}
+              defaultValue={qtyOrZero(prescribedDrug, option)}
+              value={prescribedDrug.prescribedDosages[option]}
+              step={0.5}
+              width={'50px'}
+              onChange={onCountChange}/>
+          </div>
+        ))}
+      </>
     );
   }, [prescribedDrug]);
 
+  const renderQuantities = useCallback(() => {
+    if (prescribedDrug.form === '') {
+      return (<></>);
+    }
+
+    if (isCapsuleOrTablet(prescribedDrug)) {
+      return renderOptions(prescribedDrug.regularDosageOptions!);
+    }
+    return renderOptions(prescribedDrug.oralDosageInfo!.bottles);
+  }, [prescribedDrug]);
+
   return (
-    <div>
-      <h3>{prescribedDrug.name} ({prescribedDrug.brand}) {prescribedDrug.form}</h3>
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        {renderQuantities()}
-      </div>
-    </div>
+          <div>
+            <h3>{prescribedDrug.name} ({prescribedDrug.brand}) {prescribedDrug.form}</h3>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              {renderQuantities()}
+            </div>
+          </div>
   );
 };
 

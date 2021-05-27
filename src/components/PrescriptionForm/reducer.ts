@@ -190,9 +190,10 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.intervalStartDate = new Date(action.data.date.valueOf() + action.data.date.getTimezoneOffset() * 60 * 1000);
         draft.intervalUnit = 'Days';
         if (draft.intervalEndDate) {
-          draft.intervalCount = differenceInCalendarDays(draft.intervalEndDate, draft.intervalStartDate) + 1;
+          // draft.intervalCount = differenceInCalendarDays(draft.intervalEndDate, draft.intervalStartDate) + 1;
+          draft.intervalCount = action.data.intervalDurationDays;
+          draft.intervalDurationDays = action.data.intervalDurationDays;
         }
-        draft.intervalDurationDays = action.data.intervalDurationDays;
 
         if (draft.chosenDrugForm) {
           if (isCapsuleOrTablet(draft.chosenDrugForm)) {
@@ -209,11 +210,13 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         break;
 
       case INTERVAL_END_DATE_CHANGE:
-        if (action.data.date) {
-          draft.intervalEndDate = new Date(action.data.date.valueOf() + action.data.date?.getTimezoneOffset() * 60 * 1000);
-        } else {
-          draft.intervalEndDate = action.data.date;
-        }
+        // todo: do I need this..?
+        // if (action.data.date) {
+        //   draft.intervalEndDate = new Date(action.data.date.valueOf() + action.data.date?.getTimezoneOffset() * 60 * 1000);
+        // } else {
+        //   draft.intervalEndDate = action.data.date;
+        // }
+        draft.intervalEndDate = action.data.date;
         draft.intervalUnit = 'Days';
         // draft.intervalDurationDays = differenceInCalendarDays(draft.intervalEndDate!, draft.intervalStartDate) + 1;
         draft.intervalDurationDays = action.data.intervalDurationDays;

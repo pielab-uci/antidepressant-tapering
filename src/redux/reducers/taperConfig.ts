@@ -459,7 +459,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         }
 
         if (isCapsuleOrTablet(drug)) {
-          drug.prescribedDosages[action.data.dosage.dosage] = action.data.dosage.quantity;
+          drug.prescribedDosages[action.data.dosage.dosage] = action.data.dosage.quantity * drug.intervalDurationDays;
         } else {
           const dosageSum = drug.upcomingDosages[0].quantity / drug.oralDosageInfo!.rate.mg * drug.oralDosageInfo!.rate.ml;
           drug.prescribedDosages = calcMinimumQuantityForDosage(drug.oralDosageInfo!.bottles, dosageSum, null);
@@ -489,8 +489,17 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
 
         if (drug.intervalEndDate) {
           drug.intervalUnit = 'Days';
-          drug.intervalCount = differenceInCalendarDays(drug.intervalEndDate, drug.intervalStartDate) + 1;
-          drug.intervalDurationDays = drug.intervalCount;
+          drug.intervalCount = action.data.intervalDurationDays;
+          drug.intervalDurationDays = action.data.intervalDurationDays;
+          // drug.intervalCount = differenceInCalendarDays(drug.intervalEndDate, drug.intervalStartDate) + 1;
+          // drug.intervalDurationDays = drug.intervalCount;
+        }
+        if (drug.form !== '') {
+          if (isCapsuleOrTablet(drug)) {
+            drug.prescribedDosages = action.data.prescribedDosages;
+          } else {
+          // oral form
+          }
         }
         draft.isSaved = false;
         break;
@@ -500,8 +509,16 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         drug.intervalEndDate = action.data.date;
         drug.intervalUnit = 'Days';
-        drug.intervalCount = differenceInCalendarDays(drug.intervalEndDate!, drug.intervalStartDate) + 1;
-        drug.intervalDurationDays = drug.intervalCount;
+        drug.intervalCount = action.data.intervalDurationDays;
+        drug.intervalDurationDays = action.data.intervalDurationDays;
+
+        if (drug.form !== '') {
+          if (isCapsuleOrTablet(drug)) {
+            drug.prescribedDosages = action.data.prescribedDosages!;
+          } else {
+          // oral form
+          }
+        }
         draft.isSaved = false;
         break;
       }
@@ -509,11 +526,21 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case INTERVAL_UNIT_CHANGE: {
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         drug.intervalUnit = action.data.unit;
-        drug.intervalEndDate = sub(
-          add(drug.intervalStartDate, { [drug.intervalUnit.toLowerCase()]: drug.intervalCount }),
-          { days: 1 },
-        );
-        drug.intervalDurationDays = differenceInCalendarDays(drug.intervalEndDate, drug.intervalStartDate) + 1;
+        // drug.intervalEndDate = sub(
+        //   add(drug.intervalStartDate, { [drug.intervalUnit.toLowerCase()]: drug.intervalCount }),
+        //   { days: 1 },
+        // );
+        drug.intervalEndDate = action.data.intervalEndDate;
+        drug.intervalDurationDays = action.data.intervalDurationDays;
+        // drug.intervalDurationDays = differenceInCalendarDays(drug.intervalEndDate, drug.intervalStartDate) + 1;
+
+        if (drug.form !== '') {
+          if (isCapsuleOrTablet(drug)) {
+            drug.prescribedDosages = action.data.prescribedDosages;
+          } else {
+            // oral form
+          }
+        }
         draft.isSaved = false;
         break;
       }
@@ -521,11 +548,20 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case INTERVAL_COUNT_CHANGE: {
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         drug.intervalCount = action.data.count;
-        drug.intervalEndDate = sub(
-          add(drug.intervalStartDate, { [drug.intervalUnit.toLowerCase()]: drug.intervalCount }),
-          { days: 1 },
-        );
-        drug.intervalDurationDays = drug.intervalCount;
+        // drug.intervalEndDate = sub(
+        //   add(drug.intervalStartDate, { [drug.intervalUnit.toLowerCase()]: drug.intervalCount }),
+        //   { days: 1 },
+        // );
+        drug.intervalEndDate = action.data.intervalEndDate;
+        drug.intervalDurationDays = action.data.intervalDurationDays;
+
+        if (drug.form !== '') {
+          if (isCapsuleOrTablet(drug)) {
+            drug.prescribedDosages = action.data.prescribedDosages!;
+          } else {
+            // oral form
+          }
+        }
         draft.isSaved = false;
         break;
       }

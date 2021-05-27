@@ -35,7 +35,7 @@ export interface PriorDosageChangeAction {
   data: { id: number, dosage: { dosage: string, quantity: number } };
 }
 
-export const priorDosageChange = (data: { id: number, dosage: { dosage: string, quantity: number } }): PriorDosageChangeAction => ({
+export const priorDosageChange = (data: PriorDosageChangeAction['data']): PriorDosageChangeAction => ({
   type: PRIOR_DOSAGE_CHANGE,
   data,
 });
@@ -47,9 +47,7 @@ export interface UpcomingDosageChangeAction {
   data: { id: number, dosage: { dosage: string, quantity: number }, intervalDurationDays?: number };
 }
 
-export const upcomingDosageChange = (data: {
-  id: number, dosage: { dosage: string, quantity: number }, intervalDurationDays?: number
-}): UpcomingDosageChangeAction => ({
+export const upcomingDosageChange = (data: UpcomingDosageChangeAction['data']): UpcomingDosageChangeAction => ({
   type: UPCOMING_DOSAGE_CHANGE,
   data,
 });
@@ -61,9 +59,7 @@ export interface PrescribedQuantityChange {
   data: { id: number, dosage: { dosage: string, quantity: number }, intervalDurationDays?: number }
 }
 
-export const prescribedQuantityChange = (data: {
-  id: number, dosage: { dosage: string, quantity: number }, intervalDurationDays?: number
-}): PrescribedQuantityChange => ({
+export const prescribedQuantityChange = (data: PrescribedQuantityChange['data']): PrescribedQuantityChange => ({
   type: PRESCRIBED_QUANTITY_CHANGE,
   data,
 });
@@ -75,7 +71,7 @@ export interface AllowSplittingUnscoredTabletAction {
   data: { id: number, allow: boolean };
 }
 
-export const toggleAllowSplittingUnscoredTablet = (data: { id: number, allow: boolean }): AllowSplittingUnscoredTabletAction => ({
+export const toggleAllowSplittingUnscoredTablet = (data: AllowSplittingUnscoredTabletAction['data']): AllowSplittingUnscoredTabletAction => ({
   type: ALLOW_SPLITTING_UNSCORED_TABLET,
   data,
 });

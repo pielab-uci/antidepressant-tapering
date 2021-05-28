@@ -7,6 +7,7 @@ import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import { SCHEDULE_ROW_SELECTED, ScheduleRowSelectedAction } from '../../redux/actions/taperConfig';
 import { TableRowData } from '../../redux/reducers/utils';
+import './tableStyles.css';
 
 const ProjectedScheduleTable = () => {
   const columns = useMemo(() => [
@@ -56,10 +57,14 @@ const ProjectedScheduleTable = () => {
   }, []);
 
   return (
-    <Table columns={columns}
-           dataSource={projectedSchedule.data.map((d, i) => ({ ...d, key: i }))}
-           rowSelection={{ selectedRowKeys: scheduleSelectedRowKeys, onChange: rowSelectionOnChange }}
-    />
+    <div className='ProjectedScheduleTable'>
+      <Table columns={columns}
+             dataSource={projectedSchedule.data.map((d, i) => ({ ...d, key: i }))}
+             rowSelection={{ selectedRowKeys: scheduleSelectedRowKeys, onChange: rowSelectionOnChange }}
+             rowClassName={(row) => `${row.drug}`}
+             // rowClassName={(row) => `${row.drug} ${row.selected && 'selected'}`}
+      />
+    </div>
   );
 };
 

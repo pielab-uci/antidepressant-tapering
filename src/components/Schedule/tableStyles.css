@@ -1,0 +1,33 @@
+@import '~antd/dist/antd.css';
+.ProjectedScheduleTable {
+    --alpha-not-selected: 0.2;
+    --alpha-selected: 0.6;
+}
+.Fluoxetine {
+    --rgb: 85, 239, 196;
+}
+
+.Citalopram {
+    --rgb: 129, 236, 236;
+}
+
+.Sertraline {
+    --rgb: 129, 236, 236;
+}
+
+.Paroxetine {
+    --rgb: 162, 155, 254;
+}
+
+.Escitalopram {
+    --rgb: 223, 230, 233;
+}
+
+
+.Fluoxetine,
+.Citalopram,
+.Escitalopram,
+.Paroxetine,
+.Sertraline {
+    background-color: rgba(var(--rgb),var(--alpha-not-selected));
+}

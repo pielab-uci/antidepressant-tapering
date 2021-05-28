@@ -147,7 +147,8 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
     rows.push({
       Drug: drug.name,
       Dosage: `${upcomingDosages[0]}${drug.measureUnit}`,
-      Dates: `${format(drug.intervalStartDate, 'MM/dd/yyyy')} - ${format(drug.intervalEndDate, 'MM/dd/yyyy')}`,
+      StartDate: `${format(drug.intervalStartDate, 'MM/dd/yyyy')}`,
+      EndDate: `${format(drug.intervalEndDate, 'MM/dd/yyyy')}`,
       startDate: drug.intervalStartDate,
       endDate: drug.intervalEndDate,
       Prescription: prescription({ ...drug }, drug.upcomingDosages.reduce(
@@ -183,7 +184,9 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
         rows.push({
           Drug: drug.name,
           Dosage: `${newRowData.upcomingDosageSum}${drug.measureUnit}`,
-          Dates: `${format(newRowData.startDate, 'MM/dd/yyyy')} - ${format(newRowData.endDate, 'MM/dd/yyyy')}`,
+          // Dates: `${format(newRowData.startDate, 'MM/dd/yyyy')} - ${format(newRowData.endDate, 'MM/dd/yyyy')}`,
+          StartDate: `${format(newRowData.startDate, 'MM/dd/yyyy')}`,
+          EndDate: `${format(newRowData.endDate, 'MM/dd/yyyy')}`,
           startDate: newRowData.startDate,
           endDate: newRowData.endDate,
           Prescription: prescription({ ...drug }, newRowData.prescribedDosages),
@@ -215,7 +218,9 @@ const checkIntervalOverlappingRows = (rows: TableRowData[]): TableRowData[] => {
     rowsFromPreviousVisits.forEach((fromPrev, i, arr) => {
       if (rowIntervalOverlapping(fromPrev, fromCurrent)) {
         fromPrev.endDate = sub(fromCurrent.startDate, { days: 1 });
-        fromPrev.Dates = `${format(fromPrev.startDate, 'MM/dd/yyyy')} - ${format(fromPrev.endDate, 'MM/dd/yyyy')}`;
+        // fromPrev.Dates = `${format(fromPrev.startDate, 'MM/dd/yyyy')} - ${format(fromPrev.endDate, 'MM/dd/yyyy')}`;
+        fromPrev.StartDate = `${format(fromPrev.startDate, 'MM/dd/yyyy')}`;
+        fromPrev.EndDate = `${format(fromPrev.endDate, 'MM/dd/yyyy')}`;
         fromPrev.intervalUnit = 'Days';
         fromPrev.intervalCount = differenceInCalendarDays(fromPrev.endDate, fromPrev.startDate) + 1;
         fromPrev.Prescription = prescription({

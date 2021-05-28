@@ -9,7 +9,9 @@ import { SCHEDULE_ROW_SELECTED, ScheduleRowSelectedAction } from '../../redux/ac
 export interface TableRow {
   Drug: string;
   Dosage: string;
-  Dates: string;
+  // Dates: string;
+  StartDate: string;
+  EndDate: string;
   Prescription: string;
 }
 
@@ -17,7 +19,9 @@ const ProjectedScheduleTable = () => {
   const columns = useMemo(() => [
     { title: 'Drug', dataIndex: 'Drug', key: 'Drug' },
     { title: 'Dosage', dataIndex: 'Dosage', key: 'Dosage' },
-    { title: 'Dates', dataIndex: 'Dates', key: 'Dates' },
+    // { title: 'Dates', dataIndex: 'Dates', key: 'Dates' },
+    { title: 'Start date', dataIndex: 'StartDate', key: 'StartDate' },
+    { title: 'End date', dataIndex: 'EndDate', key: 'EndDate' },
     { title: 'Prescription', dataIndex: 'Prescription', key: 'Prescription' },
   ], []);
 

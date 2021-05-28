@@ -8,7 +8,7 @@ import { Dispatch } from 'redux';
 import { PrescriptionFormContext } from './PrescriptionForm';
 import { TaperConfigActions } from '../../redux/reducers/taperConfig';
 import { OralDosage } from '../../types';
-import useDosageSumDifferenceMessage from '../../hooks/useDosageSumDifference';
+import useDosageSumDifferenceMessage from '../../hooks/useDosageSumDifferenceMessage';
 import { calcPrescribedDosageQty } from '../utils';
 import {
   priorDosageChange, PriorDosageChangeAction, upcomingDosageChange, UpcomingDosageChangeAction,

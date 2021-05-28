@@ -5,7 +5,7 @@ import {
 import CapsuleOrTabletUnit from './CapsuleOrTabletUnit';
 import { PrescriptionFormContext } from './PrescriptionForm';
 import { CapsuleOrTabletDosage } from '../../types';
-import useDosageSumDifferenceMessage from '../../hooks/useDosageSumDifference';
+import useDosageSumDifferenceMessage from '../../hooks/useDosageSumDifferenceMessage';
 
 interface Props {
   time: 'Prior' | 'Upcoming';

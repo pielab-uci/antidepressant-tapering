@@ -110,6 +110,10 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
       case CHOOSE_FORM: {
         const chosenDrugForm = draft.drugFormOptions!.find((form) => form.form === action.data.form)!;
         draft.chosenDrugForm = chosenDrugForm;
+        draft.priorDosagesQty = {};
+        draft.upcomingDosagesQty = {};
+        draft.prescribedDosagesQty = {};
+
         if (isCapsuleOrTablet(chosenDrugForm)) {
           draft.dosageOptions = chosenDrugForm.dosages;
           draft.minDosageUnit = Math.min(...draft.dosageOptions.map((dosage) => parseFloat(dosage.dosage))) / 2;
@@ -121,9 +125,6 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
             return option.dosage;
           }))];
 
-          draft.priorDosagesQty = {};
-          draft.upcomingDosagesQty = {};
-          draft.prescribedDosagesQty = {};
           draft.oralDosageInfo = null;
 
           chosenDrugForm.dosages.forEach((dosage) => {

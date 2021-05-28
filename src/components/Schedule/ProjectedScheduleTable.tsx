@@ -2,27 +2,48 @@ import * as React from 'react';
 import { Key, useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Table } from 'antd';
+import { format, isAfter } from 'date-fns';
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import { SCHEDULE_ROW_SELECTED, ScheduleRowSelectedAction } from '../../redux/actions/taperConfig';
-
-export interface TableRow {
-  Drug: string;
-  Dosage: string;
-  // Dates: string;
-  StartDate: string;
-  EndDate: string;
-  Prescription: string;
-}
+import { TableRowData } from '../../redux/reducers/utils';
 
 const ProjectedScheduleTable = () => {
   const columns = useMemo(() => [
-    { title: 'Drug', dataIndex: 'Drug', key: 'Drug' },
-    { title: 'Dosage', dataIndex: 'Dosage', key: 'Dosage' },
-    // { title: 'Dates', dataIndex: 'Dates', key: 'Dates' },
-    { title: 'Start date', dataIndex: 'StartDate', key: 'StartDate' },
-    { title: 'End date', dataIndex: 'EndDate', key: 'EndDate' },
-    { title: 'Prescription', dataIndex: 'Prescription', key: 'Prescription' },
+    {
+      title: 'Drug',
+      dataIndex: 'drug',
+      key: 'Drug',
+      sorter: {
+        compare: (a: TableRowData, b: TableRowData) => (a.drug > b.drug ? 1 : 0),
+      },
+    },
+    {
+      title: 'Dosage',
+      dataIndex: 'dosage',
+      key: 'Dosage',
+      render: (dosage: number, row: TableRowData) => `${dosage}${row.measureUnit}`,
+    },
+    {
+      title: 'Start date',
+      dataIndex: 'startDate',
+      key: 'startDate',
+      sorter: {
+        compare: (a: TableRowData, b: TableRowData) => (isAfter(a.startDate, b.startDate) ? 1 : -1),
+      },
+      render: (date: Date) => format(date, 'MM/dd/yyyy'),
+      editable: true,
+    },
+    {
+      title: 'End date',
+      dataIndex: 'endDate',
+      key: 'endDate',
+      sorter: {
+        compare: (a: TableRowData, b: TableRowData) => (isAfter(a.endDate, b.endDate) ? 1 : -1),
+      },
+      render: (date: Date) => format(date, 'MM/dd/yyyy'),
+    },
+    { title: 'Prescription', dataIndex: 'prescription', key: 'Prescription' },
   ], []);
 
   const {

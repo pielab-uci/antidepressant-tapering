@@ -1,5 +1,4 @@
 import produce from 'immer';
-import { add, differenceInCalendarDays, sub } from 'date-fns';
 import { Key } from 'react';
 import {
   Drug, isCapsuleOrTablet, PrescribedDrug, TaperingConfiguration,
@@ -80,8 +79,8 @@ import {
   generateInstructionsForPatientFromSchedule,
   isCompleteDrugInput,
   generateInstructionsForPharmacy,
-  calcMinimumQuantityForDosage,
 } from './utils';
+import { calcMinimumQuantityForDosage } from '../../components/utils';
 
 export interface TaperConfigState {
   clinicianId: number;
@@ -491,16 +490,8 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           drug.intervalUnit = 'Days';
           drug.intervalCount = action.data.intervalDurationDays;
           drug.intervalDurationDays = action.data.intervalDurationDays;
-          // drug.intervalCount = differenceInCalendarDays(drug.intervalEndDate, drug.intervalStartDate) + 1;
-          // drug.intervalDurationDays = drug.intervalCount;
         }
-        if (drug.form !== '') {
-          if (isCapsuleOrTablet(drug)) {
-            drug.prescribedDosages = action.data.prescribedDosages;
-          } else {
-          // oral form
-          }
-        }
+        drug.prescribedDosages = action.data.prescribedDosages;
         draft.isSaved = false;
         break;
       }
@@ -511,14 +502,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.intervalUnit = 'Days';
         drug.intervalCount = action.data.intervalDurationDays;
         drug.intervalDurationDays = action.data.intervalDurationDays;
-
-        if (drug.form !== '') {
-          if (isCapsuleOrTablet(drug)) {
-            drug.prescribedDosages = action.data.prescribedDosages!;
-          } else {
-          // oral form
-          }
-        }
+        drug.prescribedDosages = action.data.prescribedDosages!;
         draft.isSaved = false;
         break;
       }
@@ -526,21 +510,9 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case INTERVAL_UNIT_CHANGE: {
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         drug.intervalUnit = action.data.unit;
-        // drug.intervalEndDate = sub(
-        //   add(drug.intervalStartDate, { [drug.intervalUnit.toLowerCase()]: drug.intervalCount }),
-        //   { days: 1 },
-        // );
         drug.intervalEndDate = action.data.intervalEndDate;
         drug.intervalDurationDays = action.data.intervalDurationDays;
-        // drug.intervalDurationDays = differenceInCalendarDays(drug.intervalEndDate, drug.intervalStartDate) + 1;
-
-        if (drug.form !== '') {
-          if (isCapsuleOrTablet(drug)) {
-            drug.prescribedDosages = action.data.prescribedDosages;
-          } else {
-            // oral form
-          }
-        }
+        drug.prescribedDosages = action.data.prescribedDosages;
         draft.isSaved = false;
         break;
       }
@@ -548,20 +520,9 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case INTERVAL_COUNT_CHANGE: {
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         drug.intervalCount = action.data.count;
-        // drug.intervalEndDate = sub(
-        //   add(drug.intervalStartDate, { [drug.intervalUnit.toLowerCase()]: drug.intervalCount }),
-        //   { days: 1 },
-        // );
         drug.intervalEndDate = action.data.intervalEndDate;
         drug.intervalDurationDays = action.data.intervalDurationDays;
-
-        if (drug.form !== '') {
-          if (isCapsuleOrTablet(drug)) {
-            drug.prescribedDosages = action.data.prescribedDosages!;
-          } else {
-            // oral form
-          }
-        }
+        drug.prescribedDosages = action.data.prescribedDosages!;
         draft.isSaved = false;
         break;
       }

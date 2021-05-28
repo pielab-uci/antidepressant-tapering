@@ -4,7 +4,6 @@ import {
 } from 'react';
 import {
   add,
-  differenceInCalendarDays,
   format, isAfter, isSameDay, sub,
 } from 'date-fns';
 import { Input, Select } from 'antd';
@@ -17,6 +16,7 @@ import {
   intervalCountChange, intervalEndDateChange,
   intervalStartDateChange, intervalUnitChange,
 } from './actions';
+import { calcIntervalDurationDays, calcPrescribedDosageQty } from '../utils';
 
 const { Option } = Select;
 
@@ -28,8 +28,9 @@ const SelectInterval = () => {
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
   const {
     formActionDispatch, intervalCount, intervalUnit,
-    intervalStartDate, intervalEndDate, id, prescribedDosagesQty, chosenDrugForm,
-    upcomingDosagesQty,
+    intervalStartDate, intervalEndDate, id,
+    upcomingDosagesQty, chosenDrugForm,
+    oralDosageInfo,
   } = useContext(PrescriptionFormContext);
   const dispatch = (action: IntervalActions) => {
     formActionDispatch(action);
@@ -38,50 +39,29 @@ const SelectInterval = () => {
 
   const units = useRef(['Days', 'Weeks', 'Months']);
 
-  const calcIntervalDurationDays = useCallback((startDate: Date, endDate: Date|null) => {
-    return !endDate ? 0 : differenceInCalendarDays(endDate, startDate) + 1;
-  }, []);
-
-  const calcPrescribedDosageQty = (intervalStartDate: Date, intervalEndDate: Date|null, intervalDurationDays: number, upcomingDosageQty: { [dosage: string]: number }) => {
-    return Object.entries(upcomingDosageQty).reduce((prev: { [p: string]:number }, [dosage, qty]) => {
-      prev[dosage] = qty * intervalDurationDays;
-      return prev;
-    }, {});
-  };
-
-  const onIntervalStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onIntervalStartDateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const date = new Date(e.target.value);
     if (intervalEndDate && isAfter(date, intervalEndDate)) {
       alert('Interval start date must be before the interval end date.');
     } else {
-      // dispatch(intervalStartDateChange(({ date, id })));
       const intervalDurationDays = calcIntervalDurationDays(date, intervalEndDate);
-      const prescribedDosages = calcPrescribedDosageQty(date, intervalEndDate, intervalDurationDays, upcomingDosagesQty);
-      // formActionDispatch(intervalStartDateChange({
-      //   date, id, prescribedDosages, intervalDurationDays,
-      // }));
-      // taperConfigActionDispatch(intervalStartDateChange({
-      //   date, id, prescribedDosages, intervalDurationDays,
-      // }));
+      const prescribedDosages = calcPrescribedDosageQty({
+        chosenDrugForm, intervalDurationDays, upcomingDosagesQty, oralDosageInfo,
+      });
       dispatch(intervalStartDateChange({
         date, id, prescribedDosages, intervalDurationDays,
       }));
     }
-  };
+  }, [intervalEndDate, upcomingDosagesQty]);
 
-  const onIntervalEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onIntervalEndDateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const tempEndDate = new Date(e.target.value);
     const newEndDate = new Date(tempEndDate.valueOf() + tempEndDate.getTimezoneOffset() * 60 * 1000);
     const intervalDurationDays = calcIntervalDurationDays(intervalStartDate, newEndDate);
-    const prescribedDosages = calcPrescribedDosageQty(newEndDate, intervalEndDate, intervalDurationDays, upcomingDosagesQty);
+    const prescribedDosages = calcPrescribedDosageQty({
+      chosenDrugForm, intervalDurationDays, upcomingDosagesQty, oralDosageInfo,
+    });
     if (isSameDay(newEndDate, intervalStartDate) || isAfter(newEndDate, intervalStartDate)) {
-      // dispatch(intervalEndDateChange({ date: newEndDate, id }));
-      // formActionDispatch(intervalEndDateChange({
-      //   date: newEndDate, id, prescribedDosages, intervalDurationDays,
-      // }));
-      // taperConfigActionDispatch(intervalEndDateChange({
-      //   date: newEndDate, id, prescribedDosages, intervalDurationDays,
-      // }));
       dispatch(intervalEndDateChange({
         date: newEndDate, id, prescribedDosages, intervalDurationDays,
       }));
@@ -91,38 +71,36 @@ const SelectInterval = () => {
         date: null, id, intervalDurationDays, prescribedDosages,
       }));
     }
-  };
+  }, [intervalStartDate, upcomingDosagesQty]);
 
-  const onIntervalUnitChange = (value: 'Days' | 'Weeks' | 'Months') => {
-    // dispatch(intervalUnitChange({ unit: value, id }));
+  const onIntervalUnitChange = useCallback((value: 'Days' | 'Weeks' | 'Months') => {
     const endDate = sub(add(intervalStartDate, { [value.toLowerCase()]: intervalCount }), { days: 1 });
     const intervalDurationDays = calcIntervalDurationDays(intervalStartDate, endDate);
-    const prescribedDosages = calcPrescribedDosageQty(intervalStartDate, endDate, intervalDurationDays, upcomingDosagesQty);
+    const prescribedDosages = calcPrescribedDosageQty({
+      chosenDrugForm, intervalDurationDays, upcomingDosagesQty, oralDosageInfo,
+    });
 
     dispatch(intervalUnitChange({
       unit: value, intervalEndDate: endDate, intervalDurationDays, prescribedDosages, id,
     }));
-  };
+  }, [intervalStartDate, intervalCount, upcomingDosagesQty]);
 
-  const onIntervalCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // dispatch(intervalCountChange({ count: parseInt(e.target.value, 10), id }));
-    // if (intervalEndDate) {
+  const onIntervalCountChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const count = parseInt(e.target.value, 10);
     const endDate = count === 0 ? null : sub(add(intervalStartDate, { [intervalUnit.toLowerCase()]: count }),
       { days: 1 });
     const intervalDurationDays = calcIntervalDurationDays(intervalStartDate, endDate);
-    const prescribedDosages = calcPrescribedDosageQty(
-      intervalStartDate,
-      endDate,
+    const prescribedDosages = calcPrescribedDosageQty({
+      chosenDrugForm,
       intervalDurationDays,
       upcomingDosagesQty,
-    );
+      oralDosageInfo,
+    });
 
     dispatch(intervalCountChange({
       count: parseInt(e.target.value, 10), id, intervalEndDate: endDate, intervalDurationDays, prescribedDosages,
     }));
-    // }
-  };
+  }, [intervalStartDate, upcomingDosagesQty]);
 
   return (
     <>

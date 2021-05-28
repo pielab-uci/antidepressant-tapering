@@ -6,9 +6,13 @@ import { Input } from 'antd';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
 import { PrescriptionFormContext } from './PrescriptionForm';
-import { TaperConfigActions } from '../../redux/reducers/taperConfig';
+import taperConfig, { TaperConfigActions } from '../../redux/reducers/taperConfig';
 import { OralDosage } from '../../types';
 import { useDosageSumAndDifferenceMessage } from '../../hooks/useDosageSumDifference';
+import { calcPrescribedDosageQty } from '../utils';
+import {
+  priorDosageChange, PriorDosageChangeAction, upcomingDosageChange, UpcomingDosageChangeAction,
+} from './actions';
 
 interface Props {
   time: 'Prior'|'Upcoming'
@@ -23,30 +27,47 @@ const OralFormDosage: FC<Props> = ({ time }) => {
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
   const {
     formActionDispatch, id, chosenDrugForm, priorDosagesQty, upcomingDosagesQty,
+    intervalDurationDays, oralDosageInfo,
   } = context;
-  const { dosages, dosageChangeAction } = context[time];
+  const { dosages } = context[time];
   const dosage = useRef('1mg');
   const [mlDosage, setmlDosage] = useState(dosages['1mg']);
   const [dosageDifferenceMessage, dosageSum] = useDosageSumAndDifferenceMessage(time, priorDosagesQty, upcomingDosagesQty);
+  const dispatch = (action: UpcomingDosageChangeAction | PriorDosageChangeAction) => {
+    formActionDispatch(action);
+    taperConfigActionDispatch(action);
+  };
 
   const mgOnChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const mg = parseInt(e.target.value, 10);
     const ml = mg / (chosenDrugForm!.dosages as OralDosage).rate.mg * (chosenDrugForm!.dosages as OralDosage).rate.ml;
     const actionData = { id, dosage: { dosage: dosage.current, quantity: mg } };
-    formActionDispatch(dosageChangeAction(actionData));
-    taperConfigActionDispatch(dosageChangeAction(actionData));
+    if (time === 'Upcoming') {
+      const prescribedDosages = calcPrescribedDosageQty({
+        chosenDrugForm, intervalDurationDays, upcomingDosagesQty, oralDosageInfo,
+      });
+      dispatch(upcomingDosageChange({ ...actionData, prescribedDosages }));
+    } else {
+      dispatch(priorDosageChange(actionData));
+    }
 
     setmlDosage(ml);
-  }, []);
+  }, [chosenDrugForm, intervalDurationDays, upcomingDosagesQty, oralDosageInfo]);
 
   const mlOnChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const ml = parseInt(e.target.value, 10);
     setmlDosage(ml);
     const mg = ml / (chosenDrugForm!.dosages as OralDosage).rate.ml * (chosenDrugForm!.dosages as OralDosage).rate.mg;
     const actionData = { id, dosage: { dosage: dosage.current, quantity: mg } };
-    formActionDispatch(dosageChangeAction(actionData));
-    taperConfigActionDispatch(dosageChangeAction(actionData));
-  }, []);
+    if (time === 'Upcoming') {
+      const prescribedDosages = calcPrescribedDosageQty({
+        chosenDrugForm, intervalDurationDays, upcomingDosagesQty, oralDosageInfo,
+      });
+      dispatch(upcomingDosageChange({ ...actionData, prescribedDosages }));
+    } else {
+      dispatch(priorDosageChange(actionData));
+    }
+  }, [chosenDrugForm, intervalDurationDays, upcomingDosagesQty, oralDosageInfo]);
 
   return (
   <>

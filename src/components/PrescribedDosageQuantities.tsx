@@ -6,9 +6,9 @@ import {
 import { Input } from 'antd';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
-import { prescribedQuantityChange } from './PrescriptionForm/actions';
 import { TaperConfigActions } from '../redux/reducers/taperConfig';
 import { isCapsuleOrTablet, PrescribedDrug } from '../types';
+import { prescribedQuantityChange } from '../redux/actions/taperConfig';
 
 interface Props {
   prescribedDrug: PrescribedDrug;

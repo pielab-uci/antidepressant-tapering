@@ -44,11 +44,9 @@ export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
   ...initialState,
   Prior: {
     dosages: initialState.priorDosagesQty,
-    dosageChangeAction: priorDosageChange,
   },
   Upcoming: {
     dosages: initialState.upcomingDosagesQty,
-    dosageChangeAction: upcomingDosageChange,
   },
   formActionDispatch: () => {},
   id: -1,

@@ -55,7 +55,7 @@ import {
   EMPTY_PRESCRIBED_DRUGS,
   EmptyPrescribedDrugs,
   ChangeNoteAndInstructions,
-  CHANGE_NOTE_AND_INSTRUCTIONS,
+  CHANGE_NOTE_AND_INSTRUCTIONS, PRESCRIBED_QUANTITY_CHANGE, PrescribedQuantityChange,
 } from '../actions/taperConfig';
 import drugs from './drugs';
 
@@ -68,7 +68,7 @@ import {
   INTERVAL_START_DATE_CHANGE,
   INTERVAL_UNIT_CHANGE,
   ALLOW_SPLITTING_UNSCORED_TABLET,
-  UPCOMING_DOSAGE_CHANGE, PRESCRIBED_QUANTITY_CHANGE,
+  UPCOMING_DOSAGE_CHANGE,
   PrescriptionFormActions,
 } from '../../components/PrescriptionForm/actions';
 import { Schedule } from '../../components/Schedule/ProjectedSchedule';
@@ -201,6 +201,7 @@ export type TaperConfigActions =
   | ShareWithPatientEmailRequest
   | ShareWithPatientEmailSuccess
   | ShareWithPatientEmailFailure
+  | PrescribedQuantityChange
   | PrescriptionFormActions;
 
 const emptyPrescribedDrug = (id: number): PrescribedDrug => ({
@@ -457,12 +458,13 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           drug.upcomingDosages[idx] = action.data.dosage;
         }
 
-        if (isCapsuleOrTablet(drug)) {
-          drug.prescribedDosages[action.data.dosage.dosage] = action.data.dosage.quantity * drug.intervalDurationDays;
-        } else {
-          const dosageSum = drug.upcomingDosages[0].quantity / drug.oralDosageInfo!.rate.mg * drug.oralDosageInfo!.rate.ml;
-          drug.prescribedDosages = calcMinimumQuantityForDosage(drug.oralDosageInfo!.bottles, dosageSum, null);
-        }
+        drug.prescribedDosages = action.data.prescribedDosages;
+        // if (isCapsuleOrTablet(drug)) {
+        //   drug.prescribedDosages[action.data.dosage.dosage] = action.data.dosage.quantity * drug.intervalDurationDays;
+        // } else {
+        //   const dosageSum = drug.upcomingDosages[0].quantity / drug.oralDosageInfo!.rate.mg * drug.oralDosageInfo!.rate.ml;
+        //   drug.prescribedDosages = calcMinimumQuantityForDosage(drug.oralDosageInfo!.bottles, dosageSum, null);
+        // }
 
         draft.isSaved = false;
         break;

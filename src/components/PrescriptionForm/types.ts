@@ -38,11 +38,9 @@ export type IPrescriptionFormContext = PrescriptionFormState
 & {
   Prior: {
     dosages: typeof initialState.priorDosagesQty,
-    dosageChangeAction: typeof priorDosageChange,
   };
   Upcoming: {
     dosages: typeof initialState.upcomingDosagesQty,
-    dosageChangeAction: typeof upcomingDosageChange,
   };
   formActionDispatch: Dispatch<PrescriptionFormActions>;
   id: number;

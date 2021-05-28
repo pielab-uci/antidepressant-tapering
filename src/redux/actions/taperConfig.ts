@@ -177,3 +177,15 @@ export const changeNoteAndInstructions = (data: ChangeNoteAndInstructions['data'
   type: CHANGE_NOTE_AND_INSTRUCTIONS,
   data,
 });
+
+export const PRESCRIBED_QUANTITY_CHANGE = 'PRESCRIBED_QUANTITY_CHANGE' as const;
+
+export interface PrescribedQuantityChange {
+  type: typeof PRESCRIBED_QUANTITY_CHANGE,
+  data: { id: number, dosage: { dosage: string, quantity: number }, intervalDurationDays?: number }
+}
+
+export const prescribedQuantityChange = (data: PrescribedQuantityChange['data']): PrescribedQuantityChange => ({
+  type: PRESCRIBED_QUANTITY_CHANGE,
+  data,
+});

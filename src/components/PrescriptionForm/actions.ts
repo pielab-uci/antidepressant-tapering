@@ -44,23 +44,11 @@ export const UPCOMING_DOSAGE_CHANGE = 'UPCOMING_DOSAGE_CHANGE' as const;
 
 export interface UpcomingDosageChangeAction {
   type: typeof UPCOMING_DOSAGE_CHANGE;
-  data: { id: number, dosage: { dosage: string, quantity: number }, intervalDurationDays?: number };
+  data: { id: number, dosage: { dosage: string, quantity: number }, prescribedDosages: { [dosage: string]: number } };
 }
 
 export const upcomingDosageChange = (data: UpcomingDosageChangeAction['data']): UpcomingDosageChangeAction => ({
   type: UPCOMING_DOSAGE_CHANGE,
-  data,
-});
-
-export const PRESCRIBED_QUANTITY_CHANGE = 'PRESCRIBED_QUANTITY_CHANGE' as const;
-
-export interface PrescribedQuantityChange {
-  type: typeof PRESCRIBED_QUANTITY_CHANGE,
-  data: { id: number, dosage: { dosage: string, quantity: number }, intervalDurationDays?: number }
-}
-
-export const prescribedQuantityChange = (data: PrescribedQuantityChange['data']): PrescribedQuantityChange => ({
-  type: PRESCRIBED_QUANTITY_CHANGE,
   data,
 });
 
@@ -156,5 +144,4 @@ export type PrescriptionFormActions =
   | PriorDosageChangeAction
   | UpcomingDosageChangeAction
   | AllowSplittingUnscoredTabletAction
-  | IntervalActions
-  | PrescribedQuantityChange;
+  | IntervalActions;

@@ -6,7 +6,11 @@ import { Button } from 'antd';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
 import { PrescriptionFormContext } from './PrescriptionForm';
-import { TaperConfigActions } from '../../redux/reducers/taperConfig';
+import taperConfig, { TaperConfigActions } from '../../redux/reducers/taperConfig';
+import { calcPrescribedDosageQty } from '../utils';
+import {
+  priorDosageChange, PriorDosageChangeAction, upcomingDosageChange, UpcomingDosageChangeAction,
+} from './actions';
 
 interface Props {
   form: string;
@@ -22,9 +26,14 @@ const CapsuleOrTabletUnit: FC<Props> = ({
   const context = useContext(PrescriptionFormContext);
   const {
     formActionDispatch, id, intervalDurationDays, allowSplittingUnscoredTablet,
+    chosenDrugForm, upcomingDosagesQty, oralDosageInfo,
   } = context;
-  const { dosages, dosageChangeAction } = context[time];
+  const { dosages } = context[time];
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
+  const dispatch = (action: UpcomingDosageChangeAction | PriorDosageChangeAction) => {
+    formActionDispatch(action);
+    taperConfigActionDispatch(action);
+  };
 
   const quantity = (change: 'increment' | 'decrement', dosages: { [dosage: string]: number }, dosage: string) => {
     // if (isMinDosage) {
@@ -49,8 +58,14 @@ const CapsuleOrTabletUnit: FC<Props> = ({
       },
     };
 
-    taperConfigActionDispatch(dosageChangeAction({ ...actionData, intervalDurationDays }));
-    formActionDispatch(dosageChangeAction(actionData));
+    if (time === 'Upcoming') {
+      const prescribedDosages = calcPrescribedDosageQty({
+        chosenDrugForm, intervalDurationDays, upcomingDosagesQty, oralDosageInfo,
+      });
+      dispatch(upcomingDosageChange({ ...actionData, prescribedDosages }));
+    } else {
+      dispatch(priorDosageChange(actionData));
+    }
   }, [dosages, intervalDurationDays, allowSplittingUnscoredTablet]);
 
   const onDecrement = useCallback(() => {
@@ -62,8 +77,14 @@ const CapsuleOrTabletUnit: FC<Props> = ({
       },
     };
 
-    taperConfigActionDispatch(dosageChangeAction({ ...actionData, intervalDurationDays }));
-    formActionDispatch(dosageChangeAction(actionData));
+    if (time === 'Upcoming') {
+      const prescribedDosages = calcPrescribedDosageQty({
+        chosenDrugForm, intervalDurationDays, upcomingDosagesQty, oralDosageInfo,
+      });
+      dispatch(upcomingDosageChange({ ...actionData, prescribedDosages }));
+    } else {
+      dispatch(priorDosageChange(actionData));
+    }
   }, [dosages, intervalDurationDays, allowSplittingUnscoredTablet]);
 
   return (

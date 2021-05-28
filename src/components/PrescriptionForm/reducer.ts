@@ -1,7 +1,4 @@
 import produce from 'immer';
-import {
-  add, differenceInCalendarDays, sub,
-} from 'date-fns';
 import { PrescriptionFormState } from './types';
 import {
   ALLOW_SPLITTING_UNSCORED_TABLET,
@@ -12,11 +9,9 @@ import {
   INTERVAL_END_DATE_CHANGE,
   INTERVAL_START_DATE_CHANGE, INTERVAL_UNIT_CHANGE, LOAD_PRESCRIPTION_DATA,
   UPCOMING_DOSAGE_CHANGE,
-  PRESCRIBED_QUANTITY_CHANGE,
   PrescriptionFormActions,
 } from './actions';
 import { CapsuleOrTabletDosage, isCapsuleOrTablet } from '../../types';
-import { calcMinimumQuantityForDosage } from '../../redux/reducers/utils';
 
 export const initialState: PrescriptionFormState = {
   drugs: null,
@@ -33,7 +28,6 @@ export const initialState: PrescriptionFormState = {
   upcomingDosagesQty: {},
   allowSplittingUnscoredTablet: false,
   oralDosageInfo: null,
-  prescribedDosagesQty: {},
   intervalStartDate: new Date(),
   intervalEndDate: null,
   intervalCount: 0,
@@ -85,7 +79,6 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.intervalEndDate = action.data.intervalEndDate;
         draft.intervalCount = action.data.intervalCount;
         draft.intervalUnit = action.data.intervalUnit;
-        draft.prescribedDosagesQty = action.data.prescribedDosages;
         break;
       }
 
@@ -106,13 +99,15 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.priorDosagesQty = {};
         draft.oralDosageInfo = null;
         draft.upcomingDosagesQty = {};
-        draft.prescribedDosagesQty = {};
         break;
       }
 
       case CHOOSE_FORM: {
         const chosenDrugForm = draft.drugFormOptions!.find((form) => form.form === action.data.form)!;
         draft.chosenDrugForm = chosenDrugForm;
+        draft.priorDosagesQty = {};
+        draft.upcomingDosagesQty = {};
+
         if (isCapsuleOrTablet(chosenDrugForm)) {
           draft.dosageOptions = chosenDrugForm.dosages;
           draft.minDosageUnit = Math.min(...draft.dosageOptions.map((dosage) => parseFloat(dosage.dosage))) / 2;
@@ -124,15 +119,11 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
             return option.dosage;
           }))];
 
-          draft.priorDosagesQty = {};
-          draft.upcomingDosagesQty = {};
-          draft.prescribedDosagesQty = {};
           draft.oralDosageInfo = null;
 
           chosenDrugForm.dosages.forEach((dosage) => {
             draft.priorDosagesQty[dosage.dosage] = 0;
             draft.upcomingDosagesQty[dosage.dosage] = 0;
-            draft.prescribedDosagesQty[dosage.dosage] = 0;
           });
         } else {
           draft.availableDosageOptions = ['1mg'];
@@ -140,9 +131,6 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
           draft.oralDosageInfo = chosenDrugForm.dosages;
           draft.priorDosagesQty['1mg'] = 0;
           draft.upcomingDosagesQty['1mg'] = 0;
-          draft.oralDosageInfo.bottles.forEach((bottle) => {
-            draft.prescribedDosagesQty[bottle] = 0;
-          });
         }
 
         break;
@@ -154,23 +142,10 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         }
         break;
 
+        // TODO: do I need draft.prescribedDosagesQty in PrescriptionForm component?
       case UPCOMING_DOSAGE_CHANGE:
         if (action.data.dosage.quantity >= 0) {
           draft.upcomingDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;
-          if (draft.chosenDrugForm) {
-            if (isCapsuleOrTablet(draft.chosenDrugForm)) {
-              draft.prescribedDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity * draft.intervalDurationDays;
-            } else {
-              const dosageSum = draft.upcomingDosagesQty['1mg'] * draft.intervalDurationDays / draft.oralDosageInfo!.rate.mg * draft.oralDosageInfo!.rate.ml;
-              draft.prescribedDosagesQty = calcMinimumQuantityForDosage(draft.chosenDrugForm.dosages.bottles, dosageSum, null);
-            }
-          }
-        }
-        break;
-
-      case PRESCRIBED_QUANTITY_CHANGE:
-        if (action.data.dosage.quantity >= 0) {
-          draft.prescribedDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;
         }
         break;
 
@@ -190,85 +165,28 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.intervalStartDate = new Date(action.data.date.valueOf() + action.data.date.getTimezoneOffset() * 60 * 1000);
         draft.intervalUnit = 'Days';
         if (draft.intervalEndDate) {
-          draft.intervalCount = differenceInCalendarDays(draft.intervalEndDate, draft.intervalStartDate) + 1;
+          draft.intervalCount = action.data.intervalDurationDays;
+          draft.intervalDurationDays = action.data.intervalDurationDays;
         }
-        draft.intervalDurationDays = draft.intervalCount;
-
-        if (draft.chosenDrugForm) {
-          if (isCapsuleOrTablet(draft.chosenDrugForm)) {
-            Object.keys(draft.prescribedDosagesQty).forEach((key) => {
-              draft.prescribedDosagesQty[key] = draft.upcomingDosagesQty[key] * draft.intervalDurationDays;
-            });
-          } else {
-            const dosageSum = draft.upcomingDosagesQty['1mg'] * draft.intervalDurationDays / draft.oralDosageInfo!.rate.mg * draft.oralDosageInfo!.rate.ml;
-            draft.prescribedDosagesQty = calcMinimumQuantityForDosage(draft.chosenDrugForm.dosages.bottles, dosageSum, null);
-          }
-        } // else..?
-
         break;
 
       case INTERVAL_END_DATE_CHANGE:
-        if (action.data.date) {
-          draft.intervalEndDate = new Date(action.data.date.valueOf() + action.data.date?.getTimezoneOffset() * 60 * 1000);
-        } else {
-          draft.intervalEndDate = action.data.date;
-        }
+        draft.intervalEndDate = action.data.date;
         draft.intervalUnit = 'Days';
-        draft.intervalDurationDays = differenceInCalendarDays(draft.intervalEndDate!, draft.intervalStartDate) + 1;
+        draft.intervalDurationDays = action.data.intervalDurationDays;
         draft.intervalCount = draft.intervalDurationDays;
-        if (draft.chosenDrugForm) {
-          if (isCapsuleOrTablet(draft.chosenDrugForm)) {
-            Object.keys(draft.prescribedDosagesQty).forEach((key) => {
-              draft.prescribedDosagesQty[key] = draft.upcomingDosagesQty[key] * draft.intervalDurationDays;
-            });
-          } else {
-            // oral form
-            // dosageSum -> must be in ml
-            const dosageSum = draft.upcomingDosagesQty['1mg'] * draft.intervalDurationDays / draft.oralDosageInfo!.rate.mg * draft.oralDosageInfo!.rate.ml;
-            draft.prescribedDosagesQty = calcMinimumQuantityForDosage(draft.chosenDrugForm.dosages.bottles, dosageSum, null);
-          }
-        }
         break;
 
       case INTERVAL_UNIT_CHANGE:
         draft.intervalUnit = action.data.unit;
-        draft.intervalEndDate = sub(add(draft.intervalStartDate, { [draft.intervalUnit.toLowerCase()]: draft.intervalCount }), { days: 1 });
-        draft.intervalDurationDays = differenceInCalendarDays(draft.intervalEndDate, draft.intervalStartDate) + 1;
-
-        if (draft.chosenDrugForm) {
-          if (isCapsuleOrTablet(draft.chosenDrugForm)) {
-            Object.keys(draft.prescribedDosagesQty).forEach((key) => {
-              draft.prescribedDosagesQty[key] = draft.upcomingDosagesQty[key] * draft.intervalDurationDays;
-            });
-          } else {
-            const dosageSum = draft.upcomingDosagesQty['1mg'] * draft.intervalDurationDays / draft.oralDosageInfo!.rate.mg * draft.oralDosageInfo!.rate.ml;
-            draft.prescribedDosagesQty = calcMinimumQuantityForDosage(draft.chosenDrugForm.dosages.bottles, dosageSum, null);
-          }
-        }
+        draft.intervalEndDate = action.data.intervalEndDate;
+        draft.intervalDurationDays = action.data.intervalDurationDays;
         break;
 
       case INTERVAL_COUNT_CHANGE:
         draft.intervalCount = action.data.count;
-        if (draft.intervalCount === 0) {
-          draft.intervalEndDate = null;
-          draft.intervalDurationDays = 0;
-        } else {
-          draft.intervalEndDate = sub(add(draft.intervalStartDate, {
-            [draft.intervalUnit.toLowerCase()]: draft.intervalCount,
-          }), { days: 1 });
-          draft.intervalDurationDays = differenceInCalendarDays(draft.intervalEndDate, draft.intervalStartDate) + 1;
-        }
-
-        if (draft.chosenDrugForm) {
-          if (isCapsuleOrTablet(draft.chosenDrugForm)) {
-            Object.keys(draft.prescribedDosagesQty).forEach((key) => {
-              draft.prescribedDosagesQty[key] = draft.upcomingDosagesQty[key] * draft.intervalDurationDays;
-            });
-          } else {
-            const dosageSum = draft.upcomingDosagesQty['1mg'] * draft.intervalDurationDays / draft.oralDosageInfo!.rate.mg * draft.oralDosageInfo!.rate.ml;
-            draft.prescribedDosagesQty = calcMinimumQuantityForDosage(draft.chosenDrugForm.dosages.bottles, dosageSum, null);
-          }
-        }
+        draft.intervalEndDate = action.data.intervalEndDate;
+        draft.intervalDurationDays = action.data.intervalDurationDays;
         break;
     }
   });

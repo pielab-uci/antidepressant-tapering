@@ -41,7 +41,7 @@ export interface AddOrUpdateTaperConfigRequestAction {
   data: { taperConfigId?: number, clinicianId: number, patientId: number, prescribedDrugs: PrescribedDrug[] };
 }
 
-export const addOrUpdateTaperConfigRequest = (data: { taperConfigId?: number, clinicianId: number, patientId: number, prescribedDrugs: PrescribedDrug[] }):AddOrUpdateTaperConfigRequestAction => ({
+export const addOrUpdateTaperConfigRequest = (data: AddOrUpdateTaperConfigRequestAction['data']):AddOrUpdateTaperConfigRequestAction => ({
   type: ADD_OR_UPDATE_TAPER_CONFIG_REQUEST,
   data,
 });
@@ -162,7 +162,7 @@ export interface ChangeMessageForPatient {
   data: string;
 }
 
-export const changeMessageForPatient = (data:string): ChangeMessageForPatient => ({
+export const changeMessageForPatient = (data:ChangeMessageForPatient['data']): ChangeMessageForPatient => ({
   type: CHANGE_MESSAGE_FOR_PATIENT,
   data,
 });
@@ -173,7 +173,19 @@ export interface ChangeNoteAndInstructions {
   data: string;
 }
 
-export const changeNoteAndInstructions = (data: string): ChangeNoteAndInstructions => ({
+export const changeNoteAndInstructions = (data: ChangeNoteAndInstructions['data']): ChangeNoteAndInstructions => ({
   type: CHANGE_NOTE_AND_INSTRUCTIONS,
+  data,
+});
+
+export const PRESCRIBED_QUANTITY_CHANGE = 'PRESCRIBED_QUANTITY_CHANGE' as const;
+
+export interface PrescribedQuantityChange {
+  type: typeof PRESCRIBED_QUANTITY_CHANGE,
+  data: { id: number, dosage: { dosage: string, quantity: number }, intervalDurationDays?: number }
+}
+
+export const prescribedQuantityChange = (data: PrescribedQuantityChange['data']): PrescribedQuantityChange => ({
+  type: PRESCRIBED_QUANTITY_CHANGE,
   data,
 });

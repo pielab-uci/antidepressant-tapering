@@ -15,7 +15,7 @@ interface Props {
 }
 
 const PrescribedDosageQuantities: FC<Props> = ({ prescribedDrug }) => {
-  const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
+  const dispatch = useDispatch<Dispatch<TaperConfigActions>>();
 
   const onCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const actionData = {
@@ -23,9 +23,7 @@ const PrescribedDosageQuantities: FC<Props> = ({ prescribedDrug }) => {
       id: prescribedDrug.id,
     };
 
-    // formActionDispatch(prescribedQuantityChange(actionData));
-    // TODO: add intervalDurationDays to PrescribedDrug
-    taperConfigActionDispatch(prescribedQuantityChange({
+    dispatch(prescribedQuantityChange({
       ...actionData,
       intervalDurationDays: prescribedDrug.intervalDurationDays,
     }));

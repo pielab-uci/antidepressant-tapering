@@ -3,8 +3,6 @@ import {
   initialState,
 } from './reducer';
 import {
-  priorDosageChange,
-  upcomingDosageChange,
   PrescriptionFormActions,
 } from './actions';
 import {

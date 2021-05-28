@@ -6,7 +6,7 @@ import { Button } from 'antd';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
 import { PrescriptionFormContext } from './PrescriptionForm';
-import taperConfig, { TaperConfigActions } from '../../redux/reducers/taperConfig';
+import { TaperConfigActions } from '../../redux/reducers/taperConfig';
 import { calcPrescribedDosageQty } from '../utils';
 import {
   priorDosageChange, PriorDosageChangeAction, upcomingDosageChange, UpcomingDosageChangeAction,
@@ -17,11 +17,10 @@ interface Props {
   time: 'Prior' | 'Upcoming'
   dosage: string;
   isScored?: boolean;
-  isMinDosage: boolean;
 }
 
 const CapsuleOrTabletUnit: FC<Props> = ({
-  time, form, dosage, isScored, isMinDosage,
+  time, form, dosage, isScored,
 }) => {
   const context = useContext(PrescriptionFormContext);
   const {
@@ -36,13 +35,6 @@ const CapsuleOrTabletUnit: FC<Props> = ({
   };
 
   const quantity = (change: 'increment' | 'decrement', dosages: { [dosage: string]: number }, dosage: string) => {
-    // if (isMinDosage) {
-    //   if (isScored || allowSplittingUnscored) {
-    //     return change === 'increment' ? dosages[dosage] + 0.5 : dosages[dosage] - 0.5;
-    //   }
-    //   return change === 'increment' ? dosages[dosage] + 1 : dosages[dosage] - 1;
-    // }
-
     if (isScored) {
       return change === 'increment' ? dosages[dosage] + 0.5 : dosages[dosage] - 0.5;
     }

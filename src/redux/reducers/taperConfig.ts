@@ -1,7 +1,7 @@
 import produce from 'immer';
 import { Key } from 'react';
 import {
-  Drug, isCapsuleOrTablet, PrescribedDrug, TaperingConfiguration,
+  Drug, PrescribedDrug, TaperingConfiguration,
 } from '../../types';
 import {
   ADD_OR_UPDATE_TAPER_CONFIG_FAILURE,
@@ -80,7 +80,6 @@ import {
   isCompleteDrugInput,
   generateInstructionsForPharmacy,
 } from './utils';
-import { calcMinimumQuantityForDosage } from '../../components/utils';
 
 export interface TaperConfigState {
   clinicianId: number;
@@ -459,13 +458,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         }
 
         drug.prescribedDosages = action.data.prescribedDosages;
-        // if (isCapsuleOrTablet(drug)) {
-        //   drug.prescribedDosages[action.data.dosage.dosage] = action.data.dosage.quantity * drug.intervalDurationDays;
-        // } else {
-        //   const dosageSum = drug.upcomingDosages[0].quantity / drug.oralDosageInfo!.rate.mg * drug.oralDosageInfo!.rate.ml;
-        //   drug.prescribedDosages = calcMinimumQuantityForDosage(drug.oralDosageInfo!.bottles, dosageSum, null);
-        // }
-
         draft.isSaved = false;
         break;
       }

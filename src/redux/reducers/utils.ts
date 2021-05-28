@@ -218,7 +218,12 @@ const checkIntervalOverlappingRows = (rows: TableRowData[]): TableRowData[] => {
         fromPrev.Dates = `${format(fromPrev.startDate, 'MM/dd/yyyy')} - ${format(fromPrev.endDate, 'MM/dd/yyyy')}`;
         fromPrev.intervalUnit = 'Days';
         fromPrev.intervalCount = differenceInCalendarDays(fromPrev.endDate, fromPrev.startDate) + 1;
-        fromPrev.Prescription = prescription({ form: fromPrev.form, intervalCount: fromPrev.intervalCount, intervalUnit: fromPrev.intervalUnit }, fromPrev.prescribedDosages);
+        fromPrev.Prescription = prescription({
+          form: fromPrev.form,
+          intervalCount: fromPrev.intervalCount,
+          intervalUnit: fromPrev.intervalUnit,
+        },
+        fromPrev.prescribedDosages);
 
         if (isBefore(fromPrev.endDate, fromPrev.startDate)) {
           arr.splice(i, 1);
@@ -316,7 +321,7 @@ export const chartDataConverter = (schedule: Schedule): ScheduleChartData => {
 export const generateInstructionsForPatientFromSchedule = (schedule: Schedule): string => {
   return schedule.data
     .filter((row) => row.selected)
-    .reduce((message, row, i, arr) => {
+    .reduce((message, row) => {
       const startDate = format(row.startDate, 'MMM dd, yyyy');
       const endDate = format(row.endDate, 'MMM dd, yyyy');
       if (row.form === 'capsule' || row.form === 'tablet') {

@@ -69,7 +69,7 @@ export interface PrescribedDrug {
   name: string;
   brand: string;
   form: string;
-  measureUnit: string; // TODO: remove measureUnit variable?
+  measureUnit: string;
   minDosageUnit: number;
   availableDosageOptions: string[];
   regularDosageOptions: string[]|null;

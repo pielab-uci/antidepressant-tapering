@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, createContext, FC } from 'react';
-import { useReducer, useState } from 'reinspect';
+import { useReducer } from 'reinspect';
 import { Button, Checkbox, Select } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
@@ -107,7 +107,7 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
       taperConfigActionDispatch<ChooseFormAction>({
         type: CHOOSE_FORM,
         data: {
-          form: chosenDrugForm!.form,
+          form: chosenDrugForm.form,
           minDosageUnit,
           availableDosageOptions,
           regularDosageOptions,
@@ -128,14 +128,13 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
     });
   };
 
-  const renderDosages = (drugForm: DrugForm | null | undefined, time: 'Prior' | 'Upcoming', dosages: { [key: string]: number }) => {
-    // TODO: render drug dosage depending on its form
+  const renderDosages = (drugForm: DrugForm | null | undefined, time: 'Prior' | 'Upcoming') => {
     if (!drugForm) {
       return <div>No drug form selected.</div>;
     }
 
     if (isCapsuleOrTablet(drugForm)) {
-      return <CapsuleOrTabletDosages time={time} dosages={dosages} />;
+      return <CapsuleOrTabletDosages time={time} />;
     }
 
     return <OralFormDosage time={time} />;
@@ -182,9 +181,9 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
       {chosenDrugForm?.form === 'tablet' && <Checkbox checked={allowSplittingUnscoredTablet} onChange={toggleAllowSplittingUnscoredTabletCheckbox}>Allow splitting unscored tablet</Checkbox>}
         <hr />
 
-        {renderDosages(chosenDrugForm, 'Prior', priorDosagesQty)}
+        {renderDosages(chosenDrugForm, 'Prior')}
         <hr />
-        {renderDosages(chosenDrugForm, 'Upcoming', upcomingDosagesQty)}
+        {renderDosages(chosenDrugForm, 'Upcoming')}
         <hr/>
         <SelectInterval />
         <hr/>

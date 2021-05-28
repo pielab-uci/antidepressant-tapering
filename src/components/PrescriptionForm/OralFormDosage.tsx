@@ -6,9 +6,9 @@ import { Input } from 'antd';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
 import { PrescriptionFormContext } from './PrescriptionForm';
-import taperConfig, { TaperConfigActions } from '../../redux/reducers/taperConfig';
+import { TaperConfigActions } from '../../redux/reducers/taperConfig';
 import { OralDosage } from '../../types';
-import { useDosageSumAndDifferenceMessage } from '../../hooks/useDosageSumDifference';
+import useDosageSumDifferenceMessage from '../../hooks/useDosageSumDifference';
 import { calcPrescribedDosageQty } from '../utils';
 import {
   priorDosageChange, PriorDosageChangeAction, upcomingDosageChange, UpcomingDosageChangeAction,
@@ -32,7 +32,7 @@ const OralFormDosage: FC<Props> = ({ time }) => {
   const { dosages } = context[time];
   const dosage = useRef('1mg');
   const [mlDosage, setmlDosage] = useState(dosages['1mg']);
-  const [dosageDifferenceMessage, dosageSum] = useDosageSumAndDifferenceMessage(time, priorDosagesQty, upcomingDosagesQty);
+  const [dosageDifferenceMessage, dosageSum] = useDosageSumDifferenceMessage(time, priorDosagesQty, upcomingDosagesQty);
   const dispatch = (action: UpcomingDosageChangeAction | PriorDosageChangeAction) => {
     formActionDispatch(action);
     taperConfigActionDispatch(action);

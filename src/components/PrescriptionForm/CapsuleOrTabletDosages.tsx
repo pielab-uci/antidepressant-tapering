@@ -5,19 +5,18 @@ import {
 import CapsuleOrTabletUnit from './CapsuleOrTabletUnit';
 import { PrescriptionFormContext } from './PrescriptionForm';
 import { CapsuleOrTabletDosage } from '../../types';
-import { useDosageSumAndDifferenceMessage } from '../../hooks/useDosageSumDifference';
+import useDosageSumDifferenceMessage from '../../hooks/useDosageSumDifference';
 
 interface Props {
   time: 'Prior' | 'Upcoming';
-  dosages: { [key: string]: number }
 }
 
-const CapsuleOrTabletDosages: FC<Props> = ({ time, dosages }) => {
+const CapsuleOrTabletDosages: FC<Props> = ({ time }) => {
   const context = useContext(PrescriptionFormContext);
   const {
     chosenDrugForm, dosageOptions, priorDosagesQty, upcomingDosagesQty,
   } = context;
-  const [dosageDifferenceMessage, dosageSum] = useDosageSumAndDifferenceMessage(time, priorDosagesQty, upcomingDosagesQty);
+  const [dosageDifferenceMessage, dosageSum] = useDosageSumDifferenceMessage(time, priorDosagesQty, upcomingDosagesQty);
 
   return (
     <>
@@ -28,14 +27,13 @@ const CapsuleOrTabletDosages: FC<Props> = ({ time, dosages }) => {
       </div>
       <div style={{ display: 'flex' }}>
         {(dosageOptions as CapsuleOrTabletDosage[])
-          .map((v: { dosage: string; isScored?: boolean }, i) => (
+          .map((v: { dosage: string; isScored?: boolean }) => (
           <CapsuleOrTabletUnit
             key={`${time}_${chosenDrugForm!.form}_${v.dosage}`}
             time={time}
             form={chosenDrugForm!.form}
             dosage={v.dosage}
             isScored={v.isScored ? v.isScored : undefined}
-            isMinDosage={i === 0}
           />))
         }
       </div>

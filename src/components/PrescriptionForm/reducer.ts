@@ -142,7 +142,6 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         }
         break;
 
-        // TODO: do I need draft.prescribedDosagesQty in PrescriptionForm component?
       case UPCOMING_DOSAGE_CHANGE:
         if (action.data.dosage.quantity >= 0) {
           draft.upcomingDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;

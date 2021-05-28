@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
-import { DrugForm } from '../types';
 
 type Type = (time: 'Prior'|'Upcoming', priorDosageQty: { [dosage: string]: number }, upcomingDosageQty: { [dosage: string]: number }) => [(string|null), number];
 
-export const useDosageSumAndDifferenceMessage: Type = (time, priorDosageQty, upcomingDosageQty) => {
+const useDosageSumDifferenceMessage: Type = (time, priorDosageQty, upcomingDosageQty) => {
   const [dosageDifferenceMessage, setDosageDifferenceMessage] = useState<string|null>(null);
 
   const calculateDosageSum = useCallback((dosages: { [key: string]: number }): number => Object
@@ -35,3 +34,5 @@ export const useDosageSumAndDifferenceMessage: Type = (time, priorDosageQty, upc
 
   return [dosageDifferenceMessage, dosageSum];
 };
+
+export default useDosageSumDifferenceMessage;

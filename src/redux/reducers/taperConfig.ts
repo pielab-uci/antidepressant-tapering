@@ -95,7 +95,7 @@ export interface TaperConfigState {
 
   projectedSchedule: Schedule;
   scheduleChartData: ScheduleChartData;
-  scheduleSelectedRowKeys: Key[];
+  scheduleSelectedRowKeys: (number|null)[];
   isInputComplete: boolean;
 
   intervalDurationDays: number,
@@ -363,13 +363,13 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
 
       case SCHEDULE_ROW_SELECTED:
         draft.scheduleSelectedRowKeys = action.data;
-        draft.projectedSchedule.data.forEach((row, i) => {
-          if (action.data.includes(i)) {
-            draft.projectedSchedule.data[i].selected = true;
-          } else {
-            draft.projectedSchedule.data[i].selected = false;
-          }
-        });
+        // draft.projectedSchedule.data.forEach((row, i) => {
+        // if (action.data.includes(i)) {
+        //   draft.projectedSchedule.data[i].selected = true;
+        // } else {
+        //   draft.projectedSchedule.data[i].selected = false;
+        // }
+        // });
         draft.instructionsForPatient = generateInstructionsForPatientFromSchedule(draft.projectedSchedule);
         draft.isSaved = false;
         break;

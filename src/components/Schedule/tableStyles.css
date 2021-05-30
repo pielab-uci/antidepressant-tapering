@@ -1,6 +1,5 @@
-@import '~antd/dist/antd.css';
 .ProjectedScheduleTable {
-    --alpha-not-selected: 0.2;
+    --alpha-not-selected: 0.5;
     --alpha-selected: 0.6;
 }
 .Fluoxetine {

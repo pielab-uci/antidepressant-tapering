@@ -72,8 +72,8 @@ export const SCHEDULE_ROW_SELECTED = 'SCHEDULE_ROW_SELECTED' as const;
 
 export interface ScheduleRowSelectedAction {
   type: typeof SCHEDULE_ROW_SELECTED,
-  // data: (TableRow & { startDate: Date, endDate: Date, key: number })[]
-  data: Key[]
+  data: (number|null)[];
+
 }
 
 export const FETCH_TAPER_CONFIG_REQUEST = 'FETCH_TAPER_CONFIG_REQUEST' as const;

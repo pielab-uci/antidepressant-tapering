@@ -1,4 +1,5 @@
 import { Key } from 'react';
+import { CellEditingStoppedEvent, ValueSetterParams } from 'ag-grid-community';
 import { PrescribedDrug, TaperingConfiguration } from '../../types';
 
 export const GENERATE_SCHEDULE = 'GENERATE_SCHEDULE' as const;
@@ -56,6 +57,11 @@ export interface AddOrUpdateTaperConfigFailureAction {
   error: any;
 }
 
+export type AddOrUpdateTaperConfigAyncActions =
+  | AddOrUpdateTaperConfigRequestAction
+  | AddOrUpdateTaperConfigSuccessAction
+  | AddOrUpdateTaperConfigFailureAction;
+
 export const ADD_NEW_DRUG_FORM = 'ADD_NEW_DRUG_FORM' as const;
 export const REMOVE_DRUG_FORM = 'REMOVE_DRUG_FORM' as const;
 
@@ -95,6 +101,11 @@ export interface FetchTaperConfigFailureAction {
   error: any;
 }
 
+export type FetchTaperConfigAsyncActions =
+  | FetchTaperConfigRequestAction
+  | FetchTaperConfigSuccessAction
+  | FetchTaperConfigFailureAction;
+
 export const FETCH_PRESCRIBED_DRUGS_REQUEST = 'FETCH_PRESCRIBED_DRUGS_REQUEST' as const;
 export const FETCH_PRESCRIBED_DRUGS_SUCCESS = 'FETCH_PRESCRIBED_DRUGS_SUCCESS' as const;
 export const FETCH_PRESCRIBED_DRUGS_FAILURE = 'FETCH_PRESCRIBED_DRUGS_FAILURE' as const;
@@ -114,6 +125,11 @@ export interface FetchPrescribedDrugsFailureAction {
   error: any;
 }
 
+export type FetchPrescribedDrugAsyncActions =
+  | FetchPrescribedDrugsRequestAction
+  | FetchPrescribedDrugsSuccessAction
+  | FetchPrescribedDrugsFailureAction;
+
 export const SHARE_WITH_PATIENT_APP_REQUEST = 'SHARE_WITH_PATIENT_APP_REQUEST' as const;
 export const SHARE_WITH_PATIENT_APP_SUCCESS = 'SHARE_WITH_PATIENT_APP_SUCCESS' as const;
 export const SHARE_WITH_PATIENT_APP_FAILURE = 'SHARE_WITH_PATIENT_APP_FAILURE' as const;
@@ -132,6 +148,11 @@ export interface ShareWithPatientAppFailure {
   error: any;
 }
 
+export type ShareWithPatientAppAsyncActions =
+  | ShareWithPatientAppRequest
+  | ShareWithPatientAppSuccess
+  | ShareWithPatientAppFailure;
+
 export const SHARE_WITH_PATIENT_EMAIL_REQUEST = 'SHARE_WITH_PATIENT_EMAIL_REQUEST' as const;
 export const SHARE_WITH_PATIENT_EMAIL_SUCCESS = 'SHARE_WITH_PATIENT_EMAIL_SUCCESS' as const;
 export const SHARE_WITH_PATIENT_EMAIL_FAILURE = 'SHARE_WITH_PATIENT_EMAIL_FAILURE' as const;
@@ -149,6 +170,11 @@ export interface ShareWithPatientEmailFailure {
   type: typeof SHARE_WITH_PATIENT_EMAIL_FAILURE;
   error: any;
 }
+
+export type ShareWithPatientEmailAsyncActions =
+  | ShareWithPatientEmailRequest
+  | ShareWithPatientEmailSuccess
+  | ShareWithPatientEmailFailure;
 
 export const TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT = 'TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT' as const;
 
@@ -189,3 +215,29 @@ export const prescribedQuantityChange = (data: PrescribedQuantityChange['data'])
   type: PRESCRIBED_QUANTITY_CHANGE,
   data,
 });
+
+export const TABLE_START_DATE_EDITED = 'TABLE_START_DATE_EDITED' as const;
+
+export interface TableStartDateEditedAction {
+  type: typeof TABLE_START_DATE_EDITED;
+  data: CellEditingStoppedEvent;
+}
+
+export const TABLE_END_DATE_EDITED = 'TABLE_END_DATE_EDITED' as const;
+
+export interface TableEndDateEditedAction {
+  type: typeof TABLE_END_DATE_EDITED,
+  data: CellEditingStoppedEvent;
+}
+
+export const TABLE_DOSAGE_EDITED = 'TABLE_DOSAGE_EDITED' as const;
+
+export interface TableDosageEditedAction {
+  type: typeof TABLE_DOSAGE_EDITED,
+  data: CellEditingStoppedEvent;
+}
+
+export type TableEditingAction =
+  | TableStartDateEditedAction
+  | TableEndDateEditedAction
+  | TableDosageEditedAction;

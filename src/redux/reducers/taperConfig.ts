@@ -55,7 +55,18 @@ import {
   EMPTY_PRESCRIBED_DRUGS,
   EmptyPrescribedDrugs,
   ChangeNoteAndInstructions,
-  CHANGE_NOTE_AND_INSTRUCTIONS, PRESCRIBED_QUANTITY_CHANGE, PrescribedQuantityChange,
+  CHANGE_NOTE_AND_INSTRUCTIONS,
+  PRESCRIBED_QUANTITY_CHANGE,
+  PrescribedQuantityChange,
+  AddOrUpdateTaperConfigAyncActions,
+  FetchTaperConfigAsyncActions,
+  FetchPrescribedDrugAsyncActions,
+  ShareWithPatientAppAsyncActions,
+  ShareWithPatientEmailAsyncActions,
+  TableEditingAction,
+  TABLE_DOSAGE_EDITED,
+  TABLE_START_DATE_EDITED,
+  TABLE_END_DATE_EDITED,
 } from '../actions/taperConfig';
 import drugs from './drugs';
 
@@ -95,7 +106,7 @@ export interface TaperConfigState {
 
   projectedSchedule: Schedule;
   scheduleChartData: ScheduleChartData;
-  scheduleSelectedRowKeys: Key[];
+  scheduleSelectedRowKeys: (number|null)[];
   isInputComplete: boolean;
 
   intervalDurationDays: number,
@@ -177,15 +188,9 @@ export type TaperConfigActions =
   | InitTaperConfigAction
   | EmptyTaperConfigPage
   | EmptyPrescribedDrugs
-  | FetchTaperConfigRequestAction
-  | FetchTaperConfigSuccessAction
-  | FetchTaperConfigFailureAction
-  | FetchPrescribedDrugsRequestAction
-  | FetchPrescribedDrugsSuccessAction
-  | FetchPrescribedDrugsFailureAction
-  | AddOrUpdateTaperConfigRequestAction
-  | AddOrUpdateTaperConfigSuccessAction
-  | AddOrUpdateTaperConfigFailureAction
+  | FetchTaperConfigAsyncActions
+  | FetchPrescribedDrugAsyncActions
+  | AddOrUpdateTaperConfigAyncActions
   | AddNewDrugFormAction
   | RemoveDrugFormAction
   | GenerateScheduleAction
@@ -194,13 +199,10 @@ export type TaperConfigActions =
   | ChangeMessageForPatient
   | ChangeNoteAndInstructions
   | ToggleShareProjectedScheduleWithPatient
-  | ShareWithPatientAppRequest
-  | ShareWithPatientAppSuccess
-  | ShareWithPatientAppFailure
-  | ShareWithPatientEmailRequest
-  | ShareWithPatientEmailSuccess
-  | ShareWithPatientEmailFailure
+  | ShareWithPatientAppAsyncActions
+  | ShareWithPatientEmailAsyncActions
   | PrescribedQuantityChange
+  | TableEditingAction
   | PrescriptionFormActions;
 
 const emptyPrescribedDrug = (id: number): PrescribedDrug => ({
@@ -363,13 +365,13 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
 
       case SCHEDULE_ROW_SELECTED:
         draft.scheduleSelectedRowKeys = action.data;
-        draft.projectedSchedule.data.forEach((row, i) => {
-          if (action.data.includes(i)) {
-            draft.projectedSchedule.data[i].selected = true;
-          } else {
-            draft.projectedSchedule.data[i].selected = false;
-          }
-        });
+        // draft.projectedSchedule.data.forEach((row, i) => {
+        // if (action.data.includes(i)) {
+        //   draft.projectedSchedule.data[i].selected = true;
+        // } else {
+        //   draft.projectedSchedule.data[i].selected = false;
+        // }
+        // });
         draft.instructionsForPatient = generateInstructionsForPatientFromSchedule(draft.projectedSchedule);
         draft.isSaved = false;
         break;
@@ -551,6 +553,24 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case SHARE_WITH_PATIENT_EMAIL_FAILURE:
         draft.sharingWithPatientEmail = false;
         draft.sharingWithPatientEmailError = action.error;
+        break;
+
+      case TABLE_DOSAGE_EDITED:
+        if (action.data.rowIndex !== null) {
+          draft.projectedSchedule.data[action.data.rowIndex].dosage = parseFloat(action.data.newValue);
+        }
+        break;
+
+      case TABLE_START_DATE_EDITED:
+        if (action.data.rowIndex !== null) {
+          draft.projectedSchedule.data[action.data.rowIndex].startDate = action.data.newValue;
+        }
+        break;
+
+      case TABLE_END_DATE_EDITED:
+        if (action.data.rowIndex !== null) {
+          draft.projectedSchedule.data[action.data.rowIndex].endDate = action.data.newValue;
+        }
         break;
 
       default:

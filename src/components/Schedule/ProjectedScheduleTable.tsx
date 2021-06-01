@@ -86,10 +86,7 @@ const ProjectedScheduleTable = () => {
   }, []);
 
   const rowClassRules = useRef({
-    Fluoxetine: (params: any) => {
-      console.log('params: ', params);
-      return params.data.drug === 'Fluoxetine';
-    },
+    Fluoxetine: (params: any) => params.data.drug === 'Fluoxetine',
     Citalopram: (params: any) => params.data.drug === 'Citalopram',
     Sertraline: (params: any) => params.data.drug === 'Sertraline',
     Paroxetine: (params: any) => params.data.drug === 'Paroxetine',
@@ -114,7 +111,6 @@ const ProjectedScheduleTable = () => {
   };
 
   const onCellEditingStopped = (params: CellEditingStoppedEvent) => {
-    console.log('cell value editing stopped: ', params);
     switch (params.colDef.field) {
       case 'startDate': {
         const tempValue = new Date(params.newValue);

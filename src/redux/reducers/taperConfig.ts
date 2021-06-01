@@ -248,6 +248,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.prescribedDrugs = draft.prescribedDrugs!.filter((drug) => isCompleteDrugInput(drug));
         draft.projectedSchedule = { drugs: [], data: [] };
         draft.instructionsForPatient = '';
+        draft.instructionsForPharmacy = '';
         break;
 
       case EMPTY_PRESCRIBED_DRUGS:
@@ -255,6 +256,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.prescribedDrugs = null;
         draft.projectedSchedule = { drugs: [], data: [] };
         draft.instructionsForPatient = '';
+        draft.instructionsForPharmacy = '';
         draft.scheduleChartData = [];
         break;
 
@@ -365,14 +367,8 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
 
       case SCHEDULE_ROW_SELECTED:
         draft.scheduleSelectedRowKeys = action.data;
-        // draft.projectedSchedule.data.forEach((row, i) => {
-        // if (action.data.includes(i)) {
-        //   draft.projectedSchedule.data[i].selected = true;
-        // } else {
-        //   draft.projectedSchedule.data[i].selected = false;
-        // }
-        // });
         draft.instructionsForPatient = generateInstructionsForPatientFromSchedule(draft.projectedSchedule);
+        // TODO: deal with selection and sync here
         draft.isSaved = false;
         break;
 

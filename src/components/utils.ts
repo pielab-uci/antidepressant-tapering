@@ -7,8 +7,9 @@ const subtractDosageOptionsFromDosage = (dosage: number, dosageOptions: string[]
   dosageOptions.concat()
     .sort((a, b) => parseFloat(b) - parseFloat(a))
     .forEach((dos) => {
-      const quot = Math.floor(dosage / parseFloat(dos));
+      const quot = Math.floor(d / parseFloat(dos));
       if (quot >= 1) {
+      // while (quot >= 1) {
         dosages[dos] = quot;
         d -= quot * parseFloat(dos);
       }

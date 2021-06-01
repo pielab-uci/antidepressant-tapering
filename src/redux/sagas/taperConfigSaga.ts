@@ -66,7 +66,7 @@ function addOrUpdateTaperConfigAPI(action: AddOrUpdateTaperConfigRequestAction):
 
 function* addOrUpdateTaperConfig(action: AddOrUpdateTaperConfigRequestAction) {
   try {
-    yield delay(1000);
+    // yield delay(1000);
     const result = addOrUpdateTaperConfigAPI(action);
 
     yield put<AddOrUpdateTaperConfigSuccessAction>({
@@ -144,7 +144,7 @@ function fetchTaperConfigAPI(action: FetchTaperConfigRequestAction): { data: Tap
 function* fetchTaperConfig(action: FetchTaperConfigRequestAction) {
   try {
     const result = fetchTaperConfigAPI(action);
-    yield delay(1000);
+    // yield delay(1000);
 
     yield put<FetchTaperConfigSuccessAction>({
       type: FETCH_TAPER_CONFIG_SUCCESS,
@@ -224,7 +224,7 @@ function fetchPrescribedDrugsAPI(action: FetchPrescribedDrugsRequestAction): { d
 
 function* fetchPrescribedDrugs(action: FetchPrescribedDrugsRequestAction) {
   try {
-    yield delay(500);
+    // yield delay(500);
     const result = fetchPrescribedDrugsAPI(action);
     console.log('result: ', result);
 

@@ -29,7 +29,7 @@ function loginAPI(action: LoginRequestAction): { data: Omit<Clinician, 'password
 
 function* logIn(action: LoginRequestAction) {
   try {
-    yield delay(1000);
+    // yield delay(1000);
     const result = loginAPI(action);
 
     yield put<LoginSuccessAction>({
@@ -51,7 +51,7 @@ function addPatientAPI(action: AddNewPatientRequest): { data: Omit<Patient, 'pas
 
 function* addPatient(action: AddNewPatientRequest) {
   try {
-    yield delay(1000);
+    // yield delay(1000);
     const result = addPatientAPI(action);
 
     yield put<AddNewPatientSuccess>({
@@ -73,7 +73,7 @@ function loadPatientsAPI(action: LoadPatientsRequestAction): { data: Omit<Patien
 
 function* loadPatients(action: LoadPatientsRequestAction) {
   try {
-    yield delay(1000);
+    // yield delay(1000);
     const result = loadPatientsAPI(action);
 
     yield put<LoadPatientsSuccessAction>({

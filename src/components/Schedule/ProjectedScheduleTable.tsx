@@ -1,20 +1,19 @@
 import * as React from 'react';
 import {
-  Key, useCallback, useMemo, useRef, useState,
+  useMemo, useRef, useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { format, isAfter } from 'date-fns';
+import { format } from 'date-fns';
 import { AgGridReact } from 'ag-grid-react';
 import {
-  CellEditingStartedEvent, CellEditingStoppedEvent,
-  CellValueChangedEvent,
+  CellEditingStoppedEvent,
   ColDef, ColumnApi,
   FirstDataRenderedEvent, GridApi,
   GridReadyEvent,
   RowSelectedEvent,
   SelectionChangedEvent,
   ValueFormatterParams,
-  ValueGetterParams, ValueSetterParams,
+  ValueSetterParams,
 } from 'ag-grid-community';
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
@@ -43,6 +42,7 @@ const ProjectedScheduleTable = () => {
 
   const defaultColumnDef = useRef<ColDef>({
     resizable: true,
+    suppressMovable: true,
   });
 
   const columnDefs: ColDef[] = useMemo(() => {
@@ -85,9 +85,13 @@ const ProjectedScheduleTable = () => {
     }];
   }, []);
 
-  // const rowSelectionOnChange = useCallback((selectedRowKeys: Key[]) => {
-  //   dispatch<ScheduleRowSelectedAction>({ type: SCHEDULE_ROW_SELECTED, data: selectedRowKeys });
-  // }, []);
+  const rowClassRules = useRef({
+    Fluoxetine: (params: any) => params.data.drug === 'Fluoxetine',
+    Citalopram: (params: any) => params.data.drug === 'Citalopram',
+    Sertraline: (params: any) => params.data.drug === 'Sertraline',
+    Paroxetine: (params: any) => params.data.drug === 'Paroxetine',
+    Escitalopram: (params: any) => params.data.drug === 'Escitalopram',
+  });
 
   const onRowSelected = (e: RowSelectedEvent) => {
     console.log(e);
@@ -107,7 +111,6 @@ const ProjectedScheduleTable = () => {
   };
 
   const onCellEditingStopped = (params: CellEditingStoppedEvent) => {
-    console.log('cell value editing stopped: ', params);
     switch (params.colDef.field) {
       case 'startDate': {
         const tempValue = new Date(params.newValue);
@@ -141,7 +144,7 @@ const ProjectedScheduleTable = () => {
   };
 
   return (
-    <div style={{
+    <div className='ProjectedScheduleTable' style={{
       display: 'flex', flexDirection: 'row', height: '500px', width: '100%',
     }}>
       <div className='ag-theme-alpine'
@@ -155,12 +158,14 @@ const ProjectedScheduleTable = () => {
           defaultColDef={defaultColumnDef.current}
           columnDefs={columnDefs}
           rowSelection='multiple'
+          rowClassRules={rowClassRules.current}
           onRowSelected={onRowSelected}
           onSelectionChanged={onSelectionChanged}
           onFirstDataRendered={onFirstDataRendered}
           onGridReady={onGridReady}
           onCellEditingStopped={onCellEditingStopped}
           frameworkComponents={{ datePicker: DateEditor }}
+          suppressDragLeaveHidesColumns={true}
         />
       </div>
     </div>

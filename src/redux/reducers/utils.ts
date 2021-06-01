@@ -327,28 +327,9 @@ export const generateInstructionsForPatientFromSchedule = (schedule: Schedule): 
     .reduce((message, row) => {
       const startDate = format(row.startDate, 'MMM dd, yyyy');
       const endDate = format(row.endDate, 'MMM dd, yyyy');
-      if (row.form === 'capsule' || row.form === 'tablet') {
-        const dosages = Object.entries(row.prescribedDosages)
-          .reduce(
-            (prev, [dosage, qty], dosage_idx, dosages) => {
-              if (qty === 0) {
-                return prev;
-              }
-              if (dosage_idx === 0) {
-                return `${prev} ${qty} ${dosage} ${row.form}(s)`;
-              }
-              if (dosage_idx === dosages.length - 1) {
-                return `${prev} and ${qty} ${dosage} ${row.form}(s)`;
-              }
-              return `${prev}, ${qty} ${dosage} ${row.form}(s)`;
-            },
-            'Take',
-          );
-        return `${message}${dosages} of ${row.drug} from ${startDate} to ${endDate}.\n`;
-      }
-
-      // in case of oral solution/suspension
-      return `${message}Take ${row.prescribedDosages['1mg']}mg (${row.prescribedDosages['1mg'] / row.oralDosageInfo!.rate.mg * row.oralDosageInfo!.rate.ml}ml) of ${row.drug} from ${startDate} to ${endDate}.\n`;
+      const { prescription } = row;
+      const dosagesPrescribed = prescription.replace(/ for.+/, '');
+      return `${message}Take ${dosagesPrescribed} from ${startDate} to ${endDate}.\n`;
     }, '');
 };
 

@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { Key } from 'react';
+import { RowNode } from 'ag-grid-community';
 import {
   Drug, PrescribedDrug, TaperingConfiguration,
 } from '../../types';
@@ -7,9 +7,6 @@ import {
   ADD_OR_UPDATE_TAPER_CONFIG_FAILURE,
   ADD_OR_UPDATE_TAPER_CONFIG_REQUEST,
   ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS,
-  AddOrUpdateTaperConfigFailureAction,
-  AddOrUpdateTaperConfigRequestAction,
-  AddOrUpdateTaperConfigSuccessAction,
   CLEAR_SCHEDULE,
   ClearScheduleAction,
   GENERATE_SCHEDULE,
@@ -20,12 +17,6 @@ import {
   SHARE_WITH_PATIENT_EMAIL_FAILURE,
   SHARE_WITH_PATIENT_EMAIL_REQUEST,
   SHARE_WITH_PATIENT_EMAIL_SUCCESS,
-  ShareWithPatientAppFailure,
-  ShareWithPatientAppRequest,
-  ShareWithPatientAppSuccess,
-  ShareWithPatientEmailFailure,
-  ShareWithPatientEmailRequest,
-  ShareWithPatientEmailSuccess,
   ADD_NEW_DRUG_FORM,
   AddNewDrugFormAction,
   REMOVE_DRUG_FORM,
@@ -39,16 +30,10 @@ import {
   InitTaperConfigAction,
   INIT_NEW_TAPER_CONFIG,
   FETCH_TAPER_CONFIG_REQUEST,
-  FetchTaperConfigRequestAction,
-  FetchTaperConfigSuccessAction,
-  FetchTaperConfigFailureAction,
   FETCH_TAPER_CONFIG_SUCCESS,
   FETCH_TAPER_CONFIG_FAILURE,
   EMPTY_TAPER_CONFIG_PAGE,
   EmptyTaperConfigPage,
-  FetchPrescribedDrugsRequestAction,
-  FetchPrescribedDrugsSuccessAction,
-  FetchPrescribedDrugsFailureAction,
   FETCH_PRESCRIBED_DRUGS_REQUEST,
   FETCH_PRESCRIBED_DRUGS_SUCCESS,
   FETCH_PRESCRIBED_DRUGS_FAILURE,
@@ -106,7 +91,8 @@ export interface TaperConfigState {
 
   projectedSchedule: Schedule;
   scheduleChartData: ScheduleChartData;
-  scheduleSelectedRowKeys: (number|null)[];
+  // scheduleSelectedRowKeys: (number|null)[];
+  tableSelectedRows: RowNode[];
   isInputComplete: boolean;
 
   intervalDurationDays: number,
@@ -152,7 +138,8 @@ export const initialState: TaperConfigState = {
 
   projectedSchedule: { data: [], drugs: [] },
   scheduleChartData: [],
-  scheduleSelectedRowKeys: [],
+  // scheduleSelectedRowKeys: [],
+  tableSelectedRows: [],
   isInputComplete: false,
 
   intervalDurationDays: 0,
@@ -340,14 +327,14 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case GENERATE_SCHEDULE: {
         draft.projectedSchedule = scheduleGenerator(action.data);
         draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
-        draft.scheduleSelectedRowKeys = draft.projectedSchedule.data
-          .map((row, i) => (row.selected ? i : null))
-          .filter((key) => key !== null) as number[];
-        draft.projectedSchedule.data.forEach((row, i) => {
-          if (row.selected) {
-            draft.scheduleSelectedRowKeys.push(i);
-          }
-        });
+        // draft.scheduleSelectedRowKeys = draft.projectedSchedule.data
+        //   .map((row, i) => (row.selected ? i : null))
+        //   .filter((key) => key !== null) as number[];
+        // draft.projectedSchedule.data.forEach((row, i) => {
+        //   if (row.selected) {
+        //     draft.scheduleSelectedRowKeys.push(i);
+        //   }
+        // });
         draft.instructionsForPatient = generateInstructionsForPatientFromSchedule(draft.projectedSchedule);
         draft.instructionsForPharmacy = generateInstructionsForPharmacy(draft.prescribedDrugs);
         draft.showInstructionsForPatient = true;
@@ -358,7 +345,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case CLEAR_SCHEDULE:
         draft.projectedSchedule = { data: [], drugs: [] };
         draft.scheduleChartData = [];
-        draft.scheduleSelectedRowKeys = [];
+        // draft.scheduleSelectedRowKeys = [];
         draft.showInstructionsForPatient = false;
         draft.instructionsForPharmacy = '';
         draft.instructionsForPatient = '';
@@ -366,10 +353,18 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         break;
 
       case SCHEDULE_ROW_SELECTED:
-        draft.scheduleSelectedRowKeys = action.data;
-        draft.instructionsForPatient = generateInstructionsForPatientFromSchedule(draft.projectedSchedule);
-        // TODO: deal with selection and sync here
-        draft.isSaved = false;
+        draft.tableSelectedRows = action.data;
+        //   draft.scheduleSelectedRowKeys = action.data;
+        //   draft.instructionsForPatient = generateInstructionsForPatientFromSchedule(draft.projectedSchedule);
+        //   draft.projectedSchedule.data.forEach((row, i) => {
+        //     if (draft.scheduleSelectedRowKeys.includes(i)) {
+        //       row.selected = true;
+        //     } else {
+        //       row.selected = false;
+        //     }
+        //   });
+        //
+        //   draft.isSaved = false;
         break;
 
       case CHANGE_MESSAGE_FOR_PATIENT:

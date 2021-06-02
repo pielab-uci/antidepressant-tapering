@@ -16,7 +16,9 @@ interface Converted extends PrescribedDrug {
 
 export type TableRowData =
   {
+    prescribedDrugId: number;
     drug: string;
+    brand: string;
     dosage: number;
     prescription: string;
     startDate: Date,
@@ -148,7 +150,9 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
     const upcomingDosages = calcProjectedDosages(drug, drug.upcomingDosageSum, 4);
 
     rows.push({
+      prescribedDrugId: drug.id,
       drug: drug.name,
+      brand: drug.brand,
       dosage: upcomingDosages[0],
       startDate: drug.intervalStartDate,
       endDate: drug.intervalEndDate,
@@ -184,7 +188,9 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
     Array(3).fill(null).forEach((_, i) => {
       if (newRowData.upcomingDosageSum !== 0) {
         rows.push({
+          prescribedDrugId: drug.id,
           drug: drug.name,
+          brand: drug.brand,
           dosage: newRowData.upcomingDosageSum,
           startDate: newRowData.startDate,
           endDate: newRowData.endDate,
@@ -280,7 +286,7 @@ export const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule =
 
   console.groupEnd();
 
-  return { data: tableDataSorted, drugs: drugNames };
+  return { data: tableDataSorted, drugs: prescribedDrugs };
 };
 
 export type ScheduleChartData = { name: string, data: { timestamp: number, dosage: number }[] }[];
@@ -289,7 +295,7 @@ export const chartDataConverter = (schedule: Schedule): ScheduleChartData => {
   const rowsGroupByDrug: { [drug: string]: TableRowData[] } = {};
 
   schedule.drugs.forEach((drug) => {
-    rowsGroupByDrug[drug] = [];
+    rowsGroupByDrug[drug.name] = [];
   });
 
   schedule.data.forEach((row) => {

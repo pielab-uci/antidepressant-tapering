@@ -34,34 +34,10 @@ import { ProjectedScheduleContext } from './ProjectedSchedule';
 const ProjectedScheduleTable: FC<{ setGridApi: (gridApi: GridApi) => void }> = ({ setGridApi }) => {
   // const [gridApi, setGridApi] = useState<GridApi | null>(null);
   const [gridColumnApi, setGridColumnApi] = useState<ColumnApi | null>(null);
-  const { gridApi } = useContext(ProjectedScheduleContext);
   const {
     projectedSchedule, tableSelectedRows,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
-  const taperConfigState = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const dispatch = useDispatch();
-  useEffect(() => {
-    console.group('ProjectedScheduleTable in every rendering');
-    console.log('taperConfigState: ', taperConfigState);
-    console.log('gridApi: ');
-    console.log(gridApi);
-    console.log('selected rows: ', gridApi?.getSelectedNodes());
-    console.groupEnd();
-  });
-  useEffect(() => {
-    console.group('ProjectedScheduleTable');
-    console.log('projected schedule updated');
-    if (gridApi !== null) {
-      console.log('gridApi !== null, update table selection');
-      gridApi.forEachNode((row) => {
-        if (tableSelectedRows.map((selectedRow) => selectedRow.rowIndex).includes(row.rowIndex)) {
-          console.log('row supposed to be selected: ', row);
-          row.setSelected(true);
-        }
-      });
-    }
-    console.groupEnd();
-  }, [projectedSchedule]);
 
   const onGridReady = (params: GridReadyEvent) => {
     console.log('onGridReady');
@@ -138,16 +114,13 @@ const ProjectedScheduleTable: FC<{ setGridApi: (gridApi: GridApi) => void }> = (
   };
 
   const onSelectionChanged = (e: SelectionChangedEvent) => {
-    console.group('Table onSelectionChanged: ', e);
-    const selectedNodes = e.api.getSelectedNodes();
-    console.log('selectedNodes: ', selectedNodes);
-    console.groupEnd();
+    const selectedNodes = e.api.getSelectedNodes().map((row) => row.rowIndex);
     dispatch<ScheduleRowSelectedAction>({ type: SCHEDULE_ROW_SELECTED, data: selectedNodes });
   };
 
   const onRowDataChanged = (e: RowDataChangedEvent) => {
     e.api.forEachNode((row) => {
-      if (tableSelectedRows.map((selectedRow) => selectedRow.rowIndex).includes(row.rowIndex)) {
+      if (tableSelectedRows.includes(row.rowIndex)) {
         row.setSelected(true);
       }
     });

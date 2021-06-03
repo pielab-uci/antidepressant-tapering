@@ -91,8 +91,7 @@ export interface TaperConfigState {
 
   projectedSchedule: Schedule;
   scheduleChartData: ScheduleChartData;
-  // scheduleSelectedRowKeys: (number|null)[];
-  tableSelectedRows: RowNode[];
+  tableSelectedRows: (number|null)[];
   isInputComplete: boolean;
 
   intervalDurationDays: number,

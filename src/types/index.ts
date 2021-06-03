@@ -86,3 +86,14 @@ export interface PrescribedDrug {
   prescribedAt: Date;
   oralDosageInfo?: OralDosage | null;
 }
+
+export interface Prescription {
+  [id: number]: {
+    name: string,
+    brand: string,
+    dosageQty: { [dosage: string]: number }
+    // TODO: add projected schedule here..?
+  }
+}
+
+export type ValueOf<T> = T[keyof T];

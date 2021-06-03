@@ -24,8 +24,9 @@ export type TableRowData =
     startDate: Date,
     endDate: Date,
     selected: boolean,
-    prescribedDosages: { [dosage: string]: number },
+    initiallyCalculatedDosages: { [dosage: string]: number },
     addedInCurrentVisit: boolean,
+    intervalDurationDays: number,
     intervalCount: number,
     intervalUnit: 'Days'|'Weeks'|'Months',
     oralDosageInfo?: OralDosage,
@@ -159,10 +160,11 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
       prescription: prescription({ ...drug }, drug.upcomingDosages.reduce(
         (prev, d) => ({ ...prev, [d.dosage]: d.quantity }), {},
       )),
-      prescribedDosages: drug.prescribedDosages,
+      initiallyCalculatedDosages: drug.prescribedDosages,
       addedInCurrentVisit: !drug.prevVisit,
       selected: !drug.prevVisit,
       form: drug.form,
+      intervalDurationDays: drug.intervalDurationDays,
       intervalCount: drug.intervalCount,
       intervalUnit: drug.intervalUnit,
       measureUnit: drug.measureUnit,
@@ -174,7 +176,8 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
     const newRowData = {
       Drug: drug.name,
       upcomingDosageSum: upcomingDosages[1],
-      prescribedDosages: calcMinimumQuantityForDosage(drug.availableDosageOptions, upcomingDosages[1], drug.regularDosageOptions),
+      // prescribedDosages: calcMinimumQuantityForDosage(drug.availableDosageOptions, upcomingDosages[1], drug.regularDosageOptions),
+      initiallyCalculateDosages: calcMinimumQuantityForDosage(drug.availableDosageOptions, upcomingDosages[1], drug.regularDosageOptions),
       startDate: projectionStartDate,
       endDate: newEndDate,
       selected: false,
@@ -194,10 +197,11 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
           dosage: newRowData.upcomingDosageSum,
           startDate: newRowData.startDate,
           endDate: newRowData.endDate,
-          prescription: prescription({ ...drug }, newRowData.prescribedDosages),
+          prescription: prescription({ ...drug }, newRowData.initiallyCalculateDosages),
           selected: false,
           addedInCurrentVisit: !drug.prevVisit,
-          prescribedDosages: newRowData.prescribedDosages,
+          initiallyCalculatedDosages: newRowData.initiallyCalculateDosages,
+          intervalDurationDays: drug.intervalDurationDays,
           intervalCount: drug.intervalCount,
           intervalUnit: drug.intervalUnit,
           measureUnit: drug.measureUnit,
@@ -206,7 +210,7 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
         });
 
         newRowData.upcomingDosageSum = upcomingDosages[i + 2];
-        newRowData.prescribedDosages = calcMinimumQuantityForDosage(drug.availableDosageOptions, newRowData.upcomingDosageSum, drug.regularDosageOptions);
+        newRowData.initiallyCalculateDosages = calcMinimumQuantityForDosage(drug.availableDosageOptions, newRowData.upcomingDosageSum, drug.regularDosageOptions);
         newRowData.startDate = add(newRowData.endDate, { days: 1 });
         newRowData.endDate = sub(add(newRowData.startDate, durationInDaysCount), { days: 1 });
       }
@@ -232,7 +236,7 @@ const checkIntervalOverlappingRows = (rows: TableRowData[]): TableRowData[] => {
           intervalCount: fromPrev.intervalCount,
           intervalUnit: fromPrev.intervalUnit,
         },
-        fromPrev.prescribedDosages);
+        fromPrev.initiallyCalculatedDosages);
 
         if (isBefore(fromPrev.endDate, fromPrev.startDate)) {
           arr.splice(i, 1);

@@ -23,7 +23,7 @@ interface RowsByForm {
 const PrescribedQuantitiesForDrug: FC<Props> = ({ drug }) => {
 // const PrescribedQuantitiesForDrug: FC<Props> = ({ drug, rows }) => {
   const { gridApi } = useContext(ProjectedScheduleContext);
-  const { projectedSchedule } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
+  const { projectedSchedule, tableSelectedRows } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const [prescribedDosages, setPrescribedDosages] = useState<{ [dosage: string]: number } | null>(null);
 
   // const prescribedDosages
@@ -32,13 +32,15 @@ const PrescribedQuantitiesForDrug: FC<Props> = ({ drug }) => {
     if (gridApi !== null) {
       const dosages = gridApi.getSelectedNodes()
         .reduce((prev, row) => {
-          Object.entries(row.data.prescribedDosages as { [dosage: string]: number }).forEach(([dosage, qty]) => {
-            if (!prev[dosage]) {
-              prev[dosage] = qty;
-            } else {
-              prev[dosage] += qty;
-            }
-          });
+          Object.entries(row.data.prescribedDosages as { [dosage: string]: number })
+            .forEach(([dosage, qty]) => {
+              if (!prev[dosage]) {
+                prev[dosage] = qty;
+              } else {
+                prev[dosage] += qty;
+              }
+            });
+
           return prev;
         }, {} as { [dosage: string]: number });
       if (JSON.stringify(prescribedDosages) !== JSON.stringify(dosages)) {
@@ -46,10 +48,10 @@ const PrescribedQuantitiesForDrug: FC<Props> = ({ drug }) => {
         setPrescribedDosages(dosages);
       }
     }
-  }, [gridApi?.getSelectedNodes()]);
+  }, [tableSelectedRows]);
 
   const rowsByForm: RowsByForm = useMemo(() => projectedSchedule.data
-    .filter((row) => row.prescribedDrugId === drug.id)
+    .filter((row) => row.prescribedDrugId === drug.id && row.prescribedDrugId === drug.id)
     .reduce((prev, row: TableRowData) => {
       if (!prev[row.form]) {
         prev[row.form] = [];
@@ -59,6 +61,7 @@ const PrescribedQuantitiesForDrug: FC<Props> = ({ drug }) => {
       }
       return prev;
     }, {} as RowsByForm), [projectedSchedule]);
+  console.log('rowsByForm: ', rowsByForm);
 
   return (
     <>

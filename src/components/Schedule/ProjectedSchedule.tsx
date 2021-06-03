@@ -39,7 +39,7 @@ const ProjectedSchedule = () => {
             </div>
           </div>
           <hr/>
-          <PrescribedQuantitiesForDrugs projectedSchedule={projectedSchedule}/>
+          {/* <PrescribedQuantitiesForDrugs projectedSchedule={projectedSchedule}/> */}
         </> : <div>No schedule yet</div>
       }
     </ProjectedScheduleContext.Provider>

@@ -88,6 +88,7 @@ export const calcPrescribedDosageQty = (args: {
   if (isCapsuleOrTablet(chosenDrugForm)) {
     return Object.entries(upcomingDosagesQty).reduce((prev: { [p: string]:number }, [dosage, qty]) => {
       prev[dosage] = qty * intervalDurationDays;
+      prev[dosage] = qty * intervalDurationDays;
       return prev;
     }, {});
   }
@@ -95,3 +96,26 @@ export const calcPrescribedDosageQty = (args: {
   const dosageSum = upcomingDosagesQty['1mg'] * intervalDurationDays / chosenDrugForm.dosages.rate.mg * chosenDrugForm.dosages.rate.ml;
   return calcMinimumQuantityForDosage(oralDosageInfo!.bottles, dosageSum, null);
 };
+// export const calcPrescribedDosageQty = (args: {
+//   chosenDrugForm: DrugForm|null|undefined,
+//   intervalDurationDays: number,
+//   upcomingDosagesQty: { [dosage: string]: number },
+//   oralDosageInfo: OralDosage | null }) => {
+//   const {
+//     chosenDrugForm, intervalDurationDays, upcomingDosagesQty, oralDosageInfo,
+//   } = args;
+//   if (!chosenDrugForm || chosenDrugForm.form === '') {
+//     return {};
+//   }
+//
+//   if (isCapsuleOrTablet(chosenDrugForm)) {
+//     return Object.entries(upcomingDosagesQty).reduce((prev: { [p: string]:number }, [dosage, qty]) => {
+//       prev[dosage] = qty * intervalDurationDays;
+//       prev[dosage] = qty * intervalDurationDays;
+//       return prev;
+//     }, {});
+//   }
+//
+//   const dosageSum = upcomingDosagesQty['1mg'] * intervalDurationDays / chosenDrugForm.dosages.rate.mg * chosenDrugForm.dosages.rate.ml;
+//   return calcMinimumQuantityForDosage(oralDosageInfo!.bottles, dosageSum, null);
+// };

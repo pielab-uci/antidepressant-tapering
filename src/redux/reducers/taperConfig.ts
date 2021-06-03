@@ -1,7 +1,7 @@
 import produce from 'immer';
 import { RowNode } from 'ag-grid-community';
 import {
-  Drug, PrescribedDrug, TaperingConfiguration,
+  Drug, PrescribedDrug, Prescription, TaperingConfiguration, ValueOf,
 } from '../../types';
 import {
   ADD_OR_UPDATE_TAPER_CONFIG_FAILURE,
@@ -91,7 +91,9 @@ export interface TaperConfigState {
 
   projectedSchedule: Schedule;
   scheduleChartData: ScheduleChartData;
-  tableSelectedRows: (number|null)[];
+  tableSelectedRows: (number | null)[];
+  // finalPrescription: { drug: PrescribedDrug, prescription: { [dosage: string]: number } }[];
+  finalPrescription: Prescription;
   isInputComplete: boolean;
 
   intervalDurationDays: number,
@@ -137,8 +139,8 @@ export const initialState: TaperConfigState = {
 
   projectedSchedule: { data: [], drugs: [] },
   scheduleChartData: [],
-  // scheduleSelectedRowKeys: [],
   tableSelectedRows: [],
+  finalPrescription: [],
   isInputComplete: false,
 
   intervalDurationDays: 0,
@@ -326,14 +328,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case GENERATE_SCHEDULE: {
         draft.projectedSchedule = scheduleGenerator(action.data);
         draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
-        // draft.scheduleSelectedRowKeys = draft.projectedSchedule.data
-        //   .map((row, i) => (row.selected ? i : null))
-        //   .filter((key) => key !== null) as number[];
-        // draft.projectedSchedule.data.forEach((row, i) => {
-        //   if (row.selected) {
-        //     draft.scheduleSelectedRowKeys.push(i);
-        //   }
-        // });
         draft.instructionsForPatient = generateInstructionsForPatientFromSchedule(draft.projectedSchedule);
         draft.instructionsForPharmacy = generateInstructionsForPharmacy(draft.prescribedDrugs);
         draft.showInstructionsForPatient = true;
@@ -351,20 +345,35 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.isSaved = false;
         break;
 
-      case SCHEDULE_ROW_SELECTED:
+      case SCHEDULE_ROW_SELECTED: {
         draft.tableSelectedRows = action.data;
-        //   draft.scheduleSelectedRowKeys = action.data;
-        //   draft.instructionsForPatient = generateInstructionsForPatientFromSchedule(draft.projectedSchedule);
-        //   draft.projectedSchedule.data.forEach((row, i) => {
-        //     if (draft.scheduleSelectedRowKeys.includes(i)) {
-        //       row.selected = true;
-        //     } else {
-        //       row.selected = false;
-        //     }
-        //   });
-        //
-        //   draft.isSaved = false;
+        draft.projectedSchedule.data.forEach((row, i) => {
+          if (draft.tableSelectedRows.includes(i)) {
+            row.selected = true;
+          } else {
+            row.selected = false;
+          }
+        });
+        draft.finalPrescription = draft.projectedSchedule.data
+          .filter((row, i) => draft.tableSelectedRows.includes(i))
+          .reduce((prev, row) => {
+            const obj: ValueOf<Prescription> = { name: '', brand: '', dosageQty: {} };
+            obj.name = row.drug;
+            obj.brand = row.brand;
+            obj.dosageQty = Object.entries(row.initiallyCalculatedDosages)
+              .reduce((dosages, [dosage, qty]) => {
+                if (!dosages[dosage]) {
+                  dosages[dosage] = qty * row.intervalDurationDays;
+                } else {
+                  dosages[dosage] += qty * row.intervalDurationDays;
+                }
+                return dosages;
+              }, {} as { [dosage: string]: number });
+            prev[row.prescribedDrugId] = obj;
+            return prev;
+          }, {} as Prescription);
         break;
+      }
 
       case CHANGE_MESSAGE_FOR_PATIENT:
         draft.instructionsForPatient = action.data;
@@ -568,5 +577,4 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
     }
   });
 };
-
 export default taperConfigReducer;

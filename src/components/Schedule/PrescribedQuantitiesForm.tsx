@@ -82,6 +82,7 @@ const PrescribedQuantitiesForm: FC<Props> = ({ prescribedDrug, rows, prescribedD
   // };
 
   const renderQuantities = () => {
+    // TODO: related to display the number of bottles in case of oral solution
     // if (isCapsuleOrTablet(prescribedDrug)) {
     //   return renderOptions(prescribedDrug.regularDosageOptions!);
     // }

@@ -15,20 +15,20 @@ interface RowsByBrand {
 const PrescribedQuantitiesForDrugs: FC<Props> = ({ projectedSchedule }) => {
   // TODO: couple total quantities and table row/ prescribed drug using id/prescribedDrugId? Or using drug name..?
   // use name considering the case where a user add same drug multiple times with different interval
-  const drugBrands: string[] = useMemo(() => projectedSchedule.drugs.map((drug) => drug.brand), [projectedSchedule]);
-  const tableRowsByName: RowsByBrand = useMemo(
-    () => projectedSchedule
-      .data
-      .reduce((prev: RowsByBrand, row: TableRowData) => {
-        if (!prev[row.brand]) {
-          prev[row.brand] = [];
-          prev[row.brand].push(row);
-        } else {
-          prev[row.brand].push(row);
-        }
-        return prev;
-      }, {} as RowsByBrand), [projectedSchedule],
-  );
+  // const drugBrands: string[] = useMemo(() => projectedSchedule.drugs.map((drug) => drug.brand), [projectedSchedule]);
+  // const tableRowsByName: RowsByBrand = useMemo(
+  //   () => projectedSchedule
+  //     .data
+  //     .reduce((prev: RowsByBrand, row: TableRowData) => {
+  //       if (!prev[row.brand]) {
+  //         prev[row.brand] = [];
+  //         prev[row.brand].push(row);
+  //       } else {
+  //         prev[row.brand].push(row);
+  //       }
+  //       return prev;
+  //     }, {} as RowsByBrand), [projectedSchedule],
+  // );
 
   return (
     <div>

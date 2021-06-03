@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  FC,
+  FC, useContext,
   useEffect,
   useMemo, useRef, useState,
 } from 'react';
@@ -11,12 +11,13 @@ import {
   CellEditingStoppedEvent,
   ColDef, ColumnApi,
   FirstDataRenderedEvent, GridApi,
-  GridReadyEvent,
+  GridReadyEvent, RowDataChangedEvent,
   RowSelectedEvent,
   SelectionChangedEvent,
   ValueFormatterParams,
   ValueSetterParams,
 } from 'ag-grid-community';
+import { DataChangedEvent } from 'ag-grid-community/dist/lib/entities/rowNode';
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import {
@@ -28,18 +29,40 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 import './tableStyles.css';
 import DateEditor from './DateEditor';
+import { ProjectedScheduleContext } from './ProjectedSchedule';
 
 const ProjectedScheduleTable: FC<{ setGridApi: (gridApi: GridApi) => void }> = ({ setGridApi }) => {
   // const [gridApi, setGridApi] = useState<GridApi | null>(null);
   const [gridColumnApi, setGridColumnApi] = useState<ColumnApi | null>(null);
+  const { gridApi } = useContext(ProjectedScheduleContext);
   const {
-    projectedSchedule,
+    projectedSchedule, tableSelectedRows,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
+  const taperConfigState = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const dispatch = useDispatch();
+  useEffect(() => {
+    console.group('ProjectedScheduleTable in every rendering');
+    console.log('taperConfigState: ', taperConfigState);
+    console.log('gridApi: ');
+    console.log(gridApi);
+    console.log('selected rows: ', gridApi?.getSelectedNodes());
+    console.groupEnd();
+  });
+  useEffect(() => {
+    console.group('ProjectedScheduleTable');
+    console.log('projected schedule updated');
+    if (gridApi !== null) {
+      console.log('gridApi !== null, update table selection');
+      gridApi.forEachNode((row) => {
+        if (tableSelectedRows.map((selectedRow) => selectedRow.rowIndex).includes(row.rowIndex)) {
+          console.log('row supposed to be selected: ', row);
+          row.setSelected(true);
+        }
+      });
+    }
+    console.groupEnd();
+  }, [projectedSchedule]);
 
-  // useEffect(() => {
-  //   const selectedRows = projectedSchedule.data.reduce((res));
-  // }, [projectedSchedule]);
   const onGridReady = (params: GridReadyEvent) => {
     console.log('onGridReady');
     setGridApi(params.api);
@@ -122,6 +145,14 @@ const ProjectedScheduleTable: FC<{ setGridApi: (gridApi: GridApi) => void }> = (
     dispatch<ScheduleRowSelectedAction>({ type: SCHEDULE_ROW_SELECTED, data: selectedNodes });
   };
 
+  const onRowDataChanged = (e: RowDataChangedEvent) => {
+    e.api.forEachNode((row) => {
+      if (tableSelectedRows.map((selectedRow) => selectedRow.rowIndex).includes(row.rowIndex)) {
+        row.setSelected(true);
+      }
+    });
+  };
+
   const onFirstDataRendered = (params: FirstDataRenderedEvent) => {
     params.api.sizeColumnsToFit();
     gridColumnApi?.autoSizeAllColumns();
@@ -177,6 +208,7 @@ const ProjectedScheduleTable: FC<{ setGridApi: (gridApi: GridApi) => void }> = (
           rowSelection='multiple'
           rowClassRules={rowClassRules.current}
           onRowSelected={onRowSelected}
+          onRowDataChanged={onRowDataChanged}
           onSelectionChanged={onSelectionChanged}
           onFirstDataRendered={onFirstDataRendered}
           onGridReady={onGridReady}

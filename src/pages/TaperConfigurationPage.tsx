@@ -118,9 +118,9 @@ const TaperConfigurationPage = () => {
   }, [prescribedDrugs]);
 
   const renderPrescriptionForms = (prescribedDrugs: PrescribedDrug[]) => {
-    console.group('renderPrescriptionForms');
-    console.log(prescribedDrugs);
-    console.groupEnd();
+    // console.group('renderPrescriptionForms');
+    // console.log(prescribedDrugs);
+    // console.groupEnd();
     const notFromPrevVisit = prescribedDrugs.filter((prescribedDrug) => !prescribedDrug.prevVisit);
     return notFromPrevVisit.map(
       (drug) => <PrescriptionForm key={`PrescriptionForm${drug.id}`} prescribedDrug={drug}/>,

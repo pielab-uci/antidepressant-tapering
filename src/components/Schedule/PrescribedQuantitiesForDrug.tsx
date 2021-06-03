@@ -48,25 +48,6 @@ const PrescribedQuantitiesForDrug: FC<Props> = ({ drug }) => {
     }
   }, [gridApi?.getSelectedNodes()]);
 
-  // const prescribedDosages: () => { [dosage: string]: number } | null = () => {
-  //   if (gridApi === null) {
-  //     return null;
-  //   }
-  //   const result = gridApi.getSelectedNodes()
-  //     .reduce((prev, row) => {
-  //       Object.entries(row.data.prescribedDosages as { [dosage: string]: number }).forEach(([dosage, qty]) => {
-  //         if (!prev[dosage]) {
-  //           prev[dosage] = qty;
-  //         } else {
-  //           prev[dosage] += qty;
-  //         }
-  //       });
-  //       return prev;
-  //     }, {} as { [dosage: string]: number });
-  //   console.log('PrescribedQuantitiesForDrug:prescribedDosages: ', result);
-  // return result;
-  // };
-
   const rowsByForm: RowsByForm = useMemo(() => projectedSchedule.data
     .filter((row) => row.prescribedDrugId === drug.id)
     .reduce((prev, row: TableRowData) => {

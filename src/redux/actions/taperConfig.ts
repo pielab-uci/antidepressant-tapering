@@ -202,15 +202,15 @@ export const changeNoteAndInstructions = (data: ChangeNoteAndInstructions['data'
   data,
 });
 
-export const PRESCRIBED_QUANTITY_CHANGE = 'PRESCRIBED_QUANTITY_CHANGE' as const;
+export const FINAL_PRESCRIPTION_QUANTITY_CHANGE = 'FINAL_PRESCRIPTION_QUANTITY_CHANGE' as const;
 
-export interface PrescribedQuantityChange {
-  type: typeof PRESCRIBED_QUANTITY_CHANGE,
-  data: { id: number, dosage: { dosage: string, quantity: number }, intervalDurationDays?: number }
+export interface FinalPrescriptionQuantityChange {
+  type: typeof FINAL_PRESCRIPTION_QUANTITY_CHANGE,
+  data: { id: number, dosage: string, quantity: number }
 }
 
-export const prescribedQuantityChange = (data: PrescribedQuantityChange['data']): PrescribedQuantityChange => ({
-  type: PRESCRIBED_QUANTITY_CHANGE,
+export const finalPrescriptionQuantityChange = (data: FinalPrescriptionQuantityChange['data']): FinalPrescriptionQuantityChange => ({
+  type: FINAL_PRESCRIPTION_QUANTITY_CHANGE,
   data,
 });
 

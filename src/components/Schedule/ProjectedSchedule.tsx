@@ -39,7 +39,7 @@ const ProjectedSchedule = () => {
           </div>
           <hr/>
           <h3>Prescription for upcoming intervals</h3>
-          {Object.entries(finalPrescription).map(([id, prescription]) => <PrescribedQuantitiesForDrug key={`PrescribedQuantitiesFor${id}`} prescription={prescription}/>)}
+          {Object.entries(finalPrescription).map(([id, prescription]) => <PrescribedQuantitiesForDrug key={`PrescribedQuantitiesFor${id}`} id={parseFloat(id)} prescription={prescription}/>)}
         </> : <div>No schedule yet</div>
       }
     </ProjectedScheduleContext.Provider>

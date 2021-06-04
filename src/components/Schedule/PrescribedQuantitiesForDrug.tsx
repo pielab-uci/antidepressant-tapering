@@ -1,19 +1,32 @@
 import * as React from 'react';
 import {
+  ChangeEvent,
   FC, useCallback,
 } from 'react';
 import { Input } from 'antd';
+import { useDispatch } from 'react-redux';
 import {
   Prescription, ValueOf,
 } from '../../types';
+import { finalPrescriptionQuantityChange } from '../../redux/actions/taperConfig';
 
 interface Props {
+  id: number,
   prescription: ValueOf<Prescription>;
 }
 
-const PrescribedQuantitiesForDrug: FC<Props> = ({ prescription }) => {
+const PrescribedQuantitiesForDrug: FC<Props> = ({ id, prescription }) => {
+  const dispatch = useDispatch();
   const qtyOrZero = useCallback((dosages: typeof prescription['dosageQty'], dosage: string): number => {
     return dosages[dosage] ? dosages[dosage] : 0;
+  }, []);
+
+  const onPrescribedQuantityChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    dispatch(finalPrescriptionQuantityChange({
+      id,
+      dosage: e.target.title,
+      quantity: parseFloat(e.target.value),
+    }));
   }, []);
 
   const renderForms = useCallback((dosages: string[], prescription: ValueOf<Prescription>) => {
@@ -29,7 +42,7 @@ const PrescribedQuantitiesForDrug: FC<Props> = ({ prescription }) => {
                    value={qtyOrZero(prescription.dosageQty, dos)}
                    step={0.5}
                    width={'50px'}
-                   readOnly/>
+                   onChange={onPrescribedQuantityChange}/>
           </div>
         ))}
       </>

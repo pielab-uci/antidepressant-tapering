@@ -40,8 +40,8 @@ import {
   EmptyPrescribedDrugs,
   ChangeNoteAndInstructions,
   CHANGE_NOTE_AND_INSTRUCTIONS,
-  PRESCRIBED_QUANTITY_CHANGE,
-  PrescribedQuantityChange,
+  FINAL_PRESCRIPTION_QUANTITY_CHANGE,
+  FinalPrescriptionQuantityChange,
   AddOrUpdateTaperConfigAyncActions,
   FetchTaperConfigAsyncActions,
   FetchPrescribedDrugAsyncActions,
@@ -187,7 +187,7 @@ export type TaperConfigActions =
   | ToggleShareProjectedScheduleWithPatient
   | ShareWithPatientAppAsyncActions
   | ShareWithPatientEmailAsyncActions
-  | PrescribedQuantityChange
+  | FinalPrescriptionQuantityChange
   | TableEditingAction
   | PrescriptionFormActions;
 
@@ -482,9 +482,8 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         break;
       }
 
-      case PRESCRIBED_QUANTITY_CHANGE: {
-        // TODO: change finalPrescription in this event
-        // draft.finalPrescription
+      case FINAL_PRESCRIPTION_QUANTITY_CHANGE: {
+        draft.finalPrescription[action.data.id].dosageQty[action.data.dosage] = action.data.quantity;
         draft.isSaved = false;
         break;
       }

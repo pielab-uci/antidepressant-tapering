@@ -1,81 +1,45 @@
 import * as React from 'react';
 import {
-  FC, useContext, useEffect, useMemo, useState,
+  FC, useCallback,
 } from 'react';
-import { useSelector } from 'react-redux';
-import { TableRowData } from '../../redux/reducers/utils';
-import PrescribedQuantitiesForm from './PrescribedQuantitiesForm';
-import { PrescribedDrug } from '../../types';
-import { ProjectedScheduleContext } from './ProjectedSchedule';
-import { RootState } from '../../redux/reducers';
-import { TaperConfigState } from '../../redux/reducers/taperConfig';
+import { Input } from 'antd';
+import {
+  Prescription, ValueOf,
+} from '../../types';
 
 interface Props {
-  // rows: TableRowData[];
-  drug: PrescribedDrug;
+  prescription: ValueOf<Prescription>;
 }
 
-interface RowsByForm {
-  [form: string]: TableRowData[]
-}
+const PrescribedQuantitiesForDrug: FC<Props> = ({ prescription }) => {
+  const qtyOrZero = useCallback((dosages: typeof prescription['dosageQty'], dosage: string): number => {
+    return dosages[dosage] ? dosages[dosage] : 0;
+  }, []);
 
-// refactor it into a function in the upper component
-const PrescribedQuantitiesForDrug: FC<Props> = ({ drug }) => {
-// const PrescribedQuantitiesForDrug: FC<Props> = ({ drug, rows }) => {
-  const { gridApi } = useContext(ProjectedScheduleContext);
-  const { projectedSchedule, tableSelectedRows } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
-  const [prescribedDosages, setPrescribedDosages] = useState<{ [dosage: string]: number } | null>(null);
+  const renderForms = useCallback((dosages: string[], prescription: ValueOf<Prescription>) => {
+    return (
+      <>
+        {dosages.map((dos: string) => (
+          <div key={`${prescription.brand}_${prescription.form}_${dos}_final_prescription`}>
+            <h5>{dos}</h5>
+            <Input title={dos}
+                   style={{ display: 'inline-block' }}
+                   type='number'
+                   min={0}
+                   value={qtyOrZero(prescription.dosageQty, dos)}
+                   step={0.5}
+                   width={'50px'}
+                   readOnly/>
+          </div>
+        ))}
+      </>
+    );
+  }, []);
 
-  // const prescribedDosages
-  useEffect(() => {
-    console.log('gridApi: ', gridApi);
-    if (gridApi !== null) {
-      const dosages = gridApi.getSelectedNodes()
-        .reduce((prev, row) => {
-          Object.entries(row.data.prescribedDosages as { [dosage: string]: number })
-            .forEach(([dosage, qty]) => {
-              if (!prev[dosage]) {
-                prev[dosage] = qty;
-              } else {
-                prev[dosage] += qty;
-              }
-            });
-
-          return prev;
-        }, {} as { [dosage: string]: number });
-      if (JSON.stringify(prescribedDosages) !== JSON.stringify(dosages)) {
-        console.log('PrescribedQuantitiesForDrug prescribedDosages updated');
-        setPrescribedDosages(dosages);
-      }
-    }
-  }, [tableSelectedRows]);
-
-  const rowsByForm: RowsByForm = useMemo(() => projectedSchedule.data
-    .filter((row) => row.prescribedDrugId === drug.id && row.prescribedDrugId === drug.id)
-    .reduce((prev, row: TableRowData) => {
-      if (!prev[row.form]) {
-        prev[row.form] = [];
-        prev[row.form].push(row);
-      } else {
-        prev[row.form].push(row);
-      }
-      return prev;
-    }, {} as RowsByForm), [projectedSchedule]);
-  console.log('rowsByForm: ', rowsByForm);
-
-  return (
-    <>
-      {Object.keys(rowsByForm).map((form) => {
-        return (
-          <PrescribedQuantitiesForm
-            key={`PrescribedQuantitiesForm_${form}`}
-            prescribedDrug={drug}
-            prescribedDosages={prescribedDosages}
-            rows={rowsByForm[form]}/>
-        );
-      })}
-    </>
-  );
+  if (prescription.oralDosageInfo) {
+    return renderForms(prescription.oralDosageInfo.bottles, prescription);
+  }
+  return renderForms(prescription.availableDosages, prescription);
 };
 
 export default PrescribedQuantitiesForDrug;

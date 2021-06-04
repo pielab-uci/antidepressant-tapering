@@ -6,8 +6,8 @@ import ProjectedScheduleTable from './ProjectedScheduleTable';
 import ScheduleChart from './ScheduleChart';
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
-import { TableRowData } from '../../redux/reducers/utils';
-import { PrescribedDrug } from '../../types';
+import { PrescribedDrug, TableRowData } from '../../types';
+import PrescribedQuantitiesForDrug from './PrescribedQuantitiesForDrug';
 
 export interface Schedule {
   drugs: PrescribedDrug[];
@@ -23,7 +23,7 @@ export const ProjectedScheduleContext = createContext<IProjectedScheduleContext>
 });
 
 const ProjectedSchedule = () => {
-  const { projectedSchedule, scheduleChartData } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
+  const { projectedSchedule, scheduleChartData, finalPrescription } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const [gridApi, setGridApi] = useState<GridApi|null>(null);
   return (
     <ProjectedScheduleContext.Provider value={{ gridApi }}>
@@ -38,7 +38,8 @@ const ProjectedSchedule = () => {
             </div>
           </div>
           <hr/>
-          {/* <PrescribedQuantitiesForDrugs projectedSchedule={projectedSchedule}/> */}
+          <h3>Prescription for upcoming intervals</h3>
+          {Object.entries(finalPrescription).map(([id, prescription]) => <PrescribedQuantitiesForDrug key={`PrescribedQuantitiesFor${id}`} prescription={prescription}/>)}
         </> : <div>No schedule yet</div>
       }
     </ProjectedScheduleContext.Provider>

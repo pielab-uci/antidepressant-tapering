@@ -92,9 +92,44 @@ export interface Prescription {
     brand: string,
     form: string,
     oralDosageInfo: OralDosage | null;
+    // available options for capsule or tablet
+    availableDosages: string[];
     dosageQty: { [dosage: string]: number }
     // TODO: add projected schedule here..?
   }
 }
 
 export type ValueOf<T> = T[keyof T];
+
+export interface Converted extends PrescribedDrug {
+  intervalEndDate: Date;
+  priorDosageSum: number;
+  upcomingDosageSum: number;
+  changeRate: number;
+  changeAmount: number;
+  isIncreasing: boolean;
+}
+
+export type TableRowData =
+  {
+    prescribedDrugId: number;
+    drug: string;
+    brand: string;
+    dosage: number;
+    prescription: string;
+    startDate: Date,
+    endDate: Date,
+    selected: boolean,
+    availableDosageOptions: string[];
+    /*
+     * dosages counts from upcoming dosages
+     * or minimum quantity calculation without considering intervalDurationDays
+     */
+    initiallyCalculatedDosages: { [dosage: string]: number },
+    addedInCurrentVisit: boolean,
+    intervalDurationDays: number,
+    intervalCount: number,
+    intervalUnit: 'Days'|'Weeks'|'Months',
+    oralDosageInfo?: OralDosage,
+    measureUnit: string,
+    form: string };

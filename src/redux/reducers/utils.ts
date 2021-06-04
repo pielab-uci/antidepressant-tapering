@@ -2,42 +2,9 @@ import {
   add, areIntervalsOverlapping, differenceInCalendarDays, format, isAfter, isBefore, sub,
 } from 'date-fns';
 import {
-  DrugForm, isCapsuleOrTablet, OralDosage, PrescribedDrug,
+  DrugForm, isCapsuleOrTablet, OralDosage, PrescribedDrug, TableRowData, Converted,
 } from '../../types';
 import { Schedule } from '../../components/Schedule/ProjectedSchedule';
-
-interface Converted extends PrescribedDrug {
-  intervalEndDate: Date;
-  priorDosageSum: number;
-  upcomingDosageSum: number;
-  changeRate: number;
-  changeAmount: number;
-  isIncreasing: boolean;
-}
-
-export type TableRowData =
-  {
-    prescribedDrugId: number;
-    drug: string;
-    brand: string;
-    dosage: number;
-    prescription: string;
-    startDate: Date,
-    endDate: Date,
-    selected: boolean,
-
-    /*
-     * dosages counts from upcoming dosages
-     * or minimum quantity calculation without considering intervalDurationDays
-     */
-    initiallyCalculatedDosages: { [dosage: string]: number },
-    addedInCurrentVisit: boolean,
-    intervalDurationDays: number,
-    intervalCount: number,
-    intervalUnit: 'Days'|'Weeks'|'Months',
-    oralDosageInfo?: OralDosage,
-    measureUnit: string,
-    form: string };
 
 export const isCompleteDrugInput = (drug: PrescribedDrug) => {
   return drug.name !== ''
@@ -242,6 +209,7 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
       }, {} as { [dosage: string]: number }),
       addedInCurrentVisit: !drug.prevVisit,
       selected: !drug.prevVisit,
+      availableDosageOptions: drug.availableDosageOptions,
       form: drug.form,
       intervalDurationDays: drug.intervalDurationDays,
       intervalCount: drug.intervalCount,
@@ -279,6 +247,7 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
           prescription: prescription({ ...drug }, newRowData.initiallyCalculateDosages),
           selected: false,
           addedInCurrentVisit: !drug.prevVisit,
+          availableDosageOptions: drug.availableDosageOptions,
           initiallyCalculatedDosages: newRowData.initiallyCalculateDosages,
           intervalDurationDays: drug.intervalDurationDays,
           intervalCount: drug.intervalCount,

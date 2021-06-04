@@ -356,7 +356,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           .reduce((prev, row) => {
             if (!prev[row.prescribedDrugId]) {
               const obj: ValueOf<Prescription> = {
-                name: '', brand: '', form: '', oralDosageInfo: null, dosageQty: {},
+                name: '', brand: '', form: '', availableDosages: [], oralDosageInfo: null, dosageQty: {},
               };
               obj.name = row.drug;
               obj.brand = row.brand;
@@ -364,6 +364,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
               if (row.oralDosageInfo) {
                 obj.oralDosageInfo = row.oralDosageInfo;
               }
+              obj.availableDosages = row.availableDosageOptions;
               obj.dosageQty = Object.entries(row.initiallyCalculatedDosages)
                 .reduce((dosages, [dosage, qty]) => {
                   if (!dosages[dosage]) {

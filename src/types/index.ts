@@ -90,6 +90,8 @@ export interface Prescription {
   [id: number]: {
     name: string,
     brand: string,
+    form: string,
+    oralDosageInfo: OralDosage | null;
     dosageQty: { [dosage: string]: number }
     // TODO: add projected schedule here..?
   }

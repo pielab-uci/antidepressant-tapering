@@ -1,5 +1,4 @@
 import produce from 'immer';
-import { RowNode } from 'ag-grid-community';
 import {
   Drug, PrescribedDrug, Prescription, TaperingConfiguration, ValueOf,
 } from '../../types';
@@ -74,7 +73,7 @@ import {
   scheduleGenerator,
   generateInstructionsForPatientFromSchedule,
   isCompleteDrugInput,
-  generateInstructionsForPharmacy,
+  generateInstructionsForPharmacy, TableRowData, calcMinimumQuantityForDosage,
 } from './utils';
 
 export interface TaperConfigState {
@@ -336,7 +335,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case CLEAR_SCHEDULE:
         draft.projectedSchedule = { data: [], drugs: [] };
         draft.scheduleChartData = [];
-        // draft.scheduleSelectedRowKeys = [];
         draft.showInstructionsForPatient = false;
         draft.instructionsForPharmacy = '';
         draft.instructionsForPatient = '';
@@ -352,13 +350,20 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
             row.selected = false;
           }
         });
+
         draft.finalPrescription = draft.projectedSchedule.data
           .filter((row, i) => draft.tableSelectedRows.includes(i))
           .reduce((prev, row) => {
             if (!prev[row.prescribedDrugId]) {
-              const obj: ValueOf<Prescription> = { name: '', brand: '', dosageQty: {} };
+              const obj: ValueOf<Prescription> = {
+                name: '', brand: '', form: '', oralDosageInfo: null, dosageQty: {},
+              };
               obj.name = row.drug;
               obj.brand = row.brand;
+              obj.form = row.form;
+              if (row.oralDosageInfo) {
+                obj.oralDosageInfo = row.oralDosageInfo;
+              }
               obj.dosageQty = Object.entries(row.initiallyCalculatedDosages)
                 .reduce((dosages, [dosage, qty]) => {
                   if (!dosages[dosage]) {
@@ -379,9 +384,15 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
                   }
                 });
             }
-
             return prev;
           }, {} as Prescription);
+
+        Object.entries(draft.finalPrescription).forEach(([id, prescription]) => {
+          if (prescription.oralDosageInfo) {
+            const dosageInMl = prescription.dosageQty['1mg'] / prescription.oralDosageInfo.rate.mg * prescription.oralDosageInfo.rate.ml;
+            prescription.dosageQty = calcMinimumQuantityForDosage(prescription.oralDosageInfo.bottles, dosageInMl, null);
+          }
+        });
         break;
       }
 

@@ -1,15 +1,11 @@
 import produce from 'immer';
-import { Key } from 'react';
 import {
-  Drug, PrescribedDrug, TaperingConfiguration,
+  Drug, PrescribedDrug, Prescription, TaperingConfiguration, ValueOf,
 } from '../../types';
 import {
   ADD_OR_UPDATE_TAPER_CONFIG_FAILURE,
   ADD_OR_UPDATE_TAPER_CONFIG_REQUEST,
   ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS,
-  AddOrUpdateTaperConfigFailureAction,
-  AddOrUpdateTaperConfigRequestAction,
-  AddOrUpdateTaperConfigSuccessAction,
   CLEAR_SCHEDULE,
   ClearScheduleAction,
   GENERATE_SCHEDULE,
@@ -20,12 +16,6 @@ import {
   SHARE_WITH_PATIENT_EMAIL_FAILURE,
   SHARE_WITH_PATIENT_EMAIL_REQUEST,
   SHARE_WITH_PATIENT_EMAIL_SUCCESS,
-  ShareWithPatientAppFailure,
-  ShareWithPatientAppRequest,
-  ShareWithPatientAppSuccess,
-  ShareWithPatientEmailFailure,
-  ShareWithPatientEmailRequest,
-  ShareWithPatientEmailSuccess,
   ADD_NEW_DRUG_FORM,
   AddNewDrugFormAction,
   REMOVE_DRUG_FORM,
@@ -39,16 +29,10 @@ import {
   InitTaperConfigAction,
   INIT_NEW_TAPER_CONFIG,
   FETCH_TAPER_CONFIG_REQUEST,
-  FetchTaperConfigRequestAction,
-  FetchTaperConfigSuccessAction,
-  FetchTaperConfigFailureAction,
   FETCH_TAPER_CONFIG_SUCCESS,
   FETCH_TAPER_CONFIG_FAILURE,
   EMPTY_TAPER_CONFIG_PAGE,
   EmptyTaperConfigPage,
-  FetchPrescribedDrugsRequestAction,
-  FetchPrescribedDrugsSuccessAction,
-  FetchPrescribedDrugsFailureAction,
   FETCH_PRESCRIBED_DRUGS_REQUEST,
   FETCH_PRESCRIBED_DRUGS_SUCCESS,
   FETCH_PRESCRIBED_DRUGS_FAILURE,
@@ -89,7 +73,7 @@ import {
   scheduleGenerator,
   generateInstructionsForPatientFromSchedule,
   isCompleteDrugInput,
-  generateInstructionsForPharmacy,
+  generateInstructionsForPharmacy, calcMinimumQuantityForDosage,
 } from './utils';
 
 export interface TaperConfigState {
@@ -106,7 +90,8 @@ export interface TaperConfigState {
 
   projectedSchedule: Schedule;
   scheduleChartData: ScheduleChartData;
-  scheduleSelectedRowKeys: (number|null)[];
+  tableSelectedRows: (number | null)[];
+  finalPrescription: Prescription;
   isInputComplete: boolean;
 
   intervalDurationDays: number,
@@ -152,7 +137,8 @@ export const initialState: TaperConfigState = {
 
   projectedSchedule: { data: [], drugs: [] },
   scheduleChartData: [],
-  scheduleSelectedRowKeys: [],
+  tableSelectedRows: [],
+  finalPrescription: [],
   isInputComplete: false,
 
   intervalDurationDays: 0,
@@ -217,7 +203,6 @@ const emptyPrescribedDrug = (id: number): PrescribedDrug => ({
   availableDosageOptions: [],
   regularDosageOptions: [],
   allowSplittingUnscoredTablet: false,
-  prescribedDosages: {},
   intervalStartDate: new Date(),
   intervalEndDate: null,
   intervalCount: 0,
@@ -340,14 +325,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case GENERATE_SCHEDULE: {
         draft.projectedSchedule = scheduleGenerator(action.data);
         draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
-        draft.scheduleSelectedRowKeys = draft.projectedSchedule.data
-          .map((row, i) => (row.selected ? i : null))
-          .filter((key) => key !== null) as number[];
-        draft.projectedSchedule.data.forEach((row, i) => {
-          if (row.selected) {
-            draft.scheduleSelectedRowKeys.push(i);
-          }
-        });
         draft.instructionsForPatient = generateInstructionsForPatientFromSchedule(draft.projectedSchedule);
         draft.instructionsForPharmacy = generateInstructionsForPharmacy(draft.prescribedDrugs);
         draft.showInstructionsForPatient = true;
@@ -358,19 +335,67 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case CLEAR_SCHEDULE:
         draft.projectedSchedule = { data: [], drugs: [] };
         draft.scheduleChartData = [];
-        draft.scheduleSelectedRowKeys = [];
         draft.showInstructionsForPatient = false;
         draft.instructionsForPharmacy = '';
         draft.instructionsForPatient = '';
         draft.isSaved = false;
         break;
 
-      case SCHEDULE_ROW_SELECTED:
-        draft.scheduleSelectedRowKeys = action.data;
-        draft.instructionsForPatient = generateInstructionsForPatientFromSchedule(draft.projectedSchedule);
-        // TODO: deal with selection and sync here
-        draft.isSaved = false;
+      case SCHEDULE_ROW_SELECTED: {
+        draft.tableSelectedRows = action.data;
+        draft.projectedSchedule.data.forEach((row, i) => {
+          if (draft.tableSelectedRows.includes(i)) {
+            row.selected = true;
+          } else {
+            row.selected = false;
+          }
+        });
+
+        draft.finalPrescription = draft.projectedSchedule.data
+          .filter((row, i) => draft.tableSelectedRows.includes(i))
+          .reduce((prev, row) => {
+            if (!prev[row.prescribedDrugId]) {
+              const obj: ValueOf<Prescription> = {
+                name: '', brand: '', form: '', availableDosages: [], oralDosageInfo: null, dosageQty: {},
+              };
+              obj.name = row.drug;
+              obj.brand = row.brand;
+              obj.form = row.form;
+              if (row.oralDosageInfo) {
+                obj.oralDosageInfo = row.oralDosageInfo;
+              }
+              obj.availableDosages = row.availableDosageOptions;
+              obj.dosageQty = Object.entries(row.initiallyCalculatedDosages)
+                .reduce((dosages, [dosage, qty]) => {
+                  if (!dosages[dosage]) {
+                    dosages[dosage] = qty * row.intervalDurationDays;
+                  } else {
+                    dosages[dosage] += qty * row.intervalDurationDays;
+                  }
+                  return dosages;
+                }, {} as { [dosage: string]: number });
+              prev[row.prescribedDrugId] = obj;
+            } else {
+              Object.entries(row.initiallyCalculatedDosages)
+                .forEach(([dosage, qty]) => {
+                  if (!prev[row.prescribedDrugId].dosageQty[dosage]) {
+                    prev[row.prescribedDrugId].dosageQty[dosage] = qty * row.intervalDurationDays;
+                  } else {
+                    prev[row.prescribedDrugId].dosageQty[dosage] += qty * row.intervalDurationDays;
+                  }
+                });
+            }
+            return prev;
+          }, {} as Prescription);
+
+        Object.entries(draft.finalPrescription).forEach(([id, prescription]) => {
+          if (prescription.oralDosageInfo) {
+            const dosageInMl = prescription.dosageQty['1mg'] / prescription.oralDosageInfo.rate.mg * prescription.oralDosageInfo.rate.ml;
+            prescription.dosageQty = calcMinimumQuantityForDosage(prescription.oralDosageInfo.bottles, dosageInMl, null);
+          }
+        });
         break;
+      }
 
       case CHANGE_MESSAGE_FOR_PATIENT:
         draft.instructionsForPatient = action.data;
@@ -396,7 +421,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.oralDosageInfo = null;
         drug.priorDosages = [];
         drug.upcomingDosages = [];
-        drug.prescribedDosages = {};
         draft.isInputComplete = false;
         draft.isSaved = false;
         draft.instructionsForPatient = '';
@@ -411,7 +435,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.minDosageUnit = action.data.minDosageUnit!;
         drug.priorDosages = [];
         drug.upcomingDosages = [];
-        drug.prescribedDosages = {};
         drug.availableDosageOptions = action.data.availableDosageOptions!;
         drug.regularDosageOptions = action.data.regularDosageOptions!;
         draft.isInputComplete = false;
@@ -455,14 +478,13 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           drug.upcomingDosages[idx] = action.data.dosage;
         }
 
-        drug.prescribedDosages = action.data.prescribedDosages;
         draft.isSaved = false;
         break;
       }
 
       case PRESCRIBED_QUANTITY_CHANGE: {
-        const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
-        drug.prescribedDosages[action.data.dosage.dosage] = action.data.dosage.quantity;
+        // TODO: change finalPrescription in this event
+        // draft.finalPrescription
         draft.isSaved = false;
         break;
       }
@@ -483,7 +505,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           drug.intervalCount = action.data.intervalDurationDays;
           drug.intervalDurationDays = action.data.intervalDurationDays;
         }
-        drug.prescribedDosages = action.data.prescribedDosages;
         draft.isSaved = false;
         break;
       }
@@ -494,7 +515,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.intervalUnit = 'Days';
         drug.intervalCount = action.data.intervalDurationDays;
         drug.intervalDurationDays = action.data.intervalDurationDays;
-        drug.prescribedDosages = action.data.prescribedDosages!;
         draft.isSaved = false;
         break;
       }
@@ -504,7 +524,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.intervalUnit = action.data.unit;
         drug.intervalEndDate = action.data.intervalEndDate;
         drug.intervalDurationDays = action.data.intervalDurationDays;
-        drug.prescribedDosages = action.data.prescribedDosages;
         draft.isSaved = false;
         break;
       }
@@ -514,7 +533,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.intervalCount = action.data.count;
         drug.intervalEndDate = action.data.intervalEndDate;
         drug.intervalDurationDays = action.data.intervalDurationDays;
-        drug.prescribedDosages = action.data.prescribedDosages!;
         draft.isSaved = false;
         break;
       }
@@ -574,5 +592,4 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
     }
   });
 };
-
 export default taperConfigReducer;

@@ -1,5 +1,7 @@
 import * as React from 'react';
 import {
+  FC, useContext,
+  useEffect,
   useMemo, useRef, useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,7 +11,7 @@ import {
   CellEditingStoppedEvent,
   ColDef, ColumnApi,
   FirstDataRenderedEvent, GridApi,
-  GridReadyEvent,
+  GridReadyEvent, RowDataChangedEvent,
   RowSelectedEvent,
   SelectionChangedEvent,
   ValueFormatterParams,
@@ -27,17 +29,29 @@ import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 import './tableStyles.css';
 import DateEditor from './DateEditor';
 
-const ProjectedScheduleTable = () => {
-  const [gridApi, setGridApi] = useState<GridApi|null>(null);
-  const [gridColumnApi, setGridColumnApi] = useState<ColumnApi|null>(null);
+const ProjectedScheduleTable: FC<{ setGridApi: (gridApi: GridApi) => void }> = ({ setGridApi }) => {
+  // const [gridApi, setGridApi] = useState<GridApi | null>(null);
+  const [gridColumnApi, setGridColumnApi] = useState<ColumnApi | null>(null);
   const {
-    projectedSchedule,
+    projectedSchedule, tableSelectedRows,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const dispatch = useDispatch();
 
   const onGridReady = (params: GridReadyEvent) => {
+    console.log('onGridReady');
     setGridApi(params.api);
     setGridColumnApi(params.columnApi);
+    const selectedRows = projectedSchedule.data.reduce((res, row, i) => {
+      if (row.selected) {
+        res.push(i);
+      }
+      return res;
+    }, [] as number[]);
+    params.api.forEachNode((row) => {
+      if (selectedRows.includes(row.rowIndex!)) {
+        row.setSelected(true);
+      }
+    });
   };
 
   const defaultColumnDef = useRef<ColDef>({
@@ -98,11 +112,16 @@ const ProjectedScheduleTable = () => {
   };
 
   const onSelectionChanged = (e: SelectionChangedEvent) => {
-    const selectedRowsIndices = e.api.getSelectedNodes()
-      .map((node) => node.rowIndex);
+    const selectedNodes = e.api.getSelectedNodes().map((row) => row.rowIndex);
+    dispatch<ScheduleRowSelectedAction>({ type: SCHEDULE_ROW_SELECTED, data: selectedNodes });
+  };
 
-    console.log('selectedRowIndices: ', selectedRowsIndices);
-    dispatch<ScheduleRowSelectedAction>({ type: SCHEDULE_ROW_SELECTED, data: selectedRowsIndices });
+  const onRowDataChanged = (e: RowDataChangedEvent) => {
+    e.api.forEachNode((row) => {
+      if (tableSelectedRows.includes(row.rowIndex)) {
+        row.setSelected(true);
+      }
+    });
   };
 
   const onFirstDataRendered = (params: FirstDataRenderedEvent) => {
@@ -160,6 +179,7 @@ const ProjectedScheduleTable = () => {
           rowSelection='multiple'
           rowClassRules={rowClassRules.current}
           onRowSelected={onRowSelected}
+          onRowDataChanged={onRowDataChanged}
           onSelectionChanged={onSelectionChanged}
           onFirstDataRendered={onFirstDataRendered}
           onGridReady={onGridReady}

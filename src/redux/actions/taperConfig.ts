@@ -1,5 +1,4 @@
-import { Key } from 'react';
-import { CellEditingStoppedEvent, ValueSetterParams } from 'ag-grid-community';
+import { CellEditingStoppedEvent } from 'ag-grid-community';
 import { PrescribedDrug, TaperingConfiguration } from '../../types';
 
 export const GENERATE_SCHEDULE = 'GENERATE_SCHEDULE' as const;
@@ -79,7 +78,6 @@ export const SCHEDULE_ROW_SELECTED = 'SCHEDULE_ROW_SELECTED' as const;
 export interface ScheduleRowSelectedAction {
   type: typeof SCHEDULE_ROW_SELECTED,
   data: (number|null)[];
-
 }
 
 export const FETCH_TAPER_CONFIG_REQUEST = 'FETCH_TAPER_CONFIG_REQUEST' as const;

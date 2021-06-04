@@ -73,7 +73,7 @@ import {
   scheduleGenerator,
   generateInstructionsForPatientFromSchedule,
   isCompleteDrugInput,
-  generateInstructionsForPharmacy, TableRowData, calcMinimumQuantityForDosage,
+  generateInstructionsForPharmacy, calcMinimumQuantityForDosage,
 } from './utils';
 
 export interface TaperConfigState {

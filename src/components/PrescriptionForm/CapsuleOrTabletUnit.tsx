@@ -7,7 +7,6 @@ import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
 import { PrescriptionFormContext } from './PrescriptionForm';
 import { TaperConfigActions } from '../../redux/reducers/taperConfig';
-import { calcPrescribedDosageQty } from '../utils';
 import {
   priorDosageChange, PriorDosageChangeAction, upcomingDosageChange, UpcomingDosageChangeAction,
 } from './actions';
@@ -25,7 +24,6 @@ const CapsuleOrTabletUnit: FC<Props> = ({
   const context = useContext(PrescriptionFormContext);
   const {
     formActionDispatch, id, intervalDurationDays, allowSplittingUnscoredTablet,
-    chosenDrugForm, upcomingDosagesQty, oralDosageInfo,
   } = context;
   const { dosages } = context[time];
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();

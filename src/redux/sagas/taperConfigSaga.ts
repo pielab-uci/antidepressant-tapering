@@ -1,5 +1,5 @@
 import {
-  all, put, fork, takeLatest, delay, select,
+  all, put, fork, takeLatest, select,
 } from 'redux-saga/effects';
 import {
   ADD_NEW_DRUG_FORM,

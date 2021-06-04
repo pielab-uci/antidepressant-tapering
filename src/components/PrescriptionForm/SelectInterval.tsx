@@ -3,7 +3,7 @@ import {
   useRef, useContext, useCallback,
 } from 'react';
 import {
-  add,
+  add, differenceInCalendarDays,
   format, isAfter, isSameDay, sub,
 } from 'date-fns';
 import { Input, Select } from 'antd';
@@ -16,7 +16,6 @@ import {
   intervalCountChange, intervalEndDateChange,
   intervalStartDateChange, intervalUnitChange,
 } from './actions';
-import { calcIntervalDurationDays, calcPrescribedDosageQty } from '../utils';
 
 const { Option } = Select;
 
@@ -29,8 +28,7 @@ const SelectInterval = () => {
   const {
     formActionDispatch, intervalCount, intervalUnit,
     intervalStartDate, intervalEndDate, id,
-    upcomingDosagesQty, chosenDrugForm,
-    oralDosageInfo,
+    upcomingDosagesQty,
   } = useContext(PrescriptionFormContext);
   const dispatch = (action: IntervalActions) => {
     formActionDispatch(action);
@@ -38,6 +36,10 @@ const SelectInterval = () => {
   };
 
   const units = useRef(['Days', 'Weeks', 'Months']);
+
+  const calcIntervalDurationDays = useCallback((startDate: Date, endDate: Date|null) => {
+    return !endDate ? 0 : differenceInCalendarDays(endDate, startDate) + 1;
+  }, []);
 
   const onIntervalStartDateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const date = new Date(e.target.value);

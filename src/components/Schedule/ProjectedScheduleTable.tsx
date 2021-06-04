@@ -17,7 +17,6 @@ import {
   ValueFormatterParams,
   ValueSetterParams,
 } from 'ag-grid-community';
-import { DataChangedEvent } from 'ag-grid-community/dist/lib/entities/rowNode';
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import {
@@ -29,7 +28,6 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 import './tableStyles.css';
 import DateEditor from './DateEditor';
-import { ProjectedScheduleContext } from './ProjectedSchedule';
 
 const ProjectedScheduleTable: FC<{ setGridApi: (gridApi: GridApi) => void }> = ({ setGridApi }) => {
   // const [gridApi, setGridApi] = useState<GridApi | null>(null);

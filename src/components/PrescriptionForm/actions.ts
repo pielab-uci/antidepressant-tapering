@@ -44,7 +44,7 @@ export const UPCOMING_DOSAGE_CHANGE = 'UPCOMING_DOSAGE_CHANGE' as const;
 
 export interface UpcomingDosageChangeAction {
   type: typeof UPCOMING_DOSAGE_CHANGE;
-  data: { id: number, dosage: { dosage: string, quantity: number }, prescribedDosages: { [dosage: string]: number } };
+  data: { id: number, dosage: { dosage: string, quantity: number } };
 }
 
 export const upcomingDosageChange = (data: UpcomingDosageChangeAction['data']): UpcomingDosageChangeAction => ({
@@ -70,7 +70,6 @@ export interface IntervalStartDateChangeAction {
   type: typeof INTERVAL_START_DATE_CHANGE,
   data: {
     date: Date,
-    prescribedDosages: { [dosage: string]:number },
     intervalDurationDays: number,
     id: number; } ;
 }
@@ -86,7 +85,6 @@ export interface IntervalEndDateChangeAction {
   type: typeof INTERVAL_END_DATE_CHANGE,
   data: {
     date: Date | null;
-    prescribedDosages: { [dosage: string]: number },
     intervalDurationDays: number,
     id: number }
 }
@@ -102,7 +100,6 @@ export interface IntervalCountChangeAction {
   type: typeof INTERVAL_COUNT_CHANGE,
   data: {
     count: number,
-    prescribedDosages: { [dosage: string]: number },
     intervalDurationDays: number,
     intervalEndDate: Date | null,
     id:number }
@@ -121,7 +118,6 @@ export interface IntervalUnitChangeAction {
     unit: 'Days' | 'Weeks' | 'Months',
     intervalEndDate: Date,
     intervalDurationDays: number,
-    prescribedDosages: { [dosage: string]: number },
     id: number }
 }
 

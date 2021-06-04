@@ -8,7 +8,6 @@ import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import { TableRowData } from '../../redux/reducers/utils';
 import { PrescribedDrug } from '../../types';
-import PrescribedQuantitiesForDrugs from './PrescribedQuantitiesForDrugs';
 
 export interface Schedule {
   drugs: PrescribedDrug[];

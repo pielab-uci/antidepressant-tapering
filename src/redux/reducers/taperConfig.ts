@@ -92,7 +92,6 @@ export interface TaperConfigState {
   projectedSchedule: Schedule;
   scheduleChartData: ScheduleChartData;
   tableSelectedRows: (number | null)[];
-  // finalPrescription: { drug: PrescribedDrug, prescription: { [dosage: string]: number } }[];
   finalPrescription: Prescription;
   isInputComplete: boolean;
 
@@ -205,7 +204,6 @@ const emptyPrescribedDrug = (id: number): PrescribedDrug => ({
   availableDosageOptions: [],
   regularDosageOptions: [],
   allowSplittingUnscoredTablet: false,
-  prescribedDosages: {},
   intervalStartDate: new Date(),
   intervalEndDate: null,
   intervalCount: 0,
@@ -357,19 +355,31 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.finalPrescription = draft.projectedSchedule.data
           .filter((row, i) => draft.tableSelectedRows.includes(i))
           .reduce((prev, row) => {
-            const obj: ValueOf<Prescription> = { name: '', brand: '', dosageQty: {} };
-            obj.name = row.drug;
-            obj.brand = row.brand;
-            obj.dosageQty = Object.entries(row.initiallyCalculatedDosages)
-              .reduce((dosages, [dosage, qty]) => {
-                if (!dosages[dosage]) {
-                  dosages[dosage] = qty * row.intervalDurationDays;
-                } else {
-                  dosages[dosage] += qty * row.intervalDurationDays;
-                }
-                return dosages;
-              }, {} as { [dosage: string]: number });
-            prev[row.prescribedDrugId] = obj;
+            if (!prev[row.prescribedDrugId]) {
+              const obj: ValueOf<Prescription> = { name: '', brand: '', dosageQty: {} };
+              obj.name = row.drug;
+              obj.brand = row.brand;
+              obj.dosageQty = Object.entries(row.initiallyCalculatedDosages)
+                .reduce((dosages, [dosage, qty]) => {
+                  if (!dosages[dosage]) {
+                    dosages[dosage] = qty * row.intervalDurationDays;
+                  } else {
+                    dosages[dosage] += qty * row.intervalDurationDays;
+                  }
+                  return dosages;
+                }, {} as { [dosage: string]: number });
+              prev[row.prescribedDrugId] = obj;
+            } else {
+              Object.entries(row.initiallyCalculatedDosages)
+                .forEach(([dosage, qty]) => {
+                  if (!prev[row.prescribedDrugId].dosageQty[dosage]) {
+                    prev[row.prescribedDrugId].dosageQty[dosage] = qty * row.intervalDurationDays;
+                  } else {
+                    prev[row.prescribedDrugId].dosageQty[dosage] += qty * row.intervalDurationDays;
+                  }
+                });
+            }
+
             return prev;
           }, {} as Prescription);
         break;
@@ -399,7 +409,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.oralDosageInfo = null;
         drug.priorDosages = [];
         drug.upcomingDosages = [];
-        drug.prescribedDosages = {};
         draft.isInputComplete = false;
         draft.isSaved = false;
         draft.instructionsForPatient = '';
@@ -414,7 +423,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.minDosageUnit = action.data.minDosageUnit!;
         drug.priorDosages = [];
         drug.upcomingDosages = [];
-        drug.prescribedDosages = {};
         drug.availableDosageOptions = action.data.availableDosageOptions!;
         drug.regularDosageOptions = action.data.regularDosageOptions!;
         draft.isInputComplete = false;
@@ -458,14 +466,13 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           drug.upcomingDosages[idx] = action.data.dosage;
         }
 
-        drug.prescribedDosages = action.data.prescribedDosages;
         draft.isSaved = false;
         break;
       }
 
       case PRESCRIBED_QUANTITY_CHANGE: {
-        const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
-        drug.prescribedDosages[action.data.dosage.dosage] = action.data.dosage.quantity;
+        // TODO: change finalPrescription in this event
+        // draft.finalPrescription
         draft.isSaved = false;
         break;
       }
@@ -486,7 +493,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           drug.intervalCount = action.data.intervalDurationDays;
           drug.intervalDurationDays = action.data.intervalDurationDays;
         }
-        drug.prescribedDosages = action.data.prescribedDosages;
         draft.isSaved = false;
         break;
       }
@@ -497,7 +503,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.intervalUnit = 'Days';
         drug.intervalCount = action.data.intervalDurationDays;
         drug.intervalDurationDays = action.data.intervalDurationDays;
-        drug.prescribedDosages = action.data.prescribedDosages!;
         draft.isSaved = false;
         break;
       }
@@ -507,7 +512,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.intervalUnit = action.data.unit;
         drug.intervalEndDate = action.data.intervalEndDate;
         drug.intervalDurationDays = action.data.intervalDurationDays;
-        drug.prescribedDosages = action.data.prescribedDosages;
         draft.isSaved = false;
         break;
       }
@@ -517,7 +521,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.intervalCount = action.data.count;
         drug.intervalEndDate = action.data.intervalEndDate;
         drug.intervalDurationDays = action.data.intervalDurationDays;
-        drug.prescribedDosages = action.data.prescribedDosages!;
         draft.isSaved = false;
         break;
       }

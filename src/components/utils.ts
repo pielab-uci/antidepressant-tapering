@@ -87,8 +87,8 @@ export const calcPrescribedDosageQty = (args: {
 
   if (isCapsuleOrTablet(chosenDrugForm)) {
     return Object.entries(upcomingDosagesQty).reduce((prev: { [p: string]:number }, [dosage, qty]) => {
-      prev[dosage] = qty * intervalDurationDays;
-      prev[dosage] = qty * intervalDurationDays;
+      // prev[dosage] = qty * intervalDurationDays;
+      prev[dosage] = qty;
       return prev;
     }, {});
   }

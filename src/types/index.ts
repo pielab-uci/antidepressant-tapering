@@ -75,14 +75,13 @@ export interface PrescribedDrug {
   regularDosageOptions: string[]|null;
   priorDosages: { dosage: string; quantity: number }[];
   upcomingDosages: { dosage: string; quantity: number }[];
-  prescribedDosages: { [dosage: string]: number; };
-  allowSplittingUnscoredTablet: boolean;
-  prevVisit: boolean;
   intervalStartDate: Date;
   intervalEndDate: Date | null;
   intervalCount: number;
   intervalUnit: 'Days'|'Weeks'|'Months';
   intervalDurationDays: number;
+  allowSplittingUnscoredTablet: boolean;
+  prevVisit: boolean;
   prescribedAt: Date;
   oralDosageInfo?: OralDosage | null;
 }

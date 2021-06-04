@@ -51,10 +51,7 @@ const CapsuleOrTabletUnit: FC<Props> = ({
     };
 
     if (time === 'Upcoming') {
-      const prescribedDosages = calcPrescribedDosageQty({
-        chosenDrugForm, intervalDurationDays, upcomingDosagesQty, oralDosageInfo,
-      });
-      dispatch(upcomingDosageChange({ ...actionData, prescribedDosages }));
+      dispatch(upcomingDosageChange(actionData));
     } else {
       dispatch(priorDosageChange(actionData));
     }
@@ -70,10 +67,7 @@ const CapsuleOrTabletUnit: FC<Props> = ({
     };
 
     if (time === 'Upcoming') {
-      const prescribedDosages = calcPrescribedDosageQty({
-        chosenDrugForm, intervalDurationDays, upcomingDosagesQty, oralDosageInfo,
-      });
-      dispatch(upcomingDosageChange({ ...actionData, prescribedDosages }));
+      dispatch(upcomingDosageChange(actionData));
     } else {
       dispatch(priorDosageChange(actionData));
     }

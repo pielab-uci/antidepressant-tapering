@@ -24,6 +24,11 @@ export type TableRowData =
     startDate: Date,
     endDate: Date,
     selected: boolean,
+
+    /*
+     * dosages counts from upcoming dosages
+     * or minimum quantity calculation without considering intervalDurationDays
+     */
     initiallyCalculatedDosages: { [dosage: string]: number },
     addedInCurrentVisit: boolean,
     intervalDurationDays: number,
@@ -33,12 +38,14 @@ export type TableRowData =
     measureUnit: string,
     form: string };
 
-export const isCompleteDrugInput = (drug: PrescribedDrug) => drug.name !== ''
+export const isCompleteDrugInput = (drug: PrescribedDrug) => {
+  return drug.name !== ''
   && drug.brand !== ''
   && drug.form !== ''
   && drug.intervalEndDate !== null
   && drug.intervalCount !== 0
   && drug.upcomingDosages.length !== 0;
+};
 
 export const completePrescribedDrugs = (drugs: PrescribedDrug[]|null|undefined): PrescribedDrug[] | [] => {
   return drugs ? drugs.filter((drug) => isCompleteDrugInput(drug)) : [];
@@ -160,7 +167,10 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
       prescription: prescription({ ...drug }, drug.upcomingDosages.reduce(
         (prev, d) => ({ ...prev, [d.dosage]: d.quantity }), {},
       )),
-      initiallyCalculatedDosages: drug.prescribedDosages,
+      initiallyCalculatedDosages: drug.upcomingDosages.reduce((prev, { dosage, quantity }) => {
+        prev[dosage] = quantity;
+        return prev;
+      }, {} as { [dosage: string]: number }),
       addedInCurrentVisit: !drug.prevVisit,
       selected: !drug.prevVisit,
       form: drug.form,
@@ -348,19 +358,20 @@ export const generateInstructionsForPharmacy = (prescribedDrugs: PrescribedDrug[
     return '';
   }
 
-  return prescribedDrugs.reduce((instruction, drug, i, drugs) => {
-    const instructionForADrug = Object.entries(drug.prescribedDosages)
-      .filter(([dosage, qty]) => qty !== 0)
-      .reduce((acc, [dosage, qty], j, dosages) => {
-        if (j === dosages.length - 1) {
-          return `${acc}${qty} * ${dosage} ${drug.form} ${drug.brand}.\n`;
-        }
-        return `${acc}${qty} * ${dosage} ${drug.form} ${drug.brand},`;
-      }, '');
-
-    if (i === drugs.length - 1) {
-      return `${instruction} ${instructionForADrug}`;
-    }
-    return `${instruction} ${instructionForADrug},`;
-  }, '');
+  // return prescribedDrugs.reduce((instruction, drug, i, drugs) => {
+  //   const instructionForADrug = Object.entries(drug.prescribedDosages)
+  //     .filter(([dosage, qty]) => qty !== 0)
+  //     .reduce((acc, [dosage, qty], j, dosages) => {
+  //       if (j === dosages.length - 1) {
+  //         return `${acc}${qty} * ${dosage} ${drug.form} ${drug.brand}.\n`;
+  //       }
+  //       return `${acc}${qty} * ${dosage} ${drug.form} ${drug.brand},`;
+  //     }, '');
+  //
+  //   if (i === drugs.length - 1) {
+  //     return `${instruction} ${instructionForADrug}`;
+  //   }
+  //   return `${instruction} ${instructionForADrug},`;
+  // }, '');
+  return '';
 };

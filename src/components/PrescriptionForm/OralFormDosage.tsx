@@ -43,10 +43,7 @@ const OralFormDosage: FC<Props> = ({ time }) => {
     const ml = mg / (chosenDrugForm!.dosages as OralDosage).rate.mg * (chosenDrugForm!.dosages as OralDosage).rate.ml;
     const actionData = { id, dosage: { dosage: dosage.current, quantity: mg } };
     if (time === 'Upcoming') {
-      const prescribedDosages = calcPrescribedDosageQty({
-        chosenDrugForm, intervalDurationDays, upcomingDosagesQty, oralDosageInfo,
-      });
-      dispatch(upcomingDosageChange({ ...actionData, prescribedDosages }));
+      dispatch(upcomingDosageChange(actionData));
     } else {
       dispatch(priorDosageChange(actionData));
     }
@@ -60,10 +57,7 @@ const OralFormDosage: FC<Props> = ({ time }) => {
     const mg = ml / (chosenDrugForm!.dosages as OralDosage).rate.ml * (chosenDrugForm!.dosages as OralDosage).rate.mg;
     const actionData = { id, dosage: { dosage: dosage.current, quantity: mg } };
     if (time === 'Upcoming') {
-      const prescribedDosages = calcPrescribedDosageQty({
-        chosenDrugForm, intervalDurationDays, upcomingDosagesQty, oralDosageInfo,
-      });
-      dispatch(upcomingDosageChange({ ...actionData, prescribedDosages }));
+      dispatch(upcomingDosageChange(actionData));
     } else {
       dispatch(priorDosageChange(actionData));
     }

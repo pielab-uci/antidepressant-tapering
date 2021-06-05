@@ -118,18 +118,11 @@ const TaperConfigurationPage = () => {
   }, [prescribedDrugs]);
 
   const renderPrescriptionForms = (prescribedDrugs: PrescribedDrug[]) => {
-    // console.group('renderPrescriptionForms');
-    // console.log(prescribedDrugs);
-    // console.groupEnd();
     const notFromPrevVisit = prescribedDrugs.filter((prescribedDrug) => !prescribedDrug.prevVisit);
     return notFromPrevVisit.map(
       (drug) => <PrescriptionForm key={`PrescriptionForm${drug.id}`} prescribedDrug={drug}/>,
     );
   };
-
-  // const renderPrescribedQuantites = (prescribedDrugs: PrescribedDrug[]) => {
-  //   return prescribedDrugs.map((drug) => <PrescribedDosageQuantities key={`$PrescribedDosageQty${drug.id}`} prescribedDrug={drug}/>);
-  // };
 
   const instructionsForPatientPlaceholder = useRef('e.g., If you experience severe withdrawal symptoms, go back to the previous dosage. / call your provider / come back to provider\'s office.');
 

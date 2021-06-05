@@ -326,7 +326,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.projectedSchedule = scheduleGenerator(action.data);
         draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
         draft.instructionsForPatient = generateInstructionsForPatientFromSchedule(draft.projectedSchedule);
-        // draft.instructionsForPharmacy = generateInstructionsForPharmacy(draft.prescribedDrugs);
         draft.instructionsForPharmacy = generateInstructionsForPharmacy(draft.instructionsForPatient, draft.finalPrescription);
         draft.showInstructionsForPatient = true;
         draft.isSaved = false;
@@ -400,6 +399,12 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.instructionsForPharmacy = generateInstructionsForPharmacy(draft.instructionsForPatient, draft.finalPrescription);
         break;
       }
+
+      case FINAL_PRESCRIPTION_QUANTITY_CHANGE:
+        draft.finalPrescription[action.data.id].dosageQty[action.data.dosage] = action.data.quantity;
+        draft.instructionsForPharmacy = generateInstructionsForPharmacy(draft.instructionsForPatient, draft.finalPrescription);
+        draft.isSaved = false;
+        break;
 
       case CHANGE_MESSAGE_FOR_PATIENT:
         draft.instructionsForPatient = action.data;
@@ -482,12 +487,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           drug.upcomingDosages[idx] = action.data.dosage;
         }
 
-        draft.isSaved = false;
-        break;
-      }
-
-      case FINAL_PRESCRIPTION_QUANTITY_CHANGE: {
-        draft.finalPrescription[action.data.id].dosageQty[action.data.dosage] = action.data.quantity;
         draft.isSaved = false;
         break;
       }

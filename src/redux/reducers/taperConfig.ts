@@ -73,7 +73,7 @@ import {
   scheduleGenerator,
   generateInstructionsForPatientFromSchedule,
   isCompleteDrugInput,
-  generateInstructionsForPharmacy, calcMinimumQuantityForDosage,
+  generateInstructionsForPharmacy, calcMinimumQuantityForDosage, prescription,
 } from './utils';
 
 export interface TaperConfigState {
@@ -366,7 +366,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
                 obj.oralDosageInfo = row.oralDosageInfo;
               }
               obj.availableDosages = row.availableDosageOptions;
-              obj.dosageQty = Object.entries(row.initiallyCalculatedDosages)
+              obj.dosageQty = Object.entries(row.unitDosages)
                 .reduce((dosages, [dosage, qty]) => {
                   if (!dosages[dosage]) {
                     dosages[dosage] = qty * row.intervalDurationDays;
@@ -377,7 +377,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
                 }, {} as { [dosage: string]: number });
               prev[row.prescribedDrugId] = obj;
             } else {
-              Object.entries(row.initiallyCalculatedDosages)
+              Object.entries(row.unitDosages)
                 .forEach(([dosage, qty]) => {
                   if (!prev[row.prescribedDrugId].dosageQty[dosage]) {
                     prev[row.prescribedDrugId].dosageQty[dosage] = qty * row.intervalDurationDays;
@@ -571,11 +571,23 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.sharingWithPatientEmailError = action.error;
         break;
 
-      case TABLE_DOSAGE_EDITED:
+      case TABLE_DOSAGE_EDITED: {
         if (action.data.rowIndex !== null) {
-          draft.projectedSchedule.data[action.data.rowIndex].dosage = parseFloat(action.data.newValue);
+          const editedRow = draft.projectedSchedule.data[action.data.rowIndex];
+          const dosage = parseFloat(action.data.newValue);
+          const unitDosages = calcMinimumQuantityForDosage(editedRow.availableDosageOptions, dosage, editedRow.regularDosageOptions);
+
+          draft.projectedSchedule.data[action.data.rowIndex] = {
+            ...editedRow,
+            dosage,
+            unitDosages,
+            prescription: prescription({ ...editedRow }, unitDosages),
+
+          };
         }
+
         break;
+      }
 
       case TABLE_START_DATE_EDITED:
         if (action.data.rowIndex !== null) {

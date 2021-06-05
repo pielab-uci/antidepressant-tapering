@@ -121,11 +121,12 @@ export type TableRowData =
     endDate: Date,
     selected: boolean,
     availableDosageOptions: string[];
+    regularDosageOptions: string[]|null;
     /*
      * dosages counts from upcoming dosages
      * or minimum quantity calculation without considering intervalDurationDays
      */
-    initiallyCalculatedDosages: { [dosage: string]: number },
+    unitDosages: { [dosage: string]: number },
     addedInCurrentVisit: boolean,
     intervalDurationDays: number,
     intervalCount: number,

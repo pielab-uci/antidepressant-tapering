@@ -28,6 +28,8 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 import './tableStyles.css';
 import DateEditor from './DateEditor';
+import NumberEditor from './NumberEditor';
+import { valueSetter } from './utils';
 
 const ProjectedScheduleTable: FC<{ setGridApi: (gridApi: GridApi) => void }> = ({ setGridApi }) => {
   // const [gridApi, setGridApi] = useState<GridApi | null>(null);
@@ -70,8 +72,10 @@ const ProjectedScheduleTable: FC<{ setGridApi: (gridApi: GridApi) => void }> = (
       headerName: 'Dosage',
       field: 'dosage',
       editable: true,
-      valueSetter: (params: ValueSetterParams) => params.newValue,
+      cellEditor: 'numberEditor',
       valueFormatter: (params: ValueFormatterParams) => `${params.value}mg`,
+      // need to keep below valueSetter
+      valueSetter: (params: ValueSetterParams) => params.newValue,
     }, {
       headName: 'Start Date',
       field: 'startDate',
@@ -80,8 +84,9 @@ const ProjectedScheduleTable: FC<{ setGridApi: (gridApi: GridApi) => void }> = (
       editable: true,
       cellEditor: 'datePicker',
       minWidth: 160,
-      valueSetter: (params: ValueSetterParams) => params.newValue,
       valueFormatter: (params: ValueFormatterParams) => format(params.value, 'MM/dd/yyyy'),
+      // need to keep below valueSetter
+      valueSetter: (params: ValueSetterParams) => params.newValue,
     }, {
       headName: 'End Date',
       field: 'endDate',
@@ -90,8 +95,9 @@ const ProjectedScheduleTable: FC<{ setGridApi: (gridApi: GridApi) => void }> = (
       editable: true,
       cellEditor: 'datePicker',
       minWidth: 160,
-      valueSetter: (params: ValueSetterParams) => params.newValue,
       valueFormatter: (params: ValueFormatterParams) => format(params.value, 'MM/dd/yyyy'),
+      // need to keep below valueSetter
+      valueSetter: (params: ValueSetterParams) => params.newValue,
     }, {
       headerName: 'Prescription',
       field: 'prescription',
@@ -184,7 +190,7 @@ const ProjectedScheduleTable: FC<{ setGridApi: (gridApi: GridApi) => void }> = (
           onFirstDataRendered={onFirstDataRendered}
           onGridReady={onGridReady}
           onCellEditingStopped={onCellEditingStopped}
-          frameworkComponents={{ datePicker: DateEditor }}
+          frameworkComponents={{ datePicker: DateEditor, numberEditor: NumberEditor }}
           suppressDragLeaveHidesColumns={true}
         />
       </div>

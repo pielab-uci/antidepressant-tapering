@@ -32,6 +32,7 @@ const PrescribedQuantitiesForDrug: FC<Props> = ({ id, prescription }) => {
   const renderForms = useCallback((dosages: string[], prescription: ValueOf<Prescription>) => {
     return (
       <>
+      <h4>{prescription.brand} {prescription.form}</h4>
         {dosages.map((dos: string) => (
           <div key={`${prescription.brand}_${prescription.form}_${dos}_final_prescription`}>
             <h5>{dos}</h5>

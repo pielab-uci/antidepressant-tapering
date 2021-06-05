@@ -166,7 +166,7 @@ export const calcMinimumQuantityForDosage = (availableOptions: string[], dosage:
 };
 
 type PrescriptionFunction = (args: { form: string, intervalCount: number, intervalUnit: 'Days'|'Weeks'|'Months', oralDosageInfo?: OralDosage | null }, dosageQty: { [dosage: string]:number }) => string;
-const prescription: PrescriptionFunction = (
+export const prescription: PrescriptionFunction = (
   {
     form, intervalCount, intervalUnit, oralDosageInfo,
   }, dosageQty,
@@ -203,13 +203,14 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
       prescription: prescription({ ...drug }, drug.upcomingDosages.reduce(
         (prev, d) => ({ ...prev, [d.dosage]: d.quantity }), {},
       )),
-      initiallyCalculatedDosages: drug.upcomingDosages.reduce((prev, { dosage, quantity }) => {
+      unitDosages: drug.upcomingDosages.reduce((prev, { dosage, quantity }) => {
         prev[dosage] = quantity;
         return prev;
       }, {} as { [dosage: string]: number }),
       addedInCurrentVisit: !drug.prevVisit,
       selected: !drug.prevVisit,
       availableDosageOptions: drug.availableDosageOptions,
+      regularDosageOptions: drug.regularDosageOptions,
       form: drug.form,
       intervalDurationDays: drug.intervalDurationDays,
       intervalCount: drug.intervalCount,
@@ -224,7 +225,7 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
       Drug: drug.name,
       upcomingDosageSum: upcomingDosages[1],
       // prescribedDosages: calcMinimumQuantityForDosage(drug.availableDosageOptions, upcomingDosages[1], drug.regularDosageOptions),
-      initiallyCalculateDosages: calcMinimumQuantityForDosage(drug.availableDosageOptions, upcomingDosages[1], drug.regularDosageOptions),
+      unitDosages: calcMinimumQuantityForDosage(drug.availableDosageOptions, upcomingDosages[1], drug.regularDosageOptions),
       startDate: projectionStartDate,
       endDate: newEndDate,
       selected: false,
@@ -244,11 +245,12 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
           dosage: newRowData.upcomingDosageSum,
           startDate: newRowData.startDate,
           endDate: newRowData.endDate,
-          prescription: prescription({ ...drug }, newRowData.initiallyCalculateDosages),
+          prescription: prescription({ ...drug }, newRowData.unitDosages),
           selected: false,
           addedInCurrentVisit: !drug.prevVisit,
           availableDosageOptions: drug.availableDosageOptions,
-          initiallyCalculatedDosages: newRowData.initiallyCalculateDosages,
+          regularDosageOptions: drug.regularDosageOptions,
+          unitDosages: newRowData.unitDosages,
           intervalDurationDays: drug.intervalDurationDays,
           intervalCount: drug.intervalCount,
           intervalUnit: drug.intervalUnit,
@@ -258,7 +260,7 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
         });
 
         newRowData.upcomingDosageSum = upcomingDosages[i + 2];
-        newRowData.initiallyCalculateDosages = calcMinimumQuantityForDosage(drug.availableDosageOptions, newRowData.upcomingDosageSum, drug.regularDosageOptions);
+        newRowData.unitDosages = calcMinimumQuantityForDosage(drug.availableDosageOptions, newRowData.upcomingDosageSum, drug.regularDosageOptions);
         newRowData.startDate = add(newRowData.endDate, { days: 1 });
         newRowData.endDate = sub(add(newRowData.startDate, durationInDaysCount), { days: 1 });
       }
@@ -284,7 +286,7 @@ const checkIntervalOverlappingRows = (rows: TableRowData[]): TableRowData[] => {
           intervalCount: fromPrev.intervalCount,
           intervalUnit: fromPrev.intervalUnit,
         },
-        fromPrev.initiallyCalculatedDosages);
+        fromPrev.unitDosages);
 
         if (isBefore(fromPrev.endDate, fromPrev.startDate)) {
           arr.splice(i, 1);
@@ -386,7 +388,7 @@ export const generateInstructionsForPatientFromSchedule = (schedule: Schedule): 
       const startDate = format(row.startDate, 'MMM dd, yyyy');
       const endDate = format(row.endDate, 'MMM dd, yyyy');
       const dosagesPrescribed = row.prescription.replace(/ for.+/, '');
-      return `${message}Take ${dosagesPrescribed} from ${startDate} to ${endDate}.\n`;
+      return `${message}Take ${row.drug}(${row.brand}) ${dosagesPrescribed} from ${startDate} to ${endDate}.\n`;
     }, '');
 };
 

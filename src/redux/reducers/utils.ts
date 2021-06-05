@@ -2,7 +2,7 @@ import {
   add, areIntervalsOverlapping, differenceInCalendarDays, format, isAfter, isBefore, sub,
 } from 'date-fns';
 import {
-  DrugForm, isCapsuleOrTablet, OralDosage, PrescribedDrug, TableRowData, Converted,
+  DrugForm, isCapsuleOrTablet, OralDosage, PrescribedDrug, TableRowData, Converted, Prescription,
 } from '../../types';
 import { Schedule } from '../../components/Schedule/ProjectedSchedule';
 

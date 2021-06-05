@@ -23,7 +23,6 @@ export const EMPTY_TAPER_CONFIG_PAGE = 'EMPTY_TAPER_CONFIG_PAGE' as const;
 
 export interface EmptyTaperConfigPage {
   type: typeof EMPTY_TAPER_CONFIG_PAGE,
-  // data: number;
 }
 
 export const EMPTY_PRESCRIBED_DRUGS = 'EMPTY_PRESCRIBED_DRUGS' as const;

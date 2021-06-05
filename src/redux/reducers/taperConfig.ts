@@ -350,7 +350,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
             row.selected = false;
           }
         });
-
+        draft.instructionsForPatient = generateInstructionsForPatientFromSchedule(draft.projectedSchedule);
         draft.finalPrescription = draft.projectedSchedule.data
           .filter((row, i) => draft.tableSelectedRows.includes(i))
           .reduce((prev, row) => {

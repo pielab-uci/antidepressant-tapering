@@ -157,7 +157,7 @@ const TaperConfigurationPage = () => {
         <Button>Copy to Clipboard</Button>
       </CopyToClipboard>
 
-      <h3>Instructions for Patients</h3>
+      <h3>Instructions for Patient</h3>
       <TextArea
         value={instructionsForPatient}
         defaultValue={instructionsForPatient}

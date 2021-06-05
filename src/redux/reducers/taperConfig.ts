@@ -326,7 +326,8 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.projectedSchedule = scheduleGenerator(action.data);
         draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
         draft.instructionsForPatient = generateInstructionsForPatientFromSchedule(draft.projectedSchedule);
-        draft.instructionsForPharmacy = generateInstructionsForPharmacy(draft.prescribedDrugs);
+        // draft.instructionsForPharmacy = generateInstructionsForPharmacy(draft.prescribedDrugs);
+        draft.instructionsForPharmacy = generateInstructionsForPharmacy(draft.instructionsForPatient, draft.finalPrescription);
         draft.showInstructionsForPatient = true;
         draft.isSaved = false;
         break;
@@ -351,6 +352,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           }
         });
         draft.instructionsForPatient = generateInstructionsForPatientFromSchedule(draft.projectedSchedule);
+
         draft.finalPrescription = draft.projectedSchedule.data
           .filter((row, i) => draft.tableSelectedRows.includes(i))
           .reduce((prev, row) => {
@@ -394,6 +396,8 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
             prescription.dosageQty = calcMinimumQuantityForDosage(prescription.oralDosageInfo.bottles, dosageInMl, null);
           }
         });
+
+        draft.instructionsForPharmacy = generateInstructionsForPharmacy(draft.instructionsForPatient, draft.finalPrescription);
         break;
       }
 

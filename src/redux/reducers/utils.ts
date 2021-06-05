@@ -2,7 +2,7 @@ import {
   add, areIntervalsOverlapping, differenceInCalendarDays, format, isAfter, isBefore, sub,
 } from 'date-fns';
 import {
-  DrugForm, isCapsuleOrTablet, OralDosage, PrescribedDrug, TableRowData, Converted, Prescription,
+  OralDosage, PrescribedDrug, TableRowData, Converted, Prescription,
 } from '../../types';
 import { Schedule } from '../../components/Schedule/ProjectedSchedule';
 
@@ -385,31 +385,31 @@ export const generateInstructionsForPatientFromSchedule = (schedule: Schedule): 
     .reduce((message, row) => {
       const startDate = format(row.startDate, 'MMM dd, yyyy');
       const endDate = format(row.endDate, 'MMM dd, yyyy');
-      const { prescription } = row;
-      const dosagesPrescribed = prescription.replace(/ for.+/, '');
+      const dosagesPrescribed = row.prescription.replace(/ for.+/, '');
       return `${message}Take ${dosagesPrescribed} from ${startDate} to ${endDate}.\n`;
     }, '');
 };
 
-export const generateInstructionsForPharmacy = (prescribedDrugs: PrescribedDrug[]|null): string => {
-  if (prescribedDrugs === null) {
-    return '';
-  }
+export const generateInstructionsForPharmacy = (patientInstructions: string, prescription: Prescription): string => {
+  const instructionsForPatients = `Instructions for Patient:
+  ${patientInstructions
+    .split('\n')
+    .filter((instruction) => instruction !== '')
+    .reduce((prev, line, i, instructionsArr) => {
+      if (i === instructionsArr.length - 1) {
+        return `${prev}\t${line}`;
+      }
+      return `${prev}\t${line}\n`;
+    }, '')}\n---------------------------------------------------\n`;
 
-  // return prescribedDrugs.reduce((instruction, drug, i, drugs) => {
-  //   const instructionForADrug = Object.entries(drug.prescribedDosages)
-  //     .filter(([dosage, qty]) => qty !== 0)
-  //     .reduce((acc, [dosage, qty], j, dosages) => {
-  //       if (j === dosages.length - 1) {
-  //         return `${acc}${qty} * ${dosage} ${drug.form} ${drug.brand}.\n`;
-  //       }
-  //       return `${acc}${qty} * ${dosage} ${drug.form} ${drug.brand},`;
-  //     }, '');
-  //
-  //   if (i === drugs.length - 1) {
-  //     return `${instruction} ${instructionForADrug}`;
-  //   }
-  //   return `${instruction} ${instructionForADrug},`;
-  // }, '');
-  return '';
+  return Object.values(prescription).reduce((instruction, { name, brand, dosageQty }, i, prescriptionArr) => {
+    const dosages = Object.entries(dosageQty).reduce((acc, [dos, qty], j, dosageArr) => {
+      if (j === dosageArr.length - 1) {
+        return `${acc}${qty} * ${dos}`;
+      }
+      return `${acc}${qty} * ${dos}, `;
+    }, '');
+
+    return `${instruction}${name}(${brand}): ${dosages}\n`;
+  }, instructionsForPatients);
 };

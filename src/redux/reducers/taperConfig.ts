@@ -50,7 +50,7 @@ import {
   TableEditingAction,
   TABLE_DOSAGE_EDITED,
   TABLE_START_DATE_EDITED,
-  TABLE_END_DATE_EDITED,
+  TABLE_END_DATE_EDITED, UPDATE_CHART, UpdateChartAction,
 } from '../actions/taperConfig';
 import drugs from './drugs';
 
@@ -189,6 +189,7 @@ export type TaperConfigActions =
   | ShareWithPatientEmailAsyncActions
   | FinalPrescriptionQuantityChange
   | TableEditingAction
+  | UpdateChartAction
   | PrescriptionFormActions;
 
 const emptyPrescribedDrug = (id: number): PrescribedDrug => ({
@@ -339,6 +340,10 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.instructionsForPharmacy = '';
         draft.instructionsForPatient = '';
         draft.isSaved = false;
+        break;
+
+      case UPDATE_CHART:
+        draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
         break;
 
       case SCHEDULE_ROW_SELECTED: {
@@ -582,7 +587,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
             dosage,
             unitDosages,
             prescription: prescription({ ...editedRow }, unitDosages),
-
           };
         }
 

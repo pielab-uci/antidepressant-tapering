@@ -5,10 +5,13 @@ import {
   ADD_NEW_DRUG_FORM,
   ADD_OR_UPDATE_TAPER_CONFIG_FAILURE,
   ADD_OR_UPDATE_TAPER_CONFIG_REQUEST,
-  ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS, AddNewDrugFormAction,
+  ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS,
+  AddNewDrugFormAction,
   AddOrUpdateTaperConfigFailureAction,
   AddOrUpdateTaperConfigRequestAction,
-  AddOrUpdateTaperConfigSuccessAction, CLEAR_SCHEDULE, ClearScheduleAction,
+  AddOrUpdateTaperConfigSuccessAction,
+  CLEAR_SCHEDULE,
+  ClearScheduleAction,
   FETCH_PRESCRIBED_DRUGS_FAILURE,
   FETCH_PRESCRIBED_DRUGS_REQUEST,
   FETCH_PRESCRIBED_DRUGS_SUCCESS,
@@ -23,6 +26,11 @@ import {
   FetchTaperConfigSuccessAction,
   GENERATE_SCHEDULE,
   GenerateScheduleAction,
+  TABLE_DOSAGE_EDITED,
+  TABLE_END_DATE_EDITED,
+  TABLE_START_DATE_EDITED,
+  UPDATE_CHART,
+  UpdateChartAction,
 } from '../actions/taperConfig';
 import { PrescribedDrug, TaperingConfiguration } from '../../types';
 import { completePrescribedDrugs } from '../reducers/utils';
@@ -34,6 +42,7 @@ import {
   PRIOR_DOSAGE_CHANGE,
   UPCOMING_DOSAGE_CHANGE,
 } from '../../components/PrescriptionForm/actions';
+import { Schedule } from '../../components/Schedule/ProjectedSchedule';
 
 let taperConfigId = 100;
 
@@ -251,23 +260,31 @@ function* fetchPrescribedDrugs(action: FetchPrescribedDrugsRequestAction) {
   }
 }
 
+function* updateChart() {
+  yield put<UpdateChartAction>({
+    type: UPDATE_CHART,
+  });
+}
 function* watchFetchPrescribedDrugs() {
   yield takeLatest(FETCH_PRESCRIBED_DRUGS_REQUEST, fetchPrescribedDrugs);
 }
 
 function* watchTaperConfigFormChange() {
-  console.log('watchTaperConfigFormChange');
   yield takeLatest([CHOOSE_BRAND, CHOOSE_FORM, PRIOR_DOSAGE_CHANGE,
     ALLOW_SPLITTING_UNSCORED_TABLET, UPCOMING_DOSAGE_CHANGE, INTERVAL_START_DATE_CHANGE,
     INTERVAL_END_DATE_CHANGE, INTERVAL_UNIT_CHANGE, INTERVAL_COUNT_CHANGE],
   generateOrClearSchedule);
 }
 
+function* watchProjectedScheduleTableEdit() {
+  yield takeLatest([TABLE_DOSAGE_EDITED, TABLE_START_DATE_EDITED, TABLE_END_DATE_EDITED], updateChart);
+}
 export default function* taperConfigSaga() {
   yield all([
     fork(watchFetchTaperConfig),
     fork(watchFetchPrescribedDrugs),
     fork(watchAddOrUpdateTaperConfig),
     fork(watchTaperConfigFormChange),
+    fork(watchProjectedScheduleTableEdit),
   ]);
 }

@@ -1,5 +1,6 @@
 import { CellEditingStoppedEvent } from 'ag-grid-community';
 import { PrescribedDrug, TaperingConfiguration } from '../../types';
+import { Schedule } from '../../components/Schedule/ProjectedSchedule';
 
 export const GENERATE_SCHEDULE = 'GENERATE_SCHEDULE' as const;
 export const CLEAR_SCHEDULE = 'CLEAR_SCHEDULE' as const;
@@ -11,6 +12,11 @@ export interface GenerateScheduleAction {
 
 export interface ClearScheduleAction {
   type: typeof CLEAR_SCHEDULE
+}
+
+export const UPDATE_CHART = 'UPDATE_CHART' as const;
+export interface UpdateChartAction {
+  type: typeof UPDATE_CHART,
 }
 
 export const INIT_NEW_TAPER_CONFIG = 'INIT_NEW_TAPER_CONFIG' as const;

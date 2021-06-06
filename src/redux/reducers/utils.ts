@@ -2,7 +2,7 @@ import {
   add, areIntervalsOverlapping, differenceInCalendarDays, format, isAfter, isBefore, sub,
 } from 'date-fns';
 import {
-  OralDosage, PrescribedDrug, TableRowData, Converted, Prescription,
+  OralDosage, PrescribedDrug, TableRowData, Converted, Prescription, ValueOf,
 } from '../../types';
 import { Schedule } from '../../components/Schedule/ProjectedSchedule';
 
@@ -439,4 +439,51 @@ export const generateInstructionsForPharmacy = (patientInstructions: string, pre
 
     return `${instruction}${name}(${brand}): ${dosages}\n`;
   }, instructionsForPatients);
+};
+
+export const calcFinalPrescription = (scheduleData: TableRowData[], tableSelectedRows: (number | null)[]): Prescription => {
+  const finalPrescription = scheduleData
+    .filter((row, i) => tableSelectedRows.includes(i))
+    .reduce((prev, row) => {
+      if (!prev[row.prescribedDrugId]) {
+        const obj: ValueOf<Prescription> = {
+          name: '', brand: '', form: '', availableDosages: [], oralDosageInfo: null, dosageQty: {},
+        };
+        obj.name = row.drug;
+        obj.brand = row.brand;
+        obj.form = row.form;
+        if (row.oralDosageInfo) {
+          obj.oralDosageInfo = row.oralDosageInfo;
+        }
+        obj.availableDosages = row.availableDosageOptions!;
+        obj.dosageQty = Object.entries(row.unitDosages!)
+          .reduce((dosages, [dosage, qty]) => {
+            if (!dosages[dosage]) {
+              dosages[dosage] = qty * row.intervalDurationDays!;
+            } else {
+              dosages[dosage] += qty * row.intervalDurationDays!;
+            }
+            return dosages;
+          }, {} as { [dosage: string]: number });
+        prev[row.prescribedDrugId] = obj;
+      } else {
+        Object.entries(row.unitDosages!)
+          .forEach(([dosage, qty]) => {
+            if (!prev[row.prescribedDrugId].dosageQty[dosage]) {
+              prev[row.prescribedDrugId].dosageQty[dosage] = qty * row.intervalDurationDays!;
+            } else {
+              prev[row.prescribedDrugId].dosageQty[dosage] += qty * row.intervalDurationDays!;
+            }
+          });
+      }
+      return prev;
+    }, {} as Prescription);
+
+  Object.entries(finalPrescription).forEach(([id, prescription]) => {
+    if (prescription.oralDosageInfo) {
+      const dosageInMl = prescription.dosageQty['1mg'] / prescription.oralDosageInfo.rate.mg * prescription.oralDosageInfo.rate.ml;
+      prescription.dosageQty = calcMinimumQuantityForDosage(prescription.oralDosageInfo.bottles, dosageInMl, null);
+    }
+  });
+  return finalPrescription;
 };

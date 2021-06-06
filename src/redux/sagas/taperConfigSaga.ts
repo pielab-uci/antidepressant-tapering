@@ -42,7 +42,6 @@ import {
   PRIOR_DOSAGE_CHANGE,
   UPCOMING_DOSAGE_CHANGE,
 } from '../../components/PrescriptionForm/actions';
-import { Schedule } from '../../components/Schedule/ProjectedSchedule';
 
 let taperConfigId = 100;
 

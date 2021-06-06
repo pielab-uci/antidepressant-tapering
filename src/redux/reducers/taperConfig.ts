@@ -1,6 +1,6 @@
 import produce from 'immer';
 import {
-  Drug, PrescribedDrug, Prescription, TaperingConfiguration, ValueOf,
+  Drug, PrescribedDrug, Prescription, TaperingConfiguration,
 } from '../../types';
 import {
   ADD_OR_UPDATE_TAPER_CONFIG_FAILURE,
@@ -349,58 +349,10 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case SCHEDULE_ROW_SELECTED: {
         draft.tableSelectedRows = action.data;
         draft.projectedSchedule.data.forEach((row, i) => {
-          if (draft.tableSelectedRows.includes(i)) {
-            row.selected = true;
-          } else {
-            row.selected = false;
-          }
+          row.selected = draft.tableSelectedRows.includes(i);
         });
         draft.instructionsForPatient = generateInstructionsForPatientFromSchedule(draft.projectedSchedule);
         draft.finalPrescription = calcFinalPrescription(draft.projectedSchedule.data, draft.tableSelectedRows);
-        // draft.finalPrescription = draft.projectedSchedule.data
-        //   .filter((row, i) => draft.tableSelectedRows.includes(i))
-        //   .reduce((prev, row) => {
-        //     if (!prev[row.prescribedDrugId]) {
-        //       const obj: ValueOf<Prescription> = {
-        //         name: '', brand: '', form: '', availableDosages: [], oralDosageInfo: null, dosageQty: {},
-        //       };
-        //       obj.name = row.drug;
-        //       obj.brand = row.brand;
-        //       obj.form = row.form;
-        //       if (row.oralDosageInfo) {
-        //         obj.oralDosageInfo = row.oralDosageInfo;
-        //       }
-        //       obj.availableDosages = row.availableDosageOptions!;
-        //       obj.dosageQty = Object.entries(row.unitDosages!)
-        //         .reduce((dosages, [dosage, qty]) => {
-        //           if (!dosages[dosage]) {
-        //             dosages[dosage] = qty * row.intervalDurationDays!;
-        //           } else {
-        //             dosages[dosage] += qty * row.intervalDurationDays!;
-        //           }
-        //           return dosages;
-        //         }, {} as { [dosage: string]: number });
-        //       prev[row.prescribedDrugId] = obj;
-        //     } else {
-        //       Object.entries(row.unitDosages!)
-        //         .forEach(([dosage, qty]) => {
-        //           if (!prev[row.prescribedDrugId].dosageQty[dosage]) {
-        //             prev[row.prescribedDrugId].dosageQty[dosage] = qty * row.intervalDurationDays!;
-        //           } else {
-        //             prev[row.prescribedDrugId].dosageQty[dosage] += qty * row.intervalDurationDays!;
-        //           }
-        //         });
-        //     }
-        //     return prev;
-        //   }, {} as Prescription);
-        //
-        // Object.entries(draft.finalPrescription).forEach(([id, prescription]) => {
-        //   if (prescription.oralDosageInfo) {
-        //     const dosageInMl = prescription.dosageQty['1mg'] / prescription.oralDosageInfo.rate.mg * prescription.oralDosageInfo.rate.ml;
-        //     prescription.dosageQty = calcMinimumQuantityForDosage(prescription.oralDosageInfo.bottles, dosageInMl, null);
-        //   }
-        // });
-
         draft.instructionsForPharmacy = generateInstructionsForPharmacy(draft.instructionsForPatient, draft.finalPrescription);
         break;
       }

@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { format } from 'date-fns';
 import { AgGridReact } from 'ag-grid-react';
 import {
-  CellEditingStoppedEvent,
+  CellEditingStoppedEvent, CheckboxSelectionCallbackParams,
   ColDef, ColumnApi,
   FirstDataRenderedEvent, GridApi,
   GridReadyEvent, RowDataChangedEvent,
@@ -66,7 +66,8 @@ const ProjectedScheduleTable: FC<{ setGridApi: (gridApi: GridApi) => void }> = (
       field: 'drug',
       sortable: true,
       unSortIcon: true,
-      checkboxSelection: true,
+      checkboxSelection: (params: CheckboxSelectionCallbackParams) => !params.data.isPriorDosage,
+
     }, {
       headerName: 'Dosage',
       field: 'dosage',
@@ -110,11 +111,12 @@ const ProjectedScheduleTable: FC<{ setGridApi: (gridApi: GridApi) => void }> = (
   }, []);
 
   const rowClassRules = useRef({
-    Fluoxetine: (params: any) => params.data.drug === 'Fluoxetine',
-    Citalopram: (params: any) => params.data.drug === 'Citalopram',
-    Sertraline: (params: any) => params.data.drug === 'Sertraline',
-    Paroxetine: (params: any) => params.data.drug === 'Paroxetine',
-    Escitalopram: (params: any) => params.data.drug === 'Escitalopram',
+    PriorDosage: (params: any) => params.data.isPriorDosage,
+    Fluoxetine: (params: any) => !params.data.isPriorDosage && params.data.drug === 'Fluoxetine',
+    Citalopram: (params: any) => !params.data.isPriorDosage && params.data.drug === 'Citalopram',
+    Sertraline: (params: any) => !params.data.isPriorDosage && params.data.drug === 'Sertraline',
+    Paroxetine: (params: any) => !params.data.isPriorDosage && params.data.drug === 'Paroxetine',
+    Escitalopram: (params: any) => !params.data.isPriorDosage && params.data.drug === 'Escitalopram',
   });
 
   const onRowSelected = (e: RowSelectedEvent) => {
@@ -196,6 +198,7 @@ const ProjectedScheduleTable: FC<{ setGridApi: (gridApi: GridApi) => void }> = (
           onCellEditingStopped={onCellEditingStopped}
           frameworkComponents={{ datePicker: DateEditor, numberEditor: NumberEditor }}
           suppressDragLeaveHidesColumns={true}
+          suppressRowClickSelection={true}
         />
       </div>
     </div>

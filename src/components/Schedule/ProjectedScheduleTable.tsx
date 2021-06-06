@@ -76,6 +76,7 @@ const ProjectedScheduleTable: FC<{ setGridApi: (gridApi: GridApi) => void }> = (
       valueFormatter: (params: ValueFormatterParams) => `${params.value}mg`,
       // need to keep below valueSetter
       valueSetter: (params: ValueSetterParams) => params.newValue,
+      // valueSetter: valueSetter((x: string) => parseFloat(x) >= 0),
     }, {
       headName: 'Start Date',
       field: 'startDate',

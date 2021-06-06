@@ -1,5 +1,5 @@
 import React, {
-  forwardRef, useImperativeHandle, useState,
+  forwardRef, useEffect, useImperativeHandle, useState,
 } from 'react';
 
 import { format } from 'date-fns';
@@ -7,9 +7,16 @@ import { Input } from 'antd';
 
 export default forwardRef((props: any, ref) => {
   const [date, setDate] = useState<Date | null>(null);
+  useEffect(() => {
+    console.group('DateEditor');
+    console.log('props: ', props);
+    console.log('ref: ', ref);
+    console.groupEnd();
+  }, []);
   const handleDateChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const tempDate = new Date(e.target.value);
     const newDate = new Date(tempDate.valueOf() + tempDate.getTimezoneOffset() * 60 * 1000);
+
     setDate(newDate);
   };
 

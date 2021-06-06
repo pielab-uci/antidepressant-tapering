@@ -212,6 +212,7 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
       availableDosageOptions: drug.availableDosageOptions,
       regularDosageOptions: drug.regularDosageOptions,
       form: drug.form,
+      isPriorDosage: false,
       intervalDurationDays: drug.intervalDurationDays,
       intervalCount: drug.intervalCount,
       intervalUnit: drug.intervalUnit,
@@ -251,6 +252,7 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
           availableDosageOptions: drug.availableDosageOptions,
           regularDosageOptions: drug.regularDosageOptions,
           unitDosages: newRowData.unitDosages,
+          isPriorDosage: false,
           intervalDurationDays: drug.intervalDurationDays,
           intervalCount: drug.intervalCount,
           intervalUnit: drug.intervalUnit,
@@ -337,7 +339,28 @@ export const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule =
   console.log('intervalOverlapCheckedRows: ', intervalOverlapCheckedRows);
   const tableDataSorted : TableRowData[] = sort(drugNames, intervalOverlapCheckedRows);
   console.log('tableData: ', tableDataSorted);
-
+  // tableDataSorted.unshift(...prescribedDrugs.map((drug) => ({
+  //   prescribedDrugId: drug.id,
+  //   isPriorDosage: true,
+  //   drug: drug.name,
+  //   brand: drug.brand,
+  //   dosage: drug.priorDosages.reduce((prev, { dosage, quantity }) => {
+  //     return prev + parseFloat(dosage) * quantity;
+  //   }, 0),
+  //   prescription: '',
+  //   startDate: new Date(-1),
+  //   endDate: new Date(-1),
+  //   selected: false,
+  //   availableDosageOptions: [],
+  //   regularDosageOptions: null,
+  //   unitDosages: {},
+  //   addedInCurrentVisit: false,
+  //   intervalDurationDays: -1,
+  //   intervalCount: -1,
+  //   intervalUnit: null,
+  //   measureUnit: drug.measureUnit,
+  //   form: drug.form,
+  // })) as TableRowData[]);
   console.groupEnd();
 
   return { data: tableDataSorted, drugs: prescribedDrugs };

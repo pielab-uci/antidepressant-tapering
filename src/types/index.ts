@@ -110,27 +110,28 @@ export interface Converted extends PrescribedDrug {
   isIncreasing: boolean;
 }
 
-export type TableRowData =
-  {
-    prescribedDrugId: number;
-    drug: string;
-    brand: string;
-    dosage: number;
-    prescription: string;
-    startDate: Date,
-    endDate: Date,
-    selected: boolean,
-    availableDosageOptions: string[];
-    regularDosageOptions: string[]|null;
-    /*
+export interface TableRowData {
+  prescribedDrugId: number;
+  isPriorDosage: boolean;
+  drug: string;
+  brand: string;
+  dosage: number;
+  prescription: string;
+  startDate: Date,
+  endDate: Date,
+  selected: boolean,
+  availableDosageOptions: string[];
+  regularDosageOptions: string[]|null;
+  /*
      * dosages counts from upcoming dosages
      * or minimum quantity calculation without considering intervalDurationDays
      */
-    unitDosages: { [dosage: string]: number },
-    addedInCurrentVisit: boolean,
-    intervalDurationDays: number,
-    intervalCount: number,
-    intervalUnit: 'Days'|'Weeks'|'Months',
-    oralDosageInfo?: OralDosage,
-    measureUnit: string,
-    form: string };
+  unitDosages: { [dosage: string]: number },
+  addedInCurrentVisit: boolean,
+  intervalDurationDays: number,
+  intervalCount: number,
+  intervalUnit: 'Days'|'Weeks'|'Months',
+  oralDosageInfo?: OralDosage,
+  measureUnit: string,
+  form: string
+}

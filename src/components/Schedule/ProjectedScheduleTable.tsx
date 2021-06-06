@@ -29,7 +29,6 @@ import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 import './tableStyles.css';
 import DateEditor from './DateEditor';
 import NumberEditor from './NumberEditor';
-import { valueSetter } from './utils';
 
 const ProjectedScheduleTable: FC<{ setGridApi: (gridApi: GridApi) => void }> = ({ setGridApi }) => {
   // const [gridApi, setGridApi] = useState<GridApi | null>(null);
@@ -85,7 +84,9 @@ const ProjectedScheduleTable: FC<{ setGridApi: (gridApi: GridApi) => void }> = (
       editable: true,
       cellEditor: 'datePicker',
       minWidth: 160,
-      valueFormatter: (params: ValueFormatterParams) => format(params.value, 'MM/dd/yyyy'),
+      valueFormatter: (params: ValueFormatterParams) => {
+        return params.value !== null ? format(params.value, 'MM/dd/yyyy') : '';
+      },
       // need to keep below valueSetter
       valueSetter: (params: ValueSetterParams) => params.newValue,
     }, {
@@ -96,7 +97,9 @@ const ProjectedScheduleTable: FC<{ setGridApi: (gridApi: GridApi) => void }> = (
       editable: true,
       cellEditor: 'datePicker',
       minWidth: 160,
-      valueFormatter: (params: ValueFormatterParams) => format(params.value, 'MM/dd/yyyy'),
+      valueFormatter: (params: ValueFormatterParams) => {
+        return params.value !== null ? format(params.value, 'MM/dd/yyyy') : '';
+      },
       // need to keep below valueSetter
       valueSetter: (params: ValueSetterParams) => params.newValue,
     }, {

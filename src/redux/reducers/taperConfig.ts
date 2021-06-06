@@ -365,24 +365,24 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
               if (row.oralDosageInfo) {
                 obj.oralDosageInfo = row.oralDosageInfo;
               }
-              obj.availableDosages = row.availableDosageOptions;
-              obj.dosageQty = Object.entries(row.unitDosages)
+              obj.availableDosages = row.availableDosageOptions!;
+              obj.dosageQty = Object.entries(row.unitDosages!)
                 .reduce((dosages, [dosage, qty]) => {
                   if (!dosages[dosage]) {
-                    dosages[dosage] = qty * row.intervalDurationDays;
+                    dosages[dosage] = qty * row.intervalDurationDays!;
                   } else {
-                    dosages[dosage] += qty * row.intervalDurationDays;
+                    dosages[dosage] += qty * row.intervalDurationDays!;
                   }
                   return dosages;
                 }, {} as { [dosage: string]: number });
               prev[row.prescribedDrugId] = obj;
             } else {
-              Object.entries(row.unitDosages)
+              Object.entries(row.unitDosages!)
                 .forEach(([dosage, qty]) => {
                   if (!prev[row.prescribedDrugId].dosageQty[dosage]) {
-                    prev[row.prescribedDrugId].dosageQty[dosage] = qty * row.intervalDurationDays;
+                    prev[row.prescribedDrugId].dosageQty[dosage] = qty * row.intervalDurationDays!;
                   } else {
-                    prev[row.prescribedDrugId].dosageQty[dosage] += qty * row.intervalDurationDays;
+                    prev[row.prescribedDrugId].dosageQty[dosage] += qty * row.intervalDurationDays!;
                   }
                 });
             }
@@ -575,7 +575,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         if (action.data.rowIndex !== null) {
           const editedRow = draft.projectedSchedule.data[action.data.rowIndex];
           const dosage = parseFloat(action.data.newValue);
-          const unitDosages = calcMinimumQuantityForDosage(editedRow.availableDosageOptions, dosage, editedRow.regularDosageOptions);
+          const unitDosages = calcMinimumQuantityForDosage(editedRow.availableDosageOptions!, dosage, editedRow.regularDosageOptions);
 
           draft.projectedSchedule.data[action.data.rowIndex] = {
             ...editedRow,

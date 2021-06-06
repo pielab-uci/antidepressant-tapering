@@ -116,21 +116,21 @@ export interface TableRowData {
   drug: string;
   brand: string;
   dosage: number;
-  prescription: string;
-  startDate: Date,
-  endDate: Date,
+  prescription: string|null;
+  startDate: Date|null,
+  endDate: Date|null,
   selected: boolean,
-  availableDosageOptions: string[];
+  availableDosageOptions: string[]|null ;
   regularDosageOptions: string[]|null;
   /*
      * dosages counts from upcoming dosages
      * or minimum quantity calculation without considering intervalDurationDays
      */
-  unitDosages: { [dosage: string]: number },
+  unitDosages: { [dosage: string]: number }|null,
   addedInCurrentVisit: boolean,
   intervalDurationDays: number,
   intervalCount: number,
-  intervalUnit: 'Days'|'Weeks'|'Months',
+  intervalUnit: 'Days'|'Weeks'|'Months'|null,
   oralDosageInfo?: OralDosage,
   measureUnit: string,
   form: string

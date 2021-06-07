@@ -1,14 +1,13 @@
 import * as React from 'react';
 import {
-  useCallback, useEffect, useRef,
+  useEffect, useRef,
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Prompt, useHistory, useLocation, useRouteMatch,
+  useLocation, useRouteMatch,
 } from 'react-router';
-import { Switch } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import { RootState } from '../../redux/reducers';
-import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import {
   FETCH_TAPER_CONFIG_REQUEST,
   FetchTaperConfigRequestAction,
@@ -18,19 +17,22 @@ import {
   EmptyTaperConfigPage,
 } from '../../redux/actions/taperConfig';
 import { CreateTaperConfiguration, EditTaperConfiguration, ConfirmTaperConfiguration } from './index';
-import CheckPatientRoute from '../../components/CheckPatientRoute';
+import { UserState } from '../../redux/reducers/user';
+import { checkCurrentPatientAndRender } from '../utils';
 
 const TaperConfigurationPage = () => {
   const dispatch = useDispatch();
+  const { currentPatient } = useSelector<RootState, UserState>((state) => state.user);
   const urlSearchParams = useRef<URLSearchParams>(new URLSearchParams(useLocation().search));
-  const history = useHistory();
   const { path, url } = useRouteMatch();
 
   useEffect(() => {
+    console.group('TaperConfigurationPage');
     const id = urlSearchParams.current.get('id');
     console.log('id: ', id);
     console.log('path: ', path);
     console.log('url: ', url);
+    console.groupEnd();
     if (id) {
       dispatch<FetchTaperConfigRequestAction>({
         type: FETCH_TAPER_CONFIG_REQUEST,
@@ -45,7 +47,6 @@ const TaperConfigurationPage = () => {
         },
       });
     }
-    // history.push('/');
     return () => {
       dispatch<EmptyTaperConfigPage>({
         type: EMPTY_TAPER_CONFIG_PAGE,
@@ -56,9 +57,9 @@ const TaperConfigurationPage = () => {
   return (
     <>
       <Switch>
-        <CheckPatientRoute path={`${path}/create`} component={CreateTaperConfiguration}/>
-        <CheckPatientRoute path={`${path}/edit`} component={EditTaperConfiguration}/>
-        <CheckPatientRoute path={`${path}/confirm`} component={ConfirmTaperConfiguration}/>
+        <Route path={`${path}/create`} render={checkCurrentPatientAndRender(currentPatient, CreateTaperConfiguration)}/>
+        <Route path={`${path}/edit`} render={checkCurrentPatientAndRender(currentPatient, EditTaperConfiguration)}/>
+        <Route path={`${path}/confirm`} render={checkCurrentPatientAndRender(currentPatient, ConfirmTaperConfiguration)}/>
       </Switch>
 
     </>

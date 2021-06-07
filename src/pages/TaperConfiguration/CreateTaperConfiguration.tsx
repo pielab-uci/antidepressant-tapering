@@ -1,8 +1,10 @@
 import * as React from 'react';
 import { Button } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { useCallback } from 'react';
-import { useHistory } from 'react-router';
+import { useCallback, useRef } from 'react';
+import {
+  useHistory, useLocation,
+} from 'react-router';
 import { PrescribedDrug } from '../../types';
 import PrescriptionForm from '../../components/PrescriptionForm/PrescriptionForm';
 import { RootState } from '../../redux/reducers';
@@ -13,6 +15,7 @@ const CreateTaperConfiguration = () => {
   const { prescribedDrugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const dispatch = useDispatch();
   const history = useHistory();
+  const urlSearchParams = useRef<URLSearchParams>(new URLSearchParams(useLocation().search));
   const addNewPrescriptionForm = useCallback(() => {
     dispatch({
       type: ADD_NEW_DRUG_FORM,
@@ -21,7 +24,7 @@ const CreateTaperConfiguration = () => {
 
   const moveToEditPage = () => {
     // TODO: continue from here - it makes taper-configuration/create/taper-configuration/edit..
-    history.push('taper-configuration/edit');
+    history.push(`/taper-configuration/edit/?clinicianId=${urlSearchParams.current.get('clinicianId')}&patientId=${urlSearchParams.current.get('patientId')}`);
   };
 
   const renderPrescriptionForms = (prescribedDrugs: PrescribedDrug[]) => {

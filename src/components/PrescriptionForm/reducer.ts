@@ -108,31 +108,21 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.priorDosagesQty = {};
         draft.upcomingDosagesQty = {};
 
+        draft.minDosageUnit = action.data.minDosageUnit;
+        draft.regularDosageOptions = action.data.regularDosageOptions;
+        draft.availableDosageOptions = action.data.availableDosageOptions;
+        draft.oralDosageInfo = action.data.oralDosageInfo;
+        draft.dosageOptions = chosenDrugForm.dosages;
+
         if (isCapsuleOrTablet(chosenDrugForm)) {
-          draft.dosageOptions = chosenDrugForm.dosages;
-          draft.minDosageUnit = Math.min(...draft.dosageOptions.map((dosage) => parseFloat(dosage.dosage))) / 2;
-          draft.regularDosageOptions = draft.dosageOptions.map((option) => option.dosage);
-          draft.availableDosageOptions = [...new Set(draft.dosageOptions.flatMap((option) => {
-            if (option.isScored) {
-              return [`${parseFloat(option.dosage) / 2}${draft.chosenDrugForm!.measureUnit}`, option.dosage];
-            }
-            return option.dosage;
-          }))];
-
-          draft.oralDosageInfo = null;
-
           chosenDrugForm.dosages.forEach((dosage) => {
             draft.priorDosagesQty[dosage.dosage] = 0;
             draft.upcomingDosagesQty[dosage.dosage] = 0;
           });
         } else {
-          draft.availableDosageOptions = ['1mg'];
-          draft.regularDosageOptions = null;
-          draft.oralDosageInfo = chosenDrugForm.dosages;
           draft.priorDosagesQty['1mg'] = 0;
           draft.upcomingDosagesQty['1mg'] = 0;
         }
-
         break;
       }
 

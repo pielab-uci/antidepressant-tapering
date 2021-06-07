@@ -25,8 +25,9 @@ import {
 } from './actions';
 import { IPrescriptionFormContext, PrescriptionFormState } from './types';
 import {
+  CapsuleOrTabletDosage,
   CapsuleOrTabletForm,
-  DrugForm, isCapsuleOrTablet, OralForm, PrescribedDrug,
+  DrugForm, isCapsuleOrTablet, OralDosage, OralForm, PrescribedDrug,
 } from '../../types';
 import {
   CLEAR_SCHEDULE,
@@ -48,7 +49,8 @@ export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
   Upcoming: {
     dosages: initialState.upcomingDosagesQty,
   },
-  formActionDispatch: () => {},
+  formActionDispatch: () => {
+  },
   id: -1,
 });
 
@@ -62,7 +64,7 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
 
   const {
     drugs: drugsLocal, chosenBrand, chosenDrugForm, drugFormOptions,
-    priorDosagesQty, upcomingDosagesQty, minDosageUnit,
+    priorDosagesQty, upcomingDosagesQty, minDosageUnit, dosageOptions,
     availableDosageOptions, allowSplittingUnscoredTablet,
     oralDosageInfo, regularDosageOptions,
   } = state;
@@ -91,32 +93,51 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
     taperConfigActionDispatch(action);
   };
 
-  // use custom hook instead?
   const onFormChange = (value: string) => {
-    const action: ChooseFormAction = {
-      type: CHOOSE_FORM,
-      data: { form: value, id: prescribedDrug.id },
+    const chooseFormActionData: ChooseFormAction['data'] = {
+      form: value,
+      id: prescribedDrug.id,
+      minDosageUnit: -1,
+      availableDosageOptions: [],
+      regularDosageOptions: [],
+      oralDosageInfo: null,
     };
 
-    formActionDispatch(action);
-  };
-
-  // TODO: need to refactor..? can be handled in redux saga instead of using useEffect..?
-  useEffect(() => {
-    if (chosenDrugForm) {
-      taperConfigActionDispatch<ChooseFormAction>({
-        type: CHOOSE_FORM,
-        data: {
-          form: chosenDrugForm.form,
-          minDosageUnit,
-          availableDosageOptions,
-          regularDosageOptions,
-          id: prescribedDrug.id,
-          oralDosageInfo: isCapsuleOrTablet(chosenDrugForm) ? null : oralDosageInfo,
-        },
-      });
+    const newChosenDrugForm = drugFormOptions!.find((form) => form.form === value)!;
+    if (value === 'capsule' || value === 'tablet') {
+      chooseFormActionData.oralDosageInfo = null;
+      // TODO: consider if tablet is scored..?
+      const minDosage = Math.min(...(newChosenDrugForm.dosages as CapsuleOrTabletDosage[])
+        .map((dosage) => parseFloat(dosage.dosage)));
+      chooseFormActionData.minDosageUnit = value === 'capsule' ? minDosage : minDosage / 2;
+      chooseFormActionData.regularDosageOptions = (newChosenDrugForm.dosages as CapsuleOrTabletDosage[])
+        .map((option) => option.dosage);
+      chooseFormActionData.availableDosageOptions = [
+        ...new Set(
+          (newChosenDrugForm.dosages as CapsuleOrTabletDosage[])
+            .flatMap((option) => {
+              if (option.isScored) {
+                return [`${parseFloat(option.dosage) / 2}${newChosenDrugForm.measureUnit}`, option.dosage];
+              }
+              return option.dosage;
+            }),
+        )];
+    } else {
+      chooseFormActionData.oralDosageInfo = (newChosenDrugForm.dosages as OralDosage);
+      chooseFormActionData.minDosageUnit = chooseFormActionData.oralDosageInfo.rate.mg;
+      chooseFormActionData.regularDosageOptions = null;
+      chooseFormActionData.availableDosageOptions = ['1mg'];
     }
-  }, [chosenDrugForm, minDosageUnit]);
+
+    formActionDispatch({
+      type: CHOOSE_FORM,
+      data: chooseFormActionData,
+    });
+    taperConfigActionDispatch({
+      type: CHOOSE_FORM,
+      data: chooseFormActionData,
+    });
+  };
 
   const removeDrugForm = () => {
     taperConfigActionDispatch<RemoveDrugFormAction>({
@@ -134,10 +155,10 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
     }
 
     if (isCapsuleOrTablet(drugForm)) {
-      return <CapsuleOrTabletDosages time={time} />;
+      return <CapsuleOrTabletDosages time={time}/>;
     }
 
-    return <OralFormDosage time={time} />;
+    return <OralFormDosage time={time}/>;
   };
 
   const toggleAllowSplittingUnscoredTabletCheckbox = (e: CheckboxChangeEvent) => {
@@ -161,33 +182,35 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
     }}
     >
       <Button onClick={removeDrugForm}>Remove</Button>
-        <h3>Prescription settings</h3>
-        <label>Brand</label>
-        <Select showSearch value={chosenBrand?.brand} onChange={onBrandChange} style={{ width: 200 }}>
-          {drugsLocal?.map(
-            (drug) => (<OptGroup key={`${drug.name}_group`} label={drug.name}>
-              {drug.options.map(
-                (option) => <Option key={option.brand} value={option.brand}>{option.brand}</Option>,
-              )}
-            </OptGroup>),
-          )}
-        </Select>
-        <label>Form</label>
-        <Select value={chosenDrugForm?.form} onChange={onFormChange} style={{ width: 200 }}>
-          {drugFormOptions?.map(
-            (form: CapsuleOrTabletForm | OralForm) => <Option key={form.form} value={form.form}>{form.form}</Option>,
-          )}
-        </Select>
-      {chosenDrugForm?.form === 'tablet' && <Checkbox checked={allowSplittingUnscoredTablet} onChange={toggleAllowSplittingUnscoredTabletCheckbox}>Allow splitting unscored tablet</Checkbox>}
-        <hr />
+      <h3>Prescription settings</h3>
+      <label>Brand</label>
+      <Select showSearch value={chosenBrand?.brand} onChange={onBrandChange} style={{ width: 200 }}>
+        {drugsLocal?.map(
+          (drug) => (<OptGroup key={`${drug.name}_group`} label={drug.name}>
+            {drug.options.map(
+              (option) => <Option key={option.brand} value={option.brand}>{option.brand}</Option>,
+            )}
+          </OptGroup>),
+        )}
+      </Select>
+      <label>Form</label>
+      <Select value={chosenDrugForm?.form} onChange={onFormChange} style={{ width: 200 }}>
+        {drugFormOptions?.map(
+          (form: CapsuleOrTabletForm | OralForm) => <Option key={form.form} value={form.form}>{form.form}</Option>,
+        )}
+      </Select>
+      {chosenDrugForm?.form === 'tablet'
+      && <Checkbox checked={allowSplittingUnscoredTablet} onChange={toggleAllowSplittingUnscoredTabletCheckbox}>Allow
+        splitting unscored tablet</Checkbox>}
+      <hr/>
 
-        {renderDosages(chosenDrugForm, 'Prior')}
-        <hr />
-        {renderDosages(chosenDrugForm, 'Upcoming')}
-        <hr/>
-        <SelectInterval />
-        <hr/>
-      <hr />
+      {renderDosages(chosenDrugForm, 'Prior')}
+      <hr/>
+      {renderDosages(chosenDrugForm, 'Upcoming')}
+      <hr/>
+      <SelectInterval/>
+      <hr/>
+      <hr/>
     </PrescriptionFormContext.Provider>
   );
 };

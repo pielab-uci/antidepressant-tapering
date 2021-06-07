@@ -73,7 +73,11 @@ import {
   scheduleGenerator,
   generateInstructionsForPatientFromSchedule,
   isCompleteDrugInput,
-  generateInstructionsForPharmacy, calcMinimumQuantityForDosage, prescription, calcFinalPrescription,
+  generateInstructionsForPharmacy,
+  calcMinimumQuantityForDosage,
+  prescription,
+  calcFinalPrescription,
+  validateCompleteInputs,
 } from './utils';
 
 export interface TaperConfigState {
@@ -224,6 +228,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.lastPrescriptionFormId += 1;
         draft.prescribedDrugs = [emptyPrescribedDrug(draft.lastPrescriptionFormId)];
         draft.isSaved = false;
+        draft.isInputComplete = false;
         break;
 
       case EMPTY_TAPER_CONFIG_PAGE:
@@ -260,6 +265,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.prescribedDrugs!.forEach((drug) => {
           drug.prescribedAt = action.data.createdAt;
         });
+        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         draft.isSaved = true;
         break;
       }
@@ -268,6 +274,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.addingTaperConfig = false;
         draft.addedTaperConfig = false;
         draft.addingTaperConfigError = action.error;
+        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         break;
 
       case FETCH_TAPER_CONFIG_REQUEST:
@@ -283,6 +290,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.patientId = action.data.patientId;
         draft.prescribedDrugs = action.data.prescribedDrugs;
         draft.lastPrescriptionFormId = Math.max(...action.data.prescribedDrugs.map((drug) => drug.id));
+        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         draft.isSaved = false;
         break;
 
@@ -301,6 +309,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.fetchingPrescribedDrugs = false;
         draft.fetchedPrescribedDrugs = true;
         draft.prescribedDrugs = action.data;
+        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         break;
 
       case FETCH_PRESCRIBED_DRUGS_FAILURE:
@@ -321,6 +330,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.prescriptionFormIds = draft.prescriptionFormIds.filter((id) => id !== action.data);
         draft.prescribedDrugs = draft.prescribedDrugs!.filter((drug) => drug.id !== action.data);
         draft.isSaved = false;
+        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         break;
 
       case GENERATE_SCHEDULE: {
@@ -398,22 +408,15 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case CHOOSE_FORM: {
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         drug.form = action.data.form;
-        drug.minDosageUnit = action.data.minDosageUnit!;
+        drug.minDosageUnit = action.data.minDosageUnit;
         drug.priorDosages = [];
         drug.upcomingDosages = [];
-        drug.availableDosageOptions = action.data.availableDosageOptions!;
-        drug.regularDosageOptions = action.data.regularDosageOptions!;
+        drug.availableDosageOptions = action.data.availableDosageOptions;
+        drug.regularDosageOptions = action.data.regularDosageOptions;
         draft.isInputComplete = false;
         draft.isSaved = false;
         draft.instructionsForPatient = '';
         draft.instructionsForPharmacy = '';
-
-        if (drug.form === 'oral solution' || drug.form === 'oral suspension') {
-          drug.oralDosageInfo = action.data.oralDosageInfo;
-        } else {
-          drug.oralDosageInfo = null;
-        }
-
         break;
       }
 
@@ -429,6 +432,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           drug.priorDosages[idx] = action.data.dosage;
         }
         draft.isSaved = false;
+        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         break;
       }
 
@@ -443,7 +447,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         } else {
           drug.upcomingDosages[idx] = action.data.dosage;
         }
-
+        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         draft.isSaved = false;
         break;
       }
@@ -464,6 +468,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           drug.intervalCount = action.data.intervalDurationDays;
           drug.intervalDurationDays = action.data.intervalDurationDays;
         }
+        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         draft.isSaved = false;
         break;
       }
@@ -474,6 +479,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.intervalUnit = 'Days';
         drug.intervalCount = action.data.intervalDurationDays;
         drug.intervalDurationDays = action.data.intervalDurationDays;
+        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         draft.isSaved = false;
         break;
       }
@@ -483,6 +489,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.intervalUnit = action.data.unit;
         drug.intervalEndDate = action.data.intervalEndDate;
         drug.intervalDurationDays = action.data.intervalDurationDays;
+        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         draft.isSaved = false;
         break;
       }
@@ -492,6 +499,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.intervalCount = action.data.count;
         drug.intervalEndDate = action.data.intervalEndDate;
         drug.intervalDurationDays = action.data.intervalDurationDays;
+        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         draft.isSaved = false;
         break;
       }

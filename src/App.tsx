@@ -5,7 +5,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import HomePage from './pages/HomePage';
-import TaperConfigurationPage from './pages/TaperConfigurationPage';
+import TaperConfigurationPage from './pages/TaperConfiguration/TaperConfigurationPage';
 import LoggingConfigurationPage from './pages/LoggingConfigurationPage';
 import SymptomReportPage from './pages/SymptomReportPage';
 import { RootState } from './redux/reducers';
@@ -13,11 +13,10 @@ import { UserState } from './redux/reducers/user';
 import LoginPage from './pages/LoginPage';
 import { LOGIN_REQUEST, LoginRequestAction } from './redux/actions/user';
 import 'antd/dist/antd.css';
-import CheckPatientRoute from './components/CheckPatientRoute';
-import CheckPatientLink from './components/CheckPatientLink';
+import { checkAndRenderLink, checkCurrentPatientAndRender } from './pages/utils';
 
 const App = () => {
-  const { me } = useSelector<RootState, UserState>((state) => state.user);
+  const { me, currentPatient } = useSelector<RootState, UserState>((state) => state.user);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch<LoginRequestAction>({
@@ -25,26 +24,29 @@ const App = () => {
       data: { email: 'clinician@gmail.com', password: '1234' },
     });
   }, []);
+
   return (
     <>
-      {!me ? <LoginPage />
+      {!me ? <LoginPage/>
         : (
           <Router>
-             <div>
+            <div>
               <Link to="/">Home</Link>
-             &nbsp;
-               <CheckPatientLink to={'/taper-configuration'} title={'Taper Configuration'}/>
-             &nbsp;
-               <CheckPatientLink to={'/logging-configuration'} title={'Logging Configuration'}/>
-             &nbsp;
-               <CheckPatientLink to={'/symptom-report'} title={'Symptom Report'}/>
-             </div>
+              &nbsp;
+              {checkAndRenderLink(currentPatient, '/taper-configuration', 'Taper Configuration')}
+              &nbsp;
+              {checkAndRenderLink(currentPatient, '/logging-configuration', 'Logging Configuration')}
+              &nbsp;
+              {checkAndRenderLink(currentPatient, '/symptom-report', 'Symptom Report')}
+            </div>
             <div>
               <Switch>
-                <CheckPatientRoute path='/taper-configuration' component={TaperConfigurationPage}/>
-                <CheckPatientRoute path='/logging-configuration' component={LoggingConfigurationPage}/>
-                <CheckPatientRoute path='/symptom-report' component={SymptomReportPage}/>
-                <Route path="/" component={HomePage} />
+                <Route path='/taper-configuration'
+                       render={checkCurrentPatientAndRender(currentPatient, TaperConfigurationPage)}/>
+                <Route path='/logging-configuration'
+                       render={checkCurrentPatientAndRender(currentPatient, LoggingConfigurationPage)}/>
+                <Route path='/symptom-report' render={checkCurrentPatientAndRender(currentPatient, SymptomReportPage)}/>
+                <Route path="/" component={HomePage}/>
               </Switch>
             </div>
           </Router>

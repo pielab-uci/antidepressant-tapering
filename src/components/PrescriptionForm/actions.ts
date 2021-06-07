@@ -27,10 +27,10 @@ export interface ChooseFormAction {
   type: typeof CHOOSE_FORM,
   data: { id: number;
     form: string,
-    minDosageUnit?: number,
-    availableDosageOptions?: string[],
-    oralDosageInfo?: OralDosage|null,
-    regularDosageOptions?: string[]|null };
+    minDosageUnit: number,
+    availableDosageOptions: string[],
+    oralDosageInfo: OralDosage|null,
+    regularDosageOptions: string[]|null };
 }
 
 export const PRIOR_DOSAGE_CHANGE = 'PRIOR_DOSAGE_CHANGE' as const;

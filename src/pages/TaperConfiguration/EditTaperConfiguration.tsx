@@ -1,81 +1,30 @@
 import * as React from 'react';
-import {
-  useCallback, useEffect, useRef,
-} from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { Button, Checkbox, Input } from 'antd';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { Prompt, useLocation } from 'react-router';
-import ProjectedSchedule from '../components/Schedule/ProjectedSchedule';
-import { RootState } from '../redux/reducers';
-import { TaperConfigState } from '../redux/reducers/taperConfig';
-import PrescriptionForm from '../components/PrescriptionForm/PrescriptionForm';
+import { Button, Checkbox } from 'antd';
+import { useCallback, useRef } from 'react';
+import TextArea from 'antd/es/input/TextArea';
+import { useDispatch, useSelector } from 'react-redux';
+import { Prompt } from 'react-router';
 import {
-  ADD_NEW_DRUG_FORM,
   addOrUpdateTaperConfigRequest,
-  changeMessageForPatient,
-  FETCH_TAPER_CONFIG_REQUEST,
-  FetchTaperConfigRequestAction,
-  INIT_NEW_TAPER_CONFIG,
-  InitTaperConfigAction,
-  EMPTY_TAPER_CONFIG_PAGE,
-  EmptyTaperConfigPage,
-  SHARE_WITH_PATIENT_APP_REQUEST,
-  SHARE_WITH_PATIENT_EMAIL_REQUEST,
+  changeMessageForPatient, changeNoteAndInstructions,
+  SHARE_WITH_PATIENT_APP_REQUEST, SHARE_WITH_PATIENT_EMAIL_REQUEST,
   TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
-  changeNoteAndInstructions,
-} from '../redux/actions/taperConfig';
-import { PrescribedDrug } from '../types';
-// import PrescribedDosageQuantities from '../components/PrescribedDosageQuantities';
+} from '../../redux/actions/taperConfig';
+import ProjectedSchedule from '../../components/Schedule/ProjectedSchedule';
+import { RootState } from '../../redux/reducers';
+import { TaperConfigState } from '../../redux/reducers/taperConfig';
 
-const { TextArea } = Input;
-
-const TaperConfigurationPage = () => {
-  const {
-    instructionsForPatient,
-    instructionsForPharmacy,
-    shareProjectedScheduleWithPatient,
-    prescribedDrugs,
-    isSaved,
-    isInputComplete,
-  } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
+const EditTaperConfiguration = () => {
   const dispatch = useDispatch();
-  const urlSearchParams = useRef<URLSearchParams>(new URLSearchParams(useLocation().search));
-
-  useEffect(() => {
-    const id = urlSearchParams.current.get('id');
-    console.log('id: ', id);
-    if (id) {
-      dispatch<FetchTaperConfigRequestAction>({
-        type: FETCH_TAPER_CONFIG_REQUEST,
-        data: parseInt(id, 10),
-      });
-    } else {
-      dispatch<InitTaperConfigAction>({
-        type: INIT_NEW_TAPER_CONFIG,
-        data: {
-          clinicianId: parseInt(urlSearchParams.current.get('clinicianId')!, 10),
-          patientId: parseInt(urlSearchParams.current.get('patientId')!, 10),
-        },
-      });
-    }
-
-    return () => {
-      dispatch<EmptyTaperConfigPage>({
-        type: EMPTY_TAPER_CONFIG_PAGE,
-      });
-    };
-  }, []);
+  const {
+    instructionsForPharmacy, instructionsForPatient,
+    shareProjectedScheduleWithPatient, isInputComplete, isSaved,
+  } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
 
   const toggleShareProjectedSchedule = useCallback(() => {
     dispatch({
       type: TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
-    });
-  }, []);
-
-  const addNewPrescriptionForm = useCallback(() => {
-    dispatch({
-      type: ADD_NEW_DRUG_FORM,
     });
   }, []);
 
@@ -107,6 +56,8 @@ const TaperConfigurationPage = () => {
     dispatch(changeNoteAndInstructions(e.target.value));
   }, []);
 
+  /*
+  TODO: save taper configuration -> not prescribedDrugs, but projectedSchedule
   const saveTaperConfiguration = useCallback(() => {
     if (prescribedDrugs) {
       dispatch(addOrUpdateTaperConfigRequest({
@@ -116,29 +67,17 @@ const TaperConfigurationPage = () => {
       }));
     }
   }, [prescribedDrugs]);
+   */
 
-  const renderPrescriptionForms = (prescribedDrugs: PrescribedDrug[]) => {
-    const notFromPrevVisit = prescribedDrugs.filter((prescribedDrug) => !prescribedDrug.prevVisit);
-    return notFromPrevVisit.map(
-      (drug) => <PrescriptionForm key={`PrescriptionForm${drug.id}`} prescribedDrug={drug}/>,
-    );
-  };
-
+  const saveTaperConfiguration = () => {};
   const instructionsForPatientPlaceholder = useRef('e.g., If you experience severe withdrawal symptoms, go back to the previous dosage. / call your provider / come back to provider\'s office.');
 
   return (
     <>
       <Prompt when={!isSaved}
               message={'Are you sure you want to leave?'}/>
-
-      {prescribedDrugs && renderPrescriptionForms(prescribedDrugs)}
-      <hr/>
-      <Button onClick={addNewPrescriptionForm}>Add Drug</Button>
-      <hr/>
       <ProjectedSchedule/>
       <hr/>
-
-      {/* {prescribedDrugs && renderPrescribedQuantites(prescribedDrugs)} */}
 
       <h3>Instructions for Pharmacy</h3>
       <TextArea value={instructionsForPharmacy}
@@ -172,4 +111,4 @@ const TaperConfigurationPage = () => {
   );
 };
 
-export default TaperConfigurationPage;
+export default EditTaperConfiguration;

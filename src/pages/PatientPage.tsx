@@ -57,7 +57,9 @@ const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) =
   }, [currentPatient]);
 
   const onClickNewSchedule = useCallback(() => {
-    history.push(`/taper-configuration/?clinicianId=${me!.id}&patientId=${currentPatient!.id}`);
+    // history.push(`/taper-configuration/?clinicianId=${me!.id}&patientId=${currentPatient!.id}`);
+    // history.push(`/taper-configuration/?clinicianId=${me!.id}&patientId=${currentPatient!.id}/create`);
+    history.push(`/taper-configuration/create/?clinicianId=${me!.id}&patientId=${currentPatient!.id}`);
   }, [me, currentPatient]);
 
   const onClickAdjustSchedule = useCallback(() => {

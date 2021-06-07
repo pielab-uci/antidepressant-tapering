@@ -5,7 +5,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import HomePage from './pages/HomePage';
-import TaperConfigurationPage from './pages/TaperConfigurationPage';
+import TaperConfigurationPage from './pages/TaperConfiguration/TaperConfigurationPage';
 import LoggingConfigurationPage from './pages/LoggingConfigurationPage';
 import SymptomReportPage from './pages/SymptomReportPage';
 import { RootState } from './redux/reducers';
@@ -17,7 +17,7 @@ import CheckPatientRoute from './components/CheckPatientRoute';
 import CheckPatientLink from './components/CheckPatientLink';
 
 const App = () => {
-  const { me } = useSelector<RootState, UserState>((state) => state.user);
+  const { me, currentPatient } = useSelector<RootState, UserState>((state) => state.user);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch<LoginRequestAction>({
@@ -25,6 +25,7 @@ const App = () => {
       data: { email: 'clinician@gmail.com', password: '1234' },
     });
   }, []);
+
   return (
     <>
       {!me ? <LoginPage />

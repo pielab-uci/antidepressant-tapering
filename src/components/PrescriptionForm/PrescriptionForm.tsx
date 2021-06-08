@@ -64,9 +64,7 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
 
   const {
     drugs: drugsLocal, chosenBrand, chosenDrugForm, drugFormOptions,
-    priorDosagesQty, upcomingDosagesQty, minDosageUnit, dosageOptions,
-    availableDosageOptions, allowSplittingUnscoredTablet,
-    oralDosageInfo, regularDosageOptions,
+    priorDosagesQty, upcomingDosagesQty, allowSplittingUnscoredTablet,
   } = state;
   const { drugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
 
@@ -81,7 +79,6 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
       formActionDispatch({ type: LOAD_PRESCRIPTION_DATA, data: prescribedDrug });
     }
   }, []);
-  // }, [prescribedDrug]);
 
   const onBrandChange = (value: string) => {
     const action: ChooseBrandAction = {

@@ -1,4 +1,5 @@
 import produce from 'immer';
+import { differenceInCalendarDays } from 'date-fns';
 import {
   Drug, PrescribedDrug, Prescription, TaperingConfiguration,
 } from '../../types';
@@ -558,6 +559,9 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         if (action.data.rowIndex !== null) {
           const editedRow = draft.projectedSchedule.data[action.data.rowIndex];
           editedRow.startDate = action.data.newValue;
+          editedRow.intervalUnit = 'Days';
+          editedRow.intervalDurationDays = differenceInCalendarDays(editedRow.endDate!, editedRow.startDate!) + 1;
+          editedRow.intervalCount = editedRow.intervalDurationDays;
           editedRow.prescription = prescription({ ...editedRow }, editedRow.unitDosages!);
           draft.finalPrescription = calcFinalPrescription(draft.projectedSchedule.data, draft.tableSelectedRows);
         }
@@ -567,6 +571,9 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         if (action.data.rowIndex !== null) {
           const editedRow = draft.projectedSchedule.data[action.data.rowIndex];
           editedRow.endDate = action.data.newValue;
+          editedRow.intervalUnit = 'Days';
+          editedRow.intervalDurationDays = differenceInCalendarDays(editedRow.endDate!, editedRow.startDate!) + 1;
+          editedRow.intervalCount = editedRow.intervalDurationDays;
           editedRow.prescription = prescription({ ...editedRow }, editedRow.unitDosages!);
           draft.finalPrescription = calcFinalPrescription(draft.projectedSchedule.data, draft.tableSelectedRows);
         }

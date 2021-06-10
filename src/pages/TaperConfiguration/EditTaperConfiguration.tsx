@@ -51,8 +51,17 @@ const EditTaperConfiguration = () => {
     <>
       {/* <Prompt when={!isSaved} */}
       {/*        message={'Are you sure you want to leave?'}/> */}
-      <ProjectedSchedule/>
+      <ProjectedSchedule editable={true}/>
       <hr/>
+
+      <h3>Instructions for Patient</h3>
+      <TextArea
+        value={instructionsForPatient}
+        defaultValue={instructionsForPatient}
+        onChange={onChangeMessageForPatient}
+        placeholder={instructionsForPatientPlaceholder.current}
+        rows={6}
+      />
 
       <h3>Instructions for Pharmacy</h3>
       <TextArea value={instructionsForPharmacy}
@@ -63,15 +72,6 @@ const EditTaperConfiguration = () => {
       <CopyToClipboard text={instructionsForPharmacy} onCopy={onNotesAndInstructionCopied}>
         <Button>Copy to Clipboard</Button>
       </CopyToClipboard>
-
-      <h3>Instructions for Patient</h3>
-      <TextArea
-        value={instructionsForPatient}
-        defaultValue={instructionsForPatient}
-        onChange={onChangeMessageForPatient}
-        placeholder={instructionsForPatientPlaceholder.current}
-        rows={6}
-      />
       <Button onClick={moveToCreatePage}>Prev</Button>
       <Button onClick={moveToConfirmPage}>Next</Button>
 

@@ -9,6 +9,7 @@ import {
   SHARE_WITH_PATIENT_APP_REQUEST, SHARE_WITH_PATIENT_EMAIL_REQUEST,
   TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
 } from '../../redux/actions/taperConfig';
+import { ProjectedSchedule } from '../../components/Schedule';
 
 const ConfirmTaperConfiguration = () => {
   const {
@@ -58,6 +59,8 @@ const saveTaperConfiguration = useCallback(() => {
   const saveTaperConfiguration = () => {};
   return <>
     <div>ConfirmTaperConfiguration</div>
+
+    <ProjectedSchedule editable={false}/>
     <CopyToClipboard text={instructionsForPatient} onCopy={onInstructionsForPatientCopied}>
       <Button>Copy to Clipboard</Button>
     </CopyToClipboard>

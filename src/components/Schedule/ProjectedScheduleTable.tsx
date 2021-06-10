@@ -9,7 +9,7 @@ import { format } from 'date-fns';
 import { AgGridReact } from 'ag-grid-react';
 import {
   CellEditingStoppedEvent, CheckboxSelectionCallbackParams,
-  ColDef, ColumnApi,
+  ColDef, ColumnApi, EditableCallbackParams,
   FirstDataRenderedEvent, GridApi,
   GridReadyEvent, RowDataChangedEvent,
   RowSelectedEvent,
@@ -17,6 +17,7 @@ import {
   ValueFormatterParams,
   ValueSetterParams,
 } from 'ag-grid-community';
+import { Button } from 'antd';
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import {
@@ -29,13 +30,14 @@ import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 import './tableStyles.css';
 import DateEditor from './DateEditor';
 import NumberEditor from './NumberEditor';
+import { ProjectedScheduleContext } from './ProjectedSchedule';
 
-const ProjectedScheduleTable: FC<{ setGridApi: (gridApi: GridApi) => void }> = ({ setGridApi }) => {
-  // const [gridApi, setGridApi] = useState<GridApi | null>(null);
+const ProjectedScheduleTable: FC<{ editable: boolean, setGridApi: (gridApi: GridApi) => void }> = ({ editable, setGridApi }) => {
   const [gridColumnApi, setGridColumnApi] = useState<ColumnApi | null>(null);
   const {
     projectedSchedule, tableSelectedRows,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
+  const { gridApi } = useContext(ProjectedScheduleContext);
   const dispatch = useDispatch();
 
   const onGridReady = (params: GridReadyEvent) => {
@@ -67,11 +69,10 @@ const ProjectedScheduleTable: FC<{ setGridApi: (gridApi: GridApi) => void }> = (
       sortable: true,
       unSortIcon: true,
       checkboxSelection: (params: CheckboxSelectionCallbackParams) => !params.data.isPriorDosage,
-
     }, {
       headerName: 'Dosage',
       field: 'dosage',
-      editable: true,
+      editable: (params: EditableCallbackParams) => editable && !params.data.isPriorDosage,
       cellEditor: 'numberEditor',
       valueFormatter: (params: ValueFormatterParams) => `${params.value}mg`,
       // need to keep below valueSetter
@@ -82,7 +83,7 @@ const ProjectedScheduleTable: FC<{ setGridApi: (gridApi: GridApi) => void }> = (
       field: 'startDate',
       sortable: true,
       unSortIcon: true,
-      editable: true,
+      editable: (params: EditableCallbackParams) => editable && !params.data.isPriorDosage,
       cellEditor: 'datePicker',
       minWidth: 160,
       valueFormatter: (params: ValueFormatterParams) => {
@@ -95,7 +96,7 @@ const ProjectedScheduleTable: FC<{ setGridApi: (gridApi: GridApi) => void }> = (
       field: 'endDate',
       sortable: true,
       unSortIcon: true,
-      editable: true,
+      editable: (params: EditableCallbackParams) => editable && !params.data.isPriorDosage,
       cellEditor: 'datePicker',
       minWidth: 160,
       valueFormatter: (params: ValueFormatterParams) => {
@@ -106,7 +107,7 @@ const ProjectedScheduleTable: FC<{ setGridApi: (gridApi: GridApi) => void }> = (
     }, {
       headerName: 'Prescription',
       field: 'prescription',
-      editable: true,
+      editable: (params: EditableCallbackParams) => editable && !params.data.isPriorDosage,
     }];
   }, []);
 
@@ -174,10 +175,14 @@ const ProjectedScheduleTable: FC<{ setGridApi: (gridApi: GridApi) => void }> = (
     }
   };
 
+  const onClickAddRow = (e: React.MouseEvent) => {
+    // gridApi?.updateRowData({ add: })
+  };
   return (
     <div className='ProjectedScheduleTable' style={{
       display: 'flex', flexDirection: 'row', height: '500px', width: '100%',
     }}>
+      <Button onClick={onClickAddRow}>Add a new row</Button>
       <div className='ag-theme-alpine'
            style={{
              width: '100%',

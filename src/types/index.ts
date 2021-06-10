@@ -28,6 +28,7 @@ export interface TaperingConfiguration {
 
 export interface Drug {
   name: string;
+  halfLife: string;
   options: DrugOption[]
 }
 
@@ -69,6 +70,7 @@ export interface PrescribedDrug {
   name: string;
   brand: string;
   form: string;
+  halfLife: string;
   measureUnit: string;
   minDosageUnit: number;
   availableDosageOptions: string[];

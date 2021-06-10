@@ -1,9 +1,12 @@
 import * as React from 'react';
 import { useEffect, createContext, FC } from 'react';
 import { useReducer } from 'reinspect';
-import { Button, Checkbox, Select } from 'antd';
+import {
+  Button, Checkbox, Select, Tooltip,
+} from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
+import { GrCircleInformation } from 'react-icons/gr';
 import {
   CapsuleOrTabletDosages, SelectInterval, OralFormDosage,
 } from '.';
@@ -196,6 +199,9 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
           (form: CapsuleOrTabletForm | OralForm) => <Option key={form.form} value={form.form}>{form.form}</Option>,
         )}
       </Select>
+      <Tooltip title={prescribedDrug.halfLife} overlayStyle={{ whiteSpace: 'pre-line' }}>
+        <GrCircleInformation/>
+      </Tooltip>
       {chosenDrugForm?.form === 'tablet'
       && <Checkbox checked={allowSplittingUnscoredTablet} onChange={toggleAllowSplittingUnscoredTabletCheckbox}>Allow
         splitting unscored tablet</Checkbox>}

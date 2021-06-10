@@ -63,7 +63,7 @@ const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) =
   }, [me, currentPatient]);
 
   const onClickAdjustSchedule = useCallback(() => {
-    history.push(`/taper-configuration/?id=${currentPatient!.taperingConfiguration!.id}`);
+    history.push(`/taper-configuration/edit/?clinicianId=${me!.id}&patientId=${currentPatient!.id}`);
   }, [currentPatient]);
 
   const renderDrugsAndDosages = useCallback(() => {

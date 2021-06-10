@@ -202,6 +202,7 @@ const emptyPrescribedDrug = (id: number): PrescribedDrug => ({
   name: '',
   brand: '',
   form: '',
+  halfLife: '',
   measureUnit: 'mg',
   minDosageUnit: 0,
   priorDosages: [],
@@ -388,11 +389,14 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
 
       case CHOOSE_BRAND: {
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
-        drug.name = draft.drugs.find(
-          (d) => d.options.find(
-            (option) => option.brand === action.data.brand,
-          ),
-        )!.name;
+        const correspondingDrugData = draft.drugs.find((d) => d.options.find((option) => option.brand === action.data.brand))!;
+        drug.name = correspondingDrugData.name;
+        drug.halfLife = correspondingDrugData.halfLife;
+        // drug.name = draft.drugs.find(
+        //   (d) => d.options.find(
+        //     (option) => option.brand === action.data.brand,
+        //   ),
+        // )!.name;
         drug.brand = action.data.brand;
         drug.form = '';
         drug.oralDosageInfo = null;

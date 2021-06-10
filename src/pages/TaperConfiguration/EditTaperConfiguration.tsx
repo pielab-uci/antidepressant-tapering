@@ -33,20 +33,6 @@ const EditTaperConfiguration = () => {
     history.push(`/taper-configuration/confirm/?clinicianId=${clinicianId}&patientId=${patientId}`);
   };
 
-  const onNotesAndInstructionCopied = useCallback(() => {
-    alert('Notes and Instructions copied.');
-  }, []);
-
-  const onChangeMessageForPatient = useCallback((e) => {
-    dispatch(changeMessageForPatient(e.target.value));
-  }, []);
-
-  const onChangeInstructionsForPharmacy = useCallback((e) => {
-    dispatch(changeNoteAndInstructions(e.target.value));
-  }, []);
-
-  const instructionsForPatientPlaceholder = useRef('e.g., If you experience severe withdrawal symptoms, go back to the previous dosage. / call your provider / come back to provider\'s office.');
-
   return (
     <>
       {/* <Prompt when={!isSaved} */}
@@ -54,24 +40,6 @@ const EditTaperConfiguration = () => {
       <ProjectedSchedule editable={true}/>
       <hr/>
 
-      <h3>Instructions for Patient</h3>
-      <TextArea
-        value={instructionsForPatient}
-        defaultValue={instructionsForPatient}
-        onChange={onChangeMessageForPatient}
-        placeholder={instructionsForPatientPlaceholder.current}
-        rows={6}
-      />
-
-      <h3>Instructions for Pharmacy</h3>
-      <TextArea value={instructionsForPharmacy}
-                defaultValue={instructionsForPharmacy}
-                onChange={onChangeInstructionsForPharmacy}
-                rows={6}
-      />
-      <CopyToClipboard text={instructionsForPharmacy} onCopy={onNotesAndInstructionCopied}>
-        <Button>Copy to Clipboard</Button>
-      </CopyToClipboard>
       <Button onClick={moveToCreatePage}>Prev</Button>
       <Button onClick={moveToConfirmPage}>Next</Button>
 

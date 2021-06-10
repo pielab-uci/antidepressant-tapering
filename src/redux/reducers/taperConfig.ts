@@ -416,6 +416,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.minDosageUnit = action.data.minDosageUnit;
         drug.priorDosages = [];
         drug.upcomingDosages = [];
+        drug.oralDosageInfo = action.data.oralDosageInfo;
         drug.availableDosageOptions = action.data.availableDosageOptions;
         drug.regularDosageOptions = action.data.regularDosageOptions;
         draft.isInputComplete = false;

@@ -175,14 +175,10 @@ const ProjectedScheduleTable: FC<{ editable: boolean, setGridApi: (gridApi: Grid
     }
   };
 
-  const onClickAddRow = (e: React.MouseEvent) => {
-    // gridApi?.updateRowData({ add: })
-  };
   return (
     <div className='ProjectedScheduleTable' style={{
       display: 'flex', flexDirection: 'row', height: '500px', width: '100%',
     }}>
-      <Button onClick={onClickAddRow}>Add a new row</Button>
       <div className='ag-theme-alpine'
            style={{
              width: '100%',

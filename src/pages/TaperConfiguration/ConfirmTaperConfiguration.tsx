@@ -35,14 +35,6 @@ const ConfirmTaperConfiguration = () => {
     });
   }, []);
 
-  const onInstructionsForPatientCopied = useCallback(() => {
-    alert('Instructions for patient copied.');
-  }, []);
-
-  const onInstructionsForPharmacyCopied = useCallback(() => {
-    alert('Instructions for pharmacy copied.');
-  }, []);
-
   /*
 TODO: save taper configuration -> not prescribedDrugs, but projectedSchedule
 const saveTaperConfiguration = useCallback(() => {
@@ -61,12 +53,6 @@ const saveTaperConfiguration = useCallback(() => {
     <div>ConfirmTaperConfiguration</div>
 
     <ProjectedSchedule editable={false}/>
-    <CopyToClipboard text={instructionsForPatient} onCopy={onInstructionsForPatientCopied}>
-      <Button>Copy to Clipboard</Button>
-    </CopyToClipboard>
-    <CopyToClipboard text={instructionsForPharmacy} onCopy={onInstructionsForPharmacyCopied}>
-      <Button>Copy to Clipboard</Button>
-    </CopyToClipboard>
 
     <Checkbox checked={shareProjectedScheduleWithPatient} onChange={toggleShareProjectedSchedule}>
       Share projected schedule

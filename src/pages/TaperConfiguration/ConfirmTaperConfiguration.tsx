@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { Button, Checkbox } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
+import { useHistory, useLocation } from 'react-router';
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import {
@@ -12,8 +12,11 @@ import {
 import { ProjectedSchedule } from '../../components/Schedule';
 
 const ConfirmTaperConfiguration = () => {
+  const history = useHistory();
+  const urlSearchParams = useRef<URLSearchParams>(new URLSearchParams(useLocation().search));
+
   const {
-    shareProjectedScheduleWithPatient, instructionsForPatient, instructionsForPharmacy, isInputComplete,
+    shareProjectedScheduleWithPatient, isInputComplete,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const dispatch = useDispatch();
 
@@ -48,6 +51,12 @@ const saveTaperConfiguration = useCallback(() => {
 }, [prescribedDrugs]);
  */
 
+  const moveToEditPage = () => {
+    const clinicianId = urlSearchParams.current.get('clinicianId');
+    const patientId = urlSearchParams.current.get('patientId');
+    history.push(`/taper-configuration/edit/?clinicianId=${clinicianId}&patientId=${patientId}`);
+  };
+
   const saveTaperConfiguration = () => {};
   return <>
     <div>ConfirmTaperConfiguration</div>
@@ -57,6 +66,7 @@ const saveTaperConfiguration = useCallback(() => {
     <Checkbox checked={shareProjectedScheduleWithPatient} onChange={toggleShareProjectedSchedule}>
       Share projected schedule
     </Checkbox>
+    <Button onClick={moveToEditPage}>Prev</Button>
     <Button onClick={shareWithApp}>App</Button>
     <Button onClick={shareWithEmail}>Email</Button>
     <Button onClick={saveTaperConfiguration} disabled={!isInputComplete}>Save configuration</Button>

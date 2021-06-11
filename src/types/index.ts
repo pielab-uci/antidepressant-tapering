@@ -122,7 +122,7 @@ export interface TableRowData {
   startDate: Date|null,
   endDate: Date|null,
   selected: boolean,
-  availableDosageOptions: string[]|null ;
+  availableDosageOptions: string[]|null;
   regularDosageOptions: string[]|null;
   /*
      * dosages counts from upcoming dosages

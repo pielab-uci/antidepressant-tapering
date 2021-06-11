@@ -14,7 +14,7 @@ import {
   FetchPrescribedDrugsRequestAction,
 } from '../redux/actions/taperConfig';
 import { TaperConfigState } from '../redux/reducers/taperConfig';
-import { ScheduleChart } from '../components/Schedule';
+import { ProjectedScheduleChart } from '../components/Schedule';
 import { chartDataConverter, completePrescribedDrugs, scheduleGenerator } from '../redux/reducers/utils';
 import { SET_CURRENT_PATIENT, SetCurrentPatientAction } from '../redux/actions/user';
 
@@ -83,7 +83,7 @@ const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) =
     }
     if (prescribedDrugs) {
       console.log('prescribedDrugs: ', prescribedDrugs);
-      return <ScheduleChart
+      return <ProjectedScheduleChart
           scheduleChartData={chartDataConverter(scheduleGenerator(completePrescribedDrugs(prescribedDrugs)))}
           width={300}
           height={300}

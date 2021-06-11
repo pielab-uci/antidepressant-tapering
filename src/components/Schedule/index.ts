@@ -1,5 +1,5 @@
 import ProjectedSchedule from './ProjectedSchedule';
 import ProjectedScheduleTable from './ProjectedScheduleTable';
-import ScheduleChart from './ScheduleChart';
+import ProjectedScheduleChart from './ProjectedScheduleChart';
 
-export { ProjectedSchedule, ProjectedScheduleTable, ScheduleChart };
+export { ProjectedSchedule, ProjectedScheduleTable, ProjectedScheduleChart };

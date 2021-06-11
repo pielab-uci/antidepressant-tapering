@@ -1,23 +1,20 @@
 import * as React from 'react';
 import {
   FC, useContext,
-  useEffect,
-  useMemo, useRef, useState,
+  useRef, useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { format } from 'date-fns';
 import { AgGridReact } from 'ag-grid-react';
 import {
   CellEditingStoppedEvent, CheckboxSelectionCallbackParams,
   ColDef, ColumnApi, EditableCallbackParams,
   FirstDataRenderedEvent, GridApi,
-  GridReadyEvent, RowDataChangedEvent,
+  GridReadyEvent, RowDataChangedEvent, RowDoubleClickedEvent,
   RowSelectedEvent,
-  SelectionChangedEvent,
-  ValueFormatterParams,
-  ValueSetterParams,
+  SelectionChangedEvent, ValueFormatterParams, ValueSetterParams,
 } from 'ag-grid-community';
-import { Button } from 'antd';
+import { Button, Modal } from 'antd';
+import { format } from 'date-fns';
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import {
@@ -39,6 +36,8 @@ const ProjectedScheduleTable: FC<{ editable: boolean, setGridApi: (gridApi: Grid
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const { gridApi } = useContext(ProjectedScheduleContext);
   const dispatch = useDispatch();
+  const [showModal, setShowModal] = useState(false);
+  const [prescribedDrugInModal, setPrescribedDrugInModal] = useState(null);
 
   const onGridReady = (params: GridReadyEvent) => {
     console.log('onGridReady');
@@ -62,8 +61,8 @@ const ProjectedScheduleTable: FC<{ editable: boolean, setGridApi: (gridApi: Grid
     suppressMovable: true,
   });
 
-  const columnDefs: ColDef[] = useMemo(() => {
-    return [{
+  const columnDefs = useRef<ColDef[]>(
+    [{
       headerName: 'Drug',
       field: 'drug',
       sortable: true,
@@ -72,18 +71,18 @@ const ProjectedScheduleTable: FC<{ editable: boolean, setGridApi: (gridApi: Grid
     }, {
       headerName: 'Dosage',
       field: 'dosage',
-      editable: (params: EditableCallbackParams) => editable && !params.data.isPriorDosage,
+      // editable: (params: EditableCallbackParams) => editable && !params.data.isPriorDosage,
       cellEditor: 'numberEditor',
       valueFormatter: (params: ValueFormatterParams) => `${params.value}mg`,
       // need to keep below valueSetter
       valueSetter: (params: ValueSetterParams) => params.newValue,
-      // valueSetter: valueSetter((x: string) => parseFloat(x) >= 0),
+    // valueSetter: valueSetter((x: string) => parseFloat(x) >= 0),
     }, {
-      headName: 'Start Date',
+      headerName: 'Start Date',
       field: 'startDate',
       sortable: true,
       unSortIcon: true,
-      editable: (params: EditableCallbackParams) => editable && !params.data.isPriorDosage,
+      // editable: (params: EditableCallbackParams) => editable && !params.data.isPriorDosage,
       cellEditor: 'datePicker',
       minWidth: 160,
       valueFormatter: (params: ValueFormatterParams) => {
@@ -92,11 +91,11 @@ const ProjectedScheduleTable: FC<{ editable: boolean, setGridApi: (gridApi: Grid
       // need to keep below valueSetter
       valueSetter: (params: ValueSetterParams) => params.newValue,
     }, {
-      headName: 'End Date',
+      headerName: 'End Date',
       field: 'endDate',
       sortable: true,
       unSortIcon: true,
-      editable: (params: EditableCallbackParams) => editable && !params.data.isPriorDosage,
+      // editable: (params: EditableCallbackParams) => editable && !params.data.isPriorDosage,
       cellEditor: 'datePicker',
       minWidth: 160,
       valueFormatter: (params: ValueFormatterParams) => {
@@ -107,9 +106,10 @@ const ProjectedScheduleTable: FC<{ editable: boolean, setGridApi: (gridApi: Grid
     }, {
       headerName: 'Prescription',
       field: 'prescription',
-      editable: (params: EditableCallbackParams) => editable && !params.data.isPriorDosage,
-    }];
-  }, []);
+      // editable: (params: EditableCallbackParams) => editable && !params.data.isPriorDosage,
+
+    }],
+  );
 
   const rowClassRules = useRef({
     PriorDosage: (params: any) => params.data.isPriorDosage,
@@ -175,6 +175,21 @@ const ProjectedScheduleTable: FC<{ editable: boolean, setGridApi: (gridApi: Grid
     }
   };
 
+  const openModal = (event: RowDoubleClickedEvent) => {
+    console.group('openModal');
+    console.log('event: ', event);
+    console.groupEnd();
+    setShowModal(true);
+  };
+
+  const handleModalCancel = () => {
+    setShowModal(false);
+  };
+
+  const handleModalOk = () => {
+    setShowModal(false);
+  };
+
   return (
     <div className='ProjectedScheduleTable' style={{
       display: 'flex', flexDirection: 'row', height: '500px', width: '100%',
@@ -188,10 +203,11 @@ const ProjectedScheduleTable: FC<{ editable: boolean, setGridApi: (gridApi: Grid
         <AgGridReact
           rowData={projectedSchedule.data}
           defaultColDef={defaultColumnDef.current}
-          columnDefs={columnDefs}
+          columnDefs={columnDefs.current}
           rowSelection='multiple'
           rowClassRules={rowClassRules.current}
           onRowSelected={onRowSelected}
+          onRowDoubleClicked={editable ? openModal : undefined}
           onRowDataChanged={onRowDataChanged}
           onSelectionChanged={onSelectionChanged}
           onFirstDataRendered={onFirstDataRendered}
@@ -201,6 +217,12 @@ const ProjectedScheduleTable: FC<{ editable: boolean, setGridApi: (gridApi: Grid
           suppressDragLeaveHidesColumns={true}
           suppressRowClickSelection={true}
         />
+        <Modal
+        visible={showModal}
+        onCancel={handleModalCancel}
+        onOk={handleModalOk}>
+          <h2>Modal</h2>
+        </Modal>
       </div>
     </div>
   );

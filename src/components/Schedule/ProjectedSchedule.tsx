@@ -7,8 +7,7 @@ import {
 import { Button } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import ProjectedScheduleTable from './ProjectedScheduleTable';
-import ScheduleChart from './ScheduleChart';
+import { ProjectedScheduleChart, ProjectedScheduleTable } from '.';
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import { PrescribedDrug, TableRowData } from '../../types';
@@ -52,6 +51,7 @@ const ProjectedSchedule: FC<{ editable: boolean }> = ({ editable }) => {
   const onInstructionsForPharmacyCopied = useCallback(() => {
     alert('Instructions for pharmacy copied.');
   }, []);
+
   return (
     <ProjectedScheduleContext.Provider value={{ gridApi }}>
       {projectedSchedule.data.length
@@ -61,7 +61,7 @@ const ProjectedSchedule: FC<{ editable: boolean }> = ({ editable }) => {
           <div style={{ display: 'flex' }}>
             {projectedSchedule.data.length !== 0 && <div style={{ flex: 3 }}><ProjectedScheduleTable editable={editable} setGridApi={setGridApi}/></div>}
             <div style={{ flex: 2 }}>
-              <ScheduleChart scheduleChartData={scheduleChartData} width={400} height={400}/>
+              <ProjectedScheduleChart scheduleChartData={scheduleChartData} width={400} height={400}/>
             </div>
           </div>
           <hr/>

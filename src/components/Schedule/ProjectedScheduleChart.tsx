@@ -3,7 +3,8 @@ import {
   CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from 'recharts';
 import { format } from 'date-fns';
-import { FC } from 'react';
+import { FC, useRef } from 'react';
+import rgbHex from 'rgb-hex';
 import { ScheduleChartData } from '../../redux/reducers/utils';
 
 interface Props {
@@ -11,9 +12,18 @@ interface Props {
   width: number;
   height: number;
 }
-const ScheduleChart: FC<Props> = ({ scheduleChartData, width, height }) => {
+const ProjectedScheduleChart: FC<Props> = ({ scheduleChartData, width, height }) => {
   console.log('scheduleChartData');
   console.log(scheduleChartData);
+
+  const lineColors = useRef<{ [drugName: string]: string }>({
+    Fluoxetine: `#${rgbHex(0, 184, 148)}`,
+    Citalopram: `#${rgbHex(0, 206, 201)}`,
+    Sertraline: `#${rgbHex(9, 132, 195)}`,
+    Paroxetine: `#${rgbHex(108, 72, 247)}`,
+    Escitalopram: `#${rgbHex(255, 117, 117)}`,
+  });
+
   return (
     // <ResponsiveContainer width="100%" height="100%">
     <ResponsiveContainer width={width} height={height}>
@@ -24,11 +34,11 @@ const ScheduleChart: FC<Props> = ({ scheduleChartData, width, height }) => {
         <Tooltip formatter={(value: number) => `${value}mg`} labelFormatter={(time: number) => format(time, 'MM-dd')}/>
         <Legend />
         {scheduleChartData.map((drug) => (
-          <Line dataKey="dosage" data={drug.data} name={drug.name} key={drug.name} type={'stepAfter'}/>
+          <Line dataKey="dosage" data={drug.data} name={drug.name} key={drug.name} type={'stepAfter'} stroke={lineColors.current[drug.name]}/>
         ))}
       </LineChart>
     </ResponsiveContainer>
   );
 };
 
-export default ScheduleChart;
+export default ProjectedScheduleChart;

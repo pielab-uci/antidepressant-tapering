@@ -67,7 +67,7 @@ const ProjectedScheduleTable: FC<{ editable: boolean, setGridApi: (gridApi: Grid
       field: 'drug',
       sortable: true,
       unSortIcon: true,
-      checkboxSelection: (params: CheckboxSelectionCallbackParams) => !params.data.isPriorDosage,
+      checkboxSelection: (params: CheckboxSelectionCallbackParams) => !params.data.isPriorDosage && editable,
     }, {
       headerName: 'Dosage',
       field: 'dosage',

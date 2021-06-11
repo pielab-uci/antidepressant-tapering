@@ -2,6 +2,8 @@ import * as React from 'react';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, Switch } from 'react-router';
+import { GrNotification } from 'react-icons/gr';
+import { css } from '@emotion/react';
 import NavBar from '../components/NavBar';
 import PatientsList from '../components/PatientsList';
 import {
@@ -24,18 +26,25 @@ const HomePage = () => {
   }, [me]);
 
   return (
-    <div style={{ width: '800px', height: '600px', border: '1px solid black' }}>
-      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-        <h2>Home</h2>
-        <button>New Patient</button>
+    <div css={css`height:100%;`}>
+      <div
+        className='home-content'
+        css={css`
+        display: flex;
+        border: 1px solid black;
+        flex-direction: row;
+        height: 100%;`
+      }>
+
+        <section css={css`
+          flex: 1;
+          `}>
+          <Switch>
+            <Route exact path="/" render={() => <PatientsList patients={patients}/>}/>
+            <Route path="/patient/:patientId" component={PatientPage}/>
+          </Switch>
+        </section>
       </div>
-    <div style={{ display: 'flex', flexDirection: 'row' }}>
-      <NavBar/>
-      <Switch>
-        <Route exact path="/" render={() => <PatientsList patients={patients}/>}/>
-        <Route path="/patient/:patientId" component={PatientPage}/>
-      </Switch>
-    </div>
     </div>
   );
 };

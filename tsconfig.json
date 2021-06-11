@@ -5,11 +5,12 @@
       "esnext",
       "dom"
     ],
-    "jsx": "react",
+    "jsx": "react-jsx",
+    "jsxImportSource": "@emotion/react",
     "allowJs": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "downlevelIteration": true
+    "downlevelIteration": true,
   },
   "include":[
     ".eslintrc.js",

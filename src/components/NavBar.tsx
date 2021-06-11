@@ -1,10 +1,18 @@
 import * as React from 'react';
+import { css } from '@emotion/react';
 
 const NavBar = () => (
-  <div style={{ border: '1px solid black' }}>
-    <h3>NavBar</h3>
-    <div>Symptom Tracker Templates</div>
-    <div>Drug search</div>
+  <div css={css`
+  background-color:#0984E3;
+  border-top-right-radius: 17px;
+  height: 100%;
+  flex: 0 0 307px;
+  margin-top: 52px;
+`}>
+    <div>Patients</div>
+    <div>Symptom Templates</div>
+    <div>Help</div>
+    <div>Log Out</div>
   </div>
 );
 

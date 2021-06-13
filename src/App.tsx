@@ -14,10 +14,24 @@ import { UserState } from './redux/reducers/user';
 import LoginPage from './pages/LoginPage';
 import { LOGIN_REQUEST, LoginRequestAction } from './redux/actions/user';
 import 'antd/dist/antd.css';
-import { checkAndRenderLink, checkCurrentPatientAndRender } from './pages/utils';
+import { checkCurrentPatientAndRender } from './pages/utils';
 import NavBar from './components/NavBar';
 import Header from './components/Header';
 
+const mainStyle = css`
+  flex: 1;
+  margin-bottom: 34px;
+
+  & > div {
+    background-color: #fafafa;
+    box-shadow: 0px 3px 6px black;
+    border-radius: 20px;
+    margin: 52px 59px 34px 65px;
+    //width: 100%;
+    height: 100%;
+    padding: 31px 88px 21px 88px;
+  }
+`;
 const App = () => {
   const { me, currentPatient } = useSelector<RootState, UserState>((state) => state.user);
   const dispatch = useDispatch();
@@ -32,30 +46,32 @@ const App = () => {
     <>
       {!me ? <LoginPage/>
         : (
-          <div css={css`
-            height: 100%;
-            display: flex;
-            flex-direction: column;`}>
-            <Header/>
-            <section css={css`
+          <Router>
+            <div css={css`
+              height: 100%;
               display: flex;
-              height: 100%;`}>
-              <NavBar/>
-              <Router>
-                <div css={css`flex: 1; margin-bottom: 34px;`}>
-                  <Switch>
-                    <Route path='/taper-configuration'
-                           render={checkCurrentPatientAndRender(currentPatient, TaperConfigurationPage)}/>
-                    <Route path='/logging-configuration'
-                           render={checkCurrentPatientAndRender(currentPatient, LoggingConfigurationPage)}/>
-                    <Route path='/symptom-report'
-                           render={checkCurrentPatientAndRender(currentPatient, SymptomReportPage)}/>
-                    <Route path="/" component={HomePage}/>
-                  </Switch>
-                </div>
-              </Router>
-            </section>
-          </div>
+              flex-direction: column;`}>
+              <Header/>
+              <section css={css`
+                display: flex;
+                height: 100%;`}>
+                <NavBar/>
+                <main css={mainStyle}>
+                  <div>
+                    <Switch>
+                      <Route path='/taper-configuration'
+                             render={checkCurrentPatientAndRender(currentPatient, TaperConfigurationPage)}/>
+                      <Route path='/logging-configuration'
+                             render={checkCurrentPatientAndRender(currentPatient, LoggingConfigurationPage)}/>
+                      <Route path='/symptom-report'
+                             render={checkCurrentPatientAndRender(currentPatient, SymptomReportPage)}/>
+                      <Route path="/" component={HomePage}/>
+                    </Switch>
+                  </div>
+                </main>
+              </section>
+            </div>
+          </Router>
         )}
     </>
   );

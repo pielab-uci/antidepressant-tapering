@@ -11,6 +11,32 @@ interface Props {
   patients: Omit<Patient, 'password'>[]
 }
 
+const headerStyle = css`
+  display: flex;
+  align-items: center
+`;
+
+const titleStyle = css`
+  font-size: 32px;
+  font-weight: bold;
+  margin-right: 61px;
+  margin-bottom: 0;
+  align-self: center;
+`;
+
+const searchStyle = css`
+  height: 50px;
+  width: 588px;
+  padding-top: 10px;
+`;
+
+const buttonStyle = css`
+  align-self: center;
+  height: 41px;
+  margin-left: auto;
+  border-radius: 17px;
+`;
+
 const PatientsList: FC<Props> = ({ patients }) => {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -29,36 +55,17 @@ const PatientsList: FC<Props> = ({ patients }) => {
   ];
 
   return (
-    <div css={css`
-      background-color: #fafafa;
-      box-shadow: 0px 3px 6px black;
-      border-radius: 20px;
-      margin: 52px 59px 34px 65px;
-      //width: 100%;
-      height: 100%;
-      padding: 31px 88px 21px 88px;
-    `}>
-      <div css={css`
-        display: flex;
-        align-items: center`}>
-        <h3 css={css`
-          font-size: 32px;
-          font-weight: bold;
-          margin-right: 61px;
-        `}>Patients</h3>
+    // <div css={patientListStyle}>
+    <div>
+      <div css={headerStyle}>
+        <h3 css={titleStyle}>Patients</h3>
         <Input.Search
           placeholder={'Search'}
-          css={css`
-            height: 41px;
-            width: 588px;
-          `}
+          css={searchStyle}
         />
         <Button
           type={'primary'}
-          css={css`
-            height: 41px;
-            margin-left: auto;
-            border-radius: 17px;`}>New Patient</Button>
+          css={buttonStyle}>New Patient</Button>
       </div>
       <Table
         columns={columns}

@@ -3,12 +3,13 @@ import styled from '@emotion/styled';
 import { css } from '@emotion/react';
 import { GrNotification } from 'react-icons/gr';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { UserState } from '../redux/reducers/user';
 import { RootState } from '../redux/reducers';
 
 const StyledHeader = styled.header`
   display: flex;
-  border: 1px solid blue;
+  //border: 1px solid blue;
   width: 100%;`;
 
 const Logo = styled.div`
@@ -16,7 +17,8 @@ const Logo = styled.div`
   text-align: center;
   line-height: 70px;
   font-size: 26px;
-  border: 1px solid blue;
+  color: #0984E3;
+  //border: 1px solid blue;
 `;
 
 const DisplayUser = styled.div`
@@ -26,16 +28,20 @@ const DisplayUser = styled.div`
   height: 70px;
   line-height: 70px;
   flex: 1;
-  border: 1px solid blue;
+  //border: 1px solid blue;
   color: white;
   font-size: 23px;`;
 
 const Header = () => {
   const { me } = useSelector<RootState, UserState>((state) => state.user);
+  const history = useHistory();
+  const onClickLogo = () => {
+    history.push('/');
+  };
   return (
     <>
       <StyledHeader>
-        <Logo>Logo</Logo>
+        <Logo onClick={onClickLogo}>Logo</Logo>
         <DisplayUser>
         <span css={css`margin-right: 86px`}><GrNotification size={'23px'} css={css`margin-right: 41px;`}/>
         Hello, Dr. {me?.name}</span>

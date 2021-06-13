@@ -31,7 +31,7 @@ const HomePage = () => {
         className='home-content'
         css={css`
         display: flex;
-        border: 1px solid black;
+        //border: 1px solid black;
         flex-direction: row;
         height: 100%;`
       }>

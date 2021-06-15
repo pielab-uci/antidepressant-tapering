@@ -1,12 +1,13 @@
 import * as React from 'react';
 import {
-  useEffect, useRef,
+  useEffect, useRef, useState,
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   useLocation, useRouteMatch,
 } from 'react-router';
 import { Route, Switch } from 'react-router-dom';
+import { css } from '@emotion/react';
 import { RootState } from '../../redux/reducers';
 import {
   FETCH_TAPER_CONFIG_REQUEST,
@@ -20,11 +21,28 @@ import { CreateTaperConfiguration, EditTaperConfiguration, ConfirmTaperConfigura
 import { UserState } from '../../redux/reducers/user';
 import { checkCurrentPatientAndRender } from '../utils';
 
+const navTextStyle = css`
+  display: flex;
+  font-family: Verdana;
+  font-size: 20px;
+  color: #636E72;
+
+  & > div {
+    margin-right: 22px;
+  }
+
+  & > .current-step {
+    font-weight: bold;
+    color: #0984E3;
+  }
+`;
+
 const TaperConfigurationPage = () => {
   const dispatch = useDispatch();
   const { currentPatient } = useSelector<RootState, UserState>((state) => state.user);
   const urlSearchParams = useRef<URLSearchParams>(new URLSearchParams(useLocation().search));
   const { path, url } = useRouteMatch();
+  const [step, setStep] = useState();
 
   useEffect(() => {
     console.group('TaperConfigurationPage');
@@ -55,13 +73,22 @@ const TaperConfigurationPage = () => {
   }, []);
 
   return (
-    <>
+    <div css={css`flex: 1`} className='taper-configuration'>
+      <div css={navTextStyle}>
+        <div className='nav-step1'>Step 1. Create</div>
+        <div>&gt;&gt;</div>
+        <div className='nave-step2'>Step 2. Prescribe</div>
+        <div>&gt;&gt;</div>
+        <div className='nav-step3'>Step 3. Confirm</div>
+      </div>
       <Switch>
-        <Route path={`${path}/create`} render={checkCurrentPatientAndRender(currentPatient, CreateTaperConfiguration)}/>
+        <Route path={`${path}/create`}
+               render={checkCurrentPatientAndRender(currentPatient, CreateTaperConfiguration)}/>
         <Route path={`${path}/edit`} render={checkCurrentPatientAndRender(currentPatient, EditTaperConfiguration)}/>
-        <Route path={`${path}/confirm`} render={checkCurrentPatientAndRender(currentPatient, ConfirmTaperConfiguration)}/>
+        <Route path={`${path}/confirm`}
+               render={checkCurrentPatientAndRender(currentPatient, ConfirmTaperConfiguration)}/>
       </Switch>
-    </>
+    </div>
   );
 };
 

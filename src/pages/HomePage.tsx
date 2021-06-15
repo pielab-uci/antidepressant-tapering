@@ -13,8 +13,6 @@ import {
 import { UserState } from '../redux/reducers/user';
 import { RootState } from '../redux/reducers';
 import PatientPage from './PatientPage';
-import { checkCurrentPatientAndRender } from './utils';
-import TaperConfigurationPage from './TaperConfiguration/TaperConfigurationPage';
 
 const HomePage = () => {
   const dispatch = useDispatch();
@@ -28,18 +26,9 @@ const HomePage = () => {
   }, [me]);
 
   return (
-    <div css={css`height:100%;`}>
-      <div
-        className='home-content'
-        css={css`
-        display: flex;
-        //border: 1px solid black;
-        flex-direction: row;
-        height: 100%;`
-      }>
-
         <section css={css`
-          flex: 1;
+          //flex: 1;
+          height: 100%;
           `}>
           <Switch>
             <Route exact path="/" render={() => <PatientsList patients={patients}/>}/>
@@ -48,8 +37,6 @@ const HomePage = () => {
             {/*       render={checkCurrentPatientAndRender(currentPatient, TaperConfigurationPage)}/> */}
           </Switch>
         </section>
-      </div>
-    </div>
   );
 };
 

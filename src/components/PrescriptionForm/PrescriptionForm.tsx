@@ -7,6 +7,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { GrCircleInformation } from 'react-icons/gr';
+import { css } from '@emotion/react';
 import {
   CapsuleOrTabletDosages, SelectInterval, OralFormDosage,
 } from '.';
@@ -182,30 +183,54 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
     }}
     >
       <Button onClick={removeDrugForm}>Remove</Button>
-      <h3>Prescription settings</h3>
-      <label>Brand</label>
-      <Select showSearch value={chosenBrand?.brand} onChange={onBrandChange} style={{ width: 200 }}>
-        {drugsLocal?.map(
-          (drug) => (<OptGroup key={`${drug.name}_group`} label={drug.name}>
-            {drug.options.map(
-              (option) => <Option key={option.brand} value={option.brand}>{option.brand}</Option>,
-            )}
-          </OptGroup>),
-        )}
-      </Select>
-      <label>Form</label>
-      <Select value={chosenDrugForm?.form} onChange={onFormChange} style={{ width: 200 }}>
-        {drugFormOptions?.map(
-          (form: CapsuleOrTabletForm | OralForm) => <Option key={form.form} value={form.form}>{form.form}</Option>,
-        )}
-      </Select>
-      <Tooltip title={prescribedDrug.halfLife} overlayStyle={{ whiteSpace: 'pre-line' }}>
-        <GrCircleInformation/>
-      </Tooltip>
-      {chosenDrugForm?.form === 'tablet'
-      && <Checkbox checked={allowSplittingUnscoredTablet} onChange={toggleAllowSplittingUnscoredTabletCheckbox}>Allow
-        splitting unscored tablet</Checkbox>}
-      <hr/>
+      <div css={css`
+        width: 288px;
+        
+        & > h3 {
+          font-size: 18px;
+          font-family: Futura;
+        }
+
+        & .medication-select-form {
+          display: flex;
+          margin: 15px 0 15px 51px;
+        }
+
+      `}>
+        <h3>Prescription settings</h3>
+        <div>
+          <div className='medication-select-form'>
+            <label>Brand</label>
+            <Select showSearch value={chosenBrand?.brand} onChange={onBrandChange} style={{ width: 200 }}>
+              {drugsLocal?.map(
+                (drug) => (
+                  <OptGroup key={`${drug.name}_group`} label={drug.name}>
+                    {drug.options.map(
+                      (option) => <Option key={option.brand} value={option.brand}>{option.brand}</Option>,
+                    )}
+                  </OptGroup>),
+              )}
+            </Select>
+            <Tooltip title={prescribedDrug.halfLife} overlayStyle={{ whiteSpace: 'pre-line' }}>
+              <GrCircleInformation/>
+            </Tooltip>
+          </div>
+          <div className='medication-select-form'>
+            <label>Form</label>
+            <Select value={chosenDrugForm?.form} onChange={onFormChange} style={{ width: 200 }}>
+              {drugFormOptions?.map(
+                (form: CapsuleOrTabletForm | OralForm) => <Option key={form.form}
+                                                                  value={form.form}>{form.form}</Option>,
+              )}
+            </Select>
+          </div>
+        </div>
+        <div>
+          {chosenDrugForm?.form === 'tablet'
+          && <Checkbox checked={allowSplittingUnscoredTablet} onChange={toggleAllowSplittingUnscoredTabletCheckbox}>Allow
+            splitting unscored tablet</Checkbox>}
+        </div>
+      </div>
 
       {renderDosages(chosenDrugForm, 'Prior')}
       <hr/>

@@ -30,6 +30,7 @@ import PatientInitPage from './PatientInitPage';
 const pageStyle = css`
   display: flex;
   flex-direction: column;
+  height: 100%;
 
   & > h2 {
     font-size: 32px;

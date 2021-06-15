@@ -71,7 +71,7 @@ const PatientsList: FC<Props> = ({ patients }) => {
   }, [currentPatient, prescribedDrugs]);
    */
   return (
-    <div>
+    <div css={css`height:100%;`}>
       <div css={headerStyle}>
         <h3 css={titleStyle}>Patients</h3>
         <Input.Search

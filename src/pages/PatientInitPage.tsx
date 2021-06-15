@@ -116,7 +116,8 @@ const PatientInitPage: FC = () => {
     <div css={css`h3 {
       font-size: 26px;
       color: #636272;
-    }`}>
+    }`}
+    className='patient-initial'>
       <div css={css`display: flex;
         justify-content: space-between;`}>
         <div css={css`width: 447px;`}>

@@ -11,9 +11,9 @@ const NavBar = () => {
   const location = useLocation();
 
   useEffect(() => {
-    console.group('NavBar');
-    console.log('location: ', location);
-    console.groupEnd();
+    // console.group('NavBar');
+    // console.log('location: ', location);
+    // console.groupEnd();
   });
 
   const TabStyle = (name: 'patient' | 'symptomTemplates') => css`

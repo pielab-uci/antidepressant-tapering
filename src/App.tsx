@@ -59,8 +59,8 @@ const App = () => {
                 <main css={mainStyle}>
                   <div>
                     <Switch>
-                      <Route path='/taper-configuration'
-                             render={checkCurrentPatientAndRender(currentPatient, TaperConfigurationPage)}/>
+                      {/* <Route path='/taper-configuration' */}
+                      {/*       render={checkCurrentPatientAndRender(currentPatient, TaperConfigurationPage)}/> */}
                       <Route path='/logging-configuration'
                              render={checkCurrentPatientAndRender(currentPatient, LoggingConfigurationPage)}/>
                       <Route path='/symptom-report'

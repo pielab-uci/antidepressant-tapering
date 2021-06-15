@@ -4,10 +4,11 @@ import {
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RouteChildrenProps } from 'react-router/ts4.0';
-import { Button } from 'antd';
-import { useHistory } from 'react-router';
+import { Button, Input } from 'antd';
+import { useHistory, useRouteMatch } from 'react-router';
 import { css } from '@emotion/react';
 import { format } from 'date-fns';
+import { Route, Switch } from 'react-router-dom';
 import { UserState } from '../redux/reducers/user';
 import { RootState } from '../redux/reducers';
 import {
@@ -16,14 +17,15 @@ import {
   FetchPrescribedDrugsRequestAction,
 } from '../redux/actions/taperConfig';
 import { TaperConfigState } from '../redux/reducers/taperConfig';
-import { ProjectedScheduleChart, ProjectedScheduleTable } from '../components/Schedule';
 import {
-  chartDataConverter,
-  completePrescribedDrugs, ScheduleChartData,
-  scheduleGenerator,
+  ScheduleChartData,
 } from '../redux/reducers/utils';
+
 import { SET_CURRENT_PATIENT, SetCurrentPatientAction } from '../redux/actions/user';
 import { Schedule } from '../components/Schedule/ProjectedSchedule';
+import { checkCurrentPatientAndRender } from './utils';
+import TaperConfigurationPage from './TaperConfiguration/TaperConfigurationPage';
+import PatientInitPage from './PatientInitPage';
 
 const pageStyle = css`
   display: flex;
@@ -46,20 +48,12 @@ const pageStyle = css`
     margin: 18px auto;
     background-color: #D1D1D1;
   }
-
-  & h3 {
-    font-size: 26px;
-    color: #636272;
-  }
 `;
 
 const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) => {
-  const { me, currentPatient } = useSelector<RootState, UserState>((state) => state.user);
-  const { prescribedDrugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
-  const [projectedSchedule, setProjectedSchedule] = useState<Schedule>({ drugs: [], data: [] });
-  const [chartData, setChartData] = useState<ScheduleChartData>([]);
+  const { currentPatient } = useSelector<RootState, UserState>((state) => state.user);
   const dispatch = useDispatch();
-  const history = useHistory();
+  const { path, url } = useRouteMatch();
 
   useEffect(() => {
     dispatch<SetCurrentPatientAction>({
@@ -73,11 +67,12 @@ const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) =
         type: FETCH_PRESCRIBED_DRUGS_REQUEST,
         data: currentPatient.taperingConfiguration.id,
       });
-      // TODO: do I need to separate the request for prescribed ddurgs and taper configurations..?
-      setProjectedSchedule(scheduleGenerator(completePrescribedDrugs(currentPatient.taperingConfiguration.prescribedDrugs)));
-      setChartData(chartDataConverter(projectedSchedule));
     }
 
+    console.group('PatientPage');
+    console.log('url: ', url);
+    console.log('path: ', path);
+    console.groupEnd();
     return () => {
       dispatch<EmptyPrescribedDrugs>({
         type: EMPTY_PRESCRIBED_DRUGS,
@@ -95,75 +90,6 @@ const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) =
     }
   }, [currentPatient]);
 
-  const onClickNewSchedule = useCallback(() => {
-    history.push(`/taper-configuration/create/?clinicianId=${me!.id}&patientId=${currentPatient!.id}`);
-  }, [me, currentPatient]);
-
-  const onClickAdjustSchedule = useCallback(() => {
-    history.push(`/taper-configuration/edit/?clinicianId=${me!.id}&patientId=${currentPatient!.id}`);
-  }, [currentPatient]);
-
-  const renderMedicationSchedule = useCallback(() => {
-    if (!currentPatient!.taperingConfiguration) {
-      return <p css={css`
-        font-size: 20px;
-        color: #c7c5c5;
-        margin-top: 46px;
-      `}>No medication schedule created</p>;
-    }
-    return <div>
-      <ProjectedScheduleTable editable={false}
-                              projectedSchedule={projectedSchedule!}/>
-    </div>;
-  }, [currentPatient]);
-
-  const renderChart = useCallback(() => {
-    if (chartData.length !== 0) {
-      return <ProjectedScheduleChart scheduleChartData={chartData} width={399} height={360}/>;
-    }
-    return <div>
-      <div css={css`
-        width: 399px;
-        height: 360px;
-        border-radius: 17px;
-        color: #c7c5c5;
-        font-size: 20px;
-        border: 1px solid #707070;
-        line-height: 300px;
-        text-align: center;
-      `}>No data.
-      </div>
-      <div css={css`
-        text-align: center;
-        font-size: 20px;
-        color: #636e72;`}>Projected taper progress
-      </div>
-    </div>;
-  }, [chartData]);
-
-  const renderSymptomTracker = () => {
-    return <p css={css`
-      font-size: 20px;
-      color: #c7c5c5;
-      margin-top: 46px;
-    `}>No symptom tracker configuration created.</p>;
-  };
-
-  const renderButton = useCallback(() => {
-    const buttonStyle = css`
-      border-radius: 10px;`;
-    return currentPatient!.taperingConfiguration
-      ? <Button type='primary' css={buttonStyle} onClick={onClickAdjustSchedule}>Edit Schedule</Button>
-      : <Button type='primary' css={buttonStyle} onClick={onClickNewSchedule}>Create New</Button>;
-  }, [currentPatient]);
-
-  const renderNoteSection = () => {
-    return (
-      <>
-        <h3>Notes</h3>
-      </>
-    );
-  };
   return (
     <>
       {!currentPatient ? <div>No such patient</div>
@@ -171,32 +97,11 @@ const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) =
           <h2>{currentPatient.name}</h2>
           <div css={css`font-size: 20px;`}>Last Visit: {format(currentPatient.recentVisit, 'MM/dd/yyyy')}</div>
           <hr/>
-
-          <div css={css`display: flex;
-            justify-content: space-between;`}>
-            <div css={css`width: 447px;`}>
-              <div css={css`display: flex;
-                align-items: center;
-                justify-content: space-between;`}>
-                <h3>Medication Schedule</h3>
-                {renderButton()}
-              </div>
-              {renderMedicationSchedule()}
-              <div css={css`display: flex;
-                align-items: center;
-                justify-content: space-between;
-                margin-top: 76px;`}>
-                <h3>Symptom Tracker</h3>
-                <Button type='primary' css={css`border-radius: 10px;`}>Create New</Button>
-              </div>
-              {renderSymptomTracker()}
-            </div>
-            <div>
-              {renderChart()}
-            </div>
-          </div>
-          <hr/>
-          {renderNoteSection()}
+          <Switch>
+            <Route exact path={`${path}`} component={PatientInitPage}/>
+            <Route path={`${path}/taper-configuration`}
+            render={checkCurrentPatientAndRender(currentPatient, TaperConfigurationPage)}/>
+        </Switch>
         </div>
       }
     </>

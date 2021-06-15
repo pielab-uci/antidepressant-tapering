@@ -13,10 +13,12 @@ import {
 import { UserState } from '../redux/reducers/user';
 import { RootState } from '../redux/reducers';
 import PatientPage from './PatientPage';
+import { checkCurrentPatientAndRender } from './utils';
+import TaperConfigurationPage from './TaperConfiguration/TaperConfigurationPage';
 
 const HomePage = () => {
   const dispatch = useDispatch();
-  const { me, patients } = useSelector<RootState, UserState>((state) => state.user);
+  const { me, patients, currentPatient } = useSelector<RootState, UserState>((state) => state.user);
 
   useEffect(() => {
     dispatch<LoadPatientsRequestAction>({
@@ -42,6 +44,8 @@ const HomePage = () => {
           <Switch>
             <Route exact path="/" render={() => <PatientsList patients={patients}/>}/>
             <Route path="/patient/:patientId" component={PatientPage}/>
+            {/* <Route path='/taper-configuration' */}
+            {/*       render={checkCurrentPatientAndRender(currentPatient, TaperConfigurationPage)}/> */}
           </Switch>
         </section>
       </div>

@@ -61,7 +61,6 @@ const TaperConfigurationPage = () => {
         <Route path={`${path}/edit`} render={checkCurrentPatientAndRender(currentPatient, EditTaperConfiguration)}/>
         <Route path={`${path}/confirm`} render={checkCurrentPatientAndRender(currentPatient, ConfirmTaperConfiguration)}/>
       </Switch>
-
     </>
   );
 };

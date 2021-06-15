@@ -53,7 +53,8 @@ export const john: Omit<Patient, 'password'> = {
   //     ],
   //   },
   // ] as TaperingConfiguration[],
-  taperingConfiguration: { id: 1 },
+  // taperingConfiguration: { id: 1 },
+  taperingConfiguration: null,
   recentVisit: new Date('2021-05-14T21:13:39.673Z'),
 };
 
@@ -62,7 +63,8 @@ export const xiao: Omit<Patient, 'password'> = {
   email: 'xiaoz@uci.edu',
   name: 'Xiao Zhang',
   // taperingConfigurations: [],
-  taperingConfiguration: { id: 2 },
+  // taperingConfiguration: { id: 2 },
+  taperingConfiguration: null,
   recentVisit: new Date(),
 };
 

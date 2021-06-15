@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import {
   useHistory, useLocation,
 } from 'react-router';
+import { css } from '@emotion/react';
 import { PrescribedDrug } from '../../types';
 import PrescriptionForm from '../../components/PrescriptionForm/PrescriptionForm';
 import { RootState } from '../../redux/reducers';
@@ -38,10 +39,30 @@ const CreateTaperConfiguration = () => {
   };
 
   return (
-    <> {prescribedDrugs && renderPrescriptionForms(prescribedDrugs)}
-      <Button onClick={addNewPrescriptionForm}>Add Drug</Button>
-      <Button onClick={moveToEditPage} disabled={!isInputComplete}>Next</Button>
-    </>
+    <div
+      className='create-taper-configuration'
+      css={css`
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        height: 100%;
+        `}>
+      <div css={css`
+        padding-top: 45px;
+        background-color: white;
+        border-radius: 17px;
+        overflow-y: scroll;
+        margin-bottom: 34px;
+        flex: 1;`}>
+        {prescribedDrugs && renderPrescriptionForms(prescribedDrugs)}
+      </div>
+      <div css={css`
+        margin-top: auto;
+        margin-bottom: 21px;`}>
+        <Button onClick={addNewPrescriptionForm}>Add Drug</Button>
+        <Button onClick={moveToEditPage} disabled={!isInputComplete}>Next</Button>
+      </div>
+    </div>
   );
 };
 

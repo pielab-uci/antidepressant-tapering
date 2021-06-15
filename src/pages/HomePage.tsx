@@ -2,6 +2,8 @@ import * as React from 'react';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, Switch } from 'react-router';
+import { GrNotification } from 'react-icons/gr';
+import { css } from '@emotion/react';
 import NavBar from '../components/NavBar';
 import PatientsList from '../components/PatientsList';
 import {
@@ -14,7 +16,7 @@ import PatientPage from './PatientPage';
 
 const HomePage = () => {
   const dispatch = useDispatch();
-  const { me, patients } = useSelector<RootState, UserState>((state) => state.user);
+  const { me, patients, currentPatient } = useSelector<RootState, UserState>((state) => state.user);
 
   useEffect(() => {
     dispatch<LoadPatientsRequestAction>({
@@ -24,19 +26,17 @@ const HomePage = () => {
   }, [me]);
 
   return (
-    <div style={{ width: '800px', height: '600px', border: '1px solid black' }}>
-      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-        <h2>Home</h2>
-        <button>New Patient</button>
-      </div>
-    <div style={{ display: 'flex', flexDirection: 'row' }}>
-      <NavBar/>
-      <Switch>
-        <Route exact path="/" render={() => <PatientsList patients={patients}/>}/>
-        <Route path="/patient/:patientId" component={PatientPage}/>
-      </Switch>
-    </div>
-    </div>
+        <section css={css`
+          //flex: 1;
+          height: 100%;
+          `}>
+          <Switch>
+            <Route exact path="/" render={() => <PatientsList patients={patients}/>}/>
+            <Route path="/patient/:patientId" component={PatientPage}/>
+            {/* <Route path='/taper-configuration' */}
+            {/*       render={checkCurrentPatientAndRender(currentPatient, TaperConfigurationPage)}/> */}
+          </Switch>
+        </section>
   );
 };
 

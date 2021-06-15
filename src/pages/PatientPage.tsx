@@ -1,11 +1,14 @@
 import * as React from 'react';
 import {
-  FC, useCallback, useEffect,
+  FC, useCallback, useEffect, useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RouteChildrenProps } from 'react-router/ts4.0';
-import { Button } from 'antd';
-import { useHistory } from 'react-router';
+import { Button, Input } from 'antd';
+import { useHistory, useRouteMatch } from 'react-router';
+import { css } from '@emotion/react';
+import { format } from 'date-fns';
+import { Route, Switch } from 'react-router-dom';
 import { UserState } from '../redux/reducers/user';
 import { RootState } from '../redux/reducers';
 import {
@@ -14,16 +17,44 @@ import {
   FetchPrescribedDrugsRequestAction,
 } from '../redux/actions/taperConfig';
 import { TaperConfigState } from '../redux/reducers/taperConfig';
-import { ProjectedScheduleChart } from '../components/Schedule';
-import { chartDataConverter, completePrescribedDrugs, scheduleGenerator } from '../redux/reducers/utils';
+import {
+  ScheduleChartData,
+} from '../redux/reducers/utils';
+
 import { SET_CURRENT_PATIENT, SetCurrentPatientAction } from '../redux/actions/user';
+import { Schedule } from '../components/Schedule/ProjectedSchedule';
+import { checkCurrentPatientAndRender } from './utils';
+import TaperConfigurationPage from './TaperConfiguration/TaperConfigurationPage';
+import PatientInitPage from './PatientInitPage';
+
+const pageStyle = css`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  & > h2 {
+    font-size: 32px;
+    font-weight: bold;
+    margin: 0;
+  }
+
+  &:nth-child(2) {
+    font-size: 20px;
+  }
+
+  & > hr {
+    border: none;
+    width: 100%;
+    height: 3px;
+    margin: 18px auto;
+    background-color: #D1D1D1;
+  }
+`;
 
 const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) => {
-  const { me, currentPatient } = useSelector<RootState, UserState>((state) => state.user);
-  const { prescribedDrugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
-
+  const { currentPatient } = useSelector<RootState, UserState>((state) => state.user);
   const dispatch = useDispatch();
-  const history = useHistory();
+  const { path, url } = useRouteMatch();
 
   useEffect(() => {
     dispatch<SetCurrentPatientAction>({
@@ -39,6 +70,10 @@ const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) =
       });
     }
 
+    console.group('PatientPage');
+    console.log('url: ', url);
+    console.log('path: ', path);
+    console.groupEnd();
     return () => {
       dispatch<EmptyPrescribedDrugs>({
         type: EMPTY_PRESCRIBED_DRUGS,
@@ -56,62 +91,21 @@ const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) =
     }
   }, [currentPatient]);
 
-  const onClickNewSchedule = useCallback(() => {
-    // history.push(`/taper-configuration/?clinicianId=${me!.id}&patientId=${currentPatient!.id}`);
-    // history.push(`/taper-configuration/?clinicianId=${me!.id}&patientId=${currentPatient!.id}/create`);
-    history.push(`/taper-configuration/create/?clinicianId=${me!.id}&patientId=${currentPatient!.id}`);
-  }, [me, currentPatient]);
-
-  const onClickAdjustSchedule = useCallback(() => {
-    history.push(`/taper-configuration/edit/?clinicianId=${me!.id}&patientId=${currentPatient!.id}`);
-  }, [currentPatient]);
-
-  const renderDrugsAndDosages = useCallback(() => {
-    return !currentPatient!.taperingConfiguration
-      ? <div>Drug(s): Drugs and dosages will appear hear.</div>
-      : prescribedDrugs && prescribedDrugs.reduce((prev, prescribedDrug) => {
-        const dosages = prescribedDrug.upcomingDosages.reduce(
-          (prevDosageStr, dosage) => `${prevDosageStr}${dosage.quantity} * ${dosage.dosage}`, '',
-        );
-        return `${prev} ${prescribedDrug.brand} (${dosages})`;
-      }, 'Drug(s):');
-  }, [currentPatient, prescribedDrugs]);
-
-  const renderTaperProgressGraph = useCallback(() => {
-    if (!currentPatient!.taperingConfiguration) {
-      return <div>Taper progress will appear</div>;
-    }
-    if (prescribedDrugs) {
-      console.log('prescribedDrugs: ', prescribedDrugs);
-      return <ProjectedScheduleChart
-          scheduleChartData={chartDataConverter(scheduleGenerator(completePrescribedDrugs(prescribedDrugs)))}
-          width={300}
-          height={300}
-        />;
-    }
-    return <div>Generating a chart..</div>;
-  }, [currentPatient, prescribedDrugs]);
-
-  const renderButtons = useCallback(() => {
-    return currentPatient!.taperingConfiguration
-      ? <Button onClick={onClickAdjustSchedule}>Adjust Schedule</Button>
-      : <Button onClick={onClickNewSchedule}>New Schedule</Button>;
-  }, [currentPatient]);
-
   return (
-  <>
-    {!currentPatient ? <div>No such patient</div>
-      : <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <h4>{currentPatient.name}</h4>
-        <hr/>
-        <h5>Schedule</h5>
-        {renderDrugsAndDosages()}
-        {renderTaperProgressGraph()}
-        {renderButtons()}
-        <button disabled={true}>Symptom Tracker</button>
-      </div>
-    }
-  </>
+    <>
+      {!currentPatient ? <div>No such patient</div>
+        : <div css={pageStyle}>
+          <h2>{currentPatient.name}</h2>
+          <div css={css`font-size: 20px;`}>Last Visit: {format(currentPatient.recentVisit, 'MM/dd/yyyy')}</div>
+          <hr/>
+          <Switch>
+            <Route exact path={`${path}`} component={PatientInitPage}/>
+            <Route path={`${path}/taper-configuration`}
+            render={checkCurrentPatientAndRender(currentPatient, TaperConfigurationPage)}/>
+        </Switch>
+        </div>
+      }
+    </>
   );
 };
 

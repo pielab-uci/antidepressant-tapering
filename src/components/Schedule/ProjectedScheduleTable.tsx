@@ -27,21 +27,19 @@ import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 import './tableStyles.css';
 import DateEditor from './DateEditor';
 import NumberEditor from './NumberEditor';
-import { ProjectedScheduleContext } from './ProjectedSchedule';
+import { Schedule } from './ProjectedSchedule';
 
-const ProjectedScheduleTable: FC<{ editable: boolean, setGridApi: (gridApi: GridApi) => void }> = ({ editable, setGridApi }) => {
+const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedule }> = ({ editable, projectedSchedule }) => {
   const [gridColumnApi, setGridColumnApi] = useState<ColumnApi | null>(null);
   const {
-    projectedSchedule, tableSelectedRows,
+    tableSelectedRows,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
-  const { gridApi } = useContext(ProjectedScheduleContext);
   const dispatch = useDispatch();
   const [showModal, setShowModal] = useState(false);
   const [prescribedDrugInModal, setPrescribedDrugInModal] = useState(null);
 
   const onGridReady = (params: GridReadyEvent) => {
     console.log('onGridReady');
-    setGridApi(params.api);
     setGridColumnApi(params.columnApi);
     const selectedRows = projectedSchedule.data.reduce((res, row, i) => {
       if (row.selected) {

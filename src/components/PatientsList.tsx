@@ -28,6 +28,10 @@ const searchStyle = css`
   height: 50px;
   width: 588px;
   padding-top: 10px;
+  
+  & .ant-input {
+    border-radius: 10px;
+  }
 `;
 
 const buttonStyle = css`
@@ -54,8 +58,19 @@ const PatientsList: FC<Props> = ({ patients }) => {
     { title: 'Last Visit', dataIndex: 'recentVisit', key: 'recentVisit' },
   ];
 
+  /*
+  const renderDrugsAndDosages = useCallback(() => {
+    return !currentPatient!.taperingConfiguration
+      ? <div>Drug(s): Drugs and dosages will appear hear.</div>
+      : prescribedDrugs && prescribedDrugs.reduce((prev, prescribedDrug) => {
+        const dosages = prescribedDrug.upcomingDosages.reduce(
+          (prevDosageStr, dosage) => `${prevDosageStr}${dosage.quantity} * ${dosage.dosage}`, '',
+        );
+        return `${prev} ${prescribedDrug.brand} (${dosages})`;
+      }, 'Drug(s):');
+  }, [currentPatient, prescribedDrugs]);
+   */
   return (
-    // <div css={patientListStyle}>
     <div>
       <div css={headerStyle}>
         <h3 css={titleStyle}>Patients</h3>

@@ -19,9 +19,9 @@ const NavBar = () => {
   const TabStyle = (name: 'patient' | 'symptomTemplates') => css`
     height: 68px;
     display: flex;
-    align-items: center;
     margin-top: 35px;
     padding-left: 29px;
+    align-items: ${name === 'patient' ? 'center' : 'start'};
     background-color: #0984E3;
     color: white;
 
@@ -48,7 +48,7 @@ const NavBar = () => {
     height: 131px;
     border-top-left-radius: 17px;
     border-bottom-left-radius: 17px;
-    border-right: 1px solid #9874E3;
+    border-right: 1px solid #0984E3;
     display: ${location.pathname.match(/(\/patient.+)|(\/taper-configuration.+)/) === null
     ? 'none'
     : 'flex'};

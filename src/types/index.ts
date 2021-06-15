@@ -14,7 +14,7 @@ export interface Patient {
   name: string;
   image?: string;
   patientSignedUp?: boolean; // considering Clinician's adding patient account in the office
-  taperingConfiguration: Pick<TaperingConfiguration, 'id'> | null;
+  taperingConfiguration: TaperingConfiguration | null;
   recentVisit: Date;
 }
 

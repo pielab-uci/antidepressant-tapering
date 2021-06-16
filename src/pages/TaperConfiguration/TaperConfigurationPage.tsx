@@ -35,6 +35,10 @@ const navTextStyle = css`
     font-weight: bold;
     color: #0984E3;
   }
+  
+  & > .nav-step1 {
+   }
+  
 `;
 
 const TaperConfigurationPage = () => {

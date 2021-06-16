@@ -15,7 +15,7 @@ import {
 } from './actions';
 
 interface Props {
-  time: 'Prior'|'Upcoming'
+  time: 'Prior' | 'Upcoming'
 }
 
 const inputStyle = {
@@ -64,25 +64,35 @@ const OralFormDosage: FC<Props> = ({ time }) => {
   }, [chosenDrugForm, intervalDurationDays, upcomingDosagesQty, oralDosageInfo]);
 
   return (
-  <>
-    <h3 css={css`font-size: 18px; font-family: Futura; color: #636E72;`}>
-    {time} Dosage
-    </h3>
-    <div>
-      <Input type='number' value={dosages['1mg']} onChange={mgOnChange} min={0} style={inputStyle}/> mg =
-      <Input type='number' value={mlDosage} onChange={mlOnChange} min={0} style={inputStyle}/> ml
-    </div>
-    {time === 'Upcoming' && dosageDifferenceMessage
-    && (
-      <div style={{ color: 'red' }}>
-        {dosageDifferenceMessage}
+    <>
+      <h3 css={css`font-size: 18px;
+        font-family: Futura;
+        color: #636E72;`}>
+        {time} Dosage
+      </h3>
+      <div css={css`
+        display: flex;
+        width: 500px;
+        justify-content: space-between;
+        margin-left: 90px;`}>
+        <div>
+          <Input type='number' value={dosages['1mg']} onChange={mgOnChange} min={0} style={inputStyle}/> mg =
+          <Input type='number' value={mlDosage} onChange={mlOnChange} min={0} style={inputStyle}/> ml
+        </div>
+        <div>
+          {time === 'Upcoming' && dosageDifferenceMessage
+          && (
+            <div style={{ color: 'red' }}>
+              {dosageDifferenceMessage}
+            </div>
+          )}
+          <div>
+            Total: {dosageSum}
+            {' '}
+            {chosenDrugForm!.measureUnit}
+          </div>
+        </div>
       </div>
-    )}
-    <div>
-      Total: {dosageSum}
-      {' '}
-      {chosenDrugForm!.measureUnit}
-    </div>
     </>
   );
 };

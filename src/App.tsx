@@ -6,7 +6,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { css } from '@emotion/react';
 import HomePage from './pages/HomePage';
-import TaperConfigurationPage from './pages/TaperConfiguration/TaperConfigurationPage';
 import LoggingConfigurationPage from './pages/LoggingConfigurationPage';
 import SymptomReportPage from './pages/SymptomReportPage';
 import { RootState } from './redux/reducers';
@@ -23,11 +22,8 @@ const mainStyle = css`
   padding: 52px 59px 34px 65px;
   & > div {
     background-color: #fafafa;
-    box-shadow: 0 3px 6px black;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
     border-radius: 20px;
-    //margin: 52px 59px 0 65px;
-    //width: 100%;
-    
     height: 100%;
     padding: 31px 88px 21px 88px;
   }
@@ -59,8 +55,6 @@ const App = () => {
                 <main css={mainStyle}>
                    <div>
                     <Switch>
-                      {/* <Route path='/taper-configuration' */}
-                      {/*       render={checkCurrentPatientAndRender(currentPatient, TaperConfigurationPage)}/> */}
                       <Route path='/logging-configuration'
                              render={checkCurrentPatientAndRender(currentPatient, LoggingConfigurationPage)}/>
                       <Route path='/symptom-report'

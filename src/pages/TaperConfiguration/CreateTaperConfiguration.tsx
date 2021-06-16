@@ -6,6 +6,7 @@ import {
   useHistory, useLocation,
 } from 'react-router';
 import { css } from '@emotion/react';
+import { useRouteMatch } from 'react-router-dom';
 import { PrescribedDrug } from '../../types';
 import PrescriptionForm from '../../components/PrescriptionForm/PrescriptionForm';
 import { RootState } from '../../redux/reducers';
@@ -18,18 +19,6 @@ const wrapperStyle = css`
   flex: 1;
   overflow-y: hidden;
   //height: 100%;
-`;
-
-const prescriptionFormStyle = css`
-  padding-top: 45px;
-  background-color: white;
-  border-radius: 17px;
-  //height: calc(100% - 312px);
-  height: 100%;
-  //overflow-y: auto;
-  overflow-y: scroll;
-  margin-bottom: 34px;
-  //flex: 1;
 `;
 
 const buttonsStyle = css`
@@ -48,19 +37,40 @@ const CreateTaperConfiguration = () => {
   const { prescribedDrugs, isInputComplete } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const dispatch = useDispatch();
   const history = useHistory();
-  const urlSearchParams = useRef<URLSearchParams>(new URLSearchParams(useLocation().search));
+  // const urlSearchParams = useRef<URLSearchParams>(new URLSearchParams(useLocation().search));
+  const location = useLocation();
+  const { path, url } = useRouteMatch();
+
+  useEffect(() => {
+    console.group('CreateTaperConfiguration');
+    console.log('history: ', history);
+    console.log('location: ', location);
+    console.log('path: ', path);
+    console.log('url: ', url);
+    console.groupEnd();
+  });
+
   const addNewPrescriptionForm = useCallback(() => {
     dispatch({
       type: ADD_NEW_DRUG_FORM,
     });
   }, []);
 
-  useEffect(() => {
+  const prescriptionFormStyle = css`
+    padding-top: ${prescribedDrugs && prescribedDrugs.length !== 0 ? '45px' : '0px'};
+    background-color: white;
+    border-radius: 17px;
+    height: 100%;
+    overflow-y: scroll;
+    margin-bottom: 34px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+  `;
 
-  }, []);
   const moveToEditPage = () => {
     // TODO: continue from here - it makes taper-configuration/create/taper-configuration/edit..
-    history.push(`/taper-configuration/edit/?clinicianId=${urlSearchParams.current.get('clinicianId')}&patientId=${urlSearchParams.current.get('patientId')}`);
+    // history.push(`/taper-configuration/edit/?clinicianId=${urlSearchParams.current.get('clinicianId')}&patientId=${urlSearchParams.current.get('patientId')}`);
+    // history.push('/taper-configuration/edit/');
+    history.push(url.replace('create', 'edit'));
   };
 
   const renderPrescriptionForms = (prescribedDrugs: PrescribedDrug[]) => {
@@ -76,10 +86,16 @@ const CreateTaperConfiguration = () => {
       className='create-taper-configuration'
       css={wrapperStyle}>
       <div className='create-taper-configuration-prescription-forms' css={prescriptionFormStyle}>
+        {prescribedDrugs?.length === 0
+        && <Button type='primary'
+                   css={css`
+                     margin-top: 10px;
+                     border-radius: 10px;
+                     width: 150px;`}
+                   onClick={addNewPrescriptionForm}>Add Medication</Button>}
         {prescribedDrugs && renderPrescriptionForms(prescribedDrugs)}
       </div>
       <div css={buttonsStyle} className='create-taper-config-buttons'>
-        {/* <Button onClick={addNewPrescriptionForm}>Add Drug</Button> */}
         <Button>Cancel</Button>
         <Button type='primary' onClick={moveToEditPage} disabled={!isInputComplete}>Next</Button>
       </div>

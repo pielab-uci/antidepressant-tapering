@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { GridApi } from 'ag-grid-community';
 import {
   FC, useCallback, useRef, useState,
 } from 'react';
 import { Button } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { css } from '@emotion/react';
 import { ProjectedScheduleChart, ProjectedScheduleTable } from '.';
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
@@ -47,42 +47,47 @@ const ProjectedSchedule: FC<{ editable: boolean }> = ({ editable }) => {
     <>
       {projectedSchedule.data.length
         ? <>
-          <h3>Projected Schedule</h3>
-          <div>Based on the current rate of reduction we project the following tapering schedule.</div>
+          <h3 css={css`font-size: 18px;
+            color: #636E72;`}>Projected Schedule based on the rate of reduction you specified</h3>
           <div style={{ display: 'flex' }}>
             {projectedSchedule.data.length !== 0
-            && <div style={{ flex: 3 }}><ProjectedScheduleTable editable={editable} projectedSchedule={projectedSchedule}/></div>}
+            && <div style={{ flex: 3 }}><ProjectedScheduleTable editable={editable} projectedSchedule={projectedSchedule}/>
+            </div>}
             <div style={{ flex: 2 }}>
               <ProjectedScheduleChart scheduleChartData={scheduleChartData} width={400} height={400}/>
             </div>
           </div>
-          <hr/>
-          <h3>Prescription for upcoming intervals</h3>
+          <h3 css={css`font-size: 18px; margin-top: 33px;`}>Prescription for upcoming intervals</h3>
           {Object.entries(finalPrescription).map(([id, prescription]) => <PrescribedQuantitiesForDrug
             key={`PrescribedQuantitiesFor${id}`} id={parseFloat(id)} prescription={prescription}/>)}
-          <h3>Instructions for Patient</h3>
-          <TextArea
-            value={instructionsForPatient}
-            defaultValue={instructionsForPatient}
-            onChange={onChangeMessageForPatient}
-            placeholder={instructionsForPatientPlaceholder.current}
-            rows={6}
-            readOnly={!editable}
-          />
-          {!editable && <CopyToClipboard text={instructionsForPatient} onCopy={onInstructionsForPatientCopied}>
-            <Button>Copy to Clipboard</Button>
-          </CopyToClipboard>}
 
-          <h3>Instructions for Pharmacy</h3>
-          <TextArea value={instructionsForPharmacy}
-                    defaultValue={instructionsForPharmacy}
-                    onChange={onChangeInstructionsForPharmacy}
-                    rows={6}
-                    readOnly={!editable}
-          />
-          {!editable && <CopyToClipboard text={instructionsForPharmacy} onCopy={onInstructionsForPharmacyCopied}>
-            <Button>Copy to Clipboard</Button>
-          </CopyToClipboard>}
+          <div>
+            <h3 css={css`margin-top: 40px;`}>Notes for Patient</h3>
+            <TextArea
+              value={instructionsForPatient}
+              defaultValue={instructionsForPatient}
+              onChange={onChangeMessageForPatient}
+              placeholder={instructionsForPatientPlaceholder.current}
+              rows={6}
+              readOnly={!editable}
+            />
+            {!editable && <CopyToClipboard text={instructionsForPatient} onCopy={onInstructionsForPatientCopied}>
+              <Button>Copy to Clipboard</Button>
+            </CopyToClipboard>}
+          </div>
+
+          <div>
+            <h3 css={css`margin-top: 40px;`}>Notes for Pharmacy</h3>
+            <TextArea value={instructionsForPharmacy}
+                      defaultValue={instructionsForPharmacy}
+                      onChange={onChangeInstructionsForPharmacy}
+                      rows={6}
+                      readOnly={!editable}
+            />
+            {!editable && <CopyToClipboard text={instructionsForPharmacy} onCopy={onInstructionsForPharmacyCopied}>
+              <Button>Copy to Clipboard</Button>
+            </CopyToClipboard>}
+          </div>
         </> : <div>No schedule yet</div>
       }
     </>

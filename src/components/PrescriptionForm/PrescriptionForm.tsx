@@ -152,19 +152,27 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug, addNewPrescriptionForm })
   };
 
   const renderDosages = (drugForm: DrugForm | null | undefined, time: 'Prior' | 'Upcoming') => {
+    const containerStyle = css`
+      margin-top: 44px;`;
     if (!drugForm) {
-      return <>
+      return <div css={containerStyle}>
         <h3 css={css`font-size: 18px;
           color: #C7C5C5;
           margin-bottom: 121px;`}>{time} Dosage</h3>
-      </>;
+      </div>;
     }
 
     if (isCapsuleOrTablet(drugForm)) {
-      return <CapsuleOrTabletDosages time={time}/>;
+      return (
+        <div css={containerStyle}>
+          <CapsuleOrTabletDosages time={time}/>
+        </div>);
     }
 
-    return <OralFormDosage time={time}/>;
+    return (
+      <div css={containerStyle}>
+        <OralFormDosage time={time}/>
+      </div>);
   };
 
   const toggleAllowSplittingUnscoredTabletCheckbox = (e: CheckboxChangeEvent) => {
@@ -190,9 +198,9 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug, addNewPrescriptionForm })
       <div css={css`
         margin-left: 42px;
         padding-bottom: 71px;`}>
-        <Button onClick={removeDrugForm}>Remove</Button>
+        <Button danger css={css`float: right; margin-right: 20px;`} onClick={removeDrugForm}>Remove</Button>
         <div css={css`
-          width: 288px;
+          width: 700px;
           //margin-left: 42px;
 
           & > h3 {
@@ -202,41 +210,48 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug, addNewPrescriptionForm })
 
           & .medication-select-form {
             display: flex;
-            margin: 15px 0 15px 51px;
+            width: 250px;
+            justify-content: space-between;
+            margin: 15px 79px 15px 51px;
+            align-items: center;
           }
         `}>
           <h3>Prescription settings</h3>
           <div>
-            <div className='medication-select-form'>
-              <label>Brand</label>
-              <Select showSearch value={chosenBrand?.brand} onChange={onBrandChange} style={{ width: 200 }}>
-                {drugsLocal?.map(
-                  (drug) => (
-                    <OptGroup key={`${drug.name}_group`} label={drug.name}>
-                      {drug.options.map(
-                        (option) => <Option key={option.brand} value={option.brand}>{option.brand}</Option>,
-                      )}
-                    </OptGroup>),
-                )}
-              </Select>
+            <div css={css`display: flex;
+              align-items: center;`}>
+              <div className='medication-select-form'>
+                <label>Brand:</label>
+                <Select showSearch value={chosenBrand?.brand} onChange={onBrandChange} style={{ width: 200 }}>
+                  {drugsLocal?.map(
+                    (drug) => (
+                      <OptGroup key={`${drug.name}_group`} label={drug.name}>
+                        {drug.options.map(
+                          (option) => <Option key={option.brand} value={option.brand}>{option.brand}</Option>,
+                        )}
+                      </OptGroup>),
+                  )}
+                </Select>
+              </div>
               <Tooltip title={prescribedDrug.halfLife} overlayStyle={{ whiteSpace: 'pre-line' }}>
-                <GrCircleInformation/>
+                <GrCircleInformation size={'16px'}/>
               </Tooltip>
             </div>
-            <div className='medication-select-form'>
-              <label>Form</label>
-              <Select value={chosenDrugForm?.form} onChange={onFormChange} style={{ width: 200 }}>
-                {drugFormOptions?.map(
-                  (form: CapsuleOrTabletForm | OralForm) => <Option key={form.form}
-                                                                    value={form.form}>{form.form}</Option>,
-                )}
-              </Select>
+            <div css={css`display: flex;
+              align-items: center;`}>
+              <div className='medication-select-form'>
+                <label>Form:</label>
+                <Select value={chosenDrugForm?.form} onChange={onFormChange} style={{ width: 200 }}>
+                  {drugFormOptions?.map(
+                    (form: CapsuleOrTabletForm | OralForm) => <Option key={form.form}
+                                                                      value={form.form}>{form.form}</Option>,
+                  )}
+                </Select>
+              </div>
+              {chosenDrugForm?.form === 'tablet'
+              && <Checkbox checked={allowSplittingUnscoredTablet} onChange={toggleAllowSplittingUnscoredTabletCheckbox}>Allow
+                splitting unscored tablet</Checkbox>}
             </div>
-          </div>
-          <div>
-            {chosenDrugForm?.form === 'tablet'
-            && <Checkbox checked={allowSplittingUnscoredTablet} onChange={toggleAllowSplittingUnscoredTabletCheckbox}>Allow
-              splitting unscored tablet</Checkbox>}
           </div>
         </div>
 
@@ -245,7 +260,8 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug, addNewPrescriptionForm })
         <SelectInterval/>
 
         {addNewPrescriptionForm
-        && <Button css={css`border-radius: 10px; margin-top: 74px;`} type='primary' onClick={addNewPrescriptionForm}>Add Medication</Button>}
+        && <Button css={css`border-radius: 10px;
+          margin-top: 74px;`} type='primary' onClick={addNewPrescriptionForm}>Add Medication</Button>}
       </div>
     </PrescriptionFormContext.Provider>
   );

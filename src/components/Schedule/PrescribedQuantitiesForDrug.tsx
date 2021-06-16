@@ -5,6 +5,7 @@ import {
 } from 'react';
 import { Input } from 'antd';
 import { useDispatch } from 'react-redux';
+import { css } from '@emotion/react';
 import {
   Prescription, ValueOf,
 } from '../../types';
@@ -32,12 +33,16 @@ const PrescribedQuantitiesForDrug: FC<Props> = ({ id, prescription }) => {
   const renderForms = useCallback((dosages: string[], prescription: ValueOf<Prescription>) => {
     return (
       <>
-      <h4>{prescription.brand} {prescription.form}</h4>
+        <h4>{prescription.brand} {prescription.form}</h4>
         {dosages.map((dos: string) => (
-          <div key={`${prescription.brand}_${prescription.form}_${dos}_final_prescription`}>
+          <div key={`${prescription.brand}_${prescription.form}_${dos}_final_prescription`}
+               css={css`
+                 display: flex;
+                 align-items: center;
+               `}>
             <h5>{dos}</h5>
             <Input title={dos}
-                   style={{ display: 'inline-block' }}
+                   css={css`width: 53px;`}
                    type='number'
                    min={0}
                    value={qtyOrZero(prescription.dosageQty, dos)}

@@ -20,7 +20,7 @@ export const completePrescribedDrugs = (drugs: PrescribedDrug[]|null|undefined):
 };
 
 export const validateCompleteInputs = (drugs: PrescribedDrug[]|null|undefined): boolean => {
-  return !(drugs === null || drugs === undefined) && drugs
+  return !(drugs === null || drugs === undefined || drugs.length === 0) && drugs
     .map((drug) => isCompleteDrugInput(drug))
     .every((cond) => cond);
 };

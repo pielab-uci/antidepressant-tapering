@@ -20,12 +20,10 @@ import Header from './components/Header';
 
 const mainStyle = css`
   flex: 1;
-  //margin-bottom: 34px;
-  //padding-bottom: 34px;
   padding: 52px 59px 34px 65px;
   & > div {
     background-color: #fafafa;
-    box-shadow: 0px 3px 6px black;
+    box-shadow: 0 3px 6px black;
     border-radius: 20px;
     //margin: 52px 59px 0 65px;
     //width: 100%;
@@ -59,7 +57,7 @@ const App = () => {
                 height: calc(100% - 70px);`}>
                 <NavBar/>
                 <main css={mainStyle}>
-                  <div>
+                   <div>
                     <Switch>
                       {/* <Route path='/taper-configuration' */}
                       {/*       render={checkCurrentPatientAndRender(currentPatient, TaperConfigurationPage)}/> */}
@@ -69,7 +67,7 @@ const App = () => {
                              render={checkCurrentPatientAndRender(currentPatient, SymptomReportPage)}/>
                       <Route path="/" component={HomePage}/>
                     </Switch>
-                  </div>
+                   </div>
                 </main>
               </section>
             </div>

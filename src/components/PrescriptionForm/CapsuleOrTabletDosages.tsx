@@ -2,6 +2,7 @@ import * as React from 'react';
 import {
   FC, useContext,
 } from 'react';
+import { css } from '@emotion/react';
 import CapsuleOrTabletUnit from './CapsuleOrTabletUnit';
 import { PrescriptionFormContext } from './PrescriptionForm';
 import { CapsuleOrTabletDosage } from '../../types';
@@ -20,11 +21,11 @@ const CapsuleOrTabletDosages: FC<Props> = ({ time }) => {
 
   return (
     <>
-      <div>
+      <h3 css={css`color: #636E72; font-size: 18px; font-family: Futura;`}>
         {time}
         {' '}
         Dosage
-      </div>
+      </h3>
       <div style={{ display: 'flex' }}>
         {(dosageOptions as CapsuleOrTabletDosage[])
           .map((v: { dosage: string; isScored?: boolean }) => (

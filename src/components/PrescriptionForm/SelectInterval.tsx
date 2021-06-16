@@ -9,6 +9,7 @@ import {
 import { Input, Select } from 'antd';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
+import { css } from '@emotion/react';
 import { PrescriptionFormContext } from './PrescriptionForm';
 import { TaperConfigActions } from '../../redux/reducers/taperConfig';
 import {
@@ -19,9 +20,35 @@ import {
 
 const { Option } = Select;
 
-const inputStyle = {
-  width: 200,
-};
+const selectIntervalStyle = css`
+  margin-top: 65px;
+  font-family: Futura;
+  width: 330px;
+
+  & > h3 {
+    font-size: 18px;
+    color: #636E72;
+    margin-bottom: 22px;
+    font-size: 18px;
+  }
+
+  & .select-interval-form {
+    font-size: 16px;
+    margin: 0 0 28px 39px;
+    display: flex;
+    flex-direction: row;
+    width: 270px;
+    justify-content: space-between;
+  }
+
+  & .select-interval-form > label {
+    margin-right: 17px;
+  }
+  
+  & .select-interval-form > input {
+    width: 180px;
+  }
+`;
 
 const SelectInterval = () => {
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
@@ -37,7 +64,7 @@ const SelectInterval = () => {
 
   const units = useRef(['Days', 'Weeks', 'Months']);
 
-  const calcIntervalDurationDays = useCallback((startDate: Date, endDate: Date|null) => {
+  const calcIntervalDurationDays = useCallback((startDate: Date, endDate: Date | null) => {
     return !endDate ? 0 : differenceInCalendarDays(endDate, startDate) + 1;
   }, []);
 
@@ -90,29 +117,39 @@ const SelectInterval = () => {
   }, [intervalStartDate, upcomingDosagesQty]);
 
   return (
-    <>
+    <div css={selectIntervalStyle}>
       <h3>Select Interval</h3>
-      <div>Start on</div>
-      <Input
-        type="date"
-        value={format(intervalStartDate, 'yyyy-MM-dd')}
-        onChange={onIntervalStartDateChange}
-        style={inputStyle}
-      />
-      <div>Interval:</div>
-      <Input type="number" value={intervalCount} min={0} onChange={onIntervalCountChange} style={inputStyle} />
-      <Select value={intervalUnit} onChange={onIntervalUnitChange}>
-        {units.current.map((unit) => <Option key={unit} value={unit}>{unit}</Option>)}
-      </Select>
+      <div className='select-interval-form'>
+        <label>Start on:</label>
+        <Input
+          type="date"
+          value={format(intervalStartDate, 'yyyy-MM-dd')}
+          onChange={onIntervalStartDateChange}
+          css={css`width: 160px;`}
+          // style={inputStyle}
+        />
+      </div>
 
-      <div>End on</div>
-      <Input
-        type="date"
-        value={intervalEndDate ? format(intervalEndDate, 'yyyy-MM-dd') : undefined}
-        onChange={onIntervalEndDateChange}
-        style={inputStyle}
-      />
-    </>
+      <div className='select-interval-form'>
+        <label>Interval:</label>
+        <div css={css`width: 180px; display: flex; justify-content: space-between;`}>
+          <Input type="number" value={intervalCount} min={0} onChange={onIntervalCountChange} css={css`width: 70px; margin-right: 9px;`}/>
+          <Select value={intervalUnit} onChange={onIntervalUnitChange} css={css`width: 100px;`}>
+            {units.current.map((unit) => <Option key={unit} value={unit}>{unit}</Option>)}
+          </Select>
+        </div>
+      </div>
+
+      <div className='select-interval-form'>
+        <label>End on</label>
+        <Input
+          type="date"
+          value={intervalEndDate ? format(intervalEndDate, 'yyyy-MM-dd') : undefined}
+          onChange={onIntervalEndDateChange}
+          css={css`width: 160px;`}
+        />
+      </div>
+    </div>
   );
 };
 

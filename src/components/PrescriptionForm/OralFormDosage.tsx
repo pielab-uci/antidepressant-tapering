@@ -5,6 +5,7 @@ import {
 import { Input } from 'antd';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
+import { css } from '@emotion/react';
 import { PrescriptionFormContext } from './PrescriptionForm';
 import { TaperConfigActions } from '../../redux/reducers/taperConfig';
 import { OralDosage } from '../../types';
@@ -64,9 +65,9 @@ const OralFormDosage: FC<Props> = ({ time }) => {
 
   return (
   <>
-    <div>
+    <h3 css={css`font-size: 18px; font-family: Futura; color: #636E72;`}>
     {time} Dosage
-    </div>
+    </h3>
     <div>
       <Input type='number' value={dosages['1mg']} onChange={mgOnChange} min={0} style={inputStyle}/> mg =
       <Input type='number' value={mlDosage} onChange={mlOnChange} min={0} style={inputStyle}/> ml

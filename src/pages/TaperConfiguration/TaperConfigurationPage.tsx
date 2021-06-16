@@ -66,28 +66,35 @@ const TaperConfigurationPage = () => {
       });
     }
     return () => {
-      dispatch<EmptyTaperConfigPage>({
-        type: EMPTY_TAPER_CONFIG_PAGE,
-      });
+      // dispatch<EmptyTaperConfigPage>({
+      //   type: EMPTY_TAPER_CONFIG_PAGE,
+      // });
     };
   }, []);
 
   return (
-    <div css={css`flex: 1`} className='taper-configuration'>
-      <div css={navTextStyle}>
+    <div css={css`
+      //flex: 1;
+      height: calc(100vh - 307px);
+    `} className='taper-configuration'>
+      <div css={navTextStyle} className='taper-configuration-nav-text'>
         <div className='nav-step1'>Step 1. Create</div>
         <div>&gt;&gt;</div>
         <div className='nave-step2'>Step 2. Prescribe</div>
         <div>&gt;&gt;</div>
         <div className='nav-step3'>Step 3. Confirm</div>
       </div>
-      <Switch>
-        <Route path={`${path}/create`}
-               render={checkCurrentPatientAndRender(currentPatient, CreateTaperConfiguration)}/>
-        <Route path={`${path}/edit`} render={checkCurrentPatientAndRender(currentPatient, EditTaperConfiguration)}/>
-        <Route path={`${path}/confirm`}
-               render={checkCurrentPatientAndRender(currentPatient, ConfirmTaperConfiguration)}/>
-      </Switch>
+      <div css={css`display: flex;
+        height: calc(100% - 31px);
+      `} className='taper-configuration-pages'>
+        <Switch>
+          <Route path={`${path}/create`}
+                 render={checkCurrentPatientAndRender(currentPatient, CreateTaperConfiguration)}/>
+          <Route path={`${path}/edit`} render={checkCurrentPatientAndRender(currentPatient, EditTaperConfiguration)}/>
+          <Route path={`${path}/confirm`}
+                 render={checkCurrentPatientAndRender(currentPatient, ConfirmTaperConfiguration)}/>
+        </Switch>
+      </div>
     </div>
   );
 };

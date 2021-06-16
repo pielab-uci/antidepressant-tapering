@@ -16,13 +16,7 @@ import {
   FETCH_PRESCRIBED_DRUGS_REQUEST,
   FetchPrescribedDrugsRequestAction,
 } from '../redux/actions/taperConfig';
-import { TaperConfigState } from '../redux/reducers/taperConfig';
-import {
-  ScheduleChartData,
-} from '../redux/reducers/utils';
-
 import { SET_CURRENT_PATIENT, SetCurrentPatientAction } from '../redux/actions/user';
-import { Schedule } from '../components/Schedule/ProjectedSchedule';
 import { checkCurrentPatientAndRender } from './utils';
 import TaperConfigurationPage from './TaperConfiguration/TaperConfigurationPage';
 import PatientInitPage from './PatientInitPage';
@@ -31,7 +25,9 @@ const pageStyle = css`
   display: flex;
   flex-direction: column;
   height: 100%;
+`;
 
+const patientPageHeaderStyle = css`
   & > h2 {
     font-size: 32px;
     font-weight: bold;
@@ -50,7 +46,6 @@ const pageStyle = css`
     background-color: #D1D1D1;
   }
 `;
-
 const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) => {
   const { currentPatient } = useSelector<RootState, UserState>((state) => state.user);
   const dispatch = useDispatch();
@@ -95,14 +90,16 @@ const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) =
     <>
       {!currentPatient ? <div>No such patient</div>
         : <div css={pageStyle}>
-          <h2>{currentPatient.name}</h2>
-          <div css={css`font-size: 20px;`}>Last Visit: {format(currentPatient.recentVisit, 'MM/dd/yyyy')}</div>
-          <hr/>
-          <Switch>
-            <Route exact path={`${path}`} component={PatientInitPage}/>
-            <Route path={`${path}/taper-configuration`}
-            render={checkCurrentPatientAndRender(currentPatient, TaperConfigurationPage)}/>
-        </Switch>
+          <div css={patientPageHeaderStyle}>
+            <h2>{currentPatient.name}</h2>
+            <div css={css`font-size: 20px;`}>Last Visit: {format(currentPatient.recentVisit, 'MM/dd/yyyy')}</div>
+            <hr/>
+          </div>
+            <Switch>
+              <Route exact path={`${path}`} component={PatientInitPage}/>
+              <Route path={`${path}/taper-configuration`}
+                     render={checkCurrentPatientAndRender(currentPatient, TaperConfigurationPage)}/>
+            </Switch>
         </div>
       }
     </>

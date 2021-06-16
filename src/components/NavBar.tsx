@@ -68,7 +68,8 @@ const NavBar = () => {
     border-top-right-radius: 17px;
     font-size: 24px;
     color: white;
-    height: 100%;
+    //height: 100%;
+    height: calc(100% - 52px);
     flex: 0 0 307px;
     margin-top: 52px;
     padding-top: 201px;
@@ -81,7 +82,8 @@ const NavBar = () => {
     margin: auto 0 19px 0;
     & > div {
       display: flex;
-      margin-bottom: 42px;
+      padding-bottom: 42px;
+      //margin-bottom: 42px;
     }
 
     & > div > div {

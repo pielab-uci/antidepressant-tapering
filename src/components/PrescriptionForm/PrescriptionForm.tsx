@@ -195,7 +195,6 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug }) => {
           display: flex;
           margin: 15px 0 15px 51px;
         }
-
       `}>
         <h3>Prescription settings</h3>
         <div>

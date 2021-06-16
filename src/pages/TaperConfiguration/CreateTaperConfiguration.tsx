@@ -51,6 +51,7 @@ const CreateTaperConfiguration = () => {
         padding-top: 45px;
         background-color: white;
         border-radius: 17px;
+        height: 100%;
         overflow-y: scroll;
         margin-bottom: 34px;
         flex: 1;`}>

@@ -6,7 +6,9 @@ import { StateInspector } from 'reinspect';
 import App from './App';
 import store from './redux/store';
 
-const AppComponentOnMode: FC<{ component: JSX.Element, mode?: string }> = ({ component, mode }) => (mode && mode === 'production' ? <>{component}</> : <StateInspector name="PrescriptionForms">{component}</StateInspector>);
+const AppComponentOnMode: FC<{ component: JSX.Element, mode?: string }> = ({ component, mode }) => (mode && mode === 'production'
+  ? <>{component}</>
+  : <StateInspector name="PrescriptionForms">{component}</StateInspector>);
 const AppComponent: JSX.Element = <Provider store={store}><App/></Provider>;
 
 ReactDOM.render(

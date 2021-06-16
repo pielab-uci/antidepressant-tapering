@@ -20,14 +20,16 @@ import Header from './components/Header';
 
 const mainStyle = css`
   flex: 1;
-  margin-bottom: 34px;
-
+  //margin-bottom: 34px;
+  //padding-bottom: 34px;
+  padding: 52px 59px 34px 65px;
   & > div {
     background-color: #fafafa;
     box-shadow: 0px 3px 6px black;
     border-radius: 20px;
-    margin: 52px 59px 34px 65px;
+    //margin: 52px 59px 0 65px;
     //width: 100%;
+    
     height: 100%;
     padding: 31px 88px 21px 88px;
   }
@@ -54,7 +56,7 @@ const App = () => {
               <Header/>
               <section css={css`
                 display: flex;
-                height: 100%;`}>
+                height: calc(100% - 70px);`}>
                 <NavBar/>
                 <main css={mainStyle}>
                   <div>

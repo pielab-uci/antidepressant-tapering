@@ -1,20 +1,52 @@
 import * as React from 'react';
 import { css } from '@emotion/react';
-import { useHistory, useLocation } from 'react-router-dom';
-import { useEffect, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import {
   HelpIcon, LogOutIcon, PatientsMenuIcon, SymptomTemplatesMenuIcon,
 } from '../icons';
 
+const NavBarStyle = css`
+  background-color: #0984E3;
+  border-top-right-radius: 17px;
+  font-size: 24px;
+  color: white;
+  //height: 100%;
+  height: calc(100% - 52px);
+  flex: 0 0 307px;
+  margin-top: 52px;
+  padding-top: 201px;
+`;
+
+const helpAndLogoutStyle = css`
+  padding-left: 29px;
+  display: flex;
+  flex-direction: column;
+  margin: auto 0 19px 0;
+
+  & > div {
+    display: flex;
+    padding-bottom: 42px;
+    //margin-bottom: 42px;
+  }
+
+  & > div > div {
+    margin-left: 14px;
+  }`;
+
 const NavBar = () => {
-  const history = useHistory();
   const location = useLocation();
+  const [currentMenu, setCurrentMenu] = useState<'schedule' | 'symptomTracker' | 'report'>('schedule');
 
   useEffect(() => {
-    // console.group('NavBar');
-    // console.log('location: ', location);
-    // console.groupEnd();
-  });
+    if (location.pathname.includes('symptom-tracker')) {
+      setCurrentMenu('symptomTracker');
+    } else if (location.pathname.includes('report')) {
+      setCurrentMenu('report');
+    } else {
+      setCurrentMenu('schedule');
+    }
+  }, [location]);
 
   const TabStyle = (name: 'patient' | 'symptomTemplates') => css`
     height: 68px;
@@ -63,35 +95,9 @@ const NavBar = () => {
     }
   `;
 
-  const NavBarStyle = css`
-    background-color: #0984E3;
-    border-top-right-radius: 17px;
-    font-size: 24px;
-    color: white;
-    //height: 100%;
-    height: calc(100% - 52px);
-    flex: 0 0 307px;
-    margin-top: 52px;
-    padding-top: 201px;
+  const boldOnRoute = (menu: 'schedule' | 'symptomTracker' | 'report') => css`
+    font-weight: ${menu === currentMenu ? 'bold' : 'normal'}
   `;
-
-  const helpAndLogoutStyle = css`
-    padding-left: 29px;
-    display: flex;
-    flex-direction: column;
-    margin: auto 0 19px 0;
-    & > div {
-      display: flex;
-      padding-bottom: 42px;
-      //margin-bottom: 42px;
-    }
-
-    & > div > div {
-      margin-left: 14px;
-    }`;
-  // const boldOnRoute = (path: string, boldUrl: string) => css`
-  // font-weight: ${path.match(boldUrl) ? 'bold' : 'normal'}
-  // `;
 
   return (
     <div css={NavBarStyle}>
@@ -105,9 +111,9 @@ const NavBar = () => {
             <div>Patients</div>
           </div>
           <div css={subMenuStyle}>
-            <div>Medication schedule</div>
-            <div>Symptom tracker</div>
-            <div>Patient report</div>
+            <div css={boldOnRoute('schedule')}>Medication schedule</div>
+            <div css={boldOnRoute('symptomTracker')}>Symptom tracker</div>
+            <div css={boldOnRoute('report')}>Patient report</div>
           </div>
         </div>
         <div css={TabStyle('symptomTemplates')}>

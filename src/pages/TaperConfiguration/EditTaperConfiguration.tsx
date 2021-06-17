@@ -7,7 +7,6 @@ import { Prompt, useHistory, useLocation } from 'react-router';
 import { css } from '@emotion/react';
 import { useRouteMatch } from 'react-router-dom';
 import ProjectedSchedule from '../../components/Schedule/ProjectedSchedule';
-import { TaperConfigurationPageContext } from './TaperConfigurationPage';
 
 const wrapperStyle = css`
 width: 100%;
@@ -43,11 +42,6 @@ const EditTaperConfiguration = () => {
   const history = useHistory();
   const urlSearchParams = useRef<URLSearchParams>(new URLSearchParams(useLocation().search));
   const { url } = useRouteMatch();
-  const { setStep } = useContext(TaperConfigurationPageContext);
-
-  useEffect(() => {
-    setStep(2);
-  }, []);
 
   const moveToCreatePage = () => {
     history.push(url.replace('edit', 'create'));

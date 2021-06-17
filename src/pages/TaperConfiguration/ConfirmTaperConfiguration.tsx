@@ -14,7 +14,6 @@ import {
   TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
 } from '../../redux/actions/taperConfig';
 import ProjectedSchedule from '../../components/Schedule/ProjectedSchedule';
-import { TaperConfigurationPageContext } from './TaperConfigurationPage';
 
 const wrapperStyle = css`
   display: flex;
@@ -49,13 +48,9 @@ const ConfirmTaperConfiguration = () => {
   const history = useHistory();
   const { url } = useRouteMatch();
   const urlSearchParams = useRef<URLSearchParams>(new URLSearchParams(useLocation().search));
-  const { setStep } = useContext(TaperConfigurationPageContext);
   const { isInputComplete } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    setStep(3);
-  }, []);
   const shareWithApp = useCallback(() => {
     dispatch({
       type: SHARE_WITH_PATIENT_APP_REQUEST,

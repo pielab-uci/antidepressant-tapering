@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {
-  createContext,
   useEffect, useRef, useState,
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -33,16 +32,13 @@ const navTextStyle = css`
     margin-right: 22px;
   }
 `;
-export const TaperConfigurationPageContext = createContext<{ setStep:(step: 1 | 2 | 3) => void; }>({
-  setStep: (step: 1 | 2 | 3) => {
-  },
-});
 
 const TaperConfigurationPage = () => {
   const dispatch = useDispatch();
   const { currentPatient } = useSelector<RootState, UserState>((state) => state.user);
   const urlSearchParams = useRef<URLSearchParams>(new URLSearchParams(useLocation().search));
   const { path, url } = useRouteMatch();
+  const location = useLocation();
   const [step, setStep] = useState<1 | 2 | 3>(1);
 
   useEffect(() => {
@@ -75,7 +71,18 @@ const TaperConfigurationPage = () => {
   }, []);
 
   useEffect(() => {
-    console.group('TaperConfigurationPage Url');
+    if (location.pathname.includes('create')) {
+      setStep(1);
+    } else if (location.pathname.includes('edit')) {
+      setStep(2);
+    } else {
+      setStep(3);
+    }
+  }, [location]);
+
+  useEffect(() => {
+    console.group('TaperConfigurationPage Url/location');
+    console.log('location: ', location);
     console.log(url);
     console.groupEnd();
   });
@@ -96,9 +103,6 @@ const TaperConfigurationPage = () => {
         <div>&gt;&gt;</div>
         <div css={assignStyle(3)} className='nav-step3'>Step 3. Confirm</div>
       </div>
-      <TaperConfigurationPageContext.Provider value={{
-        setStep,
-      }}>
         <div css={css`display: flex;
           height: calc(100% - 55px);
         `} className='taper-configuration-pages'>
@@ -110,7 +114,6 @@ const TaperConfigurationPage = () => {
                    render={checkCurrentPatientAndRender(currentPatient, ConfirmTaperConfiguration)}/>
           </Switch>
         </div>
-      </TaperConfigurationPageContext.Provider>
     </div>
   );
 };

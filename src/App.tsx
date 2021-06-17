@@ -19,7 +19,9 @@ import Header from './components/Header';
 
 const mainStyle = css`
   flex: 1;
-  padding: 52px 59px 34px 65px;
+  //padding: 52px 59px 34px 65px;
+  padding: 0 59px 34px 65px;
+
   & > div {
     background-color: #fafafa;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
@@ -51,10 +53,13 @@ const App = () => {
               <Header/>
               <section css={css`
                 display: flex;
-                height: calc(100% - 70px);`}>
+                //height: calc(100% - 70px);
+                height: 92%;
+                padding-top: 3%;
+              `}>
                 <NavBar/>
                 <main css={mainStyle}>
-                   <div>
+                  <div>
                     <Switch>
                       <Route path='/logging-configuration'
                              render={checkCurrentPatientAndRender(currentPatient, LoggingConfigurationPage)}/>
@@ -62,7 +67,7 @@ const App = () => {
                              render={checkCurrentPatientAndRender(currentPatient, SymptomReportPage)}/>
                       <Route path="/" component={HomePage}/>
                     </Switch>
-                   </div>
+                  </div>
                 </main>
               </section>
             </div>

@@ -40,10 +40,13 @@ const PrescribedQuantitiesForDrug: FC<Props> = ({ id, prescription, editable }) 
                css={css`
                  display: flex;
                  align-items: center;
+                 margin-bottom: 24px;
                `}>
             <h5>{dos}</h5>
             <Input title={dos}
-                   css={css`width: 53px;`}
+                   css={css`
+                     margin-left: 14px;
+                     width: 60px;`}
                    type='number'
                    min={0}
                    value={qtyOrZero(prescription.dosageQty, dos)}

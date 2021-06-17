@@ -47,7 +47,8 @@ const ProjectedSchedule: FC<{ editable: boolean, title: string }> = ({ editable,
     <>
       {projectedSchedule.data.length
         ? <>
-          <h3 css={css`font-size: 18px;
+          {/* <h3 css={css`font-size: 18px; */}
+          <h3 css={css`font-size: 1.1rem;
             color: #636E72;`}>{title}</h3>
           <div css={css`display: flex; justify-content: space-between;`}>
             {projectedSchedule.data.length !== 0

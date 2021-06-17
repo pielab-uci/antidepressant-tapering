@@ -17,7 +17,8 @@ const headerStyle = css`
 `;
 
 const titleStyle = css`
-  font-size: 32px;
+  //font-size: 32px;
+  font-size: 1.5rem;
   font-weight: bold;
   margin-right: 61px;
   margin-bottom: 0;
@@ -83,6 +84,7 @@ const PatientsList: FC<Props> = ({ patients }) => {
           css={buttonStyle}>New Patient</Button>
       </div>
       <Table
+        css={css`font-size: 1.2rem;`}
         columns={columns}
         dataSource={patients.map((d) => ({ ...d, key: `${d.name}_${d.id}` }))}
         onRow={(record) => ({

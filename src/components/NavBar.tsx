@@ -9,13 +9,15 @@ import {
 const NavBarStyle = css`
   background-color: #0984E3;
   border-top-right-radius: 17px;
-  font-size: 24px;
+  //font-size: 24px;
+  font-size: 1.3rem;
   color: white;
-  //height: 100%;
-  height: calc(100% - 52px);
-  flex: 0 0 307px;
-  margin-top: 52px;
-  padding-top: 201px;
+  height: 100%;
+  //height: calc(100% - 52px);
+  flex: 0 0 16%;
+  //margin-top: 52px;
+  //padding-top: 201px;
+  padding-top: 10%;
 `;
 
 const helpAndLogoutStyle = css`
@@ -75,7 +77,8 @@ const NavBar = () => {
     background-color: white;
     margin: 6px 0 0 39px;
     color: #0984E3;
-    font-size: 16px;
+    //font-size: 16px;
+    font-size: 0.8rem;
     padding: 5px 0 5px 28px;
     height: 131px;
     border-top-left-radius: 17px;
@@ -101,7 +104,9 @@ const NavBar = () => {
 
   return (
     <div css={NavBarStyle}>
-      <div css={css`margin-left: 17px;
+      <div css={css`
+        //margin-left: 17px;
+        margin-left: 5%;
         height: 100%;
         display: flex;
         flex-direction: column;`}>

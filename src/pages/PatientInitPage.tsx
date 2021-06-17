@@ -53,7 +53,8 @@ const PatientInitPage: FC = () => {
   const renderMedicationSchedule = useCallback(() => {
     if (!currentPatient!.taperingConfiguration) {
       return <p css={css`
-        font-size: 20px;
+        //font-size: 20px;
+        font-size: 1rem;
         color: #c7c5c5;
         margin-top: 46px;
       `}>No medication schedule created</p>;
@@ -66,7 +67,8 @@ const PatientInitPage: FC = () => {
 
   const renderSymptomTracker = () => {
     return <p css={css`
-      font-size: 20px;
+      //font-size: 20px;
+      font-size: 1rem;
       color: #c7c5c5;
       margin-top: 46px;
     `}>No symptom tracker configuration created.</p>;
@@ -82,7 +84,8 @@ const PatientInitPage: FC = () => {
         height: 360px;
         border-radius: 17px;
         color: #c7c5c5;
-        font-size: 20px;
+        //font-size: 20px;
+        font-size: 1rem;
         border: 1px solid #707070;
         line-height: 300px;
         text-align: center;
@@ -90,7 +93,8 @@ const PatientInitPage: FC = () => {
       </div>
       <div css={css`
         text-align: center;
-        font-size: 20px;
+        //font-size: 20px;
+        font-size: 1rem;
         color: #636e72;`}>Projected taper progress
       </div>
     </div>;
@@ -98,7 +102,8 @@ const PatientInitPage: FC = () => {
 
   const renderButton = useCallback(() => {
     const buttonStyle = css`
-      border-radius: 10px;`;
+      border-radius: 10px;
+`;
     return currentPatient!.taperingConfiguration
       ? <Button type='primary' css={buttonStyle} onClick={onClickAdjustSchedule}>Edit Schedule</Button>
       : <Button type='primary' css={buttonStyle} onClick={onClickNewSchedule}>Create New</Button>;
@@ -114,10 +119,11 @@ const PatientInitPage: FC = () => {
   };
   return (
     <div css={css`h3 {
-      font-size: 26px;
+      //font-size: 26px;
+      font-size: 1.2rem;
       color: #636272;
     }`}
-    className='patient-initial'>
+         className='patient-initial'>
       <div css={css`display: flex;
         justify-content: space-between;`}>
         <div css={css`width: 447px;`}>

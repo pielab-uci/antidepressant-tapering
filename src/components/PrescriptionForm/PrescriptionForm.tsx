@@ -156,7 +156,7 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug, addNewPrescriptionForm })
       margin-top: 44px;`;
     if (!drugForm) {
       return <div css={containerStyle}>
-        <h3 css={css`font-size: 18px;
+        <h3 css={css`font-size: 1rem;
           color: #C7C5C5;
           margin-bottom: 121px;`}>{time} Dosage</h3>
       </div>;
@@ -204,7 +204,8 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug, addNewPrescriptionForm })
           //margin-left: 42px;
 
           & > h3 {
-            font-size: 18px;
+            //font-size: 18px;
+            font-size: 1rem;
           }
 
           & .medication-select-form {

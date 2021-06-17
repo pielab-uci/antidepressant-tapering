@@ -25,17 +25,18 @@ const selectIntervalStyle = css`
   width: 330px;
 
   & > h3 {
-    font-size: 18px;
+    font-size: 1rem;
     color: #636E72;
     margin-bottom: 22px;
-    font-size: 18px;
   }
 
   & .select-interval-form {
-    font-size: 16px;
-    margin: 0 0 28px 39px;
+    //font-size: 16px;
+    font-size: 0.8rem;
+    margin: 0 0 1rem 39px;
     display: flex;
     flex-direction: row;
+    align-items: center;
     width: 270px;
     justify-content: space-between;
   }
@@ -43,7 +44,7 @@ const selectIntervalStyle = css`
   & .select-interval-form > label {
     margin-right: 17px;
   }
-  
+
   & .select-interval-form > input {
     width: 180px;
   }
@@ -124,16 +125,26 @@ const SelectInterval = () => {
           type="date"
           value={format(intervalStartDate, 'yyyy-MM-dd')}
           onChange={onIntervalStartDateChange}
-          css={css`width: 160px;`}
-          // style={inputStyle}
+          css={css`width: 160px;
+            height: 1.7rem;`}
         />
       </div>
 
       <div className='select-interval-form'>
         <label>Interval:</label>
-        <div css={css`width: 180px; display: flex; justify-content: space-between;`}>
-          <Input type="number" value={intervalCount} min={0} onChange={onIntervalCountChange} css={css`width: 70px; margin-right: 9px;`}/>
-          <Select value={intervalUnit} onChange={onIntervalUnitChange} css={css`width: 100px;`}>
+        <div css={css`width: 180px;
+          display: flex;
+          justify-content: space-between;`}>
+          <Input type="number" value={intervalCount} min={0} onChange={onIntervalCountChange} css={css`width: 70px;
+            margin-right: 9px;
+            height: 1.7rem;`}/>
+          <Select value={intervalUnit} onChange={onIntervalUnitChange} css={css`
+            width: 100px;
+
+            & .ant-select-single .ant-select-selector {
+              height: 1.7rem;
+            }
+          `}>
             {units.current.map((unit) => <Option key={unit} value={unit}>{unit}</Option>)}
           </Select>
         </div>
@@ -145,7 +156,8 @@ const SelectInterval = () => {
           type="date"
           value={intervalEndDate ? format(intervalEndDate, 'yyyy-MM-dd') : undefined}
           onChange={onIntervalEndDateChange}
-          css={css`width: 160px;`}
+          css={css`width: 160px;
+            height: 1.7rem;`}
         />
       </div>
     </div>

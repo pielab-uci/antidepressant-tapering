@@ -24,7 +24,8 @@ import { checkCurrentPatientAndRender } from '../utils';
 const navTextStyle = css`
   display: flex;
   font-family: Verdana;
-  font-size: 20px;
+  //font-size: 20px;
+  font-size: 1.2rem;
   color: #636E72;
   margin-bottom: 24px;
 

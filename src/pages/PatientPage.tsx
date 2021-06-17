@@ -28,13 +28,15 @@ const pageStyle = css`
 
 const patientPageHeaderStyle = css`
   & > h2 {
-    font-size: 32px;
+    //font-size: 32px;
+    font-size: 1.5rem;
     font-weight: bold;
     margin: 0;
   }
 
   &:nth-child(2) {
-    font-size: 20px;
+    //font-size: 20px;
+    font-size: 0.8rem;
   }
 
   & > hr {
@@ -91,7 +93,7 @@ const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) =
         : <div css={pageStyle}>
           <div css={patientPageHeaderStyle}>
             <h2>{currentPatient.name}</h2>
-            <div css={css`font-size: 20px;`}>Last Visit: {format(currentPatient.recentVisit, 'MM/dd/yyyy')}</div>
+            <div>Last Visit: {format(currentPatient.recentVisit, 'MM/dd/yyyy')}</div>
             <hr/>
           </div>
             <Switch>

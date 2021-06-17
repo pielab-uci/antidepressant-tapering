@@ -88,13 +88,19 @@ const CapsuleOrTabletUnit: FC<Props> = ({
     <div css={css`display: flex;`}>
       <div css={css`display: flex;
         flex-direction: column;
-        justify-content: center;`}>
-        <div onClick={onIncrement}>
-          <ArrowUp/>
+        justify-content: center;
+        & button {
+        border: none; 
+        background-color:white;
+        }`}>
+        <div>
+          <button onClick={onIncrement}>
+            <ArrowUp/>
+          </button>
         </div>
-        <div css={css`margin-top: 20px;`}onClick={onDecrement}>
+        <button css={css`margin-top: 20px;`} onClick={onDecrement}>
           <ArrowDown/>
-        </div>
+        </button>
       </div>
       {renderIcon()}
     </div>);

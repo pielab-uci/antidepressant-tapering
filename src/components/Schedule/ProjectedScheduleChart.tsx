@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
+  CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis,
 } from 'recharts';
 import { format } from 'date-fns';
 import { FC, useRef } from 'react';
@@ -25,8 +25,6 @@ const ProjectedScheduleChart: FC<Props> = ({ scheduleChartData, width, height })
   });
 
   return (
-    // <ResponsiveContainer width="100%" height="100%">
-    <ResponsiveContainer width={width} height={height}>
       <LineChart data={scheduleChartData} width={width} height={height}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="timestamp" type="number" tickFormatter={(time) => format(time, 'MM-dd')} domain={['auto', 'auto']} scale="time" />
@@ -37,7 +35,6 @@ const ProjectedScheduleChart: FC<Props> = ({ scheduleChartData, width, height })
           <Line dataKey="dosage" data={drug.data} name={drug.name} key={drug.name} type={'stepAfter'} stroke={lineColors.current[drug.name]}/>
         ))}
       </LineChart>
-    </ResponsiveContainer>
   );
 };
 

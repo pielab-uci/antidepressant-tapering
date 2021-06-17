@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { Button } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { useCallback, useEffect, useRef } from 'react';
+import {
+  useCallback, useContext, useEffect, useRef,
+} from 'react';
 import {
   useHistory, useLocation,
 } from 'react-router';
@@ -12,6 +14,7 @@ import PrescriptionForm from '../../components/PrescriptionForm/PrescriptionForm
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import { ADD_NEW_DRUG_FORM } from '../../redux/actions/taperConfig';
+import { TaperConfigurationPageContext } from './TaperConfigurationPage';
 
 const wrapperStyle = css`
   display: flex;
@@ -39,7 +42,12 @@ const CreateTaperConfiguration = () => {
   const history = useHistory();
   // const urlSearchParams = useRef<URLSearchParams>(new URLSearchParams(useLocation().search));
   const location = useLocation();
+  const { setStep } = useContext(TaperConfigurationPageContext);
   const { path, url } = useRouteMatch();
+
+  useEffect(() => {
+    setStep(1);
+  }, []);
 
   useEffect(() => {
     console.group('CreateTaperConfiguration');

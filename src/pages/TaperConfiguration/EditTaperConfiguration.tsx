@@ -1,10 +1,13 @@
 import * as React from 'react';
 import { Button } from 'antd';
-import { useCallback, useRef } from 'react';
+import {
+  useCallback, useContext, useEffect, useRef,
+} from 'react';
 import { Prompt, useHistory, useLocation } from 'react-router';
 import { css } from '@emotion/react';
 import { useRouteMatch } from 'react-router-dom';
 import ProjectedSchedule from '../../components/Schedule/ProjectedSchedule';
+import { TaperConfigurationPageContext } from './TaperConfigurationPage';
 
 const wrapperStyle = css`
 width: 100%;
@@ -40,8 +43,14 @@ const EditTaperConfiguration = () => {
   const history = useHistory();
   const urlSearchParams = useRef<URLSearchParams>(new URLSearchParams(useLocation().search));
   const { url } = useRouteMatch();
+  const { setStep } = useContext(TaperConfigurationPageContext);
+
+  useEffect(() => {
+    setStep(2);
+  }, []);
+
   const moveToCreatePage = () => {
-    history.goBack();
+    history.push(url.replace('edit', 'create'));
   };
 
   const moveToConfirmPage = () => {
@@ -56,7 +65,8 @@ const EditTaperConfiguration = () => {
       <div css={projectedScheduleStyle}>
         {/* <Prompt when={!isSaved} */}
         {/*        message={'Are you sure you want to leave?'}/> */}
-        <ProjectedSchedule editable={true}/>
+        <ProjectedSchedule title={'Projected Schedule based on the rate of reduction you specified'}
+                           editable={true}/>
       </div>
       <div css={buttonStyle}>
         <Button onClick={moveToCreatePage}>Previous</Button>

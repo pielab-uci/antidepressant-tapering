@@ -19,7 +19,7 @@ export interface Schedule {
   data: TableRowData[];
 }
 
-const ProjectedSchedule: FC<{ editable: boolean }> = ({ editable }) => {
+const ProjectedSchedule: FC<{ editable: boolean, title: string }> = ({ editable, title }) => {
   const {
     projectedSchedule, scheduleChartData, finalPrescription, instructionsForPharmacy, instructionsForPatient,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
@@ -48,12 +48,12 @@ const ProjectedSchedule: FC<{ editable: boolean }> = ({ editable }) => {
       {projectedSchedule.data.length
         ? <>
           <h3 css={css`font-size: 18px;
-            color: #636E72;`}>Projected Schedule based on the rate of reduction you specified</h3>
-          <div style={{ display: 'flex' }}>
+            color: #636E72;`}>{title}</h3>
+          <div css={css`display: flex; justify-content: space-between;`}>
             {projectedSchedule.data.length !== 0
-            && <div style={{ flex: 3 }}><ProjectedScheduleTable editable={editable} projectedSchedule={projectedSchedule}/>
+            && <div css={css`flex: 3;`}><ProjectedScheduleTable editable={editable} projectedSchedule={projectedSchedule}/>
             </div>}
-            <div style={{ flex: 2 }}>
+            <div>
               <ProjectedScheduleChart scheduleChartData={scheduleChartData} width={400} height={400}/>
             </div>
           </div>

@@ -14,9 +14,10 @@ import { finalPrescriptionQuantityChange } from '../../redux/actions/taperConfig
 interface Props {
   id: number,
   prescription: ValueOf<Prescription>;
+  editable: boolean;
 }
 
-const PrescribedQuantitiesForDrug: FC<Props> = ({ id, prescription }) => {
+const PrescribedQuantitiesForDrug: FC<Props> = ({ id, prescription, editable }) => {
   const dispatch = useDispatch();
   const qtyOrZero = useCallback((dosages: typeof prescription['dosageQty'], dosage: string): number => {
     return dosages[dosage] ? dosages[dosage] : 0;
@@ -48,6 +49,7 @@ const PrescribedQuantitiesForDrug: FC<Props> = ({ id, prescription }) => {
                    value={qtyOrZero(prescription.dosageQty, dos)}
                    step={0.5}
                    width={'50px'}
+                   readOnly={!editable}
                    onChange={onPrescribedQuantityChange}/>
           </div>
         ))}

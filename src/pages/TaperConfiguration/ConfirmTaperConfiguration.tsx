@@ -14,6 +14,7 @@ import {
   TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
 } from '../../redux/actions/taperConfig';
 import ProjectedSchedule from '../../components/Schedule/ProjectedSchedule';
+import { ShareWithAppIcon, ShareWithEmailIcon, ShareWithPdfIcon } from '../../icons';
 
 const wrapperStyle = css`
   display: flex;
@@ -97,12 +98,23 @@ const saveTaperConfiguration = useCallback(() => {
         <div css={css`margin-top: 44px;`}>
           <h3>Share projected schedule and notes with patient</h3>
           <div css={css`
-            & > button {
+            & > div {
               margin-right: 30px;
+              display: flex;
+              flex-direction: column;
             }`}>
-            <Button onClick={shareWithApp}>App</Button>
-            <Button onClick={shareWithEmail}>Email</Button>
-            <Button onClick={shareWithPdf}>PDF</Button>
+            <div onClick={shareWithApp}>
+              <ShareWithAppIcon/>
+              App
+            </div>
+            <div onClick={shareWithEmail}>
+              <ShareWithEmailIcon/>
+              E-mail
+            </div>
+            <div onClick={shareWithPdf}>
+              <ShareWithPdfIcon/>
+              PDF
+            </div>
           </div>
         </div>
       </div>

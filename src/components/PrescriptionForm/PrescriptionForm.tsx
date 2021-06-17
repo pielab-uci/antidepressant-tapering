@@ -198,14 +198,13 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug, addNewPrescriptionForm })
       <div css={css`
         margin-left: 42px;
         padding-bottom: 71px;`}>
-        <Button danger css={css`float: right; margin-right: 20px;`} onClick={removeDrugForm}>Remove</Button>
+        <Button danger css={css`float: right; margin-right: 20px;`} onClick={removeDrugForm}>Delete</Button>
         <div css={css`
           width: 700px;
           //margin-left: 42px;
 
           & > h3 {
             font-size: 18px;
-            font-family: Futura;
           }
 
           & .medication-select-form {

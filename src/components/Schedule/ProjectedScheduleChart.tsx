@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis,
+  CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from 'recharts';
 import { format } from 'date-fns';
 import { FC, useRef } from 'react';
@@ -12,6 +12,7 @@ interface Props {
   width: number;
   height: number;
 }
+
 const ProjectedScheduleChart: FC<Props> = ({ scheduleChartData, width, height }) => {
   console.log('scheduleChartData');
   console.log(scheduleChartData);
@@ -25,16 +26,20 @@ const ProjectedScheduleChart: FC<Props> = ({ scheduleChartData, width, height })
   });
 
   return (
-      <LineChart data={scheduleChartData} width={width} height={height}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="timestamp" type="number" tickFormatter={(time) => format(time, 'MM-dd')} domain={['auto', 'auto']} scale="time" />
-        <YAxis dataKey="dosage" />
+    <ResponsiveContainer width={width} height={height}>
+      <LineChart data={scheduleChartData}>
+        <CartesianGrid strokeDasharray="3 3"/>
+        <XAxis dataKey="timestamp" type="number" tickFormatter={(time) => format(time, 'MM-dd')}
+               domain={['auto', 'auto']} scale="time"/>
+        <YAxis dataKey="dosage"/>
         <Tooltip formatter={(value: number) => `${value}mg`} labelFormatter={(time: number) => format(time, 'MM-dd')}/>
-        <Legend />
+        <Legend/>
         {scheduleChartData.map((drug) => (
-          <Line dataKey="dosage" data={drug.data} name={drug.name} key={drug.name} type={'stepAfter'} stroke={lineColors.current[drug.name]}/>
+          <Line dataKey="dosage" data={drug.data} name={drug.name} key={drug.name} type={'stepAfter'}
+                stroke={lineColors.current[drug.name]}/>
         ))}
       </LineChart>
+    </ResponsiveContainer>
   );
 };
 

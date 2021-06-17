@@ -43,8 +43,7 @@ const Header = () => {
       <StyledHeader>
         <Logo onClick={onClickLogo}>Logo</Logo>
         <DisplayUser>
-        <span css={css`margin-right: 86px`}><GrNotification size={'23px'} css={css`margin-right: 41px;`}/>
-        Hello, Dr. {me?.name}</span>
+          <span css={css`margin-right: 86px`}>Hello, Dr. {me?.name}</span>
         </DisplayUser>
       </StyledHeader></>
   );

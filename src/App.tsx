@@ -46,6 +46,7 @@ const App = () => {
             <div css={css`
               height: 100%;
               display: flex;
+              font-family: Verdana;
               flex-direction: column;`}>
               <Header/>
               <section css={css`

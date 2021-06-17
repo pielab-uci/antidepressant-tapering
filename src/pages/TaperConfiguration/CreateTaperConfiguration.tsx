@@ -91,7 +91,8 @@ const CreateTaperConfiguration = () => {
         {prescribedDrugs?.length === 0
         && <Button type='primary'
                    css={css`
-                     margin-top: 10px;
+                     margin-top: 30px;
+                     margin-left: 20px;
                      border-radius: 10px;
                      width: 150px;`}
                    onClick={addNewPrescriptionForm}>Add Medication</Button>}

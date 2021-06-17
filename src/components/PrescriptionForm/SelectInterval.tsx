@@ -22,7 +22,6 @@ const { Option } = Select;
 
 const selectIntervalStyle = css`
   margin-top: 65px;
-  font-family: Futura;
   width: 330px;
 
   & > h3 {

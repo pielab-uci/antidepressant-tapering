@@ -66,7 +66,6 @@ const OralFormDosage: FC<Props> = ({ time }) => {
   return (
     <>
       <h3 css={css`font-size: 18px;
-        font-family: Futura;
         color: #636E72;`}>
         {time} Dosage
       </h3>

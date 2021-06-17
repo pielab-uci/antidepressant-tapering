@@ -29,7 +29,10 @@ import DateEditor from './DateEditor';
 import NumberEditor from './NumberEditor';
 import { Schedule } from './ProjectedSchedule';
 
-const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedule }> = ({ editable, projectedSchedule }) => {
+const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedule }> = ({
+  editable,
+  projectedSchedule,
+}) => {
   const [gridColumnApi, setGridColumnApi] = useState<ColumnApi | null>(null);
   const {
     tableSelectedRows,
@@ -61,11 +64,16 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
 
   const columnDefs = useRef<ColDef[]>(
     [{
+      headerName: 'Prescribe?',
+      field: 'prescribe',
+      hide: !editable,
+      checkboxSelection: (params: CheckboxSelectionCallbackParams) => !params.data.isPriorDosage && editable,
+    },
+    {
       headerName: 'Drug',
       field: 'drug',
       sortable: true,
       unSortIcon: true,
-      checkboxSelection: (params: CheckboxSelectionCallbackParams) => !params.data.isPriorDosage && editable,
     }, {
       headerName: 'Dosage',
       field: 'dosage',
@@ -74,7 +82,7 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
       valueFormatter: (params: ValueFormatterParams) => `${params.value}mg`,
       // need to keep below valueSetter
       valueSetter: (params: ValueSetterParams) => params.newValue,
-    // valueSetter: valueSetter((x: string) => parseFloat(x) >= 0),
+      // valueSetter: valueSetter((x: string) => parseFloat(x) >= 0),
     }, {
       headerName: 'Start Date',
       field: 'startDate',
@@ -216,9 +224,9 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
           suppressRowClickSelection={true}
         />
         <Modal
-        visible={showModal}
-        onCancel={handleModalCancel}
-        onOk={handleModalOk}>
+          visible={showModal}
+          onCancel={handleModalCancel}
+          onOk={handleModalOk}>
           <h2>Modal</h2>
         </Modal>
       </div>

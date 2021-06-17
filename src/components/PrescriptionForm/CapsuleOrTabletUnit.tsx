@@ -5,11 +5,15 @@ import {
 import { Button } from 'antd';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
+import { css } from '@emotion/react';
 import { PrescriptionFormContext } from './PrescriptionForm';
 import { TaperConfigActions } from '../../redux/reducers/taperConfig';
 import {
   priorDosageChange, PriorDosageChangeAction, upcomingDosageChange, UpcomingDosageChangeAction,
 } from './actions';
+import {
+  ArrowDown, ArrowUp, ScoredTablet, UnscoredTablet,
+} from '../../icons';
 
 interface Props {
   form: string;
@@ -71,19 +75,29 @@ const CapsuleOrTabletUnit: FC<Props> = ({
     }
   }, [dosages, intervalDurationDays, allowSplittingUnscoredTablet]);
 
+  const renderIcon = () => {
+    if (form === 'tablet') {
+      if (isScored) {
+        return <ScoredTablet value={dosages[dosage]}/>;
+      }
+      return <UnscoredTablet value={dosages[dosage]}/>;
+    }
+    return <div>capsule: {dosages[dosage]}</div>;
+  };
   return (
-    <>
-      <div>
-        {form}
-        :
-        {' '}
-        {dosage}
+    <div css={css`display: flex;`}>
+      <div css={css`display: flex;
+        flex-direction: column;
+        justify-content: center;`}>
+        <div onClick={onIncrement}>
+          <ArrowUp/>
+        </div>
+        <div css={css`margin-top: 20px;`}onClick={onDecrement}>
+          <ArrowDown/>
+        </div>
       </div>
-      <Button onClick={onIncrement}>+</Button>
-      <div>{dosages[dosage]}</div>
-      <Button onClick={onDecrement}>-</Button>
-    </>
-  );
+      {renderIcon()}
+    </div>);
 };
 
 export default CapsuleOrTabletUnit;

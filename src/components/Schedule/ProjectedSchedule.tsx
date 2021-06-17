@@ -59,7 +59,7 @@ const ProjectedSchedule: FC<{ editable: boolean, title: string }> = ({ editable,
           </div>
           <h3 css={css`font-size: 18px; margin-top: 33px;`}>Prescription for upcoming intervals</h3>
           {Object.entries(finalPrescription).map(([id, prescription]) => <PrescribedQuantitiesForDrug
-            key={`PrescribedQuantitiesFor${id}`} id={parseFloat(id)} prescription={prescription}/>)}
+            key={`PrescribedQuantitiesFor${id}`} id={parseFloat(id)} prescription={prescription} editable={editable}/>)}
 
           <div>
             <h3 css={css`margin-top: 40px;`}>Notes for Patient</h3>

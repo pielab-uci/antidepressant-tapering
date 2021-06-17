@@ -21,34 +21,44 @@ const CapsuleOrTabletDosages: FC<Props> = ({ time }) => {
 
   return (
     <>
-      <h3 css={css`color: #636E72; font-size: 18px; font-family: Futura;`}>
+      <h3 css={css`color: #636E72;
+        font-size: 18px;`}>
         {time}
         {' '}
         Dosage
       </h3>
-      <div style={{ display: 'flex' }}>
+      <div css={css`
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 635px;
+        margin-left: 64px;`}>
         {(dosageOptions as CapsuleOrTabletDosage[])
           .map((v: { dosage: string; isScored?: boolean }) => (
-          <CapsuleOrTabletUnit
-            key={`${time}_${chosenDrugForm!.form}_${v.dosage}`}
-            time={time}
-            form={chosenDrugForm!.form}
-            dosage={v.dosage}
-            isScored={v.isScored ? v.isScored : undefined}
-          />))
+            <CapsuleOrTabletUnit
+              key={`${time}_${chosenDrugForm!.form}_${v.dosage}`}
+              time={time}
+              form={chosenDrugForm!.form}
+              dosage={v.dosage}
+              isScored={v.isScored ? v.isScored : undefined}
+            />))
         }
-      </div>
-      {time === 'Upcoming' && dosageDifferenceMessage
-      && (
-      <div style={{ color: 'red' }}>
-        {dosageDifferenceMessage}
-      </div>
-      )}
-      <div>
-        Total:
-        {dosageSum}
-        {' '}
-        {chosenDrugForm!.measureUnit}
+        <div css={css`display: flex;
+          flex-direction: column;
+align-items: flex-end;`}>
+          {time === 'Upcoming' && dosageDifferenceMessage
+          && (
+            <div css={css`color: red;`}>
+              {dosageDifferenceMessage}
+            </div>
+          )}
+          <div>
+            Total:
+            {dosageSum}
+            {' '}
+            {chosenDrugForm!.measureUnit}
+          </div>
+        </div>
       </div>
     </>
   );

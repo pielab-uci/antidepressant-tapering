@@ -4,12 +4,16 @@ import {
   ALLOW_SPLITTING_UNSCORED_TABLET,
   CHOOSE_BRAND,
   CHOOSE_FORM,
-  PRIOR_DOSAGE_CHANGE,
-  FETCH_DRUGS, INTERVAL_COUNT_CHANGE,
+  FETCH_DRUGS,
+  INTERVAL_COUNT_CHANGE,
   INTERVAL_END_DATE_CHANGE,
-  INTERVAL_START_DATE_CHANGE, INTERVAL_UNIT_CHANGE, LOAD_PRESCRIPTION_DATA,
-  UPCOMING_DOSAGE_CHANGE,
+  INTERVAL_START_DATE_CHANGE,
+  INTERVAL_UNIT_CHANGE,
+  LOAD_PRESCRIPTION_DATA,
   PrescriptionFormActions,
+  PRIOR_DOSAGE_CHANGE,
+  SET_UPCOMING_DOSAGE_GOAL,
+  UPCOMING_DOSAGE_CHANGE,
 } from './actions';
 import { CapsuleOrTabletDosage, isCapsuleOrTablet } from '../../types';
 
@@ -26,6 +30,7 @@ export const initialState: PrescriptionFormState = {
   minDosageUnit: 0,
   priorDosagesQty: {},
   upcomingDosagesQty: {},
+  targetDosage: 0,
   allowSplittingUnscoredTablet: false,
   oralDosageInfo: null,
   intervalStartDate: new Date(),
@@ -136,6 +141,10 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         if (action.data.dosage.quantity >= 0) {
           draft.upcomingDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;
         }
+        break;
+
+      case SET_UPCOMING_DOSAGE_GOAL:
+        draft.targetDosage = action.data.dosage;
         break;
 
       case ALLOW_SPLITTING_UNSCORED_TABLET:

@@ -57,6 +57,13 @@ export const upcomingDosageChange = (data: UpcomingDosageChangeAction['data']): 
   data,
 });
 
+export const SET_UPCOMING_DOSAGE_GOAL = 'SET_UPCOMING_DOSAGE_GOAL';
+
+export interface SetUpcomingDosageGoalAction {
+  type: typeof SET_UPCOMING_DOSAGE_GOAL,
+  data: { id: number, dosage: number }
+}
+
 export const ALLOW_SPLITTING_UNSCORED_TABLET = 'ALLOW_SPLITTING_UNSCORED_TABLET' as const;
 
 export interface AllowSplittingUnscoredTabletAction {
@@ -144,5 +151,6 @@ export type PrescriptionFormActions =
   | ChooseFormAction
   | PriorDosageChangeAction
   | UpcomingDosageChangeAction
+  | SetUpcomingDosageGoalAction
   | AllowSplittingUnscoredTabletAction
   | IntervalActions;

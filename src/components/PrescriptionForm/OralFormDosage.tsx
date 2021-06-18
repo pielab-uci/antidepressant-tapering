@@ -13,6 +13,7 @@ import useDosageSumDifferenceMessage from '../../hooks/useDosageSumDifferenceMes
 import {
   priorDosageChange, PriorDosageChangeAction, upcomingDosageChange, UpcomingDosageChangeAction,
 } from './actions';
+import TargetDosageSettingForm from './TargetDosageSettingForm';
 
 interface Props {
   time: 'Prior' | 'Upcoming'
@@ -69,28 +70,35 @@ const OralFormDosage: FC<Props> = ({ time }) => {
         color: #636E72;`}>
         {time} Dosage
       </h3>
-      <div css={css`
-        display: flex;
-        width: 500px;
-        justify-content: space-between;
-        margin-left: 90px;`}>
+      <div css={css`display: flex;
+        flex-direction: column;`}>
         <div>
-          <Input type='number' value={dosages['1mg']} onChange={mgOnChange} min={0} style={inputStyle}/> mg =
-          <Input type='number' value={mlDosage} onChange={mlOnChange} min={0} style={inputStyle}/> ml
-        </div>
-        <div>
-          {time === 'Upcoming' && dosageDifferenceMessage
-          && (
-            <div style={{ color: 'red' }}>
-              {dosageDifferenceMessage}
+          <div css={css`
+            display: flex;
+            width: 500px;
+            justify-content: space-between;
+            margin-left: 90px;`}>
+            <div>
+              <Input type='number' value={dosages['1mg']} onChange={mgOnChange} min={0} style={inputStyle}/> mg =
+              <Input type='number' value={mlDosage} onChange={mlOnChange} min={0} style={inputStyle}/> ml
             </div>
-          )}
-          <div>
-            Total: {dosageSum}
-            {' '}
-            {chosenDrugForm!.measureUnit}
+            <div>
+              {time === 'Upcoming' && dosageDifferenceMessage
+              && (
+                <div style={{ color: 'red' }}>
+                  {dosageDifferenceMessage}
+                </div>
+              )}
+              <div>
+                Total: {dosageSum}
+                {' '}
+                {chosenDrugForm!.measureUnit}
+              </div>
+            </div>
           </div>
+          {time === 'Upcoming' && <TargetDosageSettingForm/>}
         </div>
+
       </div>
     </>
   );

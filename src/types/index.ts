@@ -77,6 +77,8 @@ export interface PrescribedDrug {
   regularDosageOptions: string[]|null;
   priorDosages: { dosage: string; quantity: number }[];
   upcomingDosages: { dosage: string; quantity: number }[];
+  setUpcomingDosageGoal: boolean;
+  upcomingDosageGoal: number | null;
   intervalStartDate: Date;
   intervalEndDate: Date | null;
   intervalCount: number;

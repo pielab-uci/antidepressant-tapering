@@ -4,80 +4,86 @@ import {
   Drug, PrescribedDrug, Prescription, TaperingConfiguration,
 } from '../../types';
 import {
+  ADD_NEW_DRUG_FORM,
   ADD_OR_UPDATE_TAPER_CONFIG_FAILURE,
   ADD_OR_UPDATE_TAPER_CONFIG_REQUEST,
   ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS,
+  AddNewDrugFormAction,
+  AddOrUpdateTaperConfigAyncActions,
+  CHANGE_MESSAGE_FOR_PATIENT,
+  CHANGE_NOTE_AND_INSTRUCTIONS,
+  ChangeMessageForPatient,
+  ChangeNoteAndInstructions,
   CLEAR_SCHEDULE,
   ClearScheduleAction,
+  EMPTY_PRESCRIBED_DRUGS,
+  EMPTY_TAPER_CONFIG_PAGE,
+  EmptyPrescribedDrugs,
+  EmptyTaperConfigPage,
+  FETCH_PRESCRIBED_DRUGS_FAILURE,
+  FETCH_PRESCRIBED_DRUGS_REQUEST,
+  FETCH_PRESCRIBED_DRUGS_SUCCESS,
+  FETCH_TAPER_CONFIG_FAILURE,
+  FETCH_TAPER_CONFIG_REQUEST,
+  FETCH_TAPER_CONFIG_SUCCESS,
+  FetchPrescribedDrugAsyncActions,
+  FetchTaperConfigAsyncActions,
+  FINAL_PRESCRIPTION_QUANTITY_CHANGE,
+  FinalPrescriptionQuantityChange,
   GENERATE_SCHEDULE,
   GenerateScheduleAction,
+  INIT_NEW_TAPER_CONFIG,
+  InitTaperConfigAction,
+  REMOVE_DRUG_FORM,
+  RemoveDrugFormAction,
+  SCHEDULE_ROW_SELECTED,
+  ScheduleRowSelectedAction,
   SHARE_WITH_PATIENT_APP_FAILURE,
   SHARE_WITH_PATIENT_APP_REQUEST,
   SHARE_WITH_PATIENT_APP_SUCCESS,
   SHARE_WITH_PATIENT_EMAIL_FAILURE,
   SHARE_WITH_PATIENT_EMAIL_REQUEST,
   SHARE_WITH_PATIENT_EMAIL_SUCCESS,
-  ADD_NEW_DRUG_FORM,
-  AddNewDrugFormAction,
-  REMOVE_DRUG_FORM,
-  RemoveDrugFormAction,
-  ToggleShareProjectedScheduleWithPatient,
-  TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
-  CHANGE_MESSAGE_FOR_PATIENT,
-  ChangeMessageForPatient,
-  ScheduleRowSelectedAction,
-  SCHEDULE_ROW_SELECTED,
-  InitTaperConfigAction,
-  INIT_NEW_TAPER_CONFIG,
-  FETCH_TAPER_CONFIG_REQUEST,
-  FETCH_TAPER_CONFIG_SUCCESS,
-  FETCH_TAPER_CONFIG_FAILURE,
-  EMPTY_TAPER_CONFIG_PAGE,
-  EmptyTaperConfigPage,
-  FETCH_PRESCRIBED_DRUGS_REQUEST,
-  FETCH_PRESCRIBED_DRUGS_SUCCESS,
-  FETCH_PRESCRIBED_DRUGS_FAILURE,
-  EMPTY_PRESCRIBED_DRUGS,
-  EmptyPrescribedDrugs,
-  ChangeNoteAndInstructions,
-  CHANGE_NOTE_AND_INSTRUCTIONS,
-  FINAL_PRESCRIPTION_QUANTITY_CHANGE,
-  FinalPrescriptionQuantityChange,
-  AddOrUpdateTaperConfigAyncActions,
-  FetchTaperConfigAsyncActions,
-  FetchPrescribedDrugAsyncActions,
   ShareWithPatientAppAsyncActions,
   ShareWithPatientEmailAsyncActions,
-  TableEditingAction,
   TABLE_DOSAGE_EDITED,
+  TABLE_END_DATE_EDITED,
   TABLE_START_DATE_EDITED,
-  TABLE_END_DATE_EDITED, UPDATE_CHART, UpdateChartAction,
+  TableEditingAction,
+  TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
+  ToggleShareProjectedScheduleWithPatient,
+  UPDATE_CHART,
+  UpdateChartAction,
+  SET_IS_INPUT_COMPLETE,
+  SetIsInputComplete,
+  VALIDATE_INPUT_COMPLETION,
+  ValidateInputCompletionAction,
 } from '../actions/taperConfig';
 import drugs from './drugs';
 
 import {
+  ALLOW_SPLITTING_UNSCORED_TABLET,
   CHOOSE_BRAND,
   CHOOSE_FORM,
-  PRIOR_DOSAGE_CHANGE,
   INTERVAL_COUNT_CHANGE,
   INTERVAL_END_DATE_CHANGE,
   INTERVAL_START_DATE_CHANGE,
   INTERVAL_UNIT_CHANGE,
-  ALLOW_SPLITTING_UNSCORED_TABLET,
-  UPCOMING_DOSAGE_CHANGE,
   PrescriptionFormActions,
+  PRIOR_DOSAGE_CHANGE,
+  UPCOMING_DOSAGE_CHANGE,
 } from '../../components/PrescriptionForm/actions';
 import { Schedule } from '../../components/Schedule/ProjectedSchedule';
 import {
+  calcFinalPrescription,
+  calcMinimumQuantityForDosage,
   chartDataConverter,
+  generateInstructionsForPatientFromSchedule,
+  generateInstructionsForPharmacy,
+  isCompleteDrugInput,
+  prescription,
   ScheduleChartData,
   scheduleGenerator,
-  generateInstructionsForPatientFromSchedule,
-  isCompleteDrugInput,
-  generateInstructionsForPharmacy,
-  calcMinimumQuantityForDosage,
-  prescription,
-  calcFinalPrescription,
   validateCompleteInputs,
 } from './utils';
 
@@ -195,6 +201,8 @@ export type TaperConfigActions =
   | FinalPrescriptionQuantityChange
   | TableEditingAction
   | UpdateChartAction
+  | SetIsInputComplete
+  | ValidateInputCompletionAction
   | PrescriptionFormActions;
 
 const emptyPrescribedDrug = (id: number): PrescribedDrug => ({
@@ -207,6 +215,8 @@ const emptyPrescribedDrug = (id: number): PrescribedDrug => ({
   minDosageUnit: 0,
   priorDosages: [],
   upcomingDosages: [],
+  upcomingDosageGoal: null,
+  setUpcomingDosageGoal: false,
   availableDosageOptions: [],
   regularDosageOptions: [],
   allowSplittingUnscoredTablet: false,
@@ -582,6 +592,14 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           editedRow.prescription = prescription({ ...editedRow }, editedRow.unitDosages!);
           draft.finalPrescription = calcFinalPrescription(draft.projectedSchedule.data, draft.tableSelectedRows);
         }
+        break;
+
+      case SET_IS_INPUT_COMPLETE:
+        draft.isInputComplete = action.data.isComplete;
+        break;
+
+      case VALIDATE_INPUT_COMPLETION:
+        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         break;
 
       default:

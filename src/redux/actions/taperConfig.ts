@@ -15,6 +15,7 @@ export interface ClearScheduleAction {
 }
 
 export const UPDATE_CHART = 'UPDATE_CHART' as const;
+
 export interface UpdateChartAction {
   type: typeof UPDATE_CHART,
 }
@@ -25,6 +26,7 @@ export interface InitTaperConfigAction {
   type: typeof INIT_NEW_TAPER_CONFIG,
   data: { clinicianId: number, patientId: number }
 }
+
 export const EMPTY_TAPER_CONFIG_PAGE = 'EMPTY_TAPER_CONFIG_PAGE' as const;
 
 export interface EmptyTaperConfigPage {
@@ -46,7 +48,7 @@ export interface AddOrUpdateTaperConfigRequestAction {
   data: { taperConfigId?: number, clinicianId: number, patientId: number, prescribedDrugs: PrescribedDrug[] };
 }
 
-export const addOrUpdateTaperConfigRequest = (data: AddOrUpdateTaperConfigRequestAction['data']):AddOrUpdateTaperConfigRequestAction => ({
+export const addOrUpdateTaperConfigRequest = (data: AddOrUpdateTaperConfigRequestAction['data']): AddOrUpdateTaperConfigRequestAction => ({
   type: ADD_OR_UPDATE_TAPER_CONFIG_REQUEST,
   data,
 });
@@ -82,7 +84,7 @@ export const SCHEDULE_ROW_SELECTED = 'SCHEDULE_ROW_SELECTED' as const;
 
 export interface ScheduleRowSelectedAction {
   type: typeof SCHEDULE_ROW_SELECTED,
-  data: (number|null)[];
+  data: (number | null)[];
 }
 
 export const FETCH_TAPER_CONFIG_REQUEST = 'FETCH_TAPER_CONFIG_REQUEST' as const;
@@ -186,17 +188,19 @@ export interface ToggleShareProjectedScheduleWithPatient {
 }
 
 export const CHANGE_MESSAGE_FOR_PATIENT = 'CHANGE_MESSAGE_FOR_PATIENT' as const;
+
 export interface ChangeMessageForPatient {
   type: typeof CHANGE_MESSAGE_FOR_PATIENT,
   data: string;
 }
 
-export const changeMessageForPatient = (data:ChangeMessageForPatient['data']): ChangeMessageForPatient => ({
+export const changeMessageForPatient = (data: ChangeMessageForPatient['data']): ChangeMessageForPatient => ({
   type: CHANGE_MESSAGE_FOR_PATIENT,
   data,
 });
 
 export const CHANGE_NOTE_AND_INSTRUCTIONS = 'CHANGE_NOTE_AND_INSTRUCTIONS' as const;
+
 export interface ChangeNoteAndInstructions {
   type: typeof CHANGE_NOTE_AND_INSTRUCTIONS,
   data: string;
@@ -244,3 +248,16 @@ export type TableEditingAction =
   | TableStartDateEditedAction
   | TableEndDateEditedAction
   | TableDosageEditedAction;
+
+export const SET_IS_INPUT_COMPLETE = 'SET_IS_INPUT_COMPLETE' as const;
+
+export interface SetIsInputComplete {
+  type: typeof SET_IS_INPUT_COMPLETE,
+  data: { isComplete: boolean }
+}
+
+export const VALIDATE_INPUT_COMPLETION = 'VALIDATE_INPUT_COMPLETION' as const;
+
+export interface ValidateInputCompletionAction {
+  type: typeof VALIDATE_INPUT_COMPLETION;
+}

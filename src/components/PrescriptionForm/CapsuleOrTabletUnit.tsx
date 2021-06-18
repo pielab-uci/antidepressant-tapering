@@ -75,42 +75,54 @@ const CapsuleOrTabletUnit: FC<Props> = ({
   }, [dosages, intervalDurationDays, allowSplittingUnscoredTablet]);
 
   const renderIcon = () => {
+    const wrapperStyle = css`
+    display: flex;
+    margin-left: 5px;`;
     if (form === 'tablet') {
-      if (isScored) {
-        return <ScoredTabletIcon value={dosages[dosage]}/>;
-      }
-      return <UnscoredTabletIcon value={dosages[dosage]}/>;
+      return (
+        <div css={wrapperStyle}>
+          {isScored
+            ? <ScoredTabletIcon value={dosages[dosage]}/>
+            : <UnscoredTabletIcon value={dosages[dosage]}/>}
+        </div>
+      );
     }
-    return <CapsuleIcon value={dosages[dosage]}/>;
+    return <div css={wrapperStyle}>
+      <CapsuleIcon value={dosages[dosage]}/>
+    </div>;
   };
   return (
-    <div css={css`display: flex;`}>
-      <div css={css`display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-
-        & button {
-          border: none;
-          background-color: white;
-          padding: 5px 5px;
-          display: flex;
+    <div css={css`display: flex; flex-direction: column; align-items: flex-end;`}>
+      <div css={css`display: flex; margin-bottom: 5px;`}>
+        <div className='dosage-arrow-button' css={css`display: flex;
           flex-direction: column;
-          justify-content: flex-end;
-        }`}>
-        <div>
-          <button onClick={onIncrement}>
-            <ArrowUp/>
-          </button>
+          justify-content: center;
+          align-items: center;
+
+          & button {
+            border: none;
+            background-color: white;
+            padding: 5px 5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+          }`}>
+          <div>
+            <button onClick={onIncrement}>
+              <ArrowUp/>
+            </button>
+          </div>
+          <div>
+            <button onClick={onDecrement}>
+              <ArrowDown/>
+            </button>
+          </div>
         </div>
-        <div>
-          <button onClick={onDecrement}>
-            <ArrowDown/>
-          </button>
-        </div>
+        {renderIcon()}
       </div>
-      {renderIcon()}
-    </div>);
+      <div css={css`margin-right: 10px;`}>{dosage}</div>
+    </div>
+  );
 };
 
 export default CapsuleOrTabletUnit;

@@ -81,9 +81,6 @@ const saveTaperConfiguration = useCallback(() => {
  */
 
   const moveToEditPage = () => {
-    // const clinicianId = urlSearchParams.current.get('clinicianId');
-    // const patientId = urlSearchParams.current.get('patientId');
-    // history.push(`/taper-configuration/edit/?clinicianId=${clinicianId}&patientId=${patientId}`);
     history.push(url.replace('confirm', 'edit'));
   };
 
@@ -98,9 +95,12 @@ const saveTaperConfiguration = useCallback(() => {
         <div css={css`margin-top: 44px;`}>
           <h3>Share projected schedule and notes with patient</h3>
           <div css={css`
+            display: flex;
             & > div {
               margin-right: 30px;
               display: flex;
+              justify-content: center;
+              align-items: center;
               flex-direction: column;
             }`}>
             <div onClick={shareWithApp}>

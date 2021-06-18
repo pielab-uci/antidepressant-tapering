@@ -59,7 +59,7 @@ const CreateTaperConfiguration = () => {
   }, []);
 
   const prescriptionFormStyle = css`
-    padding-top: ${prescribedDrugs && prescribedDrugs.length !== 0 ? '45px' : '0px'};
+    padding-top: ${prescribedDrugs && prescribedDrugs.length !== 0 ? '25px' : '0px'};
     background-color: white;
     border-radius: 17px;
     height: 100%;
@@ -70,16 +70,14 @@ const CreateTaperConfiguration = () => {
 
   const moveToEditPage = () => {
     // TODO: continue from here - it makes taper-configuration/create/taper-configuration/edit..
-    // history.push(`/taper-configuration/edit/?clinicianId=${urlSearchParams.current.get('clinicianId')}&patientId=${urlSearchParams.current.get('patientId')}`);
-    // history.push('/taper-configuration/edit/');
     history.push(url.replace('create', 'edit'));
   };
 
   const renderPrescriptionForms = (prescribedDrugs: PrescribedDrug[]) => {
     const notFromPrevVisit = prescribedDrugs.filter((prescribedDrug) => !prescribedDrug.prevVisit);
     return notFromPrevVisit.map(
-      (drug) => <PrescriptionForm key={`PrescriptionForm${drug.id}`} prescribedDrug={drug}
-                                  addNewPrescriptionForm={addNewPrescriptionForm}/>,
+      (drug, i) => <PrescriptionForm key={`PrescriptionForm${drug.id}`} prescribedDrug={drug}
+                                  addNewPrescriptionForm={addNewPrescriptionForm} index={i} numberOfMedications={notFromPrevVisit.length}/>,
     );
   };
 
@@ -88,14 +86,6 @@ const CreateTaperConfiguration = () => {
       className='create-taper-configuration'
       css={wrapperStyle}>
       <div className='create-taper-configuration-prescription-forms' css={prescriptionFormStyle}>
-        {prescribedDrugs?.length === 0
-        && <Button type='primary'
-                   css={css`
-                     margin-top: 30px;
-                     margin-left: 20px;
-                     border-radius: 10px;
-                     width: 150px;`}
-                   onClick={addNewPrescriptionForm}>Add Medication</Button>}
         {prescribedDrugs && renderPrescriptionForms(prescribedDrugs)}
       </div>
       <div css={buttonsStyle} className='create-taper-config-buttons'>

@@ -103,7 +103,7 @@ const PatientInitPage: FC = () => {
   const renderButton = useCallback(() => {
     const buttonStyle = css`
       border-radius: 10px;
-`;
+    `;
     return currentPatient!.taperingConfiguration
       ? <Button type='primary' css={buttonStyle} onClick={onClickAdjustSchedule}>Edit Schedule</Button>
       : <Button type='primary' css={buttonStyle} onClick={onClickNewSchedule}>Create New</Button>;
@@ -118,11 +118,14 @@ const PatientInitPage: FC = () => {
     );
   };
   return (
-    <div css={css`h3 {
-      //font-size: 26px;
-      font-size: 1.2rem;
-      color: #636272;
-    }`}
+    <div css={css`
+      overflow-y: scroll;
+
+      h3 {
+        //font-size: 26px;
+        font-size: 1.2rem;
+        color: #636272;
+      }`}
          className='patient-initial'>
       <div css={css`display: flex;
         justify-content: space-between;`}>

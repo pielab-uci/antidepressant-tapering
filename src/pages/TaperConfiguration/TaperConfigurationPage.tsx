@@ -24,10 +24,9 @@ import { checkCurrentPatientAndRender } from '../utils';
 const navTextStyle = css`
   display: flex;
   font-family: Verdana;
-  //font-size: 20px;
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: #636E72;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 
   & > div {
     margin-right: 22px;
@@ -95,7 +94,8 @@ const TaperConfigurationPage = () => {
 
   return (
     <div css={css`
-      height: calc(100vh - 307px);
+      //height: calc(100vh - 307px);
+      height: calc(100vh - 255px);
     `} className='taper-configuration'>
       <div css={navTextStyle} className='taper-configuration-nav-text'>
         <div css={assignStyle(1)} className='nav-step1'>Step 1. Create</div>

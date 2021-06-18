@@ -10,14 +10,13 @@ const NavBarStyle = css`
   background-color: #0984E3;
   border-top-right-radius: 17px;
   //font-size: 24px;
-  font-size: 1.3rem;
+  font-size: 1rem;
   color: white;
   height: 100%;
-  //height: calc(100% - 52px);
+  //width: 16%;
+  //flex: 0 0 200px;
   flex: 0 0 16%;
-  //margin-top: 52px;
-  //padding-top: 201px;
-  padding-top: 10%;
+  padding-top: 3%;
 `;
 
 const helpAndLogoutStyle = css`
@@ -28,8 +27,8 @@ const helpAndLogoutStyle = css`
 
   & > div {
     display: flex;
-    padding-bottom: 42px;
-    //margin-bottom: 42px;
+    padding-bottom: 20px;
+    align-items: center;
   }
 
   & > div > div {
@@ -77,7 +76,6 @@ const NavBar = () => {
     background-color: white;
     margin: 6px 0 0 39px;
     color: #0984E3;
-    //font-size: 16px;
     font-size: 0.8rem;
     padding: 5px 0 5px 28px;
     height: 131px;
@@ -122,7 +120,9 @@ const NavBar = () => {
           </div>
         </div>
         <div css={TabStyle('symptomTemplates')}>
-          <SymptomTemplatesMenuIcon/>
+          <div>
+            <SymptomTemplatesMenuIcon/>
+          </div>
           <div>Symptom Templates</div>
         </div>
         <div css={helpAndLogoutStyle}>

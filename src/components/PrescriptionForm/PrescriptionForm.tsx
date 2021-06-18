@@ -60,10 +60,14 @@ export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
 
 interface Props {
   prescribedDrug: PrescribedDrug;
+  numberOfMedications: number;
+  index: number;
   addNewPrescriptionForm?: () => void;
 }
 
-const PrescriptionForm: FC<Props> = ({ prescribedDrug, addNewPrescriptionForm }) => {
+const PrescriptionForm: FC<Props> = ({
+  prescribedDrug, addNewPrescriptionForm, numberOfMedications, index,
+}) => {
   const taperConfigActionDispatch = useDispatch();
   const [state, formActionDispatch] = useReducer<PrescriptionFormReducer, PrescriptionFormState>(reducer, initialState, (init) => initialState, `PrescriptionFormReducer_${prescribedDrug.id}`);
 
@@ -198,7 +202,7 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug, addNewPrescriptionForm })
       <div css={css`
         margin-left: 42px;
         padding-bottom: 71px;`}>
-        <Button danger css={css`float: right; margin-right: 20px;`} onClick={removeDrugForm}>Delete</Button>
+
         <div css={css`
           width: 700px;
           //margin-left: 42px;
@@ -216,6 +220,7 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug, addNewPrescriptionForm })
             align-items: center;
           }
         `}>
+          <h2>Medication #{index + 1}</h2>
           <h3>Prescription settings</h3>
           <div>
             <div css={css`display: flex;
@@ -233,7 +238,7 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug, addNewPrescriptionForm })
                   )}
                 </Select>
               </div>
-              <Tooltip title={prescribedDrug.halfLife} overlayStyle={{ whiteSpace: 'pre-line' }}>
+              <Tooltip title={`Half-life\n${prescribedDrug.halfLife}`} overlayStyle={{ whiteSpace: 'pre-line' }}>
                 <GrCircleInformation size={'16px'}/>
               </Tooltip>
             </div>
@@ -257,11 +262,30 @@ const PrescriptionForm: FC<Props> = ({ prescribedDrug, addNewPrescriptionForm })
 
         {renderDosages(chosenDrugForm, 'Prior')}
         {renderDosages(chosenDrugForm, 'Upcoming')}
+
         <SelectInterval/>
 
-        {addNewPrescriptionForm
+        {addNewPrescriptionForm && numberOfMedications < 2
         && <Button css={css`border-radius: 10px;
           margin-top: 74px;`} type='primary' onClick={addNewPrescriptionForm}>Add Medication</Button>}
+
+        {numberOfMedications > 1
+        && <div css={css`display: flex; flex-direction: column; align-items: flex-end;`}>
+          <Button danger
+                  css={css`
+                    width: 160px;
+                    margin-right: 20px;
+                    border-radius: 10px;`}
+                  onClick={removeDrugForm}>Delete medication</Button>
+          <hr css={css`
+            border: none;
+            width: 100%;
+            height: 3px;
+            margin: 18px auto;
+            background-color: #D1D1D1;
+          `}/>
+        </div>}
+
       </div>
     </PrescriptionFormContext.Provider>
   );

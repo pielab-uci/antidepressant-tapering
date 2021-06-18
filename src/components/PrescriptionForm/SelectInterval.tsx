@@ -31,7 +31,6 @@ const selectIntervalStyle = css`
   }
 
   & .select-interval-form {
-    //font-size: 16px;
     font-size: 0.8rem;
     margin: 0 0 1rem 39px;
     display: flex;

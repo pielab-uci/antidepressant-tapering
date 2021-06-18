@@ -27,25 +27,29 @@ const CapsuleOrTabletDosages: FC<Props> = ({ time }) => {
         {' '}
         Dosage
       </h3>
-      <div css={css`
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 635px;
-        margin-left: 64px;`}>
-        {(dosageOptions as CapsuleOrTabletDosage[])
-          .map((v: { dosage: string; isScored?: boolean }) => (
-            <CapsuleOrTabletUnit
-              key={`${time}_${chosenDrugForm!.form}_${v.dosage}`}
-              time={time}
-              form={chosenDrugForm!.form}
-              dosage={v.dosage}
-              isScored={v.isScored ? v.isScored : undefined}
-            />))
-        }
+      <div css={css`display: flex;`}>
+        <div css={css`
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          width: 400px;
+          margin-left: 64px;`}>
+          {(dosageOptions as CapsuleOrTabletDosage[])
+            .map((v: { dosage: string; isScored?: boolean }) => (
+              <CapsuleOrTabletUnit
+                key={`${time}_${chosenDrugForm!.form}_${v.dosage}`}
+                time={time}
+                form={chosenDrugForm!.form}
+                dosage={v.dosage}
+                isScored={v.isScored ? v.isScored : undefined}
+              />))
+          }
+        </div>
         <div css={css`display: flex;
           flex-direction: column;
-align-items: flex-end;`}>
+          align-items: flex-start;
+          justify-content: center;
+          margin-left: 60px;`}>
           {time === 'Upcoming' && dosageDifferenceMessage
           && (
             <div css={css`color: red;`}>

@@ -19,15 +19,14 @@ import Header from './components/Header';
 
 const mainStyle = css`
   flex: 1;
-  //padding: 52px 59px 34px 65px;
-  padding: 0 59px 34px 65px;
+  padding: 0 35px 34px 35px;
 
   & > div {
     background-color: #fafafa;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
     border-radius: 20px;
     height: 100%;
-    padding: 31px 88px 21px 88px;
+    padding: 31px 45px 21px 45px;
   }
 `;
 const App = () => {
@@ -49,13 +48,17 @@ const App = () => {
               height: 100%;
               display: flex;
               font-family: Verdana;
-              flex-direction: column;`}>
+              flex-direction: column;
+
+              input[type=number]::-webkit-inner-spin-button,
+              input[type=number]::-webkit-outer-spin-button {
+                opacity: 1;
+              }`}>
               <Header/>
               <section css={css`
                 display: flex;
-                //height: calc(100% - 70px);
-                height: 92%;
-                padding-top: 3%;
+                height: 95%;
+                padding-top: 2%;
               `}>
                 <NavBar/>
                 <main css={mainStyle}>

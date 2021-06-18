@@ -2,7 +2,6 @@ import * as React from 'react';
 import {
   FC, useCallback, useContext,
 } from 'react';
-import { Button } from 'antd';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
 import { css } from '@emotion/react';
@@ -12,7 +11,7 @@ import {
   priorDosageChange, PriorDosageChangeAction, upcomingDosageChange, UpcomingDosageChangeAction,
 } from './actions';
 import {
-  ArrowDown, ArrowUp, ScoredTablet, UnscoredTablet,
+  ArrowDown, ArrowUp, CapsuleIcon, ScoredTabletIcon, UnscoredTabletIcon,
 } from '../../icons';
 
 interface Props {
@@ -78,29 +77,37 @@ const CapsuleOrTabletUnit: FC<Props> = ({
   const renderIcon = () => {
     if (form === 'tablet') {
       if (isScored) {
-        return <ScoredTablet value={dosages[dosage]}/>;
+        return <ScoredTabletIcon value={dosages[dosage]}/>;
       }
-      return <UnscoredTablet value={dosages[dosage]}/>;
+      return <UnscoredTabletIcon value={dosages[dosage]}/>;
     }
-    return <div>capsule: {dosages[dosage]}</div>;
+    return <CapsuleIcon value={dosages[dosage]}/>;
   };
   return (
     <div css={css`display: flex;`}>
       <div css={css`display: flex;
         flex-direction: column;
         justify-content: center;
+        align-items: center;
+
         & button {
-        border: none; 
-        background-color:white;
+          border: none;
+          background-color: white;
+          padding: 5px 5px;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
         }`}>
         <div>
           <button onClick={onIncrement}>
             <ArrowUp/>
           </button>
         </div>
-        <button css={css`margin-top: 20px;`} onClick={onDecrement}>
-          <ArrowDown/>
-        </button>
+        <div>
+          <button onClick={onDecrement}>
+            <ArrowDown/>
+          </button>
+        </div>
       </div>
       {renderIcon()}
     </div>);

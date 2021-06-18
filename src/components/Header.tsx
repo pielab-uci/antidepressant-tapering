@@ -10,17 +10,18 @@ const StyledHeader = styled.header`
   display: flex;
   //border: 1px solid blue;
   height: 8%;
+  align-items: center;
   width: 100%;
 `;
 
 const Logo = styled.div`
+  //flex-basis: 16%;
   //width: 16%;
-  //flex: 0 0 16%;
-  flex-basis: 16%;
+  //flex: 0 0 200px;
+  flex: 0 1 16%;
   text-align: center;
-  line-height: 70px;
-  //font-size: 26px;
   font-size: 1.5rem;
+  margin: 0;
   color: #0984E3;
 `;
 
@@ -28,17 +29,13 @@ const DisplayUser = styled.div`
   background-color: #0984E3;
   border-bottom-left-radius: 17px;
   text-align: right;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  //height: 70px;
-  //height: 100%;
-  //line-height: 100%;
   flex: 1;
-  //border: 1px solid blue;
   color: white;
-  font-size: 1.4rem;
-  //font-size: 23px;
+  font-size: 1rem;
 `;
 
 const Header = () => {

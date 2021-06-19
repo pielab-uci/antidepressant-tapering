@@ -57,10 +57,10 @@ export const upcomingDosageChange = (data: UpcomingDosageChangeAction['data']): 
   data,
 });
 
-export const SET_UPCOMING_DOSAGE_GOAL = 'SET_UPCOMING_DOSAGE_GOAL';
+export const SET_TARGET_DOSAGE = 'SET_UPCOMING_DOSAGE_GOAL';
 
 export interface SetUpcomingDosageGoalAction {
-  type: typeof SET_UPCOMING_DOSAGE_GOAL,
+  type: typeof SET_TARGET_DOSAGE,
   data: { id: number, dosage: number }
 }
 

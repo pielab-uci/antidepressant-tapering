@@ -70,7 +70,7 @@ export const xiao: Omit<Patient, 'password'> = {
 
 export const stephen: Omit<Clinician, 'password'> = {
   email: 'clinician@gmail.com',
-  name: 'Stephen Few',
+  name: 'Christian Lee',
   id: 1,
   patients: [
     { id: sally.id, name: sally.name },

@@ -13,6 +13,18 @@ interface Props {
   height: number;
 }
 
+const CustomizedAxisTick: FC<{ x: number, y: number, stroke: string, payload: { value: Date } }> = ({
+  x, y, stroke, payload,
+}) => {
+  return (
+  <g transform={`translate(${x}, ${y})`}>
+    <text x={0} y={0} dy={16} textAnchor='end' fill='#666' transform='rotate(-35)'>
+      {format(payload.value, 'MM-dd')}
+    </text>
+  </g>
+  );
+};
+
 const ProjectedScheduleChart: FC<Props> = ({ scheduleChartData, width, height }) => {
   console.log('scheduleChartData');
   console.log(scheduleChartData);
@@ -29,8 +41,10 @@ const ProjectedScheduleChart: FC<Props> = ({ scheduleChartData, width, height })
     <ResponsiveContainer width={width} height={height}>
       <LineChart data={scheduleChartData}>
         <CartesianGrid strokeDasharray="3 3"/>
-        <XAxis dataKey="timestamp" type="number" tickFormatter={(time) => format(time, 'MM-dd')}
+        <XAxis height={60} dataKey="timestamp" type="number" tick={(props) => <CustomizedAxisTick {...props}/>} tickFormatter={(time) => format(time, 'MM-dd')}
                domain={['auto', 'auto']} scale="time"/>
+        {/* <XAxis dataKey="timestamp" type="number" tickFormatter={(time) => format(time, 'MM-dd')} */}
+        {/*       domain={['auto', 'auto']} scale="time"/> */}
         <YAxis dataKey="dosage"/>
         <Tooltip formatter={(value: number) => `${value}mg`} labelFormatter={(time: number) => format(time, 'MM-dd')}/>
         <Legend/>

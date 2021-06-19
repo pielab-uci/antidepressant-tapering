@@ -39,7 +39,7 @@ import {
   ALLOW_SPLITTING_UNSCORED_TABLET,
   CHOOSE_BRAND,
   CHOOSE_FORM, INTERVAL_COUNT_CHANGE, INTERVAL_END_DATE_CHANGE, INTERVAL_START_DATE_CHANGE, INTERVAL_UNIT_CHANGE,
-  PRIOR_DOSAGE_CHANGE,
+  PRIOR_DOSAGE_CHANGE, SET_TARGET_DOSAGE,
   UPCOMING_DOSAGE_CHANGE,
 } from '../../components/PrescriptionForm/actions';
 
@@ -115,7 +115,7 @@ function fetchTaperConfigAPI(action: FetchTaperConfigRequestAction): { data: Tap
           allowSplittingUnscoredTablet: false,
           priorDosages: [{ dosage: '10mg', quantity: 1 }, { dosage: '20mg', quantity: 2 }],
           upcomingDosages: [{ dosage: '20mg', quantity: 2 }],
-          targetDosage: null,
+          targetDosage: 10,
           // prescribedDosages: { '10mg': 3, '20mg': 0, '40mg': 0 },
           intervalStartDate: new Date('2021-05-14T21:00:06.387Z'),
           intervalEndDate: new Date('2021-05-27T21:00:06.387Z'),
@@ -135,7 +135,7 @@ function fetchTaperConfigAPI(action: FetchTaperConfigRequestAction): { data: Tap
           minDosageUnit: 12.5,
           priorDosages: [{ dosage: '25mg', quantity: 0.5 }],
           upcomingDosages: [{ dosage: '25mg', quantity: 1 }],
-          targetDosage: null,
+          targetDosage: 200,
           availableDosageOptions: ['12.5mg', '25mg', '50mg', '100mg'],
           regularDosageOptions: ['25mg', '50mg', '100mg'],
           // prescribedDosages: { '25mg': 1, '50mg': 0, '100mg': 0 },
@@ -201,7 +201,7 @@ function fetchPrescribedDrugsAPI(action: FetchPrescribedDrugsRequestAction): { d
         allowSplittingUnscoredTablet: false,
         priorDosages: [{ dosage: '10mg', quantity: 1 }, { dosage: '20mg', quantity: 2 }],
         upcomingDosages: [{ dosage: '20mg', quantity: 2 }],
-        targetDosage: null,
+        targetDosage: 10,
         // prescribedDosages: { '10mg': 3, '20mg': 0, '40mg': 0 },
         intervalStartDate: new Date('2021-05-14T21:00:06.387Z'),
         intervalEndDate: new Date('2021-05-27T21:00:06.387Z'),
@@ -221,7 +221,7 @@ function fetchPrescribedDrugsAPI(action: FetchPrescribedDrugsRequestAction): { d
         halfLife: '24 hours',
         priorDosages: [{ dosage: '25mg', quantity: 0.5 }],
         upcomingDosages: [{ dosage: '25mg', quantity: 1 }],
-        targetDosage: null,
+        targetDosage: 200,
         availableDosageOptions: ['12.5mg', '25mg', '50mg', '100mg'],
         regularDosageOptions: ['25mg', '50mg', '100mg'],
         // prescribedDosages: { '25mg': 1, '50mg': 0, '100mg': 0 },
@@ -279,7 +279,7 @@ function* watchFetchPrescribedDrugs() {
 function* watchTaperConfigFormChange() {
   yield takeLatest([CHOOSE_BRAND, CHOOSE_FORM, PRIOR_DOSAGE_CHANGE,
     ALLOW_SPLITTING_UNSCORED_TABLET, UPCOMING_DOSAGE_CHANGE, INTERVAL_START_DATE_CHANGE,
-    INTERVAL_END_DATE_CHANGE, INTERVAL_UNIT_CHANGE, INTERVAL_COUNT_CHANGE],
+    INTERVAL_END_DATE_CHANGE, INTERVAL_UNIT_CHANGE, INTERVAL_COUNT_CHANGE, SET_TARGET_DOSAGE],
   generateOrClearSchedule);
 }
 

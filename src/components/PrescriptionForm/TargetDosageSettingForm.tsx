@@ -7,7 +7,7 @@ import { css } from '@emotion/react';
 import { PrescriptionFormContext } from './PrescriptionForm';
 import { TaperConfigActions } from '../../redux/reducers/taperConfig';
 import {
-  SET_UPCOMING_DOSAGE_GOAL,
+  SET_TARGET_DOSAGE,
   SetUpcomingDosageGoalAction,
 } from './actions';
 import { SET_IS_INPUT_COMPLETE, VALIDATE_INPUT_COMPLETION } from '../../redux/actions/taperConfig';
@@ -55,9 +55,9 @@ const TargetDosageSettingForm = () => {
     }
   }, [upcomingDosagesQty, priorDosagesQty, targetDosage]);
 
-  const onChangeUpcomingDosageGoal = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeTargetDosage = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      type: SET_UPCOMING_DOSAGE_GOAL,
+      type: SET_TARGET_DOSAGE,
       data: { id, dosage: parseFloat(e.target.value) },
     });
   };
@@ -93,8 +93,8 @@ const TargetDosageSettingForm = () => {
         <div css={css`display: flex;
           align-items: center;`}>
           <Input type='number'
-                 value={targetDosage || undefined}
-                 onChange={onChangeUpcomingDosageGoal}
+                 value={targetDosage}
+                 onChange={onChangeTargetDosage}
                  min={0}
                  css={css`width: 100px;
                    display: inline;`}/> mg

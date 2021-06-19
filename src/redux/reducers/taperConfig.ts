@@ -38,6 +38,8 @@ import {
   RemoveDrugFormAction,
   SCHEDULE_ROW_SELECTED,
   ScheduleRowSelectedAction,
+  SET_IS_INPUT_COMPLETE,
+  SetIsInputComplete,
   SHARE_WITH_PATIENT_APP_FAILURE,
   SHARE_WITH_PATIENT_APP_REQUEST,
   SHARE_WITH_PATIENT_APP_SUCCESS,
@@ -54,8 +56,6 @@ import {
   ToggleShareProjectedScheduleWithPatient,
   UPDATE_CHART,
   UpdateChartAction,
-  SET_IS_INPUT_COMPLETE,
-  SetIsInputComplete,
   VALIDATE_INPUT_COMPLETION,
   ValidateInputCompletionAction,
 } from '../actions/taperConfig';
@@ -71,6 +71,7 @@ import {
   INTERVAL_UNIT_CHANGE,
   PrescriptionFormActions,
   PRIOR_DOSAGE_CHANGE,
+  SET_TARGET_DOSAGE,
   UPCOMING_DOSAGE_CHANGE,
 } from '../../components/PrescriptionForm/actions';
 import { Schedule } from '../../components/Schedule/ProjectedSchedule';
@@ -215,7 +216,7 @@ const emptyPrescribedDrug = (id: number): PrescribedDrug => ({
   minDosageUnit: 0,
   priorDosages: [],
   upcomingDosages: [],
-  targetDosage: null,
+  targetDosage: 0,
   availableDosageOptions: [],
   regularDosageOptions: [],
   allowSplittingUnscoredTablet: false,
@@ -464,6 +465,12 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         }
         draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         draft.isSaved = false;
+        break;
+      }
+
+      case SET_TARGET_DOSAGE: {
+        const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
+        drug.targetDosage = action.data.dosage;
         break;
       }
 

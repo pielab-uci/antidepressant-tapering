@@ -12,7 +12,7 @@ import {
   LOAD_PRESCRIPTION_DATA,
   PrescriptionFormActions,
   PRIOR_DOSAGE_CHANGE,
-  SET_UPCOMING_DOSAGE_GOAL,
+  SET_TARGET_DOSAGE,
   UPCOMING_DOSAGE_CHANGE,
 } from './actions';
 import { CapsuleOrTabletDosage, isCapsuleOrTablet } from '../../types';
@@ -143,7 +143,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         }
         break;
 
-      case SET_UPCOMING_DOSAGE_GOAL:
+      case SET_TARGET_DOSAGE:
         draft.targetDosage = action.data.dosage;
         break;
 

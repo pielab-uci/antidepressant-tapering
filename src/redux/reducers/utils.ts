@@ -201,12 +201,12 @@ const projectionLengthOfEachDrug = (drug: Converted): number => {
 };
 
 const generateTableRows = (drugs: Converted[]): TableRowData[] => {
-  const rows: TableRowData[] = [];
-  const lengthOfProjection = Math.max(...drugs.map(projectionLengthOfEachDrug));
+  // const lengthOfProjection = Math.max(...drugs.map(projectionLengthOfEachDrug));
 
-  drugs.forEach((drug) => {
+  const tableRowsByDrug = drugs.map((drug) => {
+    const rows: TableRowData[] = [];
     const durationInDaysCount = { days: differenceInCalendarDays(drug.intervalEndDate, drug.intervalStartDate) + 1 };
-
+    const lengthOfProjection = projectionLengthOfEachDrug(drug);
     const upcomingDosages = calcProjectedDosages(drug, drug.upcomingDosageSum, lengthOfProjection);
 
     rows.push({
@@ -283,9 +283,28 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
         newRowData.endDate = sub(add(newRowData.startDate, durationInDaysCount), { days: 1 });
       }
     });
+    return { drug: drug.name, lastEndDate: rows[rows.length - 1].endDate!, rows };
   });
 
-  return rows;
+  const endDates = tableRowsByDrug.map((d) => d.lastEndDate);
+  const lastEndDateAndIndex: [number, Date] = endDates.reduce(([i, prev], curr, j) => {
+    if (isAfter(prev, curr)) {
+      return [i, prev];
+    }
+    return [j, curr];
+  }, [0, endDates[0]]);
+
+  tableRowsByDrug.forEach((drug, i) => {
+    if (i !== lastEndDateAndIndex[0]) {
+      drug.rows.push({
+        ...drug.rows[drug.rows.length - 1],
+        startDate: add(drug.lastEndDate, { days: 1 }),
+        endDate: lastEndDateAndIndex[1],
+      });
+    }
+  });
+
+  return tableRowsByDrug.flatMap((drug) => drug.rows);
 };
 
 const checkIntervalOverlappingRows = (rows: TableRowData[]): TableRowData[] => {

@@ -95,6 +95,7 @@ const TargetDosageSettingForm = () => {
           <Input type='number'
                  value={targetDosage || undefined}
                  onChange={onChangeUpcomingDosageGoal}
+                 min={0}
                  css={css`width: 100px;
                    display: inline;`}/> mg
         </div>

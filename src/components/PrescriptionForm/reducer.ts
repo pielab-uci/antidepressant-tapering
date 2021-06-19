@@ -55,6 +55,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.drugFormOptions = draft.chosenBrand.forms;
         draft.chosenDrugForm = draft.drugFormOptions.find((form) => form.form === action.data.form)!;
         draft.dosageOptions = draft.chosenDrugForm.dosages;
+        draft.targetDosage = action.data.targetDosage;
         draft.priorDosagesQty = action.data.priorDosages.reduce(
           (prev: { [dosage: string]: number }, currentDosage) => {
             prev[currentDosage.dosage] = currentDosage.quantity;

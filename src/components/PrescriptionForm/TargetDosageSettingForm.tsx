@@ -93,7 +93,7 @@ const TargetDosageSettingForm = () => {
         <div css={css`display: flex;
           align-items: center;`}>
           <Input type='number'
-                 value={targetDosage || undefined}
+                 value={targetDosage}
                  onChange={onChangeTargetDosage}
                  min={0}
                  css={css`width: 100px;

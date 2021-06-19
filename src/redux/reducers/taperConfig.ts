@@ -216,7 +216,7 @@ const emptyPrescribedDrug = (id: number): PrescribedDrug => ({
   minDosageUnit: 0,
   priorDosages: [],
   upcomingDosages: [],
-  targetDosage: null,
+  targetDosage: 0,
   availableDosageOptions: [],
   regularDosageOptions: [],
   allowSplittingUnscoredTablet: false,

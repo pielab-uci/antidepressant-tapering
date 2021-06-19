@@ -197,7 +197,7 @@ const projectionLengthOfEachDrug = (drug: Converted): number => {
   if (drug.isIncreasing) {
     return Math.floor(drug.targetDosage! / drug.changeAmount) + 1;
   }
-  return Math.log(drug.targetDosage!) / Math.log(1 / drug.changeRate) + 1;
+  return Math.floor(Math.log(drug.targetDosage!) / Math.log(1 / drug.changeRate)) + 1;
 };
 
 const generateTableRows = (drugs: Converted[]): TableRowData[] => {

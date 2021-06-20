@@ -110,7 +110,8 @@ export interface Converted extends PrescribedDrug {
   upcomingDosageSum: number;
   changeRate: number;
   changeAmount: number;
-  isIncreasing: boolean;
+  // isIncreasing: boolean;
+  changeDirection: 'increase'|'decrease'|'same';
 }
 
 export interface TableRowData {

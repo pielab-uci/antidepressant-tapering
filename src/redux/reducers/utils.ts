@@ -45,7 +45,16 @@ const convert = (drugs: PrescribedDrug[]): Converted[] => {
       .reduce((acc, d) => acc + parseFloat(d.dosage) * d.quantity, 0);
     const upcomingDosageSum = drug.upcomingDosages
       .reduce((acc, d) => acc + parseFloat(d.dosage) * d.quantity, 0);
-    const isIncreasing = priorDosageSum < upcomingDosageSum;
+
+    const changeDirection = (() => {
+      if (priorDosageSum < upcomingDosageSum) {
+        return 'increase';
+      }
+      if (priorDosageSum > upcomingDosageSum) {
+        return 'decrease';
+      }
+      return 'same';
+    })();
 
     return {
       ...drug,
@@ -54,7 +63,7 @@ const convert = (drugs: PrescribedDrug[]): Converted[] => {
       changeAmount: upcomingDosageSum - priorDosageSum,
       changeRate: upcomingDosageSum / priorDosageSum,
       intervalEndDate: drug.intervalEndDate!,
-      isIncreasing,
+      changeDirection,
     };
   });
 };
@@ -64,7 +73,7 @@ const calcProjectedDosages = (drug: Converted, prescribedDosage: number, length:
   res.push(prescribedDosage);
 
   // increasing
-  if (drug.isIncreasing) {
+  if (drug.changeDirection === 'increase') {
     Array(length - 1).fill(null).forEach((_, i) => {
       if (res[i] + drug.changeAmount < drug.targetDosage!) {
         res.push(res[i] + drug.changeAmount);
@@ -194,7 +203,7 @@ export const prescription: PrescriptionFunction = (
 };
 
 const projectionLengthOfEachDrug = (drug: Converted): number => {
-  if (drug.isIncreasing) {
+  if (drug.changeDirection === 'increase') {
     return Math.floor(drug.targetDosage! / drug.changeAmount) + 1;
   }
   return Math.floor(Math.log(drug.targetDosage!) / Math.log(1 / drug.changeRate)) + 1;
@@ -401,10 +410,12 @@ export const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule =
   return { data: tableDataSorted, drugs: prescribedDrugs };
 };
 
-export type ScheduleChartData = { name: string, data: { timestamp: number, dosage: number }[] }[];
+export type ScheduleChartData = { name: string, changeDirection: 'increase' | 'decrease' | 'same', data: { timestamp: number, dosage: number }[] }[];
 
 export const chartDataConverter = (schedule: Schedule): ScheduleChartData => {
   const rowsGroupByDrug: { [drug: string]: TableRowData[] } = {};
+
+  const scheduleChartData: ScheduleChartData = [];
 
   schedule.drugs.forEach((drug) => {
     rowsGroupByDrug[drug.name] = [];
@@ -416,10 +427,28 @@ export const chartDataConverter = (schedule: Schedule): ScheduleChartData => {
       rowsGroupByDrug[row.drug].push(row);
     });
 
-  const scheduleChartData: ScheduleChartData = [];
+  const changeDirections: { [drugName: string]: 'increase'|'decrease'|'same' } = schedule.drugs.reduce((prev, drug) => {
+    const priorDosageSum = drug.priorDosages.reduce((acc, { dosage, quantity }) => {
+      return acc + parseFloat(dosage) * quantity;
+    }, 0);
+
+    const upcomingDosageSum = drug.upcomingDosages.reduce((acc, { dosage, quantity }) => {
+      return acc + parseFloat(dosage) * quantity;
+    }, 0);
+
+    if (priorDosageSum > upcomingDosageSum) {
+      prev[drug.name] = 'decrease';
+    } else if (priorDosageSum < upcomingDosageSum) {
+      prev[drug.name] = 'increase';
+    } else {
+      prev[drug.name] = 'same';
+    }
+
+    return prev;
+  }, {} as { [drugName: string]: 'increase'|'decrease'|'same' });
 
   Object.entries(rowsGroupByDrug).forEach(([k, rows]) => {
-    scheduleChartData.push({ name: k, data: [] });
+    scheduleChartData.push({ name: k, changeDirection: changeDirections[k], data: [] });
     rows.forEach((row, i) => {
       const chartData = scheduleChartData.find((el) => el.name === k)!;
       Array(differenceInCalendarDays(row.endDate!, row.startDate!) + 1).fill(null).forEach((_, j) => {

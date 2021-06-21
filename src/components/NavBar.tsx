@@ -57,9 +57,9 @@ const NavBar = () => {
     align-items: ${name === 'patient' ? 'center' : 'start'};
     background-color: #0984E3;
     color: white;
-
-    & > div {
-      margin-left: 14px;
+    
+    & svg {
+      margin-right: 10px;
     }
 
     ${((name === 'patient' && location.pathname.match(/(\/)|(\/patient.+)|(\/taper-configuration.+)/) !== null)

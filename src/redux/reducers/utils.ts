@@ -74,12 +74,19 @@ const convert = (drugs: PrescribedDrug[]): Converted[] => {
 };
 
 const calcProjectedDosages = (drug: Converted, prescribedDosage: number, length: number): number[] => {
+  console.group('calcProjectedDosages');
+  console.log('drug: ', drug);
+  console.log('prescribedDosage: ', prescribedDosage);
+  console.log('length: ', length);
+  console.groupEnd();
+
   const res: number[] = [];
   res.push(prescribedDosage);
 
   // increasing
   if (drug.changeDirection === 'increase') {
-    Array(length - 1).fill(null).forEach((_, i) => {
+    // Array(length - 1).fill(null).forEach((_, i) => {
+    Array(length).fill(null).forEach((_, i) => {
       if (res[i] + drug.changeAmount < drug.targetDosage!) {
         res.push(res[i] + drug.changeAmount);
       } else {
@@ -89,7 +96,8 @@ const calcProjectedDosages = (drug: Converted, prescribedDosage: number, length:
   } else {
     // decreasing
     const minDosage = parseFloat(drug.availableDosageOptions[0]);
-    Array(length - 1).fill(null).forEach((_, i) => {
+    // Array(length - 1).fill(null).forEach((_, i) => {
+    Array(length).fill(null).forEach((_, i) => {
       const nextTemp = drug.changeRate * res[i];
       const remainder = nextTemp % minDosage;
 
@@ -211,7 +219,11 @@ const projectionLengthOfEachDrug = (drug: Converted): number => {
   if (drug.changeDirection === 'increase') {
     return Math.floor(drug.targetDosage! / drug.changeAmount) + 1;
   }
-  return Math.floor(Math.log(drug.targetDosage!) / Math.log(1 / drug.changeRate)) + 1;
+
+  if (drug.changeDirection === 'decrease') {
+    return Math.floor(Math.log(drug.upcomingDosageSum) / Math.log(1 / drug.changeRate)) + 1;
+  }
+  return 4;
 };
 
 const generateTableRows = (drugs: Converted[]): TableRowData[] => {

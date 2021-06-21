@@ -10,14 +10,22 @@ export const PatientsMenuIcon = () => (
 );
 
 export const SymptomTemplatesMenuIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="42" height="42">
+  <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="40" height="40">
     <defs>
-      <pattern id="pattern" preserveAspectRatio="none" width="100%" height="100%" viewBox="0 0 42 42">
-        <image width="42" height="42" xlinkHref="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAABmJLR0QA/wD/AP+gvaeTAAABCklEQVR4nO3bzU1CQRSAUTCaUIe9SKzEBtyyZEsDVmKkF+swYQENGGAxvI+fc9YvNzfvy6wmM5sBAAAAADyC+akPtr+7/RSL3Ku315ej//hpqkX4nwAxAWICxASICRATICZATIDY86hB68+fUaNuwmqzHDLHCYgJEBMgJkBMgJgAMQFiAsQEiLkTvjB3wldOgJgAMQFiAsQEiAkQG3Yj9vH9N2rUUV/vi5vY41xOQEyAmAAxAWICxASICRATICZATICYADEBYgLEBIgJEBMgJkBMgJgAMQFiAsQEiAkQEyAmQEyAmAAxAWICxASICRDzTvjCvBO+cgLEBIgJEBMgJkBMAAAAAAAAJnAAkGkVij992MQAAAAASUVORK5CYII="/>
+      <pattern id="pattern" preserveAspectRatio="none" width="100%" height="100%" viewBox="0 0 40 40">
+        <image width="40" height="40" xlinkHref="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAABmJLR0QA/wD/AP+gvaeTAAABCklEQVR4nO3bzU1CQRSAUTCaUIe9SKzEBtyyZEsDVmKkF+swYQENGGAxvI+fc9YvNzfvy6wmM5sBAAAAADyC+akPtr+7/RSL3Ku315ej//hpqkX4nwAxAWICxASICRATICZATIDY86hB68+fUaNuwmqzHDLHCYgJEBMgJkBMgJgAMQFiAsQEiLkTvjB3wldOgJgAMQFiAsQEiAkQG3Yj9vH9N2rUUV/vi5vY41xOQEyAmAAxAWICxASICRATICZATICYADEBYgLEBIgJEBMgJkBMgJgAMQFiAsQEiAkQEyAmQEyAmAAxAWICxASICRDzTvjCvBO+cgLEBIgJEBMgJkBMAAAAAAAAJnAAkGkVij992MQAAAAASUVORK5CYII="/>
       </pattern>
     </defs>
-    <rect width="42" height="42" rx="20" fill="url(#pattern)" viewBox="0 0 42 42"/>
+    <rect width="40" height="40" rx="20" fill="url(#pattern)" viewBox="0 0 40 40"/>
   </svg>
+  // <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="42" height="42">
+  //     <defs>
+  //       <pattern id="pattern" preserveAspectRatio="none" width="100%" height="100%" viewBox="0 0 42 42">
+  //         <image width="42" height="42" xlinkHref="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAABmJLR0QA/wD/AP+gvaeTAAABCklEQVR4nO3bzU1CQRSAUTCaUIe9SKzEBtyyZEsDVmKkF+swYQENGGAxvI+fc9YvNzfvy6wmM5sBAAAAADyC+akPtr+7/RSL3Ku315ej//hpqkX4nwAxAWICxASICRATICZATIDY86hB68+fUaNuwmqzHDLHCYgJEBMgJkBMgJgAMQFiAsQEiLkTvjB3wldOgJgAMQFiAsQEiAkQG3Yj9vH9N2rUUV/vi5vY41xOQEyAmAAxAWICxASICRATICZATICYADEBYgLEBIgJEBMgJkBMgJgAMQFiAsQEiAkQEyAmQEyAmAAxAWICxASICRDzTvjCvBO+cgLEBIgJEBMgJkBMAAAAAAAAJnAAkGkVij992MQAAAAASUVORK5CYII="/>
+  //       </pattern>
+  //     </defs>
+  //     <rect width="42" height="42" rx="20" fill="url(#pattern)" viewBox="0 0 42 42"/>
+  //   </svg>
 
 );
 

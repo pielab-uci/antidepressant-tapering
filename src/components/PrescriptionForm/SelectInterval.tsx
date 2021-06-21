@@ -128,8 +128,7 @@ const SelectInterval = () => {
           type="date"
           value={format(intervalStartDate, 'yyyy-MM-dd')}
           onChange={onIntervalStartDateChange}
-          css={css`width: 160px;
-            height: 1.7rem;`}
+          css={css`width: 160px;`}
         />
       </div>
 
@@ -139,13 +138,12 @@ const SelectInterval = () => {
           display: flex;
           justify-content: space-between;`}>
           <Input type="number" value={intervalCount} min={0} onChange={onIntervalCountChange} css={css`width: 70px;
-            margin-right: 9px;
-            height: 1.7rem;`}/>
+            margin-right: 9px;`}/>
           <Select value={intervalUnit} onChange={onIntervalUnitChange} css={css`
             width: 100px;
 
             & .ant-select-single .ant-select-selector {
-              height: 1.7rem;
+              //height: 1.7rem;
             }
           `}>
             {units.current.map((unit) => <Option key={unit} value={unit}>{unit}</Option>)}
@@ -154,13 +152,12 @@ const SelectInterval = () => {
       </div>
 
       <div className='select-interval-form'>
-        <label>End on</label>
+        <label>End on:</label>
         <Input
           type="date"
           value={intervalEndDate ? format(intervalEndDate, 'yyyy-MM-dd') : undefined}
           onChange={onIntervalEndDateChange}
-          css={css`width: 160px;
-            height: 1.7rem;`}
+          css={css`width: 160px;`}
         />
       </div>
     </div>

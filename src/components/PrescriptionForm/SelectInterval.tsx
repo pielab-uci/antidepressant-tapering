@@ -6,7 +6,8 @@ import {
   add, differenceInCalendarDays,
   format, isAfter, isSameDay, sub,
 } from 'date-fns';
-import { Input, Select } from 'antd';
+import Input from 'antd/es/input';
+import Select from 'antd/es/select';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
 import { css } from '@emotion/react';

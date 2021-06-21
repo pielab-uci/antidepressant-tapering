@@ -3,7 +3,7 @@ import {
   ChangeEvent,
   FC, useCallback,
 } from 'react';
-import { Input } from 'antd';
+import Input from 'antd/es/input';
 import { useDispatch } from 'react-redux';
 import { css } from '@emotion/react';
 import {

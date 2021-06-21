@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   FC, useCallback, useRef, useState,
 } from 'react';
-import { Button } from 'antd';
+import Button from 'antd/es/button';
 import TextArea from 'antd/es/input/TextArea';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { css } from '@emotion/react';

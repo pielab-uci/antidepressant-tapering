@@ -2,10 +2,12 @@ import * as React from 'react';
 import { FC, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { css } from '@emotion/react';
-import { Button, Input, Table } from 'antd';
 import { useHistory } from 'react-router';
-import { Patient } from '../types';
+import Button from 'antd/es/button';
+import Input from 'antd/es/input';
+import Table from 'antd/es/table';
 import { SET_CURRENT_PATIENT, SetCurrentPatientAction } from '../redux/actions/user';
+import { Patient } from '../types';
 
 interface Props {
   patients: Omit<Patient, 'password'>[]

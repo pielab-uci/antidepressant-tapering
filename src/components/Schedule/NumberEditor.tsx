@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { forwardRef, useImperativeHandle, useState } from 'react';
-import { Input } from 'antd';
+import Input from 'antd/es/input';
 
 export default forwardRef((props: any, ref) => {
   const [value, setValue] = useState<number|null>(null);

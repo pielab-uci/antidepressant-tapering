@@ -13,7 +13,7 @@ import {
   RowSelectedEvent,
   SelectionChangedEvent, ValueFormatterParams, ValueSetterParams,
 } from 'ag-grid-community';
-import { Button, Modal } from 'antd';
+import Modal from 'antd/es/modal';
 import { format } from 'date-fns';
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';

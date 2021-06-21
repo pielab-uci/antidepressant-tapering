@@ -3,7 +3,8 @@ import {
   FC, useCallback, useEffect, useState,
 } from 'react';
 import { css } from '@emotion/react';
-import { Button, Input } from 'antd';
+import Button from 'antd/es/button';
+import Input from 'antd/es/input';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router';

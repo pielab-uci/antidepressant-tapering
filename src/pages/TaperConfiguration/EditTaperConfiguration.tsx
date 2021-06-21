@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button } from 'antd';
+import Button from 'antd/es/button';
 import {
   useCallback, useContext, useEffect, useRef,
 } from 'react';

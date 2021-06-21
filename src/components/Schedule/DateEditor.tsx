@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 
 import { format } from 'date-fns';
-import { Input } from 'antd';
+import Input from 'antd/es/input';
 
 export default forwardRef((props: any, ref) => {
   const [date, setDate] = useState<Date | null>(null);

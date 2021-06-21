@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { useEffect, createContext, FC } from 'react';
 import { useReducer } from 'reinspect';
-import {
-  Button, Checkbox, Select, Tooltip,
-} from 'antd';
+import Button from 'antd/es/button';
+import Checkbox, { CheckboxChangeEvent } from 'antd/es/checkbox';
+import Select from 'antd/es/select';
+import Tooltip from 'antd/es/tooltip';
 import { useDispatch, useSelector } from 'react-redux';
-import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { GrCircleInformation } from 'react-icons/gr';
 import { css } from '@emotion/react';
 import {

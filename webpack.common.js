@@ -1,5 +1,6 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
 module.exports = {
   resolve: {
@@ -28,5 +29,7 @@ module.exports = {
     filename: 'index.html',
     title: 'Supporting Tapering Antidepressants',
     template: './src/index.html'
-  }) ],
+  }),
+    new BundleAnalyzerPlugin(),
+  ],
 }

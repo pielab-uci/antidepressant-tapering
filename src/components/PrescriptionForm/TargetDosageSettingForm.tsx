@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useContext, useEffect, useState } from 'react';
-import { Input } from 'antd';
+import Input from 'antd/es/input';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
 import { css } from '@emotion/react';

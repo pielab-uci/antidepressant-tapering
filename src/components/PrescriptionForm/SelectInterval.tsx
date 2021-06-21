@@ -2,10 +2,13 @@ import * as React from 'react';
 import {
   useRef, useContext, useCallback,
 } from 'react';
-import {
-  add, differenceInCalendarDays,
-  format, isAfter, isSameDay, sub,
-} from 'date-fns';
+import add from 'date-fns/esm/add';
+import differenceInCalendarDays from 'date-fns/esm/differenceInCalendarDays';
+import format from 'date-fns/esm/format';
+import isAfter from 'date-fns/esm/isAfter';
+import isSameDay from 'date-fns/esm/isSameDay';
+import sub from 'date-fns/esm/sub';
+
 import Input from 'antd/es/input';
 import Select from 'antd/es/select';
 import { useDispatch } from 'react-redux';

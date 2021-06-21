@@ -1,8 +1,7 @@
 import React, {
   forwardRef, useEffect, useImperativeHandle, useState,
 } from 'react';
-
-import { format } from 'date-fns';
+import format from 'date-fns/esm/format';
 import Input from 'antd/es/input';
 
 export default forwardRef((props: any, ref) => {

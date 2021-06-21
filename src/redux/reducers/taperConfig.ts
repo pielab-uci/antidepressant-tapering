@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { differenceInCalendarDays } from 'date-fns';
+import differenceInCalendarDays from 'date-fns/esm/differenceInCalendarDays';
 import {
   Drug, PrescribedDrug, Prescription, TaperingConfiguration,
 } from '../../types';

@@ -1,6 +1,11 @@
-import {
-  add, areIntervalsOverlapping, differenceInCalendarDays, format, isAfter, isBefore, sub,
-} from 'date-fns';
+import add from 'date-fns/esm/add';
+import areIntervalsOverlapping from 'date-fns/esm/areIntervalsOverlapping';
+import differenceInCalendarDays from 'date-fns/esm/differenceInCalendarDays';
+import format from 'date-fns/esm/format';
+import isAfter from 'date-fns/esm/isAfter';
+import isBefore from 'date-fns/esm/isBefore';
+import sub from 'date-fns/esm/sub';
+
 import {
   OralDosage, PrescribedDrug, TableRowData, Converted, Prescription, ValueOf,
 } from '../../types';
@@ -427,7 +432,7 @@ export const chartDataConverter = (schedule: Schedule): ScheduleChartData => {
       rowsGroupByDrug[row.drug].push(row);
     });
 
-  const changeDirections: { [drugName: string]: 'increase'|'decrease'|'same' } = schedule.drugs.reduce((prev, drug) => {
+  const changeDirections: { [drugName: string]: 'increase' | 'decrease' | 'same' } = schedule.drugs.reduce((prev, drug) => {
     const priorDosageSum = drug.priorDosages.reduce((acc, { dosage, quantity }) => {
       return acc + parseFloat(dosage) * quantity;
     }, 0);
@@ -445,7 +450,7 @@ export const chartDataConverter = (schedule: Schedule): ScheduleChartData => {
     }
 
     return prev;
-  }, {} as { [drugName: string]: 'increase'|'decrease'|'same' });
+  }, {} as { [drugName: string]: 'increase' | 'decrease' | 'same' });
 
   Object.entries(rowsGroupByDrug).forEach(([k, rows]) => {
     scheduleChartData.push({ name: k, changeDirection: changeDirections[k], data: [] });

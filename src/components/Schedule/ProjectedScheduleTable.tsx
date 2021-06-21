@@ -14,7 +14,7 @@ import {
   SelectionChangedEvent, ValueFormatterParams, ValueSetterParams,
 } from 'ag-grid-community';
 import Modal from 'antd/es/modal';
-import { format } from 'date-fns';
+import format from 'date-fns/esm/format';
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import {

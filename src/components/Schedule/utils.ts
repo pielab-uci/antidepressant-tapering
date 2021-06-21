@@ -1,11 +1,4 @@
-import {
-  CheckboxSelectionCallbackParams,
-  ColDef,
-  EditableCallbackParams,
-  ValueFormatterParams,
-  ValueSetterParams,
-} from 'ag-grid-community';
-import { format } from 'date-fns';
+import { ValueSetterParams } from 'ag-grid-community';
 
 const validator = (newValue: number, validateFn: Function, onSuccess: Function, _onFail: Function) => {
   if (validateFn(newValue)) {
@@ -38,7 +31,7 @@ const _onFail = (params: ValueSetterParams) => () => {
   // params.api!.applyTransaction({ update: [data] });
 };
 
-export const valueSetter = (validateFn: Function) => (params:ValueSetterParams) => {
+export const valueSetter = (validateFn: Function) => (params: ValueSetterParams) => {
   validator(params.newValue, validateFn, _onSuccess(params), _onFail(params));
   return false;
 };

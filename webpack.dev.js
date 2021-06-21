@@ -1,4 +1,4 @@
-const { merge } = require("webpack-merge");
+const {merge} = require("webpack-merge");
 const common = require("./webpack.common");
 
 module.exports = merge(common, {
@@ -8,6 +8,14 @@ module.exports = merge(common, {
   // output: {
   //   publicPath: '/dist/',
   // },
+  module: {
+    rules: [
+      {test: /.tsx?$/, loader: 'awesome-typescript-loader'},
+      {
+        test: /.css$/, use: ['style-loader', 'css-loader'],
+      },
+    ],
+  },
   devServer: {
     hot: true,
     publicPath: '/',

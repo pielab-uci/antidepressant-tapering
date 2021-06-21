@@ -1,6 +1,8 @@
-const { merge } = require("webpack-merge")
+const {merge} = require("webpack-merge")
 const common = require("./webpack.common")
 const TerserPlugin = require("terser-webpack-plugin");
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = merge(common, {
   mode: 'production',
@@ -8,6 +10,18 @@ module.exports = merge(common, {
   output: {
     // publicPath: '/',
     publicPath: '/antidepressant-tapering'
+  },
+  module: {
+    rules: [
+      // {test: /.css$/, use: ['style-loader', MiniCssExtractPlugin.loader, 'css-loader']},
+      {test: /.tsx?$/, loader: 'awesome-typescript-loader'},
+      {
+        test: /.css$/, use: [
+          {loader: MiniCssExtractPlugin.loader, options: {esModule: false}},
+          {loader: 'css-loader'}
+        ]
+      }
+    ]
   },
   optimization: {
     minimize: true,
@@ -20,6 +34,13 @@ module.exports = merge(common, {
           }
         }
       })
-    ]
+    ],
+    splitChunks: {
+      chunks: 'all',
+    }
   },
-})
+  plugins: [
+    new BundleAnalyzerPlugin(),
+    new MiniCssExtractPlugin(),
+  ]
+});

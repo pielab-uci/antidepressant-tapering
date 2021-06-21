@@ -2,7 +2,7 @@ import * as React from 'react';
 import {
   CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from 'recharts';
-import { format } from 'date-fns';
+import format from 'date-fns/format';
 import { FC, useMemo, useRef } from 'react';
 import { ScheduleChartData } from '../../redux/reducers/utils';
 

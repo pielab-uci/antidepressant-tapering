@@ -54,10 +54,11 @@ const NavBar = () => {
     display: flex;
     margin-top: 35px;
     padding-left: 29px;
-    align-items: ${name === 'patient' ? 'center' : 'start'};
+      //align-items: ${name === 'patient' ? 'center' : 'start'};
+    align-items: center;
     background-color: #0984E3;
     color: white;
-    
+
     & svg {
       margin-right: 10px;
     }
@@ -120,9 +121,7 @@ const NavBar = () => {
           </div>
         </div>
         <div css={TabStyle('symptomTemplates')}>
-          <div>
-            <SymptomTemplatesMenuIcon/>
-          </div>
+          <SymptomTemplatesMenuIcon/>
           <div>Symptom Templates</div>
         </div>
         <div css={helpAndLogoutStyle}>

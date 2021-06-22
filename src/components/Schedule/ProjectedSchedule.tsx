@@ -50,7 +50,8 @@ const ProjectedSchedule: FC<{ editable: boolean, title: string }> = ({ editable,
           {/* <h3 css={css`font-size: 18px; */}
           <h3 css={css`font-size: 1.1rem;
             color: #636E72;`}>{title}</h3>
-          <div css={css`display: flex; justify-content: space-between;`}>
+          <div css={css`display: flex;
+            justify-content: space-between;`}>
             {projectedSchedule.data.length !== 0
             && <div css={css`flex: 3;`}><ProjectedScheduleTable editable={editable} projectedSchedule={projectedSchedule}/>
             </div>}
@@ -58,9 +59,13 @@ const ProjectedSchedule: FC<{ editable: boolean, title: string }> = ({ editable,
               <ProjectedScheduleChart scheduleChartData={scheduleChartData} width={400} height={400}/>
             </div>
           </div>
-          <h3 css={css`font-size: 18px; margin-top: 33px;`}>Prescription for upcoming intervals</h3>
-          {Object.entries(finalPrescription).map(([id, prescription]) => <PrescribedQuantitiesForDrug
-            key={`PrescribedQuantitiesFor${id}`} id={parseFloat(id)} prescription={prescription} editable={editable}/>)}
+          <h3 css={css`font-size: 18px;
+            margin-top: 33px;`}>Prescription for upcoming intervals</h3>
+          {Object.entries(finalPrescription).map(([id, prescription]) => {
+            return <PrescribedQuantitiesForDrug
+              key={`PrescribedQuantitiesFor${id}`} id={parseFloat(id)} prescription={prescription}
+              editable={editable}/>;
+          })}
 
           <div>
             <h3 css={css`margin-top: 40px;`}>Notes for Patient</h3>
@@ -94,5 +99,4 @@ const ProjectedSchedule: FC<{ editable: boolean, title: string }> = ({ editable,
     </>
   );
 };
-
 export default ProjectedSchedule;

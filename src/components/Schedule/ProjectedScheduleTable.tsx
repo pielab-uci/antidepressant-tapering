@@ -13,7 +13,6 @@ import {
   RowSelectedEvent,
   SelectionChangedEvent, ValueFormatterParams, ValueSetterParams,
 } from 'ag-grid-community';
-import Modal from 'antd/es/modal';
 import format from 'date-fns/esm/format';
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
@@ -28,6 +27,7 @@ import './tableStyles.css';
 import DateEditor from './DateEditor';
 import NumberEditor from './NumberEditor';
 import { Schedule } from './ProjectedSchedule';
+import ProjectedScheduleTableRowEditingModal from './ProjectedScheduleTableRowEditingModal';
 
 const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedule }> = ({
   editable,
@@ -39,7 +39,6 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const dispatch = useDispatch();
   const [showModal, setShowModal] = useState(false);
-  const [prescribedDrugInModal, setPrescribedDrugInModal] = useState(null);
 
   const onGridReady = (params: GridReadyEvent) => {
     console.log('onGridReady');
@@ -70,8 +69,9 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
       checkboxSelection: (params: CheckboxSelectionCallbackParams) => !params.data.isPriorDosage && editable,
     },
     {
-      headerName: 'Drug',
-      field: 'drug',
+      headerName: 'Medication',
+      // field: 'drug',
+      field: 'brand',
       sortable: true,
       unSortIcon: true,
     }, {
@@ -223,12 +223,10 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
           suppressDragLeaveHidesColumns={true}
           suppressRowClickSelection={true}
         />
-        <Modal
+        <ProjectedScheduleTableRowEditingModal
           visible={showModal}
           onCancel={handleModalCancel}
-          onOk={handleModalOk}>
-          <h2>Modal</h2>
-        </Modal>
+          onOk={handleModalOk}/>
       </div>
     </div>
   );

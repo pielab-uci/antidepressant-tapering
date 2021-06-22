@@ -42,8 +42,7 @@ import {
 
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
-
-const { OptGroup, Option } = Select;
+import PrescriptionSettingsForm from './PrescriptionSettingsForm';
 
 export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
   ...initialState,
@@ -72,7 +71,7 @@ const PrescriptionForm: FC<Props> = ({
   const [state, formActionDispatch] = useReducer<PrescriptionFormReducer, PrescriptionFormState>(reducer, initialState, (init) => initialState, `PrescriptionFormReducer_${prescribedDrug.id}`);
 
   const {
-    drugs: drugsLocal, chosenBrand, chosenDrugForm, drugFormOptions,
+    chosenBrand, chosenDrugForm, drugFormOptions,
     priorDosagesQty, upcomingDosagesQty, allowSplittingUnscoredTablet,
   } = state;
   const { drugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
@@ -203,90 +202,44 @@ const PrescriptionForm: FC<Props> = ({
         margin-left: 42px;
         padding-bottom: 71px;`}>
 
-        <div css={css`
-          width: 700px;
-          //margin-left: 42px;
-
-          & > h3 {
-            //font-size: 18px;
-            font-size: 1rem;
-          }
-
-          & .medication-select-form {
-            display: flex;
-            width: 250px;
-            justify-content: space-between;
-            margin: 15px 79px 15px 51px;
-            align-items: center;
-          }
-        `}>
           <h2>Medication #{index + 1}</h2>
-          <h3>Prescription settings</h3>
-          <div>
-            <div css={css`display: flex;
-              align-items: center;`}>
-              <div className='medication-select-form'>
-                <label>Brand:</label>
-                <Select showSearch value={chosenBrand?.brand} onChange={onBrandChange} style={{ width: 200 }}>
-                  {drugsLocal?.map(
-                    (drug) => (
-                      <OptGroup key={`${drug.name}_group`} label={drug.name}>
-                        {drug.options.map(
-                          (option) => <Option key={option.brand} value={option.brand}>{option.brand}</Option>,
-                        )}
-                      </OptGroup>),
-                  )}
-                </Select>
-              </div>
-              <Tooltip title={`Half-life\n${prescribedDrug.halfLife}`} overlayStyle={{ whiteSpace: 'pre-line' }}>
-                <GrCircleInformation size={'16px'}/>
-              </Tooltip>
-            </div>
-            <div css={css`display: flex;
-              align-items: center;`}>
-              <div className='medication-select-form'>
-                <label>Form:</label>
-                <Select value={chosenDrugForm?.form} onChange={onFormChange} style={{ width: 200 }}>
-                  {drugFormOptions?.map(
-                    (form: CapsuleOrTabletForm | OralForm) => <Option key={form.form}
-                                                                      value={form.form}>{form.form}</Option>,
-                  )}
-                </Select>
-              </div>
-              {chosenDrugForm?.form === 'tablet'
-              && <Checkbox checked={allowSplittingUnscoredTablet} onChange={toggleAllowSplittingUnscoredTabletCheckbox}>Allow
-                splitting unscored tablet</Checkbox>}
-            </div>
-          </div>
+          <PrescriptionSettingsForm
+            prescribedDrug={prescribedDrug}
+            chosenBrand={chosenBrand}
+            onBrandChange={onBrandChange}
+            chosenDrugForm={chosenDrugForm}
+            onFormChange={onFormChange}
+            allowSplittingUnscoredTablet={allowSplittingUnscoredTablet}
+            toggleAllowSplittingUnscoredTabletCheckbox={toggleAllowSplittingUnscoredTabletCheckbox}/>
+
+          {renderDosages(chosenDrugForm, 'Prior')}
+          {renderDosages(chosenDrugForm, 'Upcoming')}
+
+          <SelectInterval/>
+
+          {addNewPrescriptionForm && numberOfMedications < 2
+          && <Button css={css`border-radius: 10px;
+            margin-top: 74px;`} type='primary' onClick={addNewPrescriptionForm}>Add Medication</Button>}
+
+          {numberOfMedications > 1
+          && <div css={css`display: flex;
+            flex-direction: column;
+            align-items: flex-end;`}>
+            <Button danger
+                    css={css`
+                      width: 160px;
+                      margin-right: 20px;
+                      border-radius: 10px;`}
+                    onClick={removeDrugForm}>Delete medication</Button>
+            <hr css={css`
+              border: none;
+              width: 100%;
+              height: 3px;
+              margin: 18px auto;
+              background-color: #D1D1D1;
+            `}/>
+          </div>}
         </div>
-
-        {renderDosages(chosenDrugForm, 'Prior')}
-        {renderDosages(chosenDrugForm, 'Upcoming')}
-
-        <SelectInterval/>
-
-        {addNewPrescriptionForm && numberOfMedications < 2
-        && <Button css={css`border-radius: 10px;
-          margin-top: 74px;`} type='primary' onClick={addNewPrescriptionForm}>Add Medication</Button>}
-
-        {numberOfMedications > 1
-        && <div css={css`display: flex; flex-direction: column; align-items: flex-end;`}>
-          <Button danger
-                  css={css`
-                    width: 160px;
-                    margin-right: 20px;
-                    border-radius: 10px;`}
-                  onClick={removeDrugForm}>Delete medication</Button>
-          <hr css={css`
-            border: none;
-            width: 100%;
-            height: 3px;
-            margin: 18px auto;
-            background-color: #D1D1D1;
-          `}/>
-        </div>}
-
-      </div>
     </PrescriptionFormContext.Provider>
   );
 };

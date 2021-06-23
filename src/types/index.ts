@@ -74,14 +74,14 @@ export interface PrescribedDrug {
   measureUnit: string;
   minDosageUnit: number;
   availableDosageOptions: string[];
-  regularDosageOptions: string[]|null;
+  regularDosageOptions: string[] | null;
   priorDosages: { dosage: string; quantity: number }[];
   upcomingDosages: { dosage: string; quantity: number }[];
   targetDosage: number;
   intervalStartDate: Date;
   intervalEndDate: Date | null;
   intervalCount: number;
-  intervalUnit: 'Days'|'Weeks'|'Months';
+  intervalUnit: 'Days' | 'Weeks' | 'Months';
   intervalDurationDays: number;
   allowSplittingUnscoredTablet: boolean;
   prevVisit: boolean;
@@ -111,30 +111,31 @@ export interface Converted extends PrescribedDrug {
   changeRate: number;
   changeAmount: number;
   // isIncreasing: boolean;
-  changeDirection: 'increase'|'decrease'|'same';
+  changeDirection: 'increase' | 'decrease' | 'same';
 }
 
 export interface TableRowData {
   prescribedDrugId: number;
+  prescribedDrug: PrescribedDrug;
   isPriorDosage: boolean;
   drug: string;
   brand: string;
   dosage: number;
-  prescription: string|null;
-  startDate: Date|null,
-  endDate: Date|null,
+  prescription: string | null;
+  startDate: Date | null,
+  endDate: Date | null,
   selected: boolean,
-  availableDosageOptions: string[]|null;
-  regularDosageOptions: string[]|null;
+  availableDosageOptions: string[] | null;
+  regularDosageOptions: string[] | null;
   /*
      * dosages counts from upcoming dosages
      * or minimum quantity calculation without considering intervalDurationDays
      */
-  unitDosages: { [dosage: string]: number }|null,
+  unitDosages: { [dosage: string]: number } | null,
   addedInCurrentVisit: boolean,
   intervalDurationDays: number,
   intervalCount: number,
-  intervalUnit: 'Days'|'Weeks'|'Months'|null,
+  intervalUnit: 'Days' | 'Weeks' | 'Months' | null,
   oralDosageInfo?: OralDosage,
   measureUnit: string,
   form: string

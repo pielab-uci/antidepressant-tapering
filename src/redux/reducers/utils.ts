@@ -237,6 +237,7 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
 
     rows.push({
       prescribedDrugId: drug.id,
+      prescribedDrug: drug,
       drug: drug.name,
       brand: drug.brand,
       dosage: upcomingDosages[0],
@@ -282,6 +283,7 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
     Array(lengthOfProjection - 1).fill(null).forEach((_, i) => {
       if (newRowData.upcomingDosageSum !== 0) {
         rows.push({
+          prescribedDrug: drug,
           prescribedDrugId: drug.id,
           drug: drug.name,
           brand: drug.brand,
@@ -403,6 +405,7 @@ export const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule =
   tableDataSorted.unshift(...prescribedDrugs.map((drug) => ({
     prescribedDrugId: drug.id,
     isPriorDosage: true,
+    prescribedDrug: drug,
     drug: drug.name,
     brand: drug.brand,
     dosage: drug.priorDosages.reduce((prev, { dosage, quantity }) => {

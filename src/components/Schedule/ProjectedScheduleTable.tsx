@@ -28,17 +28,19 @@ import DateEditor from './DateEditor';
 import NumberEditor from './NumberEditor';
 import { Schedule } from './ProjectedSchedule';
 import ProjectedScheduleTableRowEditingModal from './ProjectedScheduleTableRowEditingModal';
+import { TableRowData } from '../../types';
 
 const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedule }> = ({
   editable,
   projectedSchedule,
 }) => {
-  const [gridColumnApi, setGridColumnApi] = useState<ColumnApi | null>(null);
   const {
     tableSelectedRows,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const dispatch = useDispatch();
+  const [gridColumnApi, setGridColumnApi] = useState<ColumnApi | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [doubleClickedRow, setDoubleClickedRow] = useState<TableRowData|null>(null);
 
   const onGridReady = (params: GridReadyEvent) => {
     console.log('onGridReady');
@@ -185,15 +187,18 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
     console.group('openModal');
     console.log('event: ', event);
     console.groupEnd();
+    setDoubleClickedRow(event.data);
     setShowModal(true);
   };
 
   const handleModalCancel = () => {
     setShowModal(false);
+    setDoubleClickedRow(null);
   };
 
   const handleModalOk = () => {
     setShowModal(false);
+    setDoubleClickedRow(null);
   };
 
   return (
@@ -223,10 +228,12 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
           suppressDragLeaveHidesColumns={true}
           suppressRowClickSelection={true}
         />
-        <ProjectedScheduleTableRowEditingModal
+         {/* TODO: refactor - only to use doubleClickedRow..? */}
+        {showModal && <ProjectedScheduleTableRowEditingModal
+          row={doubleClickedRow}
           visible={showModal}
           onCancel={handleModalCancel}
-          onOk={handleModalOk}/>
+          onOk={handleModalOk}/>}
       </div>
     </div>
   );

@@ -6,21 +6,21 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { AgGridReact } from 'ag-grid-react';
 import {
-  CellEditingStoppedEvent, CheckboxSelectionCallbackParams,
-  ColDef, ColumnApi, EditableCallbackParams,
-  FirstDataRenderedEvent, GridApi,
+  CheckboxSelectionCallbackParams,
+  ColDef, ColumnApi,
+  FirstDataRenderedEvent,
   GridReadyEvent, RowDataChangedEvent, RowDoubleClickedEvent,
   RowSelectedEvent,
   SelectionChangedEvent, ValueFormatterParams, ValueSetterParams,
 } from 'ag-grid-community';
-import Modal from 'antd/es/modal';
 import format from 'date-fns/esm/format';
+import { Simulate } from 'react-dom/test-utils';
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import {
+  OPEN_MODAL_FOR_EDITING_TABLE_ROW,
   SCHEDULE_ROW_SELECTED,
-  ScheduleRowSelectedAction, TABLE_DOSAGE_EDITED, TABLE_END_DATE_EDITED,
-  TABLE_START_DATE_EDITED, TableDosageEditedAction, TableEndDateEditedAction, TableStartDateEditedAction,
+  ScheduleRowSelectedAction,
 } from '../../redux/actions/taperConfig';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
@@ -28,18 +28,21 @@ import './tableStyles.css';
 import DateEditor from './DateEditor';
 import NumberEditor from './NumberEditor';
 import { Schedule } from './ProjectedSchedule';
+import ProjectedScheduleTableRowEditingModal from './ProjectedScheduleTableRowEditingModal';
+import { PrescribedDrug, TableRowData } from '../../types';
+import doubleClick = Simulate.doubleClick;
 
 const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedule }> = ({
   editable,
   projectedSchedule,
 }) => {
-  const [gridColumnApi, setGridColumnApi] = useState<ColumnApi | null>(null);
   const {
-    tableSelectedRows,
+    tableSelectedRows, lastPrescriptionFormId,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const dispatch = useDispatch();
+  const [gridColumnApi, setGridColumnApi] = useState<ColumnApi | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [prescribedDrugInModal, setPrescribedDrugInModal] = useState(null);
+  const [doubleClickedRow, setDoubleClickedRow] = useState<TableRowData | null>(null);
 
   const onGridReady = (params: GridReadyEvent) => {
     console.log('onGridReady');
@@ -70,8 +73,9 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
       checkboxSelection: (params: CheckboxSelectionCallbackParams) => !params.data.isPriorDosage && editable,
     },
     {
-      headerName: 'Drug',
-      field: 'drug',
+      headerName: 'Medication',
+      // field: 'drug',
+      field: 'brand',
       sortable: true,
       unSortIcon: true,
     }, {
@@ -111,9 +115,8 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
       valueSetter: (params: ValueSetterParams) => params.newValue,
     }, {
       headerName: 'Prescription',
-      field: 'prescription',
+      field: 'prescription.message',
       // editable: (params: EditableCallbackParams) => editable && !params.data.isPriorDosage,
-
     }],
   );
 
@@ -148,52 +151,61 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
     gridColumnApi?.autoSizeAllColumns();
   };
 
-  const onCellEditingStopped = (params: CellEditingStoppedEvent) => {
-    switch (params.colDef.field) {
-      case 'startDate': {
-        const tempValue = new Date(params.newValue);
-        const newValue = new Date(tempValue.valueOf() + tempValue.getTimezoneOffset() * 60 * 1000);
-        dispatch<TableStartDateEditedAction>({
-          type: TABLE_START_DATE_EDITED,
-          data: { ...params, newValue },
-        });
-        break;
-      }
-
-      case 'endDate': {
-        const tempValue = new Date(params.newValue);
-        const newValue = new Date(tempValue.valueOf() + tempValue.getTimezoneOffset() * 60 * 1000);
-        dispatch<TableEndDateEditedAction>({
-          type: TABLE_END_DATE_EDITED,
-          data: { ...params, newValue },
-        });
-        break;
-      }
-
-      case 'dosage':
-        dispatch<TableDosageEditedAction>({
-          type: TABLE_DOSAGE_EDITED,
-          data: params,
-        });
-        break;
-      default:
-        console.error('No such field in the table');
-    }
-  };
+  // const onCellEditingStopped = (params: CellEditingStoppedEvent) => {
+  //   switch (params.colDef.field) {
+  //     case 'startDate': {
+  //       const tempValue = new Date(params.newValue);
+  //       const newValue = new Date(tempValue.valueOf() + tempValue.getTimezoneOffset() * 60 * 1000);
+  //       dispatch<TableStartDateEditedAction>({
+  //         type: TABLE_START_DATE_EDITED,
+  //         data: { ...params, newValue },
+  //       });
+  //       break;
+  //     }
+  //
+  //     case 'endDate': {
+  //       const tempValue = new Date(params.newValue);
+  //       const newValue = new Date(tempValue.valueOf() + tempValue.getTimezoneOffset() * 60 * 1000);
+  //       dispatch<TableEndDateEditedAction>({
+  //         type: TABLE_END_DATE_EDITED,
+  //         data: { ...params, newValue },
+  //       });
+  //       break;
+  //     }
+  //
+  //     case 'dosage':
+  //       dispatch<TableDosageEditedAction>({
+  //         type: TABLE_DOSAGE_EDITED,
+  //         data: params,
+  //       });
+  //       break;
+  //     default:
+  //       console.error('No such field in the table');
+  //   }
+  // };
 
   const openModal = (event: RowDoubleClickedEvent) => {
     console.group('openModal');
     console.log('event: ', event);
     console.groupEnd();
-    setShowModal(true);
+    if (event.rowIndex !== 0) {
+      setDoubleClickedRow(event.data);
+      setShowModal(true);
+      dispatch({
+        type: OPEN_MODAL_FOR_EDITING_TABLE_ROW,
+        data: [event.api.getRowNode(`${parseFloat(event.node.id!) - 1}`)?.data, event.data],
+      });
+    }
   };
 
   const handleModalCancel = () => {
     setShowModal(false);
+    setDoubleClickedRow(null);
   };
 
   const handleModalOk = () => {
     setShowModal(false);
+    setDoubleClickedRow(null);
   };
 
   return (
@@ -218,17 +230,17 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
           onSelectionChanged={onSelectionChanged}
           onFirstDataRendered={onFirstDataRendered}
           onGridReady={onGridReady}
-          onCellEditingStopped={onCellEditingStopped}
+          // onCellEditingStopped={onCellEditingStopped}
           frameworkComponents={{ datePicker: DateEditor, numberEditor: NumberEditor }}
           suppressDragLeaveHidesColumns={true}
           suppressRowClickSelection={true}
         />
-        <Modal
+        {/* TODO: refactor - only to use doubleClickedRow..? */}
+        {showModal && <ProjectedScheduleTableRowEditingModal
+          row={doubleClickedRow}
           visible={showModal}
           onCancel={handleModalCancel}
-          onOk={handleModalOk}>
-          <h2>Modal</h2>
-        </Modal>
+          onOk={handleModalOk}/>}
       </div>
     </div>
   );

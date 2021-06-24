@@ -2,11 +2,8 @@ import * as React from 'react';
 import { useEffect, createContext, FC } from 'react';
 import { useReducer } from 'reinspect';
 import Button from 'antd/es/button';
-import Checkbox, { CheckboxChangeEvent } from 'antd/es/checkbox';
-import Select from 'antd/es/select';
-import Tooltip from 'antd/es/tooltip';
+import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { useDispatch, useSelector } from 'react-redux';
-import { GrCircleInformation } from 'react-icons/gr';
 import { css } from '@emotion/react';
 import {
   CapsuleOrTabletDosages, SelectInterval, OralFormDosage,
@@ -30,8 +27,7 @@ import {
 import { IPrescriptionFormContext, PrescriptionFormState } from './types';
 import {
   CapsuleOrTabletDosage,
-  CapsuleOrTabletForm,
-  DrugForm, isCapsuleOrTablet, OralDosage, OralForm, PrescribedDrug,
+  DrugForm, isCapsuleOrTablet, OralDosage, PrescribedDrug,
 } from '../../types';
 import {
   CLEAR_SCHEDULE,
@@ -42,8 +38,8 @@ import {
 
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
-
-const { OptGroup, Option } = Select;
+import PrescriptionSettingsForm from './PrescriptionSettingsForm';
+import Dosages from './Dosages';
 
 export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
   ...initialState,
@@ -60,19 +56,22 @@ export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
 
 interface Props {
   prescribedDrug: PrescribedDrug;
-  numberOfMedications: number;
-  index: number;
+  title: string;
+  numberOfMedications?: number;
   addNewPrescriptionForm?: () => void;
 }
 
 const PrescriptionForm: FC<Props> = ({
-  prescribedDrug, addNewPrescriptionForm, numberOfMedications, index,
+  prescribedDrug,
+  title,
+  addNewPrescriptionForm,
+  numberOfMedications,
 }) => {
   const taperConfigActionDispatch = useDispatch();
   const [state, formActionDispatch] = useReducer<PrescriptionFormReducer, PrescriptionFormState>(reducer, initialState, (init) => initialState, `PrescriptionFormReducer_${prescribedDrug.id}`);
 
   const {
-    drugs: drugsLocal, chosenBrand, chosenDrugForm, drugFormOptions,
+    chosenBrand, chosenDrugForm, drugFormOptions,
     priorDosagesQty, upcomingDosagesQty, allowSplittingUnscoredTablet,
   } = state;
   const { drugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
@@ -155,30 +154,6 @@ const PrescriptionForm: FC<Props> = ({
     });
   };
 
-  const renderDosages = (drugForm: DrugForm | null | undefined, time: 'Prior' | 'Upcoming') => {
-    const containerStyle = css`
-      margin-top: 44px;`;
-    if (!drugForm) {
-      return <div css={containerStyle}>
-        <h3 css={css`font-size: 1rem;
-          color: #C7C5C5;
-          margin-bottom: 121px;`}>{time} Dosage</h3>
-      </div>;
-    }
-
-    if (isCapsuleOrTablet(drugForm)) {
-      return (
-        <div css={containerStyle}>
-          <CapsuleOrTabletDosages time={time}/>
-        </div>);
-    }
-
-    return (
-      <div css={containerStyle}>
-        <OralFormDosage time={time}/>
-      </div>);
-  };
-
   const toggleAllowSplittingUnscoredTabletCheckbox = (e: CheckboxChangeEvent) => {
     formActionDispatch(toggleAllowSplittingUnscoredTablet({ id: prescribedDrug.id, allow: e.target.checked }));
     taperConfigActionDispatch(toggleAllowSplittingUnscoredTablet({ id: prescribedDrug.id, allow: e.target.checked }));
@@ -203,74 +178,29 @@ const PrescriptionForm: FC<Props> = ({
         margin-left: 42px;
         padding-bottom: 71px;`}>
 
-        <div css={css`
-          width: 700px;
-          //margin-left: 42px;
+        <h2>{title}</h2>
+        <PrescriptionSettingsForm
+          prescribedDrug={prescribedDrug}
+          chosenBrand={chosenBrand}
+          onBrandChange={onBrandChange}
+          chosenDrugForm={chosenDrugForm}
+          onFormChange={onFormChange}
+          allowSplittingUnscoredTablet={allowSplittingUnscoredTablet}
+          toggleAllowSplittingUnscoredTabletCheckbox={toggleAllowSplittingUnscoredTabletCheckbox}/>
 
-          & > h3 {
-            //font-size: 18px;
-            font-size: 1rem;
-          }
-
-          & .medication-select-form {
-            display: flex;
-            width: 250px;
-            justify-content: space-between;
-            margin: 15px 79px 15px 51px;
-            align-items: center;
-          }
-        `}>
-          <h2>Medication #{index + 1}</h2>
-          <h3>Prescription settings</h3>
-          <div>
-            <div css={css`display: flex;
-              align-items: center;`}>
-              <div className='medication-select-form'>
-                <label>Brand:</label>
-                <Select showSearch value={chosenBrand?.brand} onChange={onBrandChange} style={{ width: 200 }}>
-                  {drugsLocal?.map(
-                    (drug) => (
-                      <OptGroup key={`${drug.name}_group`} label={drug.name}>
-                        {drug.options.map(
-                          (option) => <Option key={option.brand} value={option.brand}>{option.brand}</Option>,
-                        )}
-                      </OptGroup>),
-                  )}
-                </Select>
-              </div>
-              <Tooltip title={`Half-life\n${prescribedDrug.halfLife}`} overlayStyle={{ whiteSpace: 'pre-line' }}>
-                <GrCircleInformation size={'16px'}/>
-              </Tooltip>
-            </div>
-            <div css={css`display: flex;
-              align-items: center;`}>
-              <div className='medication-select-form'>
-                <label>Form:</label>
-                <Select value={chosenDrugForm?.form} onChange={onFormChange} style={{ width: 200 }}>
-                  {drugFormOptions?.map(
-                    (form: CapsuleOrTabletForm | OralForm) => <Option key={form.form}
-                                                                      value={form.form}>{form.form}</Option>,
-                  )}
-                </Select>
-              </div>
-              {chosenDrugForm?.form === 'tablet'
-              && <Checkbox checked={allowSplittingUnscoredTablet} onChange={toggleAllowSplittingUnscoredTabletCheckbox}>Allow
-                splitting unscored tablet</Checkbox>}
-            </div>
-          </div>
-        </div>
-
-        {renderDosages(chosenDrugForm, 'Prior')}
-        {renderDosages(chosenDrugForm, 'Upcoming')}
+        <Dosages drugForm={chosenDrugForm} time={'Prior'} editable={true}/>
+        <Dosages drugForm={chosenDrugForm} time={'Upcoming'} editable={true}/>
 
         <SelectInterval/>
 
-        {addNewPrescriptionForm && numberOfMedications < 2
+        {addNewPrescriptionForm && numberOfMedications && numberOfMedications < 2
         && <Button css={css`border-radius: 10px;
           margin-top: 74px;`} type='primary' onClick={addNewPrescriptionForm}>Add Medication</Button>}
 
-        {numberOfMedications > 1
-        && <div css={css`display: flex; flex-direction: column; align-items: flex-end;`}>
+        {numberOfMedications && numberOfMedications > 1
+        && <div css={css`display: flex;
+          flex-direction: column;
+          align-items: flex-end;`}>
           <Button danger
                   css={css`
                     width: 160px;
@@ -285,7 +215,6 @@ const PrescriptionForm: FC<Props> = ({
             background-color: #D1D1D1;
           `}/>
         </div>}
-
       </div>
     </PrescriptionFormContext.Provider>
   );

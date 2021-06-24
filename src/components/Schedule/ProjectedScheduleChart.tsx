@@ -4,6 +4,7 @@ import {
 } from 'recharts';
 import format from 'date-fns/format';
 import { FC, useMemo, useRef } from 'react';
+import rgbHex from 'rgb-hex';
 import { ScheduleChartData } from '../../redux/reducers/utils';
 
 interface Props {
@@ -31,25 +32,13 @@ const ProjectedScheduleChart: FC<Props> = ({ scheduleChartData, width, height })
   console.log('scheduleChartData');
   console.log(scheduleChartData);
 
-  const lineColors: string[] = useMemo(() => {
-    if (scheduleChartData.length === 1) {
-      return ['#FFEAA7'];
-    }
-
-    const changeDirections: ['increase' | 'decrease' | 'same', 'increase' | 'decrease' | 'same'] = scheduleChartData.map((d) => d.changeDirection) as ['increase' | 'decrease' | 'same', 'increase' | 'decrease' | 'same'];
-
-    if (changeDirections[0] === 'increase') {
-      return ['#FFEAA7', '#74B9FF'];
-    }
-
-    if (changeDirections[0] === 'decrease') {
-      return ['#74B9FF', '#FFEAA7'];
-    }
-    if (changeDirections[1] === 'increase') {
-      return ['#74B9FF', '#FFEAA7'];
-    }
-    return ['#FFEAA7', '#74B9FF'];
-  }, [scheduleChartData]);
+  const lineColors = useRef<{ [drugName: string]: string }>({
+    Fluoxetine: `#${rgbHex(0, 184, 148)}`,
+    Citalopram: `#${rgbHex(0, 206, 201)}`,
+    Sertraline: `#${rgbHex(9, 132, 195)}`,
+    Paroxetine: `#${rgbHex(108, 72, 247)}`,
+    Escitalopram: `#${rgbHex(255, 117, 117)}`,
+  });
 
   return (
     <ResponsiveContainer width={width} height={height}>
@@ -63,7 +52,7 @@ const ProjectedScheduleChart: FC<Props> = ({ scheduleChartData, width, height })
         <Legend/>
         {scheduleChartData.map((drug, i) => (
           <Line dataKey="dosage" data={drug.data} name={drug.name} key={drug.name} type={'stepAfter'}
-                stroke={lineColors[i]}/>
+                stroke={lineColors.current[drug.name]}/>
         ))}
       </LineChart>
     </ResponsiveContainer>

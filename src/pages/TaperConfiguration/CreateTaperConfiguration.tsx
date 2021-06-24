@@ -76,8 +76,15 @@ const CreateTaperConfiguration = () => {
   const renderPrescriptionForms = (prescribedDrugs: PrescribedDrug[]) => {
     const notFromPrevVisit = prescribedDrugs.filter((prescribedDrug) => !prescribedDrug.prevVisit);
     return notFromPrevVisit.map(
-      (drug, i) => <PrescriptionForm key={`PrescriptionForm${drug.id}`} prescribedDrug={drug}
-                                  addNewPrescriptionForm={addNewPrescriptionForm} index={i} numberOfMedications={notFromPrevVisit.length}/>,
+      (drug, i) => {
+        return <PrescriptionForm
+          key={`PrescriptionForm${drug.id}`}
+          prescribedDrug={drug}
+          addNewPrescriptionForm={addNewPrescriptionForm}
+          // index={i}
+          title={`Medication #${i + 1}`}
+          numberOfMedications={notFromPrevVisit.length}/>;
+      },
     );
   };
 

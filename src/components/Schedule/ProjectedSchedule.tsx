@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  FC, useCallback, useRef, useState,
+  FC, useCallback, useMemo, useRef, useState,
 } from 'react';
 import Button from 'antd/es/button';
 import TextArea from 'antd/es/input/TextArea';
@@ -42,6 +42,12 @@ const ProjectedSchedule: FC<{ editable: boolean, title: string }> = ({ editable,
   const onInstructionsForPharmacyCopied = useCallback(() => {
     alert('Instructions for pharmacy copied.');
   }, []);
+
+  // const colors: string[] = useMemo(() => {
+  //   if (projectedSchedule.drugs.length === 1) {
+  //     return ['#FFC200'];
+  //   }
+  // });
 
   return (
     <>

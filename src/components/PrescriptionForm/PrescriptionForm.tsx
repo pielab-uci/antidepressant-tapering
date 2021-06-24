@@ -39,7 +39,7 @@ import {
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import PrescriptionSettingsForm from './PrescriptionSettingsForm';
-import Dosages from '../Dosages';
+import Dosages from './Dosages';
 
 export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
   ...initialState,

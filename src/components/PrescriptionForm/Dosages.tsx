@@ -2,8 +2,8 @@ import * as React from 'react';
 import { FC, useRef } from 'react';
 import { css } from '@emotion/react';
 import { SerializedStyles } from '@emotion/utils';
-import { DrugForm, isCapsuleOrTablet } from '../types';
-import { CapsuleOrTabletDosages, OralFormDosage } from './PrescriptionForm';
+import { DrugForm, isCapsuleOrTablet } from '../../types';
+import { CapsuleOrTabletDosages, OralFormDosage } from './index';
 
 interface Props {
   drugForm: DrugForm | null | undefined,

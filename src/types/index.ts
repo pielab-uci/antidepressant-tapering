@@ -121,7 +121,14 @@ export interface TableRowData {
   drug: string;
   brand: string;
   dosage: number;
-  prescription: string | null;
+  prescription: {
+    message: string,
+    data: {
+      form: string,
+      unit: string,
+      dosage: { [dosage: string]: number },
+    }
+  } | null;
   startDate: Date | null,
   endDate: Date | null,
   selected: boolean,

@@ -53,15 +53,11 @@ const NavBar = () => {
     height: 68px;
     display: flex;
     margin-top: 35px;
-    padding-left: 29px;
+    padding-left: 19px;
       //align-items: ${name === 'patient' ? 'center' : 'start'};
     align-items: center;
     background-color: #0984E3;
     color: white;
-
-    & svg {
-      margin-right: 10px;
-    }
 
     ${((name === 'patient' && location.pathname.match(/(\/)|(\/patient.+)|(\/taper-configuration.+)/) !== null)
             || (name === 'symptomTemplates' && location.pathname.match(/\/symptom-templates.+/)) !== null)
@@ -111,7 +107,11 @@ const NavBar = () => {
         flex-direction: column;`}>
         <div>
           <div css={TabStyle('patient')}>
-            <PatientsMenuIcon/>
+            <div css={css`width: 40px;
+              height: 40px;
+              margin-right: 10px;`}>
+              <PatientsMenuIcon/>
+            </div>
             <div>Patients</div>
           </div>
           <div css={subMenuStyle}>
@@ -121,7 +121,11 @@ const NavBar = () => {
           </div>
         </div>
         <div css={TabStyle('symptomTemplates')}>
-          <SymptomTemplatesMenuIcon/>
+          <div css={css`width: 40px;
+            height: 40px;
+            margin-right: 10px;`}>
+            <SymptomTemplatesMenuIcon/>
+          </div>
           <div>Symptom Templates</div>
         </div>
         <div css={helpAndLogoutStyle}>

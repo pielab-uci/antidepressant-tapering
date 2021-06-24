@@ -21,29 +21,6 @@ const ProjectedScheduleTableRowEditingModal: FC<Props> = ({
 }) => {
   const { drugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const dispatch = useDispatch();
-  const [chosenBrand, setChosenBrand] = useState<DrugOption | null>(
-    drugs.find((drug) => drug.name === row!.drug)!
-      .options.find((brand) => brand.brand === row!.brand)! || null,
-  );
-  const [chosenDrugForm, setChosenDrugForm] = useState<DrugForm | null>(
-    drugs.find((drug) => drug.name === row!.drug)!
-      .options.find((brand) => brand.brand === row!.brand)!
-      .forms.find((form) => form.form === row!.form)! || null,
-  );
-  const [allowSplittingUnscoredTablet, setAllowSplittingUnscoredTablet] = useState<boolean>(false);
-
-  const onBrandChange = (value: string) => {
-    setChosenBrand(drugs.find((drug) => drug.name === row!.drug)!.options.find((brand) => brand.brand === value)!);
-    setChosenDrugForm(null);
-  };
-
-  const onFormChange = (value: string) => {
-    setChosenDrugForm((chosenBrand && chosenBrand.forms.find((form) => form.form === value)!) || null);
-  };
-
-  const toggleAllowSplittingUnscoredTabletCheckbox = (e: CheckboxChangeEvent) => {
-    setAllowSplittingUnscoredTablet(e.target.checked);
-  };
 
   const onClickOk = (e: React.MouseEvent<HTMLElement>) => {
     onOk(e);
@@ -58,7 +35,7 @@ const ProjectedScheduleTableRowEditingModal: FC<Props> = ({
     return <div/>;
   }
 
-  return <Modal visible={visible} onCancel={onClickCancel} onOk={onClickOk}>
+  return <Modal visible={visible} onCancel={onClickCancel} onOk={onClickOk} width={'50%'}>
     {row && <PrescriptionForm prescribedDrug={row.prescribedDrug} title={''}/>}
   </Modal>;
 };

@@ -1,5 +1,5 @@
 import { CellEditingStoppedEvent } from 'ag-grid-community';
-import { PrescribedDrug, TaperingConfiguration } from '../../types';
+import { PrescribedDrug, TableRowData, TaperingConfiguration } from '../../types';
 import { Schedule } from '../../components/Schedule/ProjectedSchedule';
 
 export const GENERATE_SCHEDULE = 'GENERATE_SCHEDULE' as const;
@@ -260,4 +260,11 @@ export const VALIDATE_INPUT_COMPLETION = 'VALIDATE_INPUT_COMPLETION' as const;
 
 export interface ValidateInputCompletionAction {
   type: typeof VALIDATE_INPUT_COMPLETION;
+}
+
+export const OPEN_MODAL_FOR_EDITING_TABLE_ROW = 'MODAL_FOR_EDITING_EDITING_TABLE_ROW_OPENED';
+
+export interface OpenModalForEditingTableRow {
+  type: typeof OPEN_MODAL_FOR_EDITING_TABLE_ROW,
+  data: [TableRowData, TableRowData]; // double clicked row and its previous row
 }

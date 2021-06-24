@@ -192,7 +192,7 @@ export const calcMinimumQuantityForDosage = (availableOptions: string[], dosage:
   return dosages;
 };
 
-type PrescriptionFunction = (args: { form: string, intervalCount: number, intervalUnit: 'Days' | 'Weeks' | 'Months' | null, oralDosageInfo?: OralDosage | null }, dosageQty: { [dosage: string]: number }) => string;
+type PrescriptionFunction = (args: { form: string, intervalCount: number, intervalUnit: 'Days' | 'Weeks' | 'Months' | null, oralDosageInfo?: OralDosage | null }, dosageQty: { [dosage: string]: number }) => { message: string; data: { form: string, unit: string; dosage: { [dosage: string]: number } } };
 export const prescription: PrescriptionFunction = (
   {
     form, intervalCount, intervalUnit, oralDosageInfo,
@@ -200,7 +200,7 @@ export const prescription: PrescriptionFunction = (
   dosageQty,
 ) => {
   console.log('oralDosageInfo: ', oralDosageInfo);
-  return Object.entries(dosageQty)
+  const message = Object.entries(dosageQty)
     .filter(([dosage, qty]) => qty !== 0)
     .reduce((res, [dosage, qty], i, arr) => {
       if (oralDosageInfo) {
@@ -213,6 +213,17 @@ export const prescription: PrescriptionFunction = (
 
       return `${res} ${qty} * ${dosage} ${form}, `;
     }, '');
+
+  const data = {
+    form,
+    unit: oralDosageInfo !== null ? 'ml' : 'mg',
+    dosage: dosageQty,
+  };
+
+  return {
+    message,
+    data,
+  };
 };
 
 const projectionLengthOfEachDrug = (drug: Converted): number => {
@@ -496,7 +507,7 @@ export const generateInstructionsForPatientFromSchedule = (schedule: Schedule): 
     .reduce((message, row) => {
       const startDate = format(row.startDate!, 'MMM dd, yyyy');
       const endDate = format(row.endDate!, 'MMM dd, yyyy');
-      const dosagesPrescribed = row.prescription!.replace(/ for.+/, '');
+      const dosagesPrescribed = row.prescription!.message.replace(/ for.+/, '');
       return `${message}Take ${row.drug}(${row.brand}) ${dosagesPrescribed} from ${startDate} to ${endDate}.\n`;
     }, '');
 };

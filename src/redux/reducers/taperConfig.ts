@@ -34,6 +34,8 @@ import {
   GenerateScheduleAction,
   INIT_NEW_TAPER_CONFIG,
   InitTaperConfigAction,
+  OPEN_MODAL_FOR_EDITING_TABLE_ROW,
+  OpenModalForEditingTableRow,
   REMOVE_DRUG_FORM,
   RemoveDrugFormAction,
   SCHEDULE_ROW_SELECTED,
@@ -204,6 +206,7 @@ export type TaperConfigActions =
   | UpdateChartAction
   | SetIsInputComplete
   | ValidateInputCompletionAction
+  | OpenModalForEditingTableRow
   | PrescriptionFormActions;
 
 const emptyPrescribedDrug = (id: number): PrescribedDrug => ({
@@ -607,6 +610,17 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case VALIDATE_INPUT_COMPLETION:
         draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         break;
+
+      case OPEN_MODAL_FOR_EDITING_TABLE_ROW: {
+        draft.lastPrescriptionFormId += 1;
+
+        const newDrug: PrescribedDrug = {
+          ...action.data[1].prescribedDrug,
+          id: draft.lastPrescriptionFormId,
+
+        };
+        break;
+      }
 
       default:
         return state;

@@ -208,10 +208,10 @@ export const prescription: PrescriptionFunction = (
       }
 
       if (i === arr.length - 1) {
-        return `${res} ${qty} * ${dosage} ${form} for ${intervalCount} ${intervalUnit!.toLowerCase()}`;
+        return `${res} ${qty} X ${dosage} ${form} for ${intervalCount} ${intervalUnit!.toLowerCase()}`;
       }
 
-      return `${res} ${qty} * ${dosage} ${form}, `;
+      return `${res} ${qty} X ${dosage} ${form}, `;
     }, '');
 
   const data = {
@@ -527,9 +527,9 @@ export const generateInstructionsForPharmacy = (patientInstructions: string, pre
   return Object.values(prescription).reduce((instruction, { name, brand, dosageQty }, i, prescriptionArr) => {
     const dosages = Object.entries(dosageQty).reduce((acc, [dos, qty], j, dosageArr) => {
       if (j === dosageArr.length - 1) {
-        return `${acc}${qty} * ${dos}`;
+        return `${acc}${qty} X ${dos}`;
       }
-      return `${acc}${qty} * ${dos}, `;
+      return `${acc}${qty} X ${dos}, `;
     }, '');
 
     return `${instruction}${name}(${brand}): ${dosages}\n`;

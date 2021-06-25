@@ -7,6 +7,7 @@ import { Prompt, useHistory, useLocation } from 'react-router';
 import { css } from '@emotion/react';
 import { useRouteMatch } from 'react-router-dom';
 import ProjectedSchedule from '../../components/Schedule/ProjectedSchedule';
+import NotesToShare from '../../components/Schedule/NotesToShare';
 
 const wrapperStyle = css`
 width: 100%;
@@ -40,7 +41,6 @@ const buttonStyle = css`
 
 const EditTaperConfiguration = () => {
   const history = useHistory();
-  const urlSearchParams = useRef<URLSearchParams>(new URLSearchParams(useLocation().search));
   const { url } = useRouteMatch();
 
   const moveToCreatePage = () => {
@@ -48,9 +48,6 @@ const EditTaperConfiguration = () => {
   };
 
   const moveToConfirmPage = () => {
-    // const clinicianId = urlSearchParams.current.get('clinicianId');
-    // const patientId = urlSearchParams.current.get('patientId');
-    // history.push(`/taper-configuration/confirm/?clinicianId=${clinicianId}&patientId=${patientId}`);
     history.push(url.replace('edit', 'confirm'));
   };
 
@@ -61,6 +58,7 @@ const EditTaperConfiguration = () => {
         {/*        message={'Are you sure you want to leave?'}/> */}
         <ProjectedSchedule title={'Projected Schedule based on the rate of reduction you specified'}
                            editable={true}/>
+        <NotesToShare editable={true}/>
       </div>
       <div css={buttonStyle}>
         <Button onClick={moveToCreatePage}>Previous</Button>

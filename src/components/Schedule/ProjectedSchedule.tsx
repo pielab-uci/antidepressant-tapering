@@ -1,18 +1,14 @@
 import * as React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
-  FC, useCallback, useMemo, useRef, useState,
+  FC,
 } from 'react';
-import Button from 'antd/es/button';
-import TextArea from 'antd/es/input/TextArea';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { css } from '@emotion/react';
 import { ProjectedScheduleChart, ProjectedScheduleTable } from '.';
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import { PrescribedDrug, TableRowData } from '../../types';
 import PrescribedQuantitiesForDrug from './PrescribedQuantitiesForDrug';
-import { changeMessageForPatient, changeNoteAndInstructions } from '../../redux/actions/taperConfig';
 
 export interface Schedule {
   drugs: PrescribedDrug[];
@@ -21,33 +17,8 @@ export interface Schedule {
 
 const ProjectedSchedule: FC<{ editable: boolean, title: string }> = ({ editable, title }) => {
   const {
-    projectedSchedule, scheduleChartData, finalPrescription, instructionsForPharmacy, instructionsForPatient,
+    projectedSchedule, scheduleChartData, finalPrescription,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
-  const dispatch = useDispatch();
-
-  const onChangeMessageForPatient = useCallback((e) => {
-    dispatch(changeMessageForPatient(e.target.value));
-  }, []);
-
-  const onChangeInstructionsForPharmacy = useCallback((e) => {
-    dispatch(changeNoteAndInstructions(e.target.value));
-  }, []);
-
-  const instructionsForPatientPlaceholder = useRef('e.g., If you experience severe withdrawal symptoms, go back to the previous dosage. / call your provider / come back to provider\'s office.');
-
-  const onInstructionsForPatientCopied = useCallback(() => {
-    alert('Instructions for patient copied.');
-  }, []);
-
-  const onInstructionsForPharmacyCopied = useCallback(() => {
-    alert('Instructions for pharmacy copied.');
-  }, []);
-
-  // const colors: string[] = useMemo(() => {
-  //   if (projectedSchedule.drugs.length === 1) {
-  //     return ['#FFC200'];
-  //   }
-  // });
 
   return (
     <>
@@ -73,33 +44,6 @@ const ProjectedSchedule: FC<{ editable: boolean, title: string }> = ({ editable,
               editable={editable}/>;
           })}
 
-          <div>
-            <h3 css={css`margin-top: 40px;`}>Notes for Patient</h3>
-            <TextArea
-              value={instructionsForPatient}
-              defaultValue={instructionsForPatient}
-              onChange={onChangeMessageForPatient}
-              placeholder={instructionsForPatientPlaceholder.current}
-              rows={6}
-              readOnly={!editable}
-            />
-            {!editable && <CopyToClipboard text={instructionsForPatient} onCopy={onInstructionsForPatientCopied}>
-              <Button>Copy to Clipboard</Button>
-            </CopyToClipboard>}
-          </div>
-
-          <div>
-            <h3 css={css`margin-top: 40px;`}>Notes for Pharmacy</h3>
-            <TextArea value={instructionsForPharmacy}
-                      defaultValue={instructionsForPharmacy}
-                      onChange={onChangeInstructionsForPharmacy}
-                      rows={6}
-                      readOnly={!editable}
-            />
-            {!editable && <CopyToClipboard text={instructionsForPharmacy} onCopy={onInstructionsForPharmacyCopied}>
-              <Button>Copy to Clipboard</Button>
-            </CopyToClipboard>}
-          </div>
         </> : <div>No schedule yet</div>
       }
     </>

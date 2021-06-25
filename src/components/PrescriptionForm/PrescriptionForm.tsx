@@ -195,6 +195,7 @@ const PrescriptionForm: FC<Props> = ({
 
         {addNewPrescriptionForm && numberOfMedications && numberOfMedications < 2
         && <Button css={css`border-radius: 10px;
+          background-color: #0984E3;
           margin-top: 74px;`} type='primary' onClick={addNewPrescriptionForm}>Add Medication</Button>}
 
         {numberOfMedications && numberOfMedications > 1
@@ -203,10 +204,10 @@ const PrescriptionForm: FC<Props> = ({
           align-items: flex-end;`}>
           <Button danger
                   css={css`
-                    width: 160px;
+                    width: 180px;
                     margin-right: 20px;
                     border-radius: 10px;`}
-                  onClick={removeDrugForm}>Delete medication</Button>
+                  onClick={removeDrugForm}>Delete {title}</Button>
           <hr css={css`
             border: none;
             width: 100%;

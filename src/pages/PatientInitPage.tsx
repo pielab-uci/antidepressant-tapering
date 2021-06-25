@@ -104,6 +104,7 @@ const PatientInitPage: FC = () => {
   const renderButton = useCallback(() => {
     const buttonStyle = css`
       border-radius: 10px;
+      background-color:#0984E3;
     `;
     return currentPatient!.taperingConfiguration
       ? <Button type='primary' css={buttonStyle} onClick={onClickAdjustSchedule}>Edit Schedule</Button>
@@ -143,7 +144,7 @@ const PatientInitPage: FC = () => {
             justify-content: space-between;
             margin-top: 76px;`}>
             <h3>Symptom Tracker</h3>
-            <Button type='primary' css={css`border-radius: 10px;`}>Create New</Button>
+            <Button type='primary' css={css`border-radius: 10px; background-color:#0984E3;`}>Create New</Button>
           </div>
           {renderSymptomTracker()}
         </div>

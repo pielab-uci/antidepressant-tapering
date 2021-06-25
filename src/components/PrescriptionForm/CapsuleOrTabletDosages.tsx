@@ -52,10 +52,10 @@ const CapsuleOrTabletDosages: FC<Props> = ({ time }) => {
             flex-direction: column;
             align-items: flex-start;
             justify-content: center;
-            margin-left: 60px;`}>
+            margin-left: 64px;`}>
             {time === 'Upcoming' && dosageDifferenceMessage
             && (
-              <div css={css`color: red;`}>
+              <div css={css`color: #0984E3;`}>
                 {dosageDifferenceMessage}
               </div>
             )}
@@ -72,5 +72,4 @@ const CapsuleOrTabletDosages: FC<Props> = ({ time }) => {
     </>
   );
 };
-
 export default CapsuleOrTabletDosages;

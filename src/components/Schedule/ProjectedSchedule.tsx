@@ -27,6 +27,7 @@ const ProjectedSchedule: FC<{ editable: boolean, title: string }> = ({ editable,
           {/* <h3 css={css`font-size: 18px; */}
           <h3 css={css`font-size: 1.1rem;
             color: #636E72;`}>{title}</h3>
+          <p>Check all the rows that you would like to prescribe.</p>
           <div css={css`display: flex;
             justify-content: space-between;`}>
             {projectedSchedule.data.length !== 0

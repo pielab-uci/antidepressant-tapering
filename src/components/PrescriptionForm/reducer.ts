@@ -141,6 +141,17 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
       case UPCOMING_DOSAGE_CHANGE:
         if (action.data.dosage.quantity >= 0) {
           draft.upcomingDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;
+          const upcomingDosageSum = Object.entries(draft.upcomingDosagesQty).reduce((prev, [k, v]) => {
+            return prev + parseFloat(k) * v;
+          }, 0);
+
+          const priorDosageSum = Object.entries(draft.priorDosagesQty).reduce((prev, [k, v]) => {
+            return prev + parseFloat(k) * v;
+          }, 0);
+
+          if (priorDosageSum < upcomingDosageSum) {
+            draft.targetDosage = upcomingDosageSum;
+          }
         }
         break;
 

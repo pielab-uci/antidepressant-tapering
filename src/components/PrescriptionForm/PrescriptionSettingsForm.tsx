@@ -48,7 +48,7 @@ const PrescriptionSettingsForm: FC<Props> = ({
         display: flex;
         width: 250px;
         justify-content: space-between;
-        margin: 15px 79px 15px 51px;
+        margin: 15px 30px 15px 51px;
         align-items: center;
       }`}>
       <div>

@@ -3,6 +3,7 @@ import Modal from 'antd/es/modal';
 import { FC, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
+import { css } from '@emotion/react';
 import PrescriptionSettingsForm from '../PrescriptionForm/PrescriptionSettingsForm';
 import { DrugForm, DrugOption, TableRowData } from '../../types';
 import { RootState } from '../../redux/reducers';
@@ -35,7 +36,8 @@ const ProjectedScheduleTableRowEditingModal: FC<Props> = ({
     return <div/>;
   }
 
-  return <Modal visible={visible} onCancel={onClickCancel} onOk={onClickOk} width={'50%'}>
+  return <Modal visible={visible} onCancel={onClickCancel} onOk={onClickOk} width={'50%'}
+                css={css`height: 85%; overflow-y: scroll;`}>
     {row && <PrescriptionForm prescribedDrug={row.prescribedDrug} title={''}/>}
   </Modal>;
 };

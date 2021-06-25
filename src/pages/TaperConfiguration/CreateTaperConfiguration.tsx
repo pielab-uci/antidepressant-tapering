@@ -97,7 +97,7 @@ const CreateTaperConfiguration = () => {
       </div>
       <div css={buttonsStyle} className='create-taper-config-buttons'>
         <Button>Cancel</Button>
-        <Button type='primary' onClick={moveToEditPage} disabled={!isInputComplete}>Next</Button>
+        <Button css={css`background-color: #0984E3;`} type='primary' onClick={moveToEditPage} disabled={!isInputComplete}>Next</Button>
       </div>
     </div>
   );

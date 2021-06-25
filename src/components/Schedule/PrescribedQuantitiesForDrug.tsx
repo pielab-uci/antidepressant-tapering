@@ -20,7 +20,7 @@ interface Props {
 const PrescribedQuantitiesForDrug: FC<Props> = ({ id, prescription, editable }) => {
   const dispatch = useDispatch();
   const qtyOrZero = useCallback((dosages: typeof prescription['dosageQty'], dosage: string): number => {
-    return dosages[dosage] ? dosages[dosage] : 0;
+    return dosages[dosage] ? Math.round(dosages[dosage]) : 0;
   }, []);
 
   const onPrescribedQuantityChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -34,28 +34,30 @@ const PrescribedQuantitiesForDrug: FC<Props> = ({ id, prescription, editable }) 
   const renderForms = useCallback((dosages: string[], prescription: ValueOf<Prescription>) => {
     return (
       <>
-        <h4>{prescription.brand} {prescription.form}</h4>
-        {dosages.map((dos: string) => (
-          <div key={`${prescription.brand}_${prescription.form}_${dos}_final_prescription`}
-               css={css`
-                 display: flex;
-                 align-items: center;
-                 margin-bottom: 24px;
-               `}>
-            <h5>{dos}</h5>
-            <Input title={dos}
-                   css={css`
-                     margin-left: 14px;
-                     width: 60px;`}
-                   type='number'
-                   min={0}
-                   value={qtyOrZero(prescription.dosageQty, dos)}
-                   step={0.5}
-                   width={'50px'}
-                   readOnly={!editable}
-                   onChange={onPrescribedQuantityChange}/>
-          </div>
-        ))}
+        <div>{prescription.brand} {prescription.form}</div>
+        <div css={css`margin-top: 10px;`}>
+          {dosages.map((dos: string) => (
+            <div key={`${prescription.brand}_${prescription.form}_${dos}_final_prescription`}
+                 css={css`
+                   display: flex;
+                   align-items: center;
+                   margin: 0 0 24px 39px;
+                 `}>
+              <div>{dos}:</div>
+              <Input title={dos}
+                     css={css`
+                       margin-left: 14px;
+                       width: 60px;`}
+                     type='number'
+                     min={0}
+                     value={qtyOrZero(prescription.dosageQty, dos)}
+                     step={1}
+                     width={'50px'}
+                     readOnly={!editable}
+                     onChange={onPrescribedQuantityChange}/>
+            </div>
+          ))}
+        </div>
       </>
     );
   }, []);

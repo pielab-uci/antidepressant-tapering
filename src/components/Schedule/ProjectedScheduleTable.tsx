@@ -30,7 +30,6 @@ import NumberEditor from './NumberEditor';
 import { Schedule } from './ProjectedSchedule';
 import ProjectedScheduleTableRowEditingModal from './ProjectedScheduleTableRowEditingModal';
 import { PrescribedDrug, TableRowData } from '../../types';
-import doubleClick = Simulate.doubleClick;
 
 const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedule }> = ({
   editable,
@@ -67,7 +66,7 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
 
   const columnDefs = useRef<ColDef[]>(
     [{
-      headerName: 'Prescribe?',
+      headerName: '',
       field: 'prescribe',
       hide: !editable,
       checkboxSelection: (params: CheckboxSelectionCallbackParams) => !params.data.isPriorDosage && editable,
@@ -151,44 +150,23 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
     gridColumnApi?.autoSizeAllColumns();
   };
 
-  // const onCellEditingStopped = (params: CellEditingStoppedEvent) => {
-  //   switch (params.colDef.field) {
-  //     case 'startDate': {
-  //       const tempValue = new Date(params.newValue);
-  //       const newValue = new Date(tempValue.valueOf() + tempValue.getTimezoneOffset() * 60 * 1000);
-  //       dispatch<TableStartDateEditedAction>({
-  //         type: TABLE_START_DATE_EDITED,
-  //         data: { ...params, newValue },
-  //       });
-  //       break;
-  //     }
-  //
-  //     case 'endDate': {
-  //       const tempValue = new Date(params.newValue);
-  //       const newValue = new Date(tempValue.valueOf() + tempValue.getTimezoneOffset() * 60 * 1000);
-  //       dispatch<TableEndDateEditedAction>({
-  //         type: TABLE_END_DATE_EDITED,
-  //         data: { ...params, newValue },
-  //       });
-  //       break;
-  //     }
-  //
-  //     case 'dosage':
-  //       dispatch<TableDosageEditedAction>({
-  //         type: TABLE_DOSAGE_EDITED,
-  //         data: params,
-  //       });
-  //       break;
-  //     default:
-  //       console.error('No such field in the table');
-  //   }
-  // };
-
   const openModal = (event: RowDoubleClickedEvent) => {
     console.group('openModal');
     console.log('event: ', event);
     console.groupEnd();
+    const newPrescribedDrug: PrescribedDrug = {
+      ...event.data.prescribedDrug,
+      id: lastPrescriptionFormId + 1,
+
+    };
     if (event.rowIndex !== 0) {
+      const rowWithNewDrug: TableRowData = {
+        ...event.data,
+        prescribedDrug: {
+          ...event.data.prescribedDrug,
+          // id:
+        },
+      };
       setDoubleClickedRow(event.data);
       setShowModal(true);
       dispatch({

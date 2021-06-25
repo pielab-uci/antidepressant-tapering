@@ -48,6 +48,13 @@ const EditTaperConfiguration = () => {
   };
 
   const moveToConfirmPage = () => {
+    // if (prescribedDrugs) {
+    //   dispatch(addOrUpdateTaperConfigRequest({
+    //     clinicianId: parseInt(urlSearchParams.current.get('clinicianId')!, 10),
+    //     patientId: parseInt(urlSearchParams.current.get('patientId')!, 10),
+    //     prescribedDrugs,
+    //   }));
+    // }
     history.push(url.replace('edit', 'confirm'));
   };
 
@@ -56,13 +63,13 @@ const EditTaperConfiguration = () => {
       <div css={projectedScheduleStyle}>
         {/* <Prompt when={!isSaved} */}
         {/*        message={'Are you sure you want to leave?'}/> */}
-        <ProjectedSchedule title={'Projected Schedule based on the rate of reduction you specified'}
+        <ProjectedSchedule title={'Projected Schedule based on the rates of reduction you specified'}
                            editable={true}/>
         <NotesToShare editable={true}/>
       </div>
       <div css={buttonStyle}>
         <Button onClick={moveToCreatePage}>Previous</Button>
-        <Button type='primary' onClick={moveToConfirmPage}>Next</Button>
+        <Button css={css`background-color:#0984E3;`} type='primary' onClick={moveToConfirmPage}>Save</Button>
       </div>
     </div>
   );

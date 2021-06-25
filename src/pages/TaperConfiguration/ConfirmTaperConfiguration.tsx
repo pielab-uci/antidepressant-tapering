@@ -15,6 +15,7 @@ import {
 } from '../../redux/actions/taperConfig';
 import ProjectedSchedule from '../../components/Schedule/ProjectedSchedule';
 import { ShareWithAppIcon, ShareWithEmailIcon, ShareWithPdfIcon } from '../../icons';
+import NotesToShare from '../../components/Schedule/NotesToShare';
 
 const wrapperStyle = css`
   display: flex;
@@ -49,7 +50,7 @@ const ConfirmTaperConfiguration = () => {
   const history = useHistory();
   const { url } = useRouteMatch();
   const urlSearchParams = useRef<URLSearchParams>(new URLSearchParams(useLocation().search));
-  const { isInputComplete } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
+  const { isInputComplete, patientId } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const dispatch = useDispatch();
 
   const shareWithApp = useCallback(() => {
@@ -67,35 +68,25 @@ const ConfirmTaperConfiguration = () => {
   const shareWithPdf = () => {
 
   };
-  /*
-TODO: save taper configuration -> not prescribedDrugs, but projectedSchedule
-const saveTaperConfiguration = useCallback(() => {
-  if (prescribedDrugs) {
-    dispatch(addOrUpdateTaperConfigRequest({
-      clinicianId: parseInt(urlSearchParams.current.get('clinicianId')!, 10),
-      patientId: parseInt(urlSearchParams.current.get('patientId')!, 10),
-      prescribedDrugs,
-    }));
-  }
-}, [prescribedDrugs]);
- */
 
   const moveToEditPage = () => {
     history.push(url.replace('confirm', 'edit'));
   };
 
-  const saveTaperConfiguration = () => {
-
+  const returnToPatientsPage = () => {
+    history.push(`/patient/${patientId}`);
   };
 
   return (
     <div css={wrapperStyle}>
       <div css={scheduleStyle}>
-        <ProjectedSchedule title={'Projected schedule'} editable={false}/>
+        <h3>Prescription has been added.</h3>
+        <NotesToShare editable={false}/>
         <div css={css`margin-top: 44px;`}>
           <h3>Share projected schedule and notes with patient</h3>
           <div css={css`
             display: flex;
+
             & > div {
               margin-right: 30px;
               display: flex;
@@ -118,10 +109,8 @@ const saveTaperConfiguration = useCallback(() => {
           </div>
         </div>
       </div>
-      <div css={buttonStyle}>
-        <Button onClick={moveToEditPage}>Previous</Button>
-        <Button type='primary' onClick={saveTaperConfiguration}>Save</Button>
-      </div>
+      <Button css={css`align-self: center; border-radius: 10px; background-color:#0984E3;`} type='primary' onClick={returnToPatientsPage}>Return to Patients
+        page</Button>
     </div>);
 };
 

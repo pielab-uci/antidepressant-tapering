@@ -66,7 +66,7 @@ const OralFormDosage: FC<Props> = ({ time }) => {
 
   return (
     <>
-      <h3 css={css`font-size: 18px;
+      <h3 css={css`font-size: 1rem;
         color: #636E72;`}>
         {time} Dosage
       </h3>
@@ -85,7 +85,7 @@ const OralFormDosage: FC<Props> = ({ time }) => {
             <div>
               {time === 'Upcoming' && dosageDifferenceMessage
               && (
-                <div style={{ color: 'red' }}>
+                <div css={css`color: #0984E3;`}>
                   {dosageDifferenceMessage}
                 </div>
               )}

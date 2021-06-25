@@ -61,7 +61,7 @@ export const ScoredTabletIcon = ({ value }: { value: number }) => (
         <circle cx="12.5" cy="12.5" r="12.5" stroke="none"/>
         <circle cx="12.5" cy="12.5" r="12" fill="none"/>
       </g>
-      <text transform="translate(469 67)" textAnchor="middle" alignmentBaseline="middle" fill="#fff" fontSize="13"
+      <text transform="translate(469 67)" textAnchor="middle" alignmentBaseline="middle" fill="#ffffff" fontSize="13"
             fontFamily="SegoeUI, Segoe UI">
         <tspan x="3" y="0">{value}</tspan>
       </text>
@@ -82,7 +82,7 @@ export const UnscoredTabletIcon = ({ value }: { value: number }) => (
         <circle cx="12.5" cy="12.5" r="12.5" stroke="none"/>
         <circle cx="12.5" cy="12.5" r="12" fill="none"/>
       </g>
-      <text transform="translate(70 18)" textAnchor="middle" alignmentBaseline="middle" fill="#c7c5c5" fontSize="13" fontFamily="SegoeUI, Segoe UI">
+      <text transform="translate(70 18)" textAnchor="middle" alignmentBaseline="middle" fill="#ffffff" fontSize="13" fontFamily="SegoeUI, Segoe UI">
         <tspan x="3" y="0">{value}</tspan>
       </text>
     </g>
@@ -101,7 +101,7 @@ export const CapsuleIcon = ({ value }: { value: number }) => (
       <line x2="19" y2="0.206" transform="translate(688.5 688.294)" fill="none"
             stroke="#707070" strokeWidth="1"/>
       <path d="M12.5,0A12.5,12.5,0,1,1,0,12.5,12.5,12.5,0,0,1,12.5,0Z" transform="translate(702 657)" fill={value > 0 ? '#0984E3' : '#707070'}/>
-      <text transform="translate(711 675)" fill="#c7c5c5" fontSize="13"
+      <text transform="translate(714 675)" fill="#ffffff" fontSize="13" textAnchor="middle" alignmentBaseline="middle"
             fontFamily="SegoeUI, Segoe UI">
         <tspan x="0" y="0">{value}</tspan>
       </text>

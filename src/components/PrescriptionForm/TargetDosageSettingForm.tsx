@@ -83,21 +83,37 @@ const TargetDosageSettingForm = () => {
   return (
     <div css={css`
       display: flex;
-      margin: 20px 0 0 30px;
+      margin-top: 44px;
       flex-direction: column;`}>
       <div css={css`font-size: 0.9rem;
         display: flex;
+        //flex-direction: column;
         align-items: center;
-        margin-top: 15px;`}>
-        <label>Target dosage:</label>
+      `}>
+        <h3 css={css`font-size: 1rem;
+          color: #636E72;`}>Target dosage:</h3>
         <div css={css`display: flex;
-          align-items: center;`}>
+          //margin-left: 64px;
+          align-items: center;
+          margin-left: 10px;
+      
+          & input::-webkit-inner-spin-button,
+          & input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            opacity: 0;
+            margin: 0;
+          }
+
+          & input[type=number] {
+            -moz-appearance: textfield;
+          }`}>
           <Input type='number'
                  value={targetDosage}
                  onChange={onChangeTargetDosage}
                  min={0}
                  css={css`width: 100px;
-                   display: inline;`}/> mg
+                   display: inline;
+                 `}/> mg
         </div>
         {!targetDosageValid && renderValidateErrorMessage()}
       </div>

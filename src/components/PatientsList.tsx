@@ -42,6 +42,7 @@ const buttonStyle = css`
   height: 41px;
   margin-left: auto;
   border-radius: 17px;
+  background-color:#0984E3;
 `;
 
 const PatientsList: FC<Props> = ({ patients }) => {

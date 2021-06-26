@@ -51,7 +51,7 @@ const ProjectedScheduleChart: FC<Props> = ({ scheduleChartData, width, height })
         <Tooltip formatter={(value: number) => `${value}mg`} labelFormatter={(time: number) => format(time, 'MM-dd')}/>
         <Legend/>
         {scheduleChartData.map((drug, i) => (
-          <Line dataKey="dosage" data={drug.data} name={drug.name} key={drug.name} type={'stepAfter'}
+          <Line dataKey="dosage" data={drug.data} name={drug.brand} key={drug.brand} type={'stepAfter'}
                 stroke={lineColors.current[drug.name]}/>
         ))}
       </LineChart>

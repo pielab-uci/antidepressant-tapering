@@ -36,10 +36,9 @@ const buttonsStyle = css`
 `;
 
 const CreateTaperConfiguration = () => {
-  const { prescribedDrugs, isInputComplete } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
+  const { prescribedDrugs, isInputComplete, patientId } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const dispatch = useDispatch();
   const history = useHistory();
-  // const urlSearchParams = useRef<URLSearchParams>(new URLSearchParams(useLocation().search));
   const location = useLocation();
   const { path, url } = useRouteMatch();
 
@@ -88,6 +87,9 @@ const CreateTaperConfiguration = () => {
     );
   };
 
+  const moveToPatientPage = () => {
+    history.push(`/patient/${patientId}`);
+  };
   return (
     <div
       className='create-taper-configuration'
@@ -96,7 +98,7 @@ const CreateTaperConfiguration = () => {
         {prescribedDrugs && renderPrescriptionForms(prescribedDrugs)}
       </div>
       <div css={buttonsStyle} className='create-taper-config-buttons'>
-        <Button>Cancel</Button>
+        <Button onClick={moveToPatientPage}>Cancel</Button>
         <Button css={css`background-color: #0984E3;`} type='primary' onClick={moveToEditPage} disabled={!isInputComplete}>Next</Button>
       </div>
     </div>

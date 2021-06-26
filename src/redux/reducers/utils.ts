@@ -441,24 +441,24 @@ export const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule =
   return { data: tableDataSorted, drugs: prescribedDrugs };
 };
 
-export type ScheduleChartData = { name: string, changeDirection: 'increase' | 'decrease' | 'same', data: { timestamp: number, dosage: number }[] }[];
+export type ScheduleChartData = { name: string, brand: string, changeDirection: 'increase' | 'decrease' | 'same', data: { timestamp: number, dosage: number }[] }[];
 
 export const chartDataConverter = (schedule: Schedule): ScheduleChartData => {
-  const rowsGroupByDrug: { [drug: string]: TableRowData[] } = {};
+  const rowsGroupByDrug: { [drugName_brand: string]: TableRowData[] } = {};
 
   const scheduleChartData: ScheduleChartData = [];
 
   schedule.drugs.forEach((drug) => {
-    rowsGroupByDrug[drug.name] = [];
+    rowsGroupByDrug[`${drug.name}_${drug.brand}`] = [];
   });
 
   schedule.data
     .filter((row) => !row.isPriorDosage)
     .forEach((row) => {
-      rowsGroupByDrug[row.drug].push(row);
+      rowsGroupByDrug[`${row.drug}_${row.brand}`].push(row);
     });
 
-  const changeDirections: { [drugName: string]: 'increase' | 'decrease' | 'same' } = schedule.drugs.reduce((prev, drug) => {
+  const changeDirections: { [drugName_brand: string]: 'increase' | 'decrease' | 'same' } = schedule.drugs.reduce((prev, drug) => {
     const priorDosageSum = drug.priorDosages.reduce((acc, { dosage, quantity }) => {
       return acc + parseFloat(dosage) * quantity;
     }, 0);
@@ -468,20 +468,24 @@ export const chartDataConverter = (schedule: Schedule): ScheduleChartData => {
     }, 0);
 
     if (priorDosageSum > upcomingDosageSum) {
-      prev[drug.name] = 'decrease';
+      prev[`${drug.name}_${drug.brand}`] = 'decrease';
     } else if (priorDosageSum < upcomingDosageSum) {
-      prev[drug.name] = 'increase';
+      prev[`${drug.name}_${drug.brand}`] = 'increase';
     } else {
-      prev[drug.name] = 'same';
+      prev[`${drug.name}_${drug.brand}`] = 'same';
     }
 
     return prev;
-  }, {} as { [drugName: string]: 'increase' | 'decrease' | 'same' });
+  }, {} as { [drugName_brand: string]: 'increase' | 'decrease' | 'same' });
 
   Object.entries(rowsGroupByDrug).forEach(([k, rows]) => {
-    scheduleChartData.push({ name: k, changeDirection: changeDirections[k], data: [] });
+    const [drugName, drugBrand] = k.split('_');
+    scheduleChartData.push({
+      name: drugName, brand: drugBrand, changeDirection: changeDirections[k], data: [],
+    });
+
     rows.forEach((row, i) => {
-      const chartData = scheduleChartData.find((el) => el.name === k)!;
+      const chartData = scheduleChartData.find((el) => el.brand === drugBrand)!;
       Array(differenceInCalendarDays(row.endDate!, row.startDate!) + 1).fill(null).forEach((_, j) => {
         chartData.data.push({
           timestamp: add(row.startDate!, { days: j }).getTime(),

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {
   ChangeEvent,
-  FC, useCallback,
+  FC, useCallback, useRef,
 } from 'react';
 import Input from 'antd/es/input';
 import { useDispatch } from 'react-redux';
@@ -19,6 +19,7 @@ interface Props {
 
 const PrescribedQuantitiesForDrug: FC<Props> = ({ id, prescription, editable }) => {
   const dispatch = useDispatch();
+  const initialPrescription = useRef<ValueOf<Prescription>>(prescription);
   const qtyOrZero = useCallback((dosages: typeof prescription['dosageQty'], dosage: string): number => {
     return dosages[dosage] ? Math.round(dosages[dosage]) : 0;
   }, []);
@@ -35,28 +36,31 @@ const PrescribedQuantitiesForDrug: FC<Props> = ({ id, prescription, editable }) 
     return (
       <>
         <div>{prescription.brand} {prescription.form}</div>
-        <div css={css`margin-top: 10px;`}>
-          {dosages.map((dos: string) => (
-            <div key={`${prescription.brand}_${prescription.form}_${dos}_final_prescription`}
-                 css={css`
-                   display: flex;
-                   align-items: center;
-                   margin: 0 0 24px 39px;
-                 `}>
-              <div>{dos}:</div>
-              <Input title={dos}
-                     css={css`
-                       margin-left: 14px;
-                       width: 60px;`}
-                     type='number'
-                     min={0}
-                     value={qtyOrZero(prescription.dosageQty, dos)}
-                     step={1}
-                     width={'50px'}
-                     readOnly={!editable}
-                     onChange={onPrescribedQuantityChange}/>
-            </div>
-          ))}
+        <div>
+
+          <div css={css`margin-top: 10px;`}>
+            {dosages.map((dos: string) => (
+              <div key={`${prescription.brand}_${prescription.form}_${dos}_final_prescription`}
+                   css={css`
+                     display: flex;
+                     align-items: center;
+                     margin: 0 0 24px 39px;
+                   `}>
+                <div>{dos}:</div>
+                <Input title={dos}
+                       css={css`
+                         margin-left: 14px;
+                         width: 60px;`}
+                       type='number'
+                       min={0}
+                       value={qtyOrZero(prescription.dosageQty, dos)}
+                       step={1}
+                       width={'50px'}
+                       readOnly={!editable}
+                       onChange={onPrescribedQuantityChange}/>
+              </div>
+            ))}
+          </div>
         </div>
       </>
     );

@@ -546,7 +546,12 @@ export const calcFinalPrescription = (scheduleData: TableRowData[], tableSelecte
     .reduce((prev, row) => {
       if (!prev[row.prescribedDrugId]) {
         const obj: ValueOf<Prescription> = {
-          name: '', brand: '', form: '', availableDosages: [], oralDosageInfo: null, dosageQty: {},
+          name: '',
+          brand: '',
+          form: '',
+          availableDosages: [],
+          oralDosageInfo: null,
+          dosageQty: {},
         };
         obj.name = row.drug;
         obj.brand = row.brand;

@@ -34,7 +34,7 @@ const ProjectedScheduleChart: FC<Props> = ({ scheduleChartData, width, height })
 
   const lineColors = useRef<{ [drugName: string]: string }>({
     Fluoxetine: `#${rgbHex(0, 184, 148)}`,
-    Citalopram: `#${rgbHex(0, 206, 201)}`,
+    Citalopram: `#${rgbHex(232, 67, 147)}`,
     Sertraline: `#${rgbHex(9, 132, 195)}`,
     Paroxetine: `#${rgbHex(108, 72, 247)}`,
     Escitalopram: `#${rgbHex(255, 117, 117)}`,

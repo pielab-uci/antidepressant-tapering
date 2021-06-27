@@ -98,7 +98,6 @@ export interface Prescription {
     // available options for capsule or tablet
     availableDosages: string[];
     dosageQty: { [dosage: string]: number }
-    // TODO: add projected schedule here..?
   }
 }
 

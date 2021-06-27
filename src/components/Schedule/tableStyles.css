@@ -2,12 +2,13 @@
     --alpha-not-selected: 0.2;
     --alpha-selected: 0.5;
 }
+
 .Fluoxetine {
     --rgb: 0, 184, 148;
 }
 
 .Citalopram {
-    --rgb: 0, 206, 201;
+    --rgb: 232, 67, 147;
 }
 
 .Sertraline {
@@ -33,6 +34,7 @@
 .PriorDosage {
     background-color: rgba(100, 100, 100, 0.5) !important;
 }
+
 .Fluoxetine.ag-row-selected,
 .Citalopram.ag-row-selected,
 .Escitalopram.ag-row-selected,

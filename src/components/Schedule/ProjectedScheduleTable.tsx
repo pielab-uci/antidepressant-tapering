@@ -264,6 +264,10 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
           onCancel={handleModalCancel}
           onOk={handleModalOk}/>}
       </div>
+      {/* <div> */}
+      {/*  {Object.keys(rowClassRules.current).map((key) => (<div key={key} css={css`width: 30px; */}
+      {/*    height: 30px;`} className={key}>{key}</div>))} */}
+      {/* </div> */}
     </div>
   );
 };

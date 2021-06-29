@@ -218,6 +218,7 @@ const emptyPrescribedDrug = (id: number): PrescribedDrug => ({
   measureUnit: 'mg',
   minDosageUnit: 0,
   priorDosages: [],
+  priorDosageSum: 0,
   upcomingDosages: [],
   targetDosage: 0,
   availableDosageOptions: [],

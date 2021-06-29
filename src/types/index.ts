@@ -75,8 +75,10 @@ export interface PrescribedDrug {
   minDosageUnit: number;
   availableDosageOptions: string[];
   regularDosageOptions: string[] | null;
-  priorDosages: { dosage: string; quantity: number }[];
-  upcomingDosages: { dosage: string; quantity: number }[];
+  priorDosages: { dosage: string; quantity: number }[] | null;
+  priorDosageSum: number | null;
+  upcomingDosages: { dosage: string; quantity: number }[] | null;
+  upcomingDosageSum: number | null;
   targetDosage: number;
   intervalStartDate: Date;
   intervalEndDate: Date | null;

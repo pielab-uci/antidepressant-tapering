@@ -38,7 +38,7 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
   const dispatch = useDispatch();
   const [gridColumnApi, setGridColumnApi] = useState<ColumnApi | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [doubleClickedRow, setDoubleClickedRow] = useState<TableRowData | null>(null);
+  const [rowDoubleClickEvent, setRowDoubleClickEvent] = useState<RowDoubleClickedEvent | null>(null);
 
   const onGridReady = (params: GridReadyEvent) => {
     console.log('onGridReady');
@@ -176,6 +176,7 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
     console.group('openModal');
     console.log('event: ', event);
     console.groupEnd();
+    setRowDoubleClickEvent(event);
     const newPrescribedDrug: PrescribedDrug = {
       ...event.data.prescribedDrug,
       id: lastPrescriptionFormId + 1,
@@ -189,7 +190,7 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
           // id:
         },
       };
-      setDoubleClickedRow(event.data);
+      setRowDoubleClickEvent(event.data);
       setShowModal(true);
       dispatch({
         type: OPEN_MODAL_FOR_EDITING_TABLE_ROW,
@@ -200,12 +201,12 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
 
   const handleModalCancel = () => {
     setShowModal(false);
-    setDoubleClickedRow(null);
+    setRowDoubleClickEvent(null);
   };
 
   const handleModalOk = () => {
     setShowModal(false);
-    setDoubleClickedRow(null);
+    setRowDoubleClickEvent(null);
   };
 
   return (
@@ -259,15 +260,11 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
           suppressRowClickSelection={true}
         />
         {showModal && <ProjectedScheduleTableRowEditingModal
-          row={doubleClickedRow}
+          doubleClickEvent={rowDoubleClickEvent}
           visible={showModal}
           onCancel={handleModalCancel}
           onOk={handleModalOk}/>}
       </div>
-      {/* <div> */}
-      {/*  {Object.keys(rowClassRules.current).map((key) => (<div key={key} css={css`width: 30px; */}
-      {/*    height: 30px;`} className={key}>{key}</div>))} */}
-      {/* </div> */}
     </div>
   );
 };

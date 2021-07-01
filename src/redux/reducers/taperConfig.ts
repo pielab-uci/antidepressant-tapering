@@ -218,8 +218,10 @@ const emptyPrescribedDrug = (id: number): PrescribedDrug => ({
   measureUnit: 'mg',
   minDosageUnit: 0,
   priorDosages: [],
-  priorDosageSum: 0,
+  priorDosageSum: null,
+  allowChangePriorDosage: true,
   upcomingDosages: [],
+  upcomingDosageSum: null,
   targetDosage: 0,
   availableDosageOptions: [],
   regularDosageOptions: [],
@@ -334,12 +336,18 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         break;
 
       case ADD_NEW_DRUG_FORM:
-        draft.prescriptionFormIds.push(draft.lastPrescriptionFormId + 1);
-        draft.prescribedDrugs!.push(emptyPrescribedDrug(draft.lastPrescriptionFormId + 1));
-        draft.isInputComplete = false;
-        draft.lastPrescriptionFormId += 1;
-        draft.showInstructionsForPatient = false;
-        draft.isSaved = false;
+        if (!action.data) {
+          draft.prescriptionFormIds.push(draft.lastPrescriptionFormId + 1);
+          draft.prescribedDrugs!.push(emptyPrescribedDrug(draft.lastPrescriptionFormId + 1));
+          draft.isInputComplete = false;
+          draft.lastPrescriptionFormId += 1;
+          draft.showInstructionsForPatient = false;
+          draft.isSaved = false;
+        } else {
+          draft.prescriptionFormIds.push(action.data.id);
+          draft.prescribedDrugs!.push(action.data);
+          draft.lastPrescriptionFormId = action.data.id;
+        }
         break;
 
       case REMOVE_DRUG_FORM:
@@ -413,6 +421,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         // )!.name;
         drug.brand = action.data.brand;
         drug.form = '';
+        drug.allowChangePriorDosage = true;
         drug.oralDosageInfo = null;
         drug.priorDosages = [];
         drug.upcomingDosages = [];

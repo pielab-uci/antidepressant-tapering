@@ -75,9 +75,18 @@ export interface PrescribedDrug {
   minDosageUnit: number;
   availableDosageOptions: string[];
   regularDosageOptions: string[] | null;
-  priorDosages: { dosage: string; quantity: number }[] | null;
+
+  /**
+   * When opening a PrescriptionForm in Modal, it disallows to change prior dosage
+   * unless drug name or brand are not changed.
+   */
+  allowChangePriorDosage: boolean;
+  priorDosages: { dosage: string; quantity: number }[];
+  upcomingDosages: { dosage: string; quantity: number }[];
+  /**
+   * priorDosageSum, upcomingDosageSum are used only in modal
+   */
   priorDosageSum: number | null;
-  upcomingDosages: { dosage: string; quantity: number }[] | null;
   upcomingDosageSum: number | null;
   targetDosage: number;
   intervalStartDate: Date;
@@ -127,18 +136,26 @@ export interface TableRowData {
     data: {
       form: string,
       unit: string,
+      oralDosageInfo?: OralDosage
       dosage: { [dosage: string]: number },
     }
   } | null;
   startDate: Date | null,
   endDate: Date | null,
   selected: boolean,
+  /**
+   * Includes Oral solution
+   */
   availableDosageOptions: string[] | null;
+
+  /**
+   * In case of capsule or tablet
+   */
   regularDosageOptions: string[] | null;
-  /*
-     * dosages counts from upcoming dosages
-     * or minimum quantity calculation without considering intervalDurationDays
-     */
+  /**
+   * dosages counts from upcoming dosages
+   * or minimum quantity calculation without considering intervalDurationDays
+   */
   unitDosages: { [dosage: string]: number } | null,
   addedInCurrentVisit: boolean,
   intervalDurationDays: number,

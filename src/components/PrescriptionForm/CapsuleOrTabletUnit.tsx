@@ -27,13 +27,17 @@ const CapsuleOrTabletUnit: FC<Props> = ({
 }) => {
   const context = useContext(PrescriptionFormContext);
   const {
-    formActionDispatch, id, intervalDurationDays, allowSplittingUnscoredTablet,
+    formActionDispatch, id, intervalDurationDays, allowSplittingUnscoredTablet, isModal,
   } = context;
   const { dosages } = context[time];
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
   const dispatch = (action: UpcomingDosageChangeAction | PriorDosageChangeAction) => {
-    formActionDispatch(action);
-    taperConfigActionDispatch(action);
+    if (isModal) {
+      formActionDispatch(action);
+    } else {
+      formActionDispatch(action);
+      taperConfigActionDispatch(action);
+    }
   };
 
   const quantity = (change: 'increment' | 'decrement', dosages: { [dosage: string]: number }, dosage: string) => {
@@ -77,8 +81,8 @@ const CapsuleOrTabletUnit: FC<Props> = ({
 
   const renderIcon = () => {
     const wrapperStyle = css`
-    display: flex;
-    margin-left: 5px;`;
+      display: flex;
+      margin-left: 5px;`;
     if (form === 'tablet') {
       return (
         <div css={wrapperStyle}>
@@ -93,8 +97,11 @@ const CapsuleOrTabletUnit: FC<Props> = ({
     </div>;
   };
   return (
-    <div css={css`display: flex; flex-direction: column; align-items: flex-end;`}>
-      <div css={css`display: flex; margin-bottom: 5px;`}>
+    <div css={css`display: flex;
+      flex-direction: column;
+      align-items: flex-end;`}>
+      <div css={css`display: flex;
+        margin-bottom: 5px;`}>
         <div className='dosage-arrow-button' css={css`display: flex;
           flex-direction: column;
           justify-content: center;
@@ -109,12 +116,14 @@ const CapsuleOrTabletUnit: FC<Props> = ({
             justify-content: flex-end;
           }`}>
           <div>
-            <button onClick={editable ? onIncrement : () => {}}>
+            <button onClick={editable ? onIncrement : () => {
+            }}>
               <ArrowUp/>
             </button>
           </div>
           <div>
-            <button onClick={editable ? onDecrement : () => {}}>
+            <button onClick={editable ? onDecrement : () => {
+            }}>
               <ArrowDown/>
             </button>
           </div>

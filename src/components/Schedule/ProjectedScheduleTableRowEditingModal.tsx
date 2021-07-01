@@ -1,12 +1,11 @@
 import * as React from 'react';
 import Modal from 'antd/es/modal';
-import {
-  FC, useCallback, useEffect, useState,
-} from 'react';
+import { FC, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { css } from '@emotion/react';
 import { GridApi, RowDoubleClickedEvent } from 'ag-grid-community';
+import { useState } from 'reinspect';
 import PrescriptionSettingsForm from '../PrescriptionForm/PrescriptionSettingsForm';
 import {
   DrugForm, DrugOption, PrescribedDrug, TableRowData,
@@ -30,10 +29,12 @@ const ProjectedScheduleTableRowEditingModal: FC<Props> = ({
     drugs,
     lastPrescriptionFormId,
     projectedSchedule,
+    prescribedDrugs,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
-  const [drugFromRow, setDrugFromRow] = useState<PrescribedDrug | null>(null);
+  // const [drugFromRow, setDrugFromRow] = useState<PrescribedDrug | null>(null);
+  const [drugFromRow, setDrugFromRow] = useState<PrescribedDrug | null>(null, 'DrugInModal');
   const dispatch = useDispatch();
-
+  // const [prescribedDrugId, setPrescribedDrugId] = useState<number>(-1);
   const prescriptionToDosages = useCallback((row: TableRowData): { dosage: string, quantity: number }[] => {
     if (row.prescription === null) {
       return [];
@@ -63,6 +64,21 @@ const ProjectedScheduleTableRowEditingModal: FC<Props> = ({
       return prev + parseFloat(dosage) * qty;
     }, 0)) || 0;
 
+    // const drugFromRow: PrescribedDrug = {
+    //   ...doubleClickedRow.prescribedDrug,
+    //   id: lastPrescriptionFormId + 1,
+    //   allowChangePriorDosage: false,
+    //   intervalStartDate: doubleClickedRow.startDate!,
+    //   intervalEndDate: doubleClickedRow.endDate,
+    //   intervalUnit: doubleClickedRow.intervalUnit!,
+    //   intervalCount: doubleClickedRow.intervalCount,
+    //   priorDosages: prescriptionToDosages(prevRow),
+    //   upcomingDosages: prescriptionToDosages(doubleClickedRow),
+    //   priorDosageSum,
+    //   upcomingDosageSum,
+    //   targetDosage: upcomingDosageSum,
+    // };
+
     setDrugFromRow({
       ...doubleClickedRow.prescribedDrug,
       id: lastPrescriptionFormId + 1,
@@ -77,11 +93,11 @@ const ProjectedScheduleTableRowEditingModal: FC<Props> = ({
       upcomingDosageSum,
       targetDosage: upcomingDosageSum,
     });
-
-    dispatch({
-      type: ADD_NEW_DRUG_FORM,
-      data: drugFromRow,
-    });
+    // setPrescribedDrugId(drugFromRow.id);
+    // dispatch({
+    //   type: ADD_NEW_DRUG_FORM,
+    //   data: drugFromRow,
+    // });
   }, []);
 
   // const prescriptionToDosages = (prescription: TableRowData['prescription']): { dosage: string, quantity: number }[] => {
@@ -93,16 +109,17 @@ const ProjectedScheduleTableRowEditingModal: FC<Props> = ({
 
   const onClickCancel = (e: React.MouseEvent<HTMLElement>) => {
     onCancel(e);
-    dispatch({
-      type: REMOVE_DRUG_FORM,
-      data: drugFromRow!.id,
-    });
+    // dispatch({
+    //   type: REMOVE_DRUG_FORM,
+    //   data: prescribedDrugId,
+    // });
   };
 
   return <Modal visible={visible} onCancel={onClickCancel} onOk={onClickOk} width={'50%'}
                 css={css`height: 85%;
                   overflow-y: scroll;`}>
-    {drugFromRow && <PrescriptionForm prescribedDrug={drugFromRow} title={''}/>}
+    {/* {prescribedDrugId !== -1 && <PrescriptionForm prescribedDrug={prescribedDrugs!.find((drug) => drug.id === prescribedDrugId)!} title={''}/>} */}
+    {drugFromRow && <PrescriptionForm prescribedDrug={drugFromRow} isModal={true} title={''}/>}
   </Modal>;
 };
 

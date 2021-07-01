@@ -35,6 +35,7 @@ export interface PrescriptionFormState {
 
 export type IPrescriptionFormContext = PrescriptionFormState
 & {
+  isModal: boolean;
   Prior: {
     dosages: typeof initialState.priorDosagesQty,
   };

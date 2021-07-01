@@ -81,6 +81,7 @@ const CreateTaperConfiguration = () => {
           prescribedDrug={drug}
           addNewPrescriptionForm={addNewPrescriptionForm}
           // index={i}
+          isModal={false}
           title={`Medication #${i + 1}`}
           numberOfMedications={notFromPrevVisit.length}/>;
       },

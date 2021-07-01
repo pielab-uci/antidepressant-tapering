@@ -5,9 +5,7 @@ import Button from 'antd/es/button';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { useDispatch, useSelector } from 'react-redux';
 import { css } from '@emotion/react';
-import {
-  CapsuleOrTabletDosages, SelectInterval, OralFormDosage,
-} from '.';
+import { SelectInterval } from '.';
 import {
   initialState,
   reducer,
@@ -22,13 +20,10 @@ import {
   ChooseFormAction,
   ChooseBrandAction,
   FetchDrugsAction,
-  LOAD_PRESCRIPTION_DATA, toggleAllowSplittingUnscoredTablet,
+  LOAD_PRESCRIPTION_DATA, toggleAllowSplittingUnscoredTablet, PrescriptionFormActions,
 } from './actions';
 import { IPrescriptionFormContext, PrescriptionFormState } from './types';
-import {
-  CapsuleOrTabletDosage,
-  DrugForm, isCapsuleOrTablet, OralDosage, PrescribedDrug,
-} from '../../types';
+import { CapsuleOrTabletDosage, OralDosage, PrescribedDrug } from '../../types';
 import {
   CLEAR_SCHEDULE,
   ClearScheduleAction,
@@ -43,6 +38,7 @@ import Dosages from './Dosages';
 
 export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
   ...initialState,
+  isModal: false,
   Prior: {
     dosages: initialState.priorDosagesQty,
   },
@@ -59,6 +55,7 @@ interface Props {
   title: string;
   numberOfMedications?: number;
   addNewPrescriptionForm?: () => void;
+  isModal: boolean;
 }
 
 const PrescriptionForm: FC<Props> = ({
@@ -66,9 +63,16 @@ const PrescriptionForm: FC<Props> = ({
   title,
   addNewPrescriptionForm,
   numberOfMedications,
+  isModal,
 }) => {
   const taperConfigActionDispatch = useDispatch();
   const [state, formActionDispatch] = useReducer<PrescriptionFormReducer, PrescriptionFormState>(reducer, initialState, (init) => initialState, `PrescriptionFormReducer_${prescribedDrug.id}`);
+  const taperConfigActionDispatchWrapper = (isModal: boolean) => {
+    if (isModal) {
+      return (arg: any) => {};
+    }
+    return taperConfigActionDispatch;
+  };
 
   const {
     chosenBrand, chosenDrugForm, drugFormOptions,
@@ -95,7 +99,8 @@ const PrescriptionForm: FC<Props> = ({
     };
 
     formActionDispatch(action);
-    taperConfigActionDispatch(action);
+    // taperConfigActionDispatch(action);
+    taperConfigActionDispatchWrapper(isModal)(action);
   };
 
   const onFormChange = (value: string) => {
@@ -138,31 +143,32 @@ const PrescriptionForm: FC<Props> = ({
       type: CHOOSE_FORM,
       data: chooseFormActionData,
     });
-    taperConfigActionDispatch({
+    taperConfigActionDispatchWrapper(isModal)({
       type: CHOOSE_FORM,
       data: chooseFormActionData,
     });
   };
 
   const removeDrugForm = () => {
-    taperConfigActionDispatch<RemoveDrugFormAction>({
+    taperConfigActionDispatchWrapper(isModal)({
       type: REMOVE_DRUG_FORM,
       data: prescribedDrug.id,
     });
-    taperConfigActionDispatch<ClearScheduleAction>({
+    taperConfigActionDispatchWrapper(isModal)({
       type: CLEAR_SCHEDULE,
     });
   };
 
   const toggleAllowSplittingUnscoredTabletCheckbox = (e: CheckboxChangeEvent) => {
     formActionDispatch(toggleAllowSplittingUnscoredTablet({ id: prescribedDrug.id, allow: e.target.checked }));
-    taperConfigActionDispatch(toggleAllowSplittingUnscoredTablet({ id: prescribedDrug.id, allow: e.target.checked }));
+    taperConfigActionDispatchWrapper(isModal)(toggleAllowSplittingUnscoredTablet({ id: prescribedDrug.id, allow: e.target.checked }));
   };
 
   return (
     <PrescriptionFormContext.Provider value={{
       ...state,
       id: prescribedDrug.id,
+      isModal,
       Prior: {
         dosages: priorDosagesQty,
         dosageChangeAction: priorDosageChange,

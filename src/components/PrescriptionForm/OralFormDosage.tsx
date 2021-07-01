@@ -16,14 +16,15 @@ import {
 import TargetDosageSettingForm from './TargetDosageSettingForm';
 
 interface Props {
-  time: 'Prior' | 'Upcoming'
+  time: 'Prior' | 'Upcoming';
+  editable: boolean;
 }
 
 const inputStyle = {
   width: 150,
 };
 
-const OralFormDosage: FC<Props> = ({ time }) => {
+const OralFormDosage: FC<Props> = ({ time, editable }) => {
   const context = useContext(PrescriptionFormContext);
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
   const {
@@ -79,8 +80,8 @@ const OralFormDosage: FC<Props> = ({ time }) => {
             justify-content: space-between;
             margin-left: 90px;`}>
             <div>
-              <Input type='number' value={dosages['1mg']} onChange={mgOnChange} min={0} style={inputStyle}/> mg =
-              <Input type='number' value={mlDosage} onChange={mlOnChange} min={0} style={inputStyle}/> ml
+              <Input type='number' value={dosages['1mg']} onChange={mgOnChange} readOnly={!editable} min={0} style={inputStyle}/> mg =
+              <Input type='number' value={mlDosage} onChange={mlOnChange} readOnly={!editable} min={0} style={inputStyle}/> ml
             </div>
             <div>
               {time === 'Upcoming' && dosageDifferenceMessage

@@ -18,11 +18,12 @@ interface Props {
   form: string;
   time: 'Prior' | 'Upcoming'
   dosage: string;
+  editable: boolean;
   isScored?: boolean;
 }
 
 const CapsuleOrTabletUnit: FC<Props> = ({
-  time, form, dosage, isScored,
+  time, form, dosage, isScored, editable,
 }) => {
   const context = useContext(PrescriptionFormContext);
   const {
@@ -108,12 +109,12 @@ const CapsuleOrTabletUnit: FC<Props> = ({
             justify-content: flex-end;
           }`}>
           <div>
-            <button onClick={onIncrement}>
+            <button onClick={editable ? onIncrement : () => {}}>
               <ArrowUp/>
             </button>
           </div>
           <div>
-            <button onClick={onDecrement}>
+            <button onClick={editable ? onDecrement : () => {}}>
               <ArrowDown/>
             </button>
           </div>

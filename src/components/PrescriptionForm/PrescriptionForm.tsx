@@ -188,7 +188,7 @@ const PrescriptionForm: FC<Props> = ({
           allowSplittingUnscoredTablet={allowSplittingUnscoredTablet}
           toggleAllowSplittingUnscoredTabletCheckbox={toggleAllowSplittingUnscoredTabletCheckbox}/>
 
-        <Dosages drugForm={chosenDrugForm} time={'Prior'} editable={true}/>
+        <Dosages drugForm={chosenDrugForm} time={'Prior'} editable={prescribedDrug.allowChangePriorDosage}/>
         <Dosages drugForm={chosenDrugForm} time={'Upcoming'} editable={true}/>
 
         <SelectInterval/>

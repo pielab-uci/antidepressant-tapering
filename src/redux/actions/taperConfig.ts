@@ -73,6 +73,7 @@ export const REMOVE_DRUG_FORM = 'REMOVE_DRUG_FORM' as const;
 
 export interface AddNewDrugFormAction {
   type: typeof ADD_NEW_DRUG_FORM
+  data?: PrescribedDrug;
 }
 
 export interface RemoveDrugFormAction {

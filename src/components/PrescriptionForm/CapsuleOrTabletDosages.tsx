@@ -11,9 +11,10 @@ import TargetDosageSettingForm from './TargetDosageSettingForm';
 
 interface Props {
   time: 'Prior' | 'Upcoming';
+  editable: boolean;
 }
 
-const CapsuleOrTabletDosages: FC<Props> = ({ time }) => {
+const CapsuleOrTabletDosages: FC<Props> = ({ time, editable }) => {
   const context = useContext(PrescriptionFormContext);
   const {
     chosenDrugForm, dosageOptions, priorDosagesQty, upcomingDosagesQty,
@@ -42,6 +43,7 @@ const CapsuleOrTabletDosages: FC<Props> = ({ time }) => {
                 <CapsuleOrTabletUnit
                   key={`${time}_${chosenDrugForm!.form}_${v.dosage}`}
                   time={time}
+                  editable={editable}
                   form={chosenDrugForm!.form}
                   dosage={v.dosage}
                   isScored={v.isScored ? v.isScored : undefined}

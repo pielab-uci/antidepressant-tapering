@@ -16,27 +16,32 @@ import {
 import TargetDosageSettingForm from './TargetDosageSettingForm';
 
 interface Props {
-  time: 'Prior' | 'Upcoming'
+  time: 'Prior' | 'Upcoming';
+  editable: boolean;
 }
 
 const inputStyle = {
   width: 150,
 };
 
-const OralFormDosage: FC<Props> = ({ time }) => {
+const OralFormDosage: FC<Props> = ({ time, editable }) => {
   const context = useContext(PrescriptionFormContext);
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
   const {
     formActionDispatch, id, chosenDrugForm, priorDosagesQty, upcomingDosagesQty,
-    intervalDurationDays, oralDosageInfo,
+    intervalDurationDays, oralDosageInfo, isModal,
   } = context;
   const { dosages } = context[time];
   const dosage = useRef('1mg');
   const [mlDosage, setmlDosage] = useState(dosages['1mg']);
   const [dosageDifferenceMessage, dosageSum] = useDosageSumDifferenceMessage(time, priorDosagesQty, upcomingDosagesQty);
   const dispatch = (action: UpcomingDosageChangeAction | PriorDosageChangeAction) => {
-    formActionDispatch(action);
-    taperConfigActionDispatch(action);
+    if (isModal) {
+      formActionDispatch(action);
+    } else {
+      formActionDispatch(action);
+      taperConfigActionDispatch(action);
+    }
   };
 
   const mgOnChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,8 +84,10 @@ const OralFormDosage: FC<Props> = ({ time }) => {
             justify-content: space-between;
             margin-left: 90px;`}>
             <div>
-              <Input type='number' value={dosages['1mg']} onChange={mgOnChange} min={0} style={inputStyle}/> mg =
-              <Input type='number' value={mlDosage} onChange={mlOnChange} min={0} style={inputStyle}/> ml
+              <Input type='number' value={dosages['1mg']} onChange={mgOnChange} readOnly={!editable} min={0}
+                     style={inputStyle}/> mg =
+              <Input type='number' value={mlDosage} onChange={mlOnChange} readOnly={!editable} min={0}
+                     style={inputStyle}/> ml
             </div>
             <div>
               {time === 'Upcoming' && dosageDifferenceMessage

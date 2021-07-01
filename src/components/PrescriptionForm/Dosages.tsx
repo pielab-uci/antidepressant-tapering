@@ -8,7 +8,7 @@ import { CapsuleOrTabletDosages, OralFormDosage } from './index';
 interface Props {
   drugForm: DrugForm | null | undefined,
   time: 'Prior' | 'Upcoming'
-  editable?: boolean;
+  editable: boolean;
 }
 
 const Dosages: FC<Props> = ({ drugForm, time, editable }) => {
@@ -26,14 +26,14 @@ const Dosages: FC<Props> = ({ drugForm, time, editable }) => {
   if (isCapsuleOrTablet(drugForm)) {
     return (
       <div css={containerStyle.current}>
-        <CapsuleOrTabletDosages time={time}/>
+        <CapsuleOrTabletDosages time={time} editable={editable}/>
       </div>
     );
   }
 
   return (
     <div css={containerStyle.current}>
-      <OralFormDosage time={time}/>
+      <OralFormDosage time={time} editable={editable}/>
     </div>
   );
 };

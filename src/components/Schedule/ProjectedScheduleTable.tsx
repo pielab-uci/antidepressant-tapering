@@ -5,7 +5,7 @@ import { AgGridReact } from 'ag-grid-react';
 import {
   CheckboxSelectionCallbackParams,
   ColDef, ColumnApi,
-  FirstDataRenderedEvent,
+  FirstDataRenderedEvent, GridApi,
   GridReadyEvent, RowDataChangedEvent, RowDoubleClickedEvent,
   RowSelectedEvent,
   SelectionChangedEvent, ValueFormatterParams, ValueSetterParams,
@@ -36,13 +36,16 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
     tableSelectedRows, lastPrescriptionFormId,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const dispatch = useDispatch();
+  const [gridApi, setGridApi] = useState<GridApi | null>(null);
   const [gridColumnApi, setGridColumnApi] = useState<ColumnApi | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [doubleClickedRow, setDoubleClickedRow] = useState<TableRowData | null>(null);
+  // const [rowDoubleClickedEvent, setRowDoubleClickEvent] = useState<RowDoubleClickedEvent | null>(null);
+  const [doubleClickedRowAndBefore, setDoubleClickedRowAndBefore] = useState<[TableRowData, TableRowData]|null>(null);
 
   const onGridReady = (params: GridReadyEvent) => {
     console.log('onGridReady');
     setGridColumnApi(params.columnApi);
+    setGridApi(params.api);
     const selectedRows = projectedSchedule.data.reduce((res, row, i) => {
       if (row.selected) {
         res.push(i);
@@ -176,36 +179,26 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
     console.group('openModal');
     console.log('event: ', event);
     console.groupEnd();
-    const newPrescribedDrug: PrescribedDrug = {
-      ...event.data.prescribedDrug,
-      id: lastPrescriptionFormId + 1,
 
-    };
     if (event.rowIndex !== 0) {
-      const rowWithNewDrug: TableRowData = {
-        ...event.data,
-        prescribedDrug: {
-          ...event.data.prescribedDrug,
-          // id:
-        },
-      };
-      setDoubleClickedRow(event.data);
+      const prevRow: TableRowData = event.api.getRowNode(`${parseFloat(event.node.id!) - 1}`)!.data;
+      setDoubleClickedRowAndBefore([prevRow, event.data]);
       setShowModal(true);
-      dispatch({
-        type: OPEN_MODAL_FOR_EDITING_TABLE_ROW,
-        data: [event.api.getRowNode(`${parseFloat(event.node.id!) - 1}`)?.data, event.data],
-      });
+      // dispatch({
+      //   type: OPEN_MODAL_FOR_EDITING_TABLE_ROW,
+      //   data: [event.api.getRowNode(`${parseFloat(event.node.id!) - 1}`)?.data, event.data],
+      // });
     }
   };
 
   const handleModalCancel = () => {
     setShowModal(false);
-    setDoubleClickedRow(null);
+    setDoubleClickedRowAndBefore(null);
   };
 
   const handleModalOk = () => {
     setShowModal(false);
-    setDoubleClickedRow(null);
+    setDoubleClickedRowAndBefore(null);
   };
 
   return (
@@ -258,16 +251,12 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
           suppressDragLeaveHidesColumns={true}
           suppressRowClickSelection={true}
         />
-        {showModal && <ProjectedScheduleTableRowEditingModal
-          row={doubleClickedRow}
+        {showModal && doubleClickedRowAndBefore && <ProjectedScheduleTableRowEditingModal
+          doubleClickedRowAndBefore={doubleClickedRowAndBefore}
           visible={showModal}
           onCancel={handleModalCancel}
           onOk={handleModalOk}/>}
       </div>
-      {/* <div> */}
-      {/*  {Object.keys(rowClassRules.current).map((key) => (<div key={key} css={css`width: 30px; */}
-      {/*    height: 30px;`} className={key}>{key}</div>))} */}
-      {/* </div> */}
     </div>
   );
 };

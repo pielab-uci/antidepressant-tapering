@@ -73,7 +73,7 @@ export const REMOVE_DRUG_FORM = 'REMOVE_DRUG_FORM' as const;
 
 export interface AddNewDrugFormAction {
   type: typeof ADD_NEW_DRUG_FORM
-  data?: PrescribedDrug;
+  data: PrescribedDrug | null;
 }
 
 export interface RemoveDrugFormAction {
@@ -263,9 +263,9 @@ export interface ValidateInputCompletionAction {
   type: typeof VALIDATE_INPUT_COMPLETION;
 }
 
-export const OPEN_MODAL_FOR_EDITING_TABLE_ROW = 'MODAL_FOR_EDITING_EDITING_TABLE_ROW_OPENED';
+export const EDIT_PROJECTED_SCHEDULE_FROM_MODAL = 'EDIT_PROJECTED_SCHEDULE_FROM_MODAL';
 
-export interface OpenModalForEditingTableRow {
-  type: typeof OPEN_MODAL_FOR_EDITING_TABLE_ROW,
-  data: [TableRowData, TableRowData]; // double clicked row and its previous row
+export interface EditProjectedScheduleFromModal {
+  type: typeof EDIT_PROJECTED_SCHEDULE_FROM_MODAL,
+  data: { doubleClickedRowAndBefore: [TableRowData, TableRowData], prescribedDrugGeneratedFromRow: PrescribedDrug }
 }

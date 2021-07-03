@@ -1,5 +1,6 @@
 import produce from 'immer';
 import differenceInCalendarDays from 'date-fns/esm/differenceInCalendarDays';
+import isBefore from 'date-fns/isBefore';
 import {
   Drug, PrescribedDrug, Prescription, TaperingConfiguration,
 } from '../../types';
@@ -16,6 +17,8 @@ import {
   ChangeNoteAndInstructions,
   CLEAR_SCHEDULE,
   ClearScheduleAction,
+  EDIT_PROJECTED_SCHEDULE_FROM_MODAL,
+  EditProjectedScheduleFromModal,
   EMPTY_PRESCRIBED_DRUGS,
   EMPTY_TAPER_CONFIG_PAGE,
   EmptyPrescribedDrugs,
@@ -34,8 +37,6 @@ import {
   GenerateScheduleAction,
   INIT_NEW_TAPER_CONFIG,
   InitTaperConfigAction,
-  OPEN_MODAL_FOR_EDITING_TABLE_ROW,
-  OpenModalForEditingTableRow,
   REMOVE_DRUG_FORM,
   RemoveDrugFormAction,
   SCHEDULE_ROW_SELECTED,
@@ -206,7 +207,7 @@ export type TaperConfigActions =
   | UpdateChartAction
   | SetIsInputComplete
   | ValidateInputCompletionAction
-  | OpenModalForEditingTableRow
+  | EditProjectedScheduleFromModal
   | PrescriptionFormActions;
 
 const emptyPrescribedDrug = (id: number): PrescribedDrug => ({
@@ -216,6 +217,7 @@ const emptyPrescribedDrug = (id: number): PrescribedDrug => ({
   form: '',
   halfLife: '',
   measureUnit: 'mg',
+  applyInSchedule: true,
   minDosageUnit: 0,
   priorDosages: [],
   priorDosageSum: null,
@@ -336,7 +338,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         break;
 
       case ADD_NEW_DRUG_FORM:
-        if (!action.data) {
+        if (action.data === null) {
           draft.prescriptionFormIds.push(draft.lastPrescriptionFormId + 1);
           draft.prescribedDrugs!.push(emptyPrescribedDrug(draft.lastPrescriptionFormId + 1));
           draft.isInputComplete = false;
@@ -621,14 +623,41 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         break;
 
-      case OPEN_MODAL_FOR_EDITING_TABLE_ROW: {
-        draft.lastPrescriptionFormId += 1;
+      case EDIT_PROJECTED_SCHEDULE_FROM_MODAL: {
+        /**
+         * 1. Change draft.prescribedDrugs ..?
+         * - change previous prescribedDrug - modify the target dosage to the previous row of double clicked one
+         * -> call generate_schedule event/function
+         * - update all the rows at once
+         * 2. Directly change draft.projectedSchedule..?
+         * - still need to change draft.prescribedDrugs
+         */
 
-        const newDrug: PrescribedDrug = {
-          ...action.data[1].prescribedDrug,
-          id: draft.lastPrescriptionFormId,
+        const [prevRow, doubleClickedRow] = action.data.doubleClickedRowAndBefore;
+        const prevDrug = draft.prescribedDrugs!.find((drug) => drug.id === action.data.doubleClickedRowAndBefore[0].prescribedDrugId)!;
+        prevDrug.targetDosage = prevRow.dosage;
+        // TODO: need to handle different cases of start/end dates..
+        prevDrug.intervalEndDate = prevRow.endDate;
+        prevDrug.intervalCount = differenceInCalendarDays(prevRow.endDate!, prevRow.startDate!);
+        prevDrug.intervalUnit = 'Days';
 
-        };
+        if (isBefore(prevDrug.intervalEndDate!, prevDrug.intervalStartDate)) {
+          // TODO: handle this case
+        }
+
+        // add new prescribed drug here
+        draft.prescribedDrugs!.push(action.data.prescribedDrugGeneratedFromRow);
+
+        /*
+        draft.projectedSchedule.data.forEach((row, i) => {
+          if (row.prescribedDrugId === action.data.doubleClickedRowAndBefore.prescribedDrugId
+          && row.rowIndexInPrescribedDrug >= action.data.doubleClickedRowAndBefore.rowIndexInPrescribedDrug) {
+            draft.projectedSchedule.data.splice(i);
+            // draft.projectedSchedule.data.
+          }
+        });
+         */
+
         break;
       }
 

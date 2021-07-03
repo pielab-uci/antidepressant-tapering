@@ -14,13 +14,17 @@ import { SET_IS_INPUT_COMPLETE, VALIDATE_INPUT_COMPLETION } from '../../redux/ac
 
 const TargetDosageSettingForm = () => {
   const {
-    id, targetDosage, formActionDispatch, priorDosagesQty, upcomingDosagesQty,
+    id, targetDosage, formActionDispatch, priorDosagesQty, upcomingDosagesQty, isModal,
   } = useContext(PrescriptionFormContext);
   const [targetDosageValid, setTargetDosageValid] = useState(false);
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
   const dispatch = (action: SetUpcomingDosageGoalAction) => {
-    formActionDispatch(action);
-    taperConfigActionDispatch(action);
+    if (isModal) {
+      formActionDispatch(action);
+    } else {
+      formActionDispatch(action);
+      taperConfigActionDispatch(action);
+    }
   };
 
   const [dosageChange, setDosageChange] = useState<'increase' | 'decrease' | 'same' | null>(null);
@@ -96,7 +100,7 @@ const TargetDosageSettingForm = () => {
           //margin-left: 64px;
           align-items: center;
           margin-left: 10px;
-      
+
           & input::-webkit-inner-spin-button,
           & input::-webkit-outer-spin-button {
             -webkit-appearance: none;

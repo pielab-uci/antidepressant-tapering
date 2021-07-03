@@ -1,6 +1,8 @@
 import * as React from 'react';
 import Modal from 'antd/es/modal';
-import { FC, useCallback, useEffect } from 'react';
+import {
+  FC, useCallback, useEffect, useRef,
+} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { css } from '@emotion/react';
@@ -13,7 +15,7 @@ import {
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import PrescriptionForm from '../PrescriptionForm/PrescriptionForm';
-import { ADD_NEW_DRUG_FORM, REMOVE_DRUG_FORM } from '../../redux/actions/taperConfig';
+import { ADD_NEW_DRUG_FORM, EDIT_PROJECTED_SCHEDULE_FROM_MODAL, REMOVE_DRUG_FORM } from '../../redux/actions/taperConfig';
 
 interface Props {
   visible: boolean;
@@ -64,23 +66,9 @@ const ProjectedScheduleTableRowEditingModal: FC<Props> = ({
       return prev + parseFloat(dosage) * qty;
     }, 0)) || 0;
 
-    // const drugFromRow: PrescribedDrug = {
-    //   ...doubleClickedRow.prescribedDrug,
-    //   id: lastPrescriptionFormId + 1,
-    //   allowChangePriorDosage: false,
-    //   intervalStartDate: doubleClickedRow.startDate!,
-    //   intervalEndDate: doubleClickedRow.endDate,
-    //   intervalUnit: doubleClickedRow.intervalUnit!,
-    //   intervalCount: doubleClickedRow.intervalCount,
-    //   priorDosages: prescriptionToDosages(prevRow),
-    //   upcomingDosages: prescriptionToDosages(doubleClickedRow),
-    //   priorDosageSum,
-    //   upcomingDosageSum,
-    //   targetDosage: upcomingDosageSum,
-    // };
-
-    setDrugFromRow({
+    const newDrugFromRow: PrescribedDrug = {
       ...doubleClickedRow.prescribedDrug,
+      applyInSchedule: false,
       id: lastPrescriptionFormId + 1,
       allowChangePriorDosage: false,
       intervalStartDate: doubleClickedRow.startDate!,
@@ -92,27 +80,43 @@ const ProjectedScheduleTableRowEditingModal: FC<Props> = ({
       priorDosageSum,
       upcomingDosageSum,
       targetDosage: upcomingDosageSum,
+    };
+
+    setDrugFromRow(newDrugFromRow);
+
+    dispatch({
+      type: ADD_NEW_DRUG_FORM,
+      data: newDrugFromRow,
     });
-    // setPrescribedDrugId(drugFromRow.id);
-    // dispatch({
-    //   type: ADD_NEW_DRUG_FORM,
-    //   data: drugFromRow,
-    // });
   }, []);
 
   // const prescriptionToDosages = (prescription: TableRowData['prescription']): { dosage: string, quantity: number }[] => {
 
   const onClickOk = (e: React.MouseEvent<HTMLElement>) => {
+    /**
+     * When medication is changed: add new medication with full new settings
+     * When dosage is changed:
+     *  - when dosage was increasing before -> increase the dosage of other table rows by the same amount
+     *  - when dosage was decreasing before -> decrease the dosage of other table rows by new decreasing rate
+     * When start/end date is changed:
+     * - When start date is changed: only affect the double clicked row
+     * - - When new start date is overlapped with previous rows with the same prescribed drug:
+     * - When end date is changed: push the table rows with same prescribed drug back by the same interval unit count
+     */
+
     onOk(e);
-    // TODO: update table rows
+    dispatch({
+      type: EDIT_PROJECTED_SCHEDULE_FROM_MODAL,
+      data: { doubleClickedRowAndBefore, prescribedDrugGeneratedFromRow: drugFromRow },
+    });
   };
 
   const onClickCancel = (e: React.MouseEvent<HTMLElement>) => {
     onCancel(e);
-    // dispatch({
-    //   type: REMOVE_DRUG_FORM,
-    //   data: prescribedDrugId,
-    // });
+    dispatch({
+      type: REMOVE_DRUG_FORM,
+      data: drugFromRow!.id,
+    });
   };
 
   return <Modal visible={visible} onCancel={onClickCancel} onOk={onClickOk} width={'50%'}

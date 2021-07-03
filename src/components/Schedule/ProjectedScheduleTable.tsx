@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { FC, useRef, useState } from 'react';
+import { useState as useStateLog } from 'reinspect';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { AgGridReact } from 'ag-grid-react';
 import {
@@ -15,7 +17,6 @@ import { css } from '@emotion/react';
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import {
-  OPEN_MODAL_FOR_EDITING_TABLE_ROW,
   SCHEDULE_ROW_SELECTED,
   ScheduleRowSelectedAction,
 } from '../../redux/actions/taperConfig';
@@ -40,7 +41,8 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
   const [gridColumnApi, setGridColumnApi] = useState<ColumnApi | null>(null);
   const [showModal, setShowModal] = useState(false);
   // const [rowDoubleClickedEvent, setRowDoubleClickEvent] = useState<RowDoubleClickedEvent | null>(null);
-  const [doubleClickedRowAndBefore, setDoubleClickedRowAndBefore] = useState<[TableRowData, TableRowData]|null>(null);
+  // const [doubleClickedRowAndBefore, setDoubleClickedRowAndBefore] = useState<[TableRowData, TableRowData]|null>(null);
+  const [doubleClickedRowAndBefore, setDoubleClickedRowAndBefore] = useStateLog<[TableRowData, TableRowData] | null>(null, 'ProjectedScheduleTable:setDoubleClickedRowAndBefore');
 
   const onGridReady = (params: GridReadyEvent) => {
     console.log('onGridReady');
@@ -180,9 +182,22 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
     console.log('event: ', event);
     console.groupEnd();
 
-    if (event.rowIndex !== 0) {
-      const prevRow: TableRowData = event.api.getRowNode(`${parseFloat(event.node.id!) - 1}`)!.data;
-      setDoubleClickedRowAndBefore([prevRow, event.data]);
+    // if (event.rowIndex !== 0) {
+    if (event.data.rowIndexInPrescribedDrug !== -1) {
+      // const prevRow: TableRowData = event.api.getRowNode(`${parseFloat(event.node.id!) - 1}`)!.data;
+
+      // TODO: this prevRow must be the previous row with the same prescribed with the double clicked row.
+      const prevAndDoubleClickedRow: [TableRowData, TableRowData] = [] as unknown as [TableRowData, TableRowData];
+      event.api.forEachNode((row, i) => {
+        if (row.data.prescribedDrugId === event.data.prescribedDrugId
+          && row.data.rowIndexInPrescribedDrug === event.data.rowIndexInPrescribedDrug - 1) {
+          prevAndDoubleClickedRow[0] = row.data;
+          prevAndDoubleClickedRow[1] = event.data;
+        }
+        return null;
+      });
+
+      setDoubleClickedRowAndBefore(prevAndDoubleClickedRow);
       setShowModal(true);
       // dispatch({
       //   type: OPEN_MODAL_FOR_EDITING_TABLE_ROW,

@@ -239,14 +239,13 @@ const projectionLengthOfEachDrug = (drug: Converted): number => {
 
 const generateTableRows = (drugs: Converted[]): TableRowData[] => {
   // const lengthOfProjection = Math.max(...drugs.map(projectionLengthOfEachDrug));
-
   const tableRowsByDrug = drugs.map((drug) => {
     const rows: TableRowData[] = [];
     const durationInDaysCount = { days: differenceInCalendarDays(drug.intervalEndDate, drug.intervalStartDate) + 1 };
     const lengthOfProjection = projectionLengthOfEachDrug(drug);
     const upcomingDosages = calcProjectedDosages(drug, drug.upcomingDosageSum, lengthOfProjection);
-
     rows.push({
+      rowIndexInPrescribedDrug: 0,
       prescribedDrugId: drug.id,
       prescribedDrug: drug,
       drug: drug.name,
@@ -294,6 +293,7 @@ const generateTableRows = (drugs: Converted[]): TableRowData[] => {
     Array(lengthOfProjection - 1).fill(null).forEach((_, i) => {
       if (newRowData.upcomingDosageSum !== 0) {
         rows.push({
+          rowIndexInPrescribedDrug: i + 1,
           prescribedDrug: drug,
           prescribedDrugId: drug.id,
           drug: drug.name,
@@ -403,7 +403,9 @@ const sort = (drugNames: string[], rows: TableRowData[]): TableRowData[] => {
 export const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule => {
   console.group('scheduleGenerator');
   console.log('prescribedDrugs: ', prescribedDrugs);
-  const drugNames = prescribedDrugs.map((drug) => drug.name);
+  const drugsToApplyInSchedule = prescribedDrugs.filter((drug) => drug.applyInSchedule);
+  // const drugNames = prescribedDrugs.map((drug) => drug.name);
+  const drugNames = drugsToApplyInSchedule.map((drug) => drug.name);
 
   const converted: Converted[] = convert(prescribedDrugs);
   console.log('converted: ', converted);
@@ -414,6 +416,7 @@ export const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule =
   const tableDataSorted: TableRowData[] = sort(drugNames, intervalOverlapCheckedRows);
   console.log('tableData: ', tableDataSorted);
   tableDataSorted.unshift(...prescribedDrugs.map((drug) => ({
+    rowIndexInPrescribedDrug: -1,
     prescribedDrugId: drug.id,
     isPriorDosage: true,
     prescribedDrug: drug,

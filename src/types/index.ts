@@ -125,6 +125,7 @@ export interface Converted extends PrescribedDrug {
 }
 
 export interface TableRowData {
+  rowIndexInPrescribedDrug: number;
   prescribedDrugId: number;
   prescribedDrug: PrescribedDrug;
   isPriorDosage: boolean;

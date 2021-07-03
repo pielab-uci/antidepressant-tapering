@@ -11,7 +11,7 @@ import {
   AddOrUpdateTaperConfigRequestAction,
   AddOrUpdateTaperConfigSuccessAction,
   CLEAR_SCHEDULE,
-  ClearScheduleAction,
+  ClearScheduleAction, EDIT_PROJECTED_SCHEDULE_FROM_MODAL,
   FETCH_PRESCRIBED_DRUGS_FAILURE,
   FETCH_PRESCRIBED_DRUGS_REQUEST,
   FETCH_PRESCRIBED_DRUGS_SUCCESS,
@@ -174,6 +174,7 @@ function* fetchTaperConfig(action: FetchTaperConfigRequestAction) {
     if (taperConfigState.prescribedDrugs?.filter((drug) => !drug.prevVisit).length === 0) {
       yield put<AddNewDrugFormAction>({
         type: ADD_NEW_DRUG_FORM,
+        data: null,
       });
     }
 
@@ -227,6 +228,7 @@ function fetchPrescribedDrugsAPI(action: FetchPrescribedDrugsRequestAction): { d
         form: 'tablet',
         measureUnit: 'mg',
         minDosageUnit: 12.5,
+        minDosageUnit: 12.5,
         allowChangePriorDosage: true,
         halfLife: '24 hours',
         priorDosages: [{ dosage: '25mg', quantity: 0.5 }],
@@ -266,6 +268,7 @@ function* fetchPrescribedDrugs(action: FetchPrescribedDrugsRequestAction) {
     if (taperConfigState.prescribedDrugs?.filter((drug) => !drug.prevVisit).length === 0) {
       yield put<AddNewDrugFormAction>({
         type: ADD_NEW_DRUG_FORM,
+        data: null,
       });
     }
 
@@ -284,6 +287,7 @@ function* updateChart() {
     type: UPDATE_CHART,
   });
 }
+
 function* watchFetchPrescribedDrugs() {
   yield takeLatest(FETCH_PRESCRIBED_DRUGS_REQUEST, fetchPrescribedDrugs);
 }
@@ -291,13 +295,15 @@ function* watchFetchPrescribedDrugs() {
 function* watchTaperConfigFormChange() {
   yield takeLatest([CHOOSE_BRAND, CHOOSE_FORM, PRIOR_DOSAGE_CHANGE,
     ALLOW_SPLITTING_UNSCORED_TABLET, UPCOMING_DOSAGE_CHANGE, INTERVAL_START_DATE_CHANGE,
-    INTERVAL_END_DATE_CHANGE, INTERVAL_UNIT_CHANGE, INTERVAL_COUNT_CHANGE, SET_TARGET_DOSAGE],
+    INTERVAL_END_DATE_CHANGE, INTERVAL_UNIT_CHANGE, INTERVAL_COUNT_CHANGE, SET_TARGET_DOSAGE,
+    EDIT_PROJECTED_SCHEDULE_FROM_MODAL],
   generateOrClearSchedule);
 }
 
 function* watchProjectedScheduleTableEdit() {
   yield takeLatest([TABLE_DOSAGE_EDITED, TABLE_START_DATE_EDITED, TABLE_END_DATE_EDITED], updateChart);
 }
+
 export default function* taperConfigSaga() {
   yield all([
     fork(watchFetchTaperConfig),

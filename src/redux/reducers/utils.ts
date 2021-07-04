@@ -407,7 +407,8 @@ export const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule =
   // const drugNames = prescribedDrugs.map((drug) => drug.name);
   const drugNames = drugsToApplyInSchedule.map((drug) => drug.name);
 
-  const converted: Converted[] = convert(prescribedDrugs);
+  // const converted: Converted[] = convert(prescribedDrugs);
+  const converted: Converted[] = convert(drugsToApplyInSchedule);
   console.log('converted: ', converted);
   const rows: TableRowData[] = generateTableRows(converted);
   console.log('rows: ', rows);
@@ -415,7 +416,8 @@ export const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule =
   console.log('intervalOverlapCheckedRows: ', intervalOverlapCheckedRows);
   const tableDataSorted: TableRowData[] = sort(drugNames, intervalOverlapCheckedRows);
   console.log('tableData: ', tableDataSorted);
-  tableDataSorted.unshift(...prescribedDrugs.map((drug) => ({
+  // tableDataSorted.unshift(...prescribedDrugs.map((drug) => ({
+  tableDataSorted.unshift(...drugsToApplyInSchedule.map((drug) => ({
     rowIndexInPrescribedDrug: -1,
     prescribedDrugId: drug.id,
     isPriorDosage: true,
@@ -441,7 +443,8 @@ export const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule =
   })) as TableRowData[]);
   console.groupEnd();
 
-  return { data: tableDataSorted, drugs: prescribedDrugs };
+  // return { data: tableDataSorted, drugs: prescribedDrugs };
+  return { data: tableDataSorted, drugs: drugsToApplyInSchedule };
 };
 
 export type ScheduleChartData = { name: string, brand: string, changeDirection: 'increase' | 'decrease' | 'same', data: { timestamp: number, dosage: number }[] }[];

@@ -1,5 +1,7 @@
 import * as React from 'react';
-import { FC, useRef, useState } from 'react';
+import {
+  FC, useCallback, useRef, useState,
+} from 'react';
 import { useState as useStateLog } from 'reinspect';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,6 +19,7 @@ import { css } from '@emotion/react';
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import {
+  ADD_NEW_DRUG_FORM,
   SCHEDULE_ROW_SELECTED,
   ScheduleRowSelectedAction,
 } from '../../redux/actions/taperConfig';
@@ -34,15 +37,30 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
   projectedSchedule,
 }) => {
   const {
-    tableSelectedRows, lastPrescriptionFormId,
+    tableSelectedRows, lastPrescriptionFormId, prescribedDrugs,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const dispatch = useDispatch();
   const [gridApi, setGridApi] = useState<GridApi | null>(null);
   const [gridColumnApi, setGridColumnApi] = useState<ColumnApi | null>(null);
   const [showModal, setShowModal] = useState(false);
-  // const [rowDoubleClickedEvent, setRowDoubleClickEvent] = useState<RowDoubleClickedEvent | null>(null);
-  // const [doubleClickedRowAndBefore, setDoubleClickedRowAndBefore] = useState<[TableRowData, TableRowData]|null>(null);
-  const [doubleClickedRowAndBefore, setDoubleClickedRowAndBefore] = useStateLog<[TableRowData, TableRowData] | null>(null, 'ProjectedScheduleTable:setDoubleClickedRowAndBefore');
+  // const [drugFromDoubleClickedRow, setDrugFromDoubleClickedRow] = useState<PrescribedDrug | null>(null);
+
+  const prescriptionToDosages = useCallback((row: TableRowData): { dosage: string, quantity: number }[] => {
+    if (row.prescription === null) {
+      return [];
+    }
+
+    if (row.form === 'capsule' || row.form === 'tablet') {
+      const dosages = row.prescribedDrug.regularDosageOptions!.map((option) => ({ dosage: option, quantity: 0 }));
+
+      Object.entries(row.prescription.data.dosage).forEach(([dosage, quantity]) => {
+        dosages.find((dos) => dos.dosage === dosage)!.quantity = quantity;
+      });
+      return dosages;
+    }
+
+    return [{ dosage: '1mg', quantity: row.prescription.data.dosage['1mg'] }];
+  }, []);
 
   const onGridReady = (params: GridReadyEvent) => {
     console.log('onGridReady');
@@ -180,7 +198,6 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
   const openModal = (event: RowDoubleClickedEvent) => {
     console.group('openModal');
     console.log('event: ', event);
-    console.groupEnd();
 
     // if (event.rowIndex !== 0) {
     if (event.data.rowIndexInPrescribedDrug !== -1) {
@@ -188,6 +205,7 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
 
       // TODO: this prevRow must be the previous row with the same prescribed with the double clicked row.
       const prevAndDoubleClickedRow: [TableRowData, TableRowData] = [] as unknown as [TableRowData, TableRowData];
+
       event.api.forEachNode((row, i) => {
         if (row.data.prescribedDrugId === event.data.prescribedDrugId
           && row.data.rowIndexInPrescribedDrug === event.data.rowIndexInPrescribedDrug - 1) {
@@ -197,8 +215,41 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
         return null;
       });
 
-      setDoubleClickedRowAndBefore(prevAndDoubleClickedRow);
+      const [prevRow, doubleClickedRow] = prevAndDoubleClickedRow;
+
+      // setDoubleClickedRowAndBefore(prevAndDoubleClickedRow);
+      const priorDosageSum = (prevAndDoubleClickedRow[0].prescription
+        && Object.entries(prevAndDoubleClickedRow[0].prescription.data.dosage)
+          .reduce((prev, [dosage, qty]) => prev + parseFloat(dosage) * qty, 0)) || 0;
+
+      const upcomingDosageSum = (prevAndDoubleClickedRow[1].prescription
+        && Object.entries(prevAndDoubleClickedRow[1].prescription.data.dosage)
+          .reduce((prev, [dosage, qty]) => prev + parseFloat(dosage) * qty, 0)) || 0;
+
+      const drugFromDoubleClickedRow: PrescribedDrug = {
+        ...doubleClickedRow.prescribedDrug,
+        applyInSchedule: false,
+        id: lastPrescriptionFormId + 1,
+        allowChangePriorDosage: false,
+        intervalStartDate: doubleClickedRow.startDate!,
+        intervalEndDate: doubleClickedRow.endDate!,
+        intervalUnit: doubleClickedRow.intervalUnit!,
+        intervalCount: doubleClickedRow.intervalCount,
+        priorDosages: prescriptionToDosages(prevRow),
+        upcomingDosages: prescriptionToDosages(doubleClickedRow), // TODO: check this part
+        priorDosageSum,
+        upcomingDosageSum,
+        targetDosage: upcomingDosageSum,
+      };
+
+      console.log('drugFromDoubleClickedRow: ', drugFromDoubleClickedRow);
+
       setShowModal(true);
+      dispatch({
+        type: ADD_NEW_DRUG_FORM,
+        data: drugFromDoubleClickedRow,
+      });
+      console.groupEnd();
       // dispatch({
       //   type: OPEN_MODAL_FOR_EDITING_TABLE_ROW,
       //   data: [event.api.getRowNode(`${parseFloat(event.node.id!) - 1}`)?.data, event.data],
@@ -208,12 +259,12 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
 
   const handleModalCancel = () => {
     setShowModal(false);
-    setDoubleClickedRowAndBefore(null);
+    // setDrugFromDoubleClickedRow(null);
   };
 
   const handleModalOk = () => {
     setShowModal(false);
-    setDoubleClickedRowAndBefore(null);
+    // setDrugFromDoubleClickedRow(null);
   };
 
   return (
@@ -266,8 +317,11 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
           suppressDragLeaveHidesColumns={true}
           suppressRowClickSelection={true}
         />
-        {showModal && doubleClickedRowAndBefore && <ProjectedScheduleTableRowEditingModal
-          doubleClickedRowAndBefore={doubleClickedRowAndBefore}
+        {showModal
+        // && prescribedDrugs!.find((drug) => drug.id === drugFromDoubleClickedRow.id)
+        && <ProjectedScheduleTableRowEditingModal
+          // prescribedDrug={prescribedDrugs!.find((drug) => drug.id === drugFromDoubleClickedRow.id)!}
+          prescribedDrug={prescribedDrugs![prescribedDrugs!.length - 1]}
           visible={showModal}
           onCancel={handleModalCancel}
           onOk={handleModalOk}/>}

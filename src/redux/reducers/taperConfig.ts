@@ -346,9 +346,11 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           draft.showInstructionsForPatient = false;
           draft.isSaved = false;
         } else {
-          draft.prescriptionFormIds.push(action.data.id);
+          // change these on click ok in modal
+          // draft.prescriptionFormIds.push(action.data.id);
+          // draft.lastPrescriptionFormId = action.data.id;
+
           draft.prescribedDrugs!.push(action.data);
-          draft.lastPrescriptionFormId = action.data.id;
         }
         break;
 
@@ -641,6 +643,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         prevDrug.intervalCount = differenceInCalendarDays(prevRow.endDate!, prevRow.startDate!);
         prevDrug.intervalUnit = 'Days';
 
+        // TODO: change draft.prescriptionFormIds, draft.lastPrescriptionFormId,..
         if (isBefore(prevDrug.intervalEndDate!, prevDrug.intervalStartDate)) {
           // TODO: handle this case
         }

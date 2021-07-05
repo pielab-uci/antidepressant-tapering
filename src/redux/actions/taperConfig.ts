@@ -267,5 +267,17 @@ export const EDIT_PROJECTED_SCHEDULE_FROM_MODAL = 'EDIT_PROJECTED_SCHEDULE_FROM_
 
 export interface EditProjectedScheduleFromModal {
   type: typeof EDIT_PROJECTED_SCHEDULE_FROM_MODAL,
-  data: { doubleClickedRowAndBefore: [TableRowData, TableRowData], prescribedDrugGeneratedFromRow: PrescribedDrug }
+  // data: { doubleClickedRowAndBefore: [TableRowData, TableRowData], prescribedDrugGeneratedFromRow: PrescribedDrug }
+  // data: { prevRow: TableRowData, doubleClickedRow: TableRowData; }
+}
+
+export const OPEN_MODAL = 'OPEN_MODAL';
+export interface OpenModalAction {
+  type: typeof OPEN_MODAL,
+  data: { prevRow: TableRowData, doubleClickedRow: TableRowData, drugFromRows: PrescribedDrug }
+}
+
+export const MOVE_FROM_CREATE_TO_PRESCRIBE_PAGE = 'MOVE_FROM_CREATE_TO_PRESCRIBE_PAGE';
+export interface MoveFromCreateToPrescribePage {
+  type: typeof MOVE_FROM_CREATE_TO_PRESCRIBE_PAGE;
 }

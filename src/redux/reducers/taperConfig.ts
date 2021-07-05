@@ -2,7 +2,7 @@ import produce from 'immer';
 import differenceInCalendarDays from 'date-fns/esm/differenceInCalendarDays';
 import isBefore from 'date-fns/isBefore';
 import {
-  Drug, PrescribedDrug, Prescription, TaperingConfiguration,
+  Drug, PrescribedDrug, Prescription, TableRowData, TaperingConfiguration,
 } from '../../types';
 import {
   ADD_NEW_DRUG_FORM,
@@ -36,7 +36,7 @@ import {
   GENERATE_SCHEDULE,
   GenerateScheduleAction,
   INIT_NEW_TAPER_CONFIG,
-  InitTaperConfigAction,
+  InitTaperConfigAction, OPEN_MODAL, OpenModalAction,
   REMOVE_DRUG_FORM,
   RemoveDrugFormAction,
   SCHEDULE_ROW_SELECTED,
@@ -109,6 +109,8 @@ export interface TaperConfigState {
   finalPrescription: Prescription;
   isInputComplete: boolean;
 
+  modal_prevRow: TableRowData | null;
+  modal_doubleClickedRow: TableRowData | null;
   intervalDurationDays: number,
 
   instructionsForPatient: string;
@@ -155,6 +157,9 @@ export const initialState: TaperConfigState = {
   tableSelectedRows: [],
   finalPrescription: [],
   isInputComplete: false,
+
+  modal_prevRow: null,
+  modal_doubleClickedRow: null,
 
   intervalDurationDays: 0,
 
@@ -206,6 +211,7 @@ export type TaperConfigActions =
   | TableEditingAction
   | UpdateChartAction
   | SetIsInputComplete
+  | OpenModalAction
   | ValidateInputCompletionAction
   | EditProjectedScheduleFromModal
   | PrescriptionFormActions;
@@ -217,6 +223,7 @@ const emptyPrescribedDrug = (id: number): PrescribedDrug => ({
   form: '',
   halfLife: '',
   measureUnit: 'mg',
+  isModal: false,
   applyInSchedule: true,
   minDosageUnit: 0,
   priorDosages: [],
@@ -355,8 +362,10 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         break;
 
       case REMOVE_DRUG_FORM:
-        draft.prescriptionFormIds = draft.prescriptionFormIds.filter((id) => id !== action.data);
-        draft.prescribedDrugs = draft.prescribedDrugs!.filter((drug) => drug.id !== action.data);
+        // draft.prescriptionFormIds = draft.prescriptionFormIds.filter((id) => id !== action.data);
+        // draft.prescribedDrugs = draft.prescribedDrugs!.filter((drug) => drug.id !== action.data);
+        draft.prescriptionFormIds.pop();
+        draft.prescribedDrugs!.pop();
         draft.isSaved = false;
         draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         break;
@@ -625,6 +634,12 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         break;
 
+      case OPEN_MODAL:
+        draft.prescribedDrugs!.push(action.data.drugFromRows);
+        draft.modal_prevRow = action.data.prevRow;
+        draft.modal_doubleClickedRow = action.data.doubleClickedRow;
+        break;
+
       case EDIT_PROJECTED_SCHEDULE_FROM_MODAL: {
         /**
          * 1. Change draft.prescribedDrugs ..?
@@ -634,32 +649,43 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
          * 2. Directly change draft.projectedSchedule..?
          * - still need to change draft.prescribedDrugs
          */
+        const prevRow = draft.modal_prevRow!;
+        const doubleClickedRow = draft.modal_doubleClickedRow;
 
-        const [prevRow, doubleClickedRow] = action.data.doubleClickedRowAndBefore;
-        const prevDrug = draft.prescribedDrugs!.find((drug) => drug.id === action.data.doubleClickedRowAndBefore[0].prescribedDrugId)!;
+        const prevDrug = draft.prescribedDrugs!.find((drug) => drug.id === draft.modal_prevRow!.prescribedDrugId)!;
         prevDrug.targetDosage = prevRow.dosage;
-        // TODO: need to handle different cases of start/end dates..
-        prevDrug.intervalEndDate = prevRow.endDate;
-        prevDrug.intervalCount = differenceInCalendarDays(prevRow.endDate!, prevRow.startDate!);
-        prevDrug.intervalUnit = 'Days';
+        draft.prescribedDrugs![draft.prescribedDrugs!.length - 1].applyInSchedule = true;
+        // prevDrug.intervalStartDate = prevRow.startDate!;
+        // prevDrug.intervalEndDate = prevRow.endDate!;
+        // prevDrug.intervalCount = prevRow.intervalCount;
+        // prevDrug.intervalUnit = prevRow.intervalUnit!;
 
-        // TODO: change draft.prescriptionFormIds, draft.lastPrescriptionFormId,..
-        if (isBefore(prevDrug.intervalEndDate!, prevDrug.intervalStartDate)) {
-          // TODO: handle this case
-        }
-
-        // add new prescribed drug here
-        draft.prescribedDrugs!.push(action.data.prescribedDrugGeneratedFromRow);
-
-        /*
-        draft.projectedSchedule.data.forEach((row, i) => {
-          if (row.prescribedDrugId === action.data.doubleClickedRowAndBefore.prescribedDrugId
-          && row.rowIndexInPrescribedDrug >= action.data.doubleClickedRowAndBefore.rowIndexInPrescribedDrug) {
-            draft.projectedSchedule.data.splice(i);
-            // draft.projectedSchedule.data.
-          }
-        });
-         */
+        //
+        // const [prevRow, doubleClickedRow] = action.data.doubleClickedRowAndBefore;
+        // const prevDrug = draft.prescribedDrugs!.find((drug) => drug.id === action.data.doubleClickedRowAndBefore[0].prescribedDrugId)!;
+        // prevDrug.targetDosage = prevRow.dosage;
+        // // TODO: need to handle different cases of start/end dates..
+        // prevDrug.intervalEndDate = prevRow.endDate;
+        // prevDrug.intervalCount = differenceInCalendarDays(prevRow.endDate!, prevRow.startDate!);
+        // prevDrug.intervalUnit = 'Days';
+        //
+        // // TODO: change draft.prescriptionFormIds, draft.lastPrescriptionFormId,..
+        // if (isBefore(prevDrug.intervalEndDate!, prevDrug.intervalStartDate)) {
+        //   // TODO: handle this case
+        // }
+        //
+        // // add new prescribed drug here
+        // draft.prescribedDrugs!.push(action.data.prescribedDrugGeneratedFromRow);
+        //
+        // /*
+        // draft.projectedSchedule.data.forEach((row, i) => {
+        //   if (row.prescribedDrugId === action.data.doubleClickedRowAndBefore.prescribedDrugId
+        //   && row.rowIndexInPrescribedDrug >= action.data.doubleClickedRowAndBefore.rowIndexInPrescribedDrug) {
+        //     draft.projectedSchedule.data.splice(i);
+        //     // draft.projectedSchedule.data.
+        //   }
+        // });
+        //  */
 
         break;
       }

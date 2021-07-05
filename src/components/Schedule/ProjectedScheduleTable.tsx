@@ -19,7 +19,7 @@ import { css } from '@emotion/react';
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import {
-  ADD_NEW_DRUG_FORM,
+  ADD_NEW_DRUG_FORM, OPEN_MODAL, OpenModalAction,
   SCHEDULE_ROW_SELECTED,
   ScheduleRowSelectedAction,
 } from '../../redux/actions/taperConfig';
@@ -226,8 +226,9 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
         && Object.entries(prevAndDoubleClickedRow[1].prescription.data.dosage)
           .reduce((prev, [dosage, qty]) => prev + parseFloat(dosage) * qty, 0)) || 0;
 
-      const drugFromDoubleClickedRow: PrescribedDrug = {
+      const drugFromRows: PrescribedDrug = {
         ...doubleClickedRow.prescribedDrug,
+        isModal: true,
         applyInSchedule: false,
         id: lastPrescriptionFormId + 1,
         allowChangePriorDosage: false,
@@ -242,14 +243,18 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
         targetDosage: upcomingDosageSum,
       };
 
-      console.log('drugFromDoubleClickedRow: ', drugFromDoubleClickedRow);
+      console.log('drugFromDoubleClickedRow: ', drugFromRows);
 
-      setShowModal(true);
-      dispatch({
-        type: ADD_NEW_DRUG_FORM,
-        data: drugFromDoubleClickedRow,
+      dispatch<OpenModalAction>({
+        type: OPEN_MODAL,
+        data: {
+          prevRow,
+          doubleClickedRow,
+          drugFromRows,
+        },
       });
       console.groupEnd();
+      setShowModal(true);
       // dispatch({
       //   type: OPEN_MODAL_FOR_EDITING_TABLE_ROW,
       //   data: [event.api.getRowNode(`${parseFloat(event.node.id!) - 1}`)?.data, event.data],
@@ -321,7 +326,7 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
         // && prescribedDrugs!.find((drug) => drug.id === drugFromDoubleClickedRow.id)
         && <ProjectedScheduleTableRowEditingModal
           // prescribedDrug={prescribedDrugs!.find((drug) => drug.id === drugFromDoubleClickedRow.id)!}
-          prescribedDrug={prescribedDrugs![prescribedDrugs!.length - 1]}
+          // prescribedDrug={prescribedDrugs![prescribedDrugs!.length - 1]}
           visible={showModal}
           onCancel={handleModalCancel}
           onOk={handleModalOk}/>}

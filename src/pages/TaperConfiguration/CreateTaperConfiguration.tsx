@@ -1,19 +1,19 @@
 import * as React from 'react';
 import Button from 'antd/es/button';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {
   useCallback, useEffect, useRef,
 } from 'react';
 import {
   useHistory, useLocation,
 } from 'react-router';
-import { css } from '@emotion/react';
-import { useRouteMatch } from 'react-router-dom';
-import { PrescribedDrug } from '../../types';
+import {css} from '@emotion/react';
+import {useRouteMatch} from 'react-router-dom';
+import {PrescribedDrug} from '../../types';
 import PrescriptionForm from '../../components/PrescriptionForm/PrescriptionForm';
-import { RootState } from '../../redux/reducers';
-import { TaperConfigState } from '../../redux/reducers/taperConfig';
-import { ADD_NEW_DRUG_FORM } from '../../redux/actions/taperConfig';
+import {RootState} from '../../redux/reducers';
+import {TaperConfigState} from '../../redux/reducers/taperConfig';
+import {ADD_NEW_DRUG_FORM} from '../../redux/actions/taperConfig';
 
 const wrapperStyle = css`
   display: flex;
@@ -36,11 +36,15 @@ const buttonsStyle = css`
 `;
 
 const CreateTaperConfiguration = () => {
-  const { prescribedDrugs, isInputComplete, patientId } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
+  const {
+    prescribedDrugs,
+    isInputComplete,
+    patientId
+  } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
-  const { path, url } = useRouteMatch();
+  const {path, url} = useRouteMatch();
 
   useEffect(() => {
     console.group('CreateTaperConfiguration');
@@ -73,8 +77,9 @@ const CreateTaperConfiguration = () => {
   };
 
   const renderPrescriptionForms = (prescribedDrugs: PrescribedDrug[]) => {
-    const notFromPrevVisit = prescribedDrugs.filter((prescribedDrug) => !prescribedDrug.prevVisit);
-    return notFromPrevVisit.map(
+    const drugsToRender = prescribedDrugs.filter((prescribedDrug) => !prescribedDrug.prevVisit && !prescribedDrug.isModal);
+
+    return drugsToRender.map(
       (drug, i) => {
         return <PrescriptionForm
           key={`PrescriptionForm${drug.id}`}
@@ -83,7 +88,7 @@ const CreateTaperConfiguration = () => {
           // index={i}
           isModal={false}
           title={`Medication #${i + 1}`}
-          numberOfMedications={notFromPrevVisit.length}/>;
+          numberOfMedications={drugsToRender.length}/>;
       },
     );
   };
@@ -100,7 +105,8 @@ const CreateTaperConfiguration = () => {
       </div>
       <div css={buttonsStyle} className='create-taper-config-buttons'>
         <Button onClick={moveToPatientPage}>Cancel</Button>
-        <Button css={css`background-color: #0984E3;`} type='primary' onClick={moveToEditPage} disabled={!isInputComplete}>Next</Button>
+        <Button css={css`background-color: #0984E3;`} type='primary' onClick={moveToEditPage}
+                disabled={!isInputComplete}>Next</Button>
       </div>
     </div>
   );

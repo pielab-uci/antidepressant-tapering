@@ -79,6 +79,7 @@ export interface PrescribedDrug {
    * In modal, keep setting false before adding to taperConfig state
    */
   applyInSchedule: boolean;
+  isModal: boolean;
   /**
    * When opening a PrescriptionForm in Modal, it disallows to change prior dosage
    * unless drug name or brand are not changed.

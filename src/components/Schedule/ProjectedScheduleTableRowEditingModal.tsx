@@ -18,19 +18,22 @@ import PrescriptionForm from '../PrescriptionForm/PrescriptionForm';
 import { ADD_NEW_DRUG_FORM, EDIT_PROJECTED_SCHEDULE_FROM_MODAL, REMOVE_DRUG_FORM } from '../../redux/actions/taperConfig';
 
 interface Props {
-  prescribedDrug: PrescribedDrug;
+  // prescribedDrug: PrescribedDrug;
   visible: boolean;
   onCancel: (e: React.MouseEvent<HTMLElement>) => void;
   onOk: (e: React.MouseEvent<HTMLElement>) => void;
 }
 
 const ProjectedScheduleTableRowEditingModal: FC<Props> = ({
-  prescribedDrug, visible, onCancel, onOk,
+  // prescribedDrug,
+  visible, onCancel, onOk,
 }) => {
   const {
     drugs,
     lastPrescriptionFormId,
     projectedSchedule,
+    modal_prevRow,
+    modal_doubleClickedRow,
     prescribedDrugs,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   // const [drugFromRow, setDrugFromRow] = useState<PrescribedDrug | null>(null);
@@ -90,17 +93,16 @@ const ProjectedScheduleTableRowEditingModal: FC<Props> = ({
     // TODO: need to handle the case where Ok is clicked without any changes
 
     onOk(e);
-    // dispatch({
-    //   type: EDIT_PROJECTED_SCHEDULE_FROM_MODAL,
-    //   data: { doubleClickedRowAndBefore, prescribedDrugGeneratedFromRow: drugFromRow },
-    // });
+    dispatch({
+      type: EDIT_PROJECTED_SCHEDULE_FROM_MODAL,
+    });
   };
 
   const onClickCancel = (e: React.MouseEvent<HTMLElement>) => {
     onCancel(e);
     dispatch({
       type: REMOVE_DRUG_FORM,
-      data: prescribedDrug.id,
+      // data: prescribedDrug.id,
     });
   };
 
@@ -108,7 +110,8 @@ const ProjectedScheduleTableRowEditingModal: FC<Props> = ({
                 css={css`height: 85%;
                   overflow-y: scroll;`}>
     {/* {prescribedDrugId !== -1 && <PrescriptionForm prescribedDrug={prescribedDrugs!.find((drug) => drug.id === prescribedDrugId)!} title={''}/>} */}
-    {prescribedDrug && <PrescriptionForm prescribedDrug={prescribedDrug} isModal={true} title={''}/>}
+    {/* {prescribedDrug && <PrescriptionForm prescribedDrug={prescribedDrug} isModal={true} title={''}/>} */}
+    {<PrescriptionForm prescribedDrug={prescribedDrugs![prescribedDrugs!.length - 1]} isModal={false} title={''}/>}
   </Modal>;
 };
 

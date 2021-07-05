@@ -25,7 +25,7 @@ import {
   FetchTaperConfigRequestAction,
   FetchTaperConfigSuccessAction,
   GENERATE_SCHEDULE,
-  GenerateScheduleAction,
+  GenerateScheduleAction, MOVE_FROM_CREATE_TO_PRESCRIBE_PAGE,
   TABLE_DOSAGE_EDITED,
   TABLE_END_DATE_EDITED,
   TABLE_START_DATE_EDITED,
@@ -109,6 +109,7 @@ function fetchTaperConfigAPI(action: FetchTaperConfigRequestAction): { data: Tap
           form: 'capsule',
           measureUnit: 'mg',
           minDosageUnit: 5,
+          isModal: false,
           halfLife: 'Fluoxetine: 4-6 days\nNorfluoxetine (active metabolite): 4-16 days',
           applyInSchedule: true,
           availableDosageOptions: ['10mg', '20mg', '40mg'],
@@ -136,6 +137,7 @@ function fetchTaperConfigAPI(action: FetchTaperConfigRequestAction): { data: Tap
           form: 'tablet',
           halfLife: '24 hours',
           measureUnit: 'mg',
+          isModal: false,
           minDosageUnit: 12.5,
           applyInSchedule: true,
           priorDosages: [{ dosage: '25mg', quantity: 0.5 }],
@@ -204,6 +206,7 @@ function fetchPrescribedDrugsAPI(action: FetchPrescribedDrugsRequestAction): { d
         form: 'capsule',
         measureUnit: 'mg',
         minDosageUnit: 5,
+        isModal: false,
         halfLife: 'Fluoxetine: 4-6 days\nNorfluoxetine (active metabolite): 4-16 days',
         availableDosageOptions: ['10mg', '20mg', '40mg'],
         regularDosageOptions: ['10mg', '20mg', '40mg'],
@@ -233,6 +236,7 @@ function fetchPrescribedDrugsAPI(action: FetchPrescribedDrugsRequestAction): { d
         applyInSchedule: true,
         minDosageUnit: 12.5,
         allowChangePriorDosage: true,
+        isModal: false,
         halfLife: '24 hours',
         priorDosages: [{ dosage: '25mg', quantity: 0.5 }],
         priorDosageSum: null,
@@ -296,12 +300,17 @@ function* watchFetchPrescribedDrugs() {
 }
 
 function* watchTaperConfigFormChange() {
-  yield takeLatest([CHOOSE_BRAND, CHOOSE_FORM, PRIOR_DOSAGE_CHANGE,
-    ALLOW_SPLITTING_UNSCORED_TABLET, UPCOMING_DOSAGE_CHANGE, INTERVAL_START_DATE_CHANGE,
-    INTERVAL_END_DATE_CHANGE, INTERVAL_UNIT_CHANGE, INTERVAL_COUNT_CHANGE, SET_TARGET_DOSAGE,
+  yield takeLatest([MOVE_FROM_CREATE_TO_PRESCRIBE_PAGE,
     EDIT_PROJECTED_SCHEDULE_FROM_MODAL],
   generateOrClearSchedule);
 }
+// function* watchTaperConfigFormChange() {
+//   yield takeLatest([CHOOSE_BRAND, CHOOSE_FORM, PRIOR_DOSAGE_CHANGE,
+//     ALLOW_SPLITTING_UNSCORED_TABLET, UPCOMING_DOSAGE_CHANGE, INTERVAL_START_DATE_CHANGE,
+//     INTERVAL_END_DATE_CHANGE, INTERVAL_UNIT_CHANGE, INTERVAL_COUNT_CHANGE, SET_TARGET_DOSAGE,
+//     EDIT_PROJECTED_SCHEDULE_FROM_MODAL],
+//   generateOrClearSchedule);
+// }
 
 function* watchProjectedScheduleTableEdit() {
   yield takeLatest([TABLE_DOSAGE_EDITED, TABLE_START_DATE_EDITED, TABLE_END_DATE_EDITED], updateChart);

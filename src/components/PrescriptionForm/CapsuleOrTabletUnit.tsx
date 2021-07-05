@@ -116,14 +116,12 @@ const CapsuleOrTabletUnit: FC<Props> = ({
             justify-content: flex-end;
           }`}>
           <div>
-            <button onClick={editable ? onIncrement : () => {
-            }}>
+            <button onClick={editable ? onIncrement : () => {}}>
               <ArrowUp/>
             </button>
           </div>
           <div>
-            <button onClick={editable ? onDecrement : () => {
-            }}>
+            <button onClick={editable ? onDecrement : () => {}}>
               <ArrowDown/>
             </button>
           </div>

@@ -8,6 +8,8 @@ import { css } from '@emotion/react';
 import { useRouteMatch } from 'react-router-dom';
 import ProjectedSchedule from '../../components/Schedule/ProjectedSchedule';
 import NotesToShare from '../../components/Schedule/NotesToShare';
+import {useDispatch} from "react-redux";
+import {MOVE_FROM_CREATE_TO_PRESCRIBE_PAGE} from "../../redux/actions/taperConfig";
 
 const wrapperStyle = css`
 width: 100%;
@@ -42,6 +44,13 @@ const buttonStyle = css`
 const EditTaperConfiguration = () => {
   const history = useHistory();
   const { url } = useRouteMatch();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch({
+      type: MOVE_FROM_CREATE_TO_PRESCRIBE_PAGE
+    })
+  }, [])
 
   const moveToCreatePage = () => {
     history.push(url.replace('edit', 'create'));

@@ -17,7 +17,7 @@ import {
 import format from 'date-fns/esm/format';
 import { css } from '@emotion/react';
 import { RootState } from '../../redux/reducers';
-import { TaperConfigState } from '../../redux/reducers/taperConfig/taperConfig';
+import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import {
   ADD_NEW_DRUG_FORM, OPEN_MODAL, OpenModalAction,
   SCHEDULE_ROW_SELECTED,
@@ -44,25 +44,7 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
   const [gridApi, setGridApi] = useState<GridApi | null>(null);
   const [gridColumnApi, setGridColumnApi] = useState<ColumnApi | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [drugFromDoubleClickedRow, setDrugFromDoubleClickedRow] = useState<PrescribedDrug | null>(null);
   const [doubleClickedRowAndBefore, setDoubleClickedRowAndBefore] = useState<[TableRowData, TableRowData] | null>(null);
-
-  const prescriptionToDosages = useCallback((row: TableRowData): { dosage: string, quantity: number }[] => {
-    if (row.prescription === null) {
-      return [];
-    }
-
-    if (row.form === 'capsule' || row.form === 'tablet') {
-      const dosages = row.prescribedDrug.regularDosageOptions!.map((option) => ({ dosage: option, quantity: 0 }));
-
-      Object.entries(row.prescription.data.dosage).forEach(([dosage, quantity]) => {
-        dosages.find((dos) => dos.dosage === dosage)!.quantity = quantity;
-      });
-      return dosages;
-    }
-
-    return [{ dosage: '1mg', quantity: row.prescription.data.dosage['1mg'] }];
-  }, []);
 
   const onGridReady = (params: GridReadyEvent) => {
     console.log('onGridReady');
@@ -200,11 +182,10 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
   const openModal = (event: RowDoubleClickedEvent) => {
     console.group('openModal');
     console.log('event: ', event);
-
     // if (event.rowIndex !== 0) {
     if (event.data.rowIndexInPrescribedDrug !== -1) {
       // const prevRow: TableRowData = event.api.getRowNode(`${parseFloat(event.node.id!) - 1}`)!.data;
-
+      console.log('setDoubleClickedRowAndBefore');
       // TODO: this prevRow must be the previous row with the same prescribed with the double clicked row.
       const prevAndDoubleClickedRow: [TableRowData, TableRowData] = [] as unknown as [TableRowData, TableRowData];
 
@@ -216,61 +197,16 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
         }
         return null;
       });
-
-      console.log('setDoubleClickedRowAndBefore');
+      console.log('prevAndDoubleClickedRow: ', prevAndDoubleClickedRow);
       setDoubleClickedRowAndBefore(prevAndDoubleClickedRow);
-      console.log(doubleClickedRowAndBefore);
-
-      const [prevRow, doubleClickedRow] = prevAndDoubleClickedRow;
-      // const [prevRow, doubleClickedRow] = doubleClickedRowAndBefore!;
-      console.log('prevRow: ', prevRow);
-      console.log('doubleClickedRow: ', doubleClickedRow);
-
-      // setDoubleClickedRowAndBefore(prevAndDoubleClickedRow);
-      const priorDosageSum = (prevAndDoubleClickedRow[0].prescription
-        && Object.entries(prevAndDoubleClickedRow[0].prescription.data.dosage)
-          .reduce((prev, [dosage, qty]) => prev + parseFloat(dosage) * qty, 0)) || 0;
-
-      const upcomingDosageSum = (prevAndDoubleClickedRow[1].prescription
-        && Object.entries(prevAndDoubleClickedRow[1].prescription.data.dosage)
-          .reduce((prev, [dosage, qty]) => prev + parseFloat(dosage) * qty, 0)) || 0;
-
-      const drugFromRows: PrescribedDrug = {
-        ...doubleClickedRow.prescribedDrug,
-        isModal: true,
-        applyInSchedule: false,
-        id: lastPrescriptionFormId + 1,
-        allowChangePriorDosage: false,
-        intervalStartDate: doubleClickedRow.startDate!,
-        intervalEndDate: doubleClickedRow.endDate!,
-        intervalUnit: doubleClickedRow.intervalUnit!,
-        intervalCount: doubleClickedRow.intervalCount,
-        priorDosages: prescriptionToDosages(prevRow),
-        upcomingDosages: prescriptionToDosages(doubleClickedRow), // TODO: check this part
-        priorDosageSum,
-        upcomingDosageSum,
-        targetDosage: upcomingDosageSum,
-      };
-
-      setDrugFromDoubleClickedRow(drugFromRows);
-
-      console.log('drugFromDoubleClickedRow: ', drugFromRows);
-
-      // dispatch<OpenModalAction>({
-      //   type: OPEN_MODAL,
-      //   data: {
-      //     prevRow,
-      //     doubleClickedRow,
-      //     drugFromRows,
-      //   },
-      // });
-      console.groupEnd();
+      console.log('doubleClickedRowAndBefore: ', doubleClickedRowAndBefore);
       setShowModal(true);
       // dispatch({
       //   type: OPEN_MODAL_FOR_EDITING_TABLE_ROW,
       //   data: [event.api.getRowNode(`${parseFloat(event.node.id!) - 1}`)?.data, event.data],
       // });
     }
+    console.groupEnd();
   };
 
   const handleModalCancel = () => {
@@ -333,23 +269,12 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
           suppressDragLeaveHidesColumns={true}
           suppressRowClickSelection={true}
         />
-        {/* {showModal */}
-        {/* // && prescribedDrugs!.find((drug) => drug.id === drugFromDoubleClickedRow.id) */}
-        {/* && <ProjectedScheduleTableRowEditingModal */}
-        {/*  // prescribedDrug={prescribedDrugs!.find((drug) => drug.id === drugFromDoubleClickedRow.id)!} */}
-        {/*  // prescribedDrug={prescribedDrugs![prescribedDrugs!.length - 1]} */}
-        {/*  visible={showModal} */}
-        {/*  onCancel={handleModalCancel} */}
-        {/*  onOk={handleModalOk}/>} */}
-
-        {drugFromDoubleClickedRow
-        && doubleClickedRowAndBefore
+        {doubleClickedRowAndBefore
         && showModal
-        && <ProjectedScheduleTableRowEditingModal prescribedDrug={drugFromDoubleClickedRow}
-                                                  doubleClickedRowAndBefore={doubleClickedRowAndBefore}
-                                                  visible={showModal} onCancel={handleModalCancel}
-                                                  onOk={handleModalOk}/>}
-
+        && <ProjectedScheduleTableRowEditingModal
+          doubleClickedRowAndBefore={doubleClickedRowAndBefore}
+          visible={showModal} onCancel={handleModalCancel}
+          onOk={handleModalOk}/>}
       </div>
     </div>
   );

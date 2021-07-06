@@ -12,7 +12,7 @@ import { useRouteMatch } from 'react-router-dom';
 import { PrescribedDrug } from '../../types';
 import PrescriptionForm from '../../components/PrescriptionForm/PrescriptionForm';
 import { RootState } from '../../redux/reducers';
-import { TaperConfigState } from '../../redux/reducers/taperConfig/taperConfig';
+import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import { ADD_NEW_DRUG_FORM } from '../../redux/actions/taperConfig';
 
 const wrapperStyle = css`
@@ -86,7 +86,7 @@ const CreateTaperConfiguration = () => {
           prescribedDrug={drug}
           addNewPrescriptionForm={addNewPrescriptionForm}
           // index={i}
-          isModal={false}
+          modal={{ isModal: false }}
           title={`Medication #${i + 1}`}
           numberOfMedications={drugsToRender.length}/>;
       },

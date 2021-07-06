@@ -41,8 +41,6 @@ export interface TaperConfigState {
   finalPrescription: Prescription;
   isInputComplete: boolean;
 
-  modal_prevRow: TableRowData | null;
-  modal_doubleClickedRow: TableRowData | null;
   intervalDurationDays: number,
 
   instructionsForPatient: string;
@@ -143,9 +141,6 @@ export const initialState: TaperConfigState = {
   tableSelectedRows: [],
   finalPrescription: [],
   isInputComplete: false,
-
-  modal_prevRow: null,
-  modal_doubleClickedRow: null,
 
   intervalDurationDays: 0,
 

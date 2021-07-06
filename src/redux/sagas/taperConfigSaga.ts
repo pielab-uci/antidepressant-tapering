@@ -34,7 +34,7 @@ import {
 } from '../actions/taperConfig';
 import { PrescribedDrug, TaperingConfiguration } from '../../types';
 import { completePrescribedDrugs } from '../reducers/utils';
-import { TaperConfigState } from '../reducers/taperConfig/taperConfig';
+import { TaperConfigState } from '../reducers/taperConfig';
 import {
   ALLOW_SPLITTING_UNSCORED_TABLET,
   CHOOSE_BRAND,

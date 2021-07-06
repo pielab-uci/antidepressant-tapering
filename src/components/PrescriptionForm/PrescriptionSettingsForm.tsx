@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import {
   CapsuleOrTabletForm, DrugForm, DrugOption, OralForm, PrescribedDrug,
 } from '../../types';
-import { TaperConfigState } from '../../redux/reducers/taperConfig/taperConfig';
+import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import { RootState } from '../../redux/reducers';
 
 const { OptGroup, Option } = Select;

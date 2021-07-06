@@ -1,5 +1,7 @@
 import * as React from 'react';
-import { useEffect, createContext, FC } from 'react';
+import {
+  useEffect, createContext, FC, Dispatch,
+} from 'react';
 import { useReducer } from 'reinspect';
 import Button from 'antd/es/button';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
@@ -32,7 +34,7 @@ import {
 } from '../../redux/actions/taperConfig';
 
 import { RootState } from '../../redux/reducers';
-import { TaperConfigState } from '../../redux/reducers/taperConfig/taperConfig';
+import { TaperConfigActions, TaperConfigState } from '../../redux/reducers/taperConfig';
 import PrescriptionSettingsForm from './PrescriptionSettingsForm';
 import Dosages from './Dosages';
 
@@ -55,7 +57,7 @@ interface Props {
   title: string;
   numberOfMedications?: number;
   addNewPrescriptionForm?: () => void;
-  isModal: boolean;
+  modal: { isModal: boolean, modalDispatch?: Dispatch<any> }
 }
 
 const PrescriptionForm: FC<Props> = ({
@@ -63,13 +65,13 @@ const PrescriptionForm: FC<Props> = ({
   title,
   addNewPrescriptionForm,
   numberOfMedications,
-  isModal,
+  modal: { isModal, modalDispatch },
 }) => {
   const taperConfigActionDispatch = useDispatch();
   const [state, formActionDispatch] = useReducer<PrescriptionFormReducer, PrescriptionFormState>(reducer, initialState, (init) => initialState, `PrescriptionFormReducer_${prescribedDrug.id}`);
-  const taperConfigActionDispatchWrapper = (isModal: boolean) => {
+  const externalDispatchWrapper = (isModal: boolean) => {
     if (isModal) {
-      return (arg: any) => {};
+      return modalDispatch!;
     }
     return taperConfigActionDispatch;
   };
@@ -100,7 +102,7 @@ const PrescriptionForm: FC<Props> = ({
 
     formActionDispatch(action);
     // taperConfigActionDispatch(action);
-    taperConfigActionDispatchWrapper(isModal)(action);
+    externalDispatchWrapper(isModal)(action);
   };
 
   const onFormChange = (value: string) => {
@@ -143,25 +145,25 @@ const PrescriptionForm: FC<Props> = ({
       type: CHOOSE_FORM,
       data: chooseFormActionData,
     });
-    taperConfigActionDispatchWrapper(isModal)({
+    externalDispatchWrapper(isModal)({
       type: CHOOSE_FORM,
       data: chooseFormActionData,
     });
   };
 
   const removeDrugForm = () => {
-    taperConfigActionDispatchWrapper(isModal)({
+    externalDispatchWrapper(isModal)({
       type: REMOVE_DRUG_FORM,
       data: prescribedDrug.id,
     });
-    taperConfigActionDispatchWrapper(isModal)({
+    externalDispatchWrapper(isModal)({
       type: CLEAR_SCHEDULE,
     });
   };
 
   const toggleAllowSplittingUnscoredTabletCheckbox = (e: CheckboxChangeEvent) => {
     formActionDispatch(toggleAllowSplittingUnscoredTablet({ id: prescribedDrug.id, allow: e.target.checked }));
-    taperConfigActionDispatchWrapper(isModal)(toggleAllowSplittingUnscoredTablet({ id: prescribedDrug.id, allow: e.target.checked }));
+    externalDispatchWrapper(isModal)(toggleAllowSplittingUnscoredTablet({ id: prescribedDrug.id, allow: e.target.checked }));
   };
 
   return (

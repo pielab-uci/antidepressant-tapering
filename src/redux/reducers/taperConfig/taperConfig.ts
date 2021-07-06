@@ -1,68 +1,26 @@
 import produce from 'immer';
 import differenceInCalendarDays from 'date-fns/esm/differenceInCalendarDays';
-import isBefore from 'date-fns/isBefore';
-import {
-  Drug, PrescribedDrug, Prescription, TableRowData, TaperingConfiguration,
-} from '../../../types';
 import {
   ADD_NEW_DRUG_FORM,
-  ADD_OR_UPDATE_TAPER_CONFIG_FAILURE,
-  ADD_OR_UPDATE_TAPER_CONFIG_REQUEST,
-  ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS,
-  AddNewDrugFormAction,
-  AddOrUpdateTaperConfigAyncActions,
   CHANGE_MESSAGE_FOR_PATIENT,
   CHANGE_NOTE_AND_INSTRUCTIONS,
-  ChangeMessageForPatient,
-  ChangeNoteAndInstructions,
   CLEAR_SCHEDULE,
-  ClearScheduleAction,
   EDIT_PROJECTED_SCHEDULE_FROM_MODAL,
-  EditProjectedScheduleFromModal,
   EMPTY_PRESCRIBED_DRUGS,
   EMPTY_TAPER_CONFIG_PAGE,
-  EmptyPrescribedDrugs,
-  EmptyTaperConfigPage,
-  FETCH_PRESCRIBED_DRUGS_FAILURE,
-  FETCH_PRESCRIBED_DRUGS_REQUEST,
-  FETCH_PRESCRIBED_DRUGS_SUCCESS,
-  FETCH_TAPER_CONFIG_FAILURE,
-  FETCH_TAPER_CONFIG_REQUEST,
-  FETCH_TAPER_CONFIG_SUCCESS,
-  FetchPrescribedDrugAsyncActions,
-  FetchTaperConfigAsyncActions,
   FINAL_PRESCRIPTION_QUANTITY_CHANGE,
-  FinalPrescriptionQuantityChange,
   GENERATE_SCHEDULE,
-  GenerateScheduleAction,
   INIT_NEW_TAPER_CONFIG,
-  InitTaperConfigAction, OPEN_MODAL, OpenModalAction,
   REMOVE_DRUG_FORM,
-  RemoveDrugFormAction,
   SCHEDULE_ROW_SELECTED,
-  ScheduleRowSelectedAction,
   SET_IS_INPUT_COMPLETE,
-  SetIsInputComplete,
-  SHARE_WITH_PATIENT_APP_FAILURE,
-  SHARE_WITH_PATIENT_APP_REQUEST,
-  SHARE_WITH_PATIENT_APP_SUCCESS,
-  SHARE_WITH_PATIENT_EMAIL_FAILURE,
-  SHARE_WITH_PATIENT_EMAIL_REQUEST,
-  SHARE_WITH_PATIENT_EMAIL_SUCCESS,
-  ShareWithPatientAppAsyncActions,
-  ShareWithPatientEmailAsyncActions,
   TABLE_DOSAGE_EDITED,
   TABLE_END_DATE_EDITED,
   TABLE_START_DATE_EDITED,
-  TableEditingAction,
   TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
-  ToggleShareProjectedScheduleWithPatient,
   UPDATE_CHART,
-  UpdateChartAction,
   VALIDATE_INPUT_COMPLETION,
-  ValidateInputCompletionAction,
 } from '../../actions/taperConfig';
-import drugs from '../drugs';
 
 import {
   ALLOW_SPLITTING_UNSCORED_TABLET,
@@ -77,7 +35,6 @@ import {
   SET_TARGET_DOSAGE,
   UPCOMING_DOSAGE_CHANGE,
 } from '../../../components/PrescriptionForm/actions';
-import { Schedule } from '../../../components/Schedule/ProjectedSchedule';
 import {
   calcFinalPrescription,
   calcMinimumQuantityForDosage,
@@ -126,72 +83,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.instructionsForPatient = '';
         draft.instructionsForPharmacy = '';
         draft.scheduleChartData = [];
-        break;
-
-      case ADD_OR_UPDATE_TAPER_CONFIG_REQUEST:
-        draft.addingTaperConfig = true;
-        draft.addedTaperConfig = false;
-        draft.addingTaperConfigError = null;
-        break;
-
-      case ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS: {
-        draft.addingTaperConfig = false;
-        draft.addedTaperConfig = true;
-        draft.taperConfigId = action.data.id;
-        draft.taperConfigCreatedAt = action.data.createdAt;
-        draft.prescribedDrugs!.forEach((drug) => {
-          drug.prescribedAt = action.data.createdAt;
-        });
-        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
-        draft.isSaved = true;
-        break;
-      }
-
-      case ADD_OR_UPDATE_TAPER_CONFIG_FAILURE:
-        draft.addingTaperConfig = false;
-        draft.addedTaperConfig = false;
-        draft.addingTaperConfigError = action.error;
-        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
-        break;
-
-      case FETCH_TAPER_CONFIG_REQUEST:
-        draft.fetchingTaperConfig = true;
-        draft.fetchedTaperConfig = false;
-        draft.fetchingTaperConfigError = null;
-        break;
-
-      case FETCH_TAPER_CONFIG_SUCCESS:
-        draft.fetchingTaperConfig = false;
-        draft.fetchedTaperConfig = true;
-        draft.clinicianId = action.data.clinicianId;
-        draft.patientId = action.data.patientId;
-        draft.prescribedDrugs = action.data.prescribedDrugs;
-        draft.lastPrescriptionFormId = Math.max(...action.data.prescribedDrugs.map((drug) => drug.id));
-        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
-        draft.isSaved = false;
-        break;
-
-      case FETCH_TAPER_CONFIG_FAILURE:
-        draft.fetchingTaperConfig = false;
-        draft.fetchingTaperConfigError = action.error;
-        break;
-
-      case FETCH_PRESCRIBED_DRUGS_REQUEST:
-        draft.fetchingPrescribedDrugs = true;
-        draft.fetchedPrescribedDrugs = false;
-        draft.fetchingPrescribedDrugsError = false;
-        break;
-
-      case FETCH_PRESCRIBED_DRUGS_SUCCESS:
-        draft.fetchingPrescribedDrugs = false;
-        draft.fetchedPrescribedDrugs = true;
-        draft.prescribedDrugs = action.data;
-        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
-        break;
-
-      case FETCH_PRESCRIBED_DRUGS_FAILURE:
-        draft.fetchingPrescribedDrugs = false;
-        draft.fetchingPrescribedDrugsError = action.error;
         break;
 
       case ADD_NEW_DRUG_FORM:
@@ -402,38 +293,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         break;
       }
 
-      case SHARE_WITH_PATIENT_APP_REQUEST:
-        draft.sharingWithPatientApp = true;
-        draft.sharedWithPatientApp = false;
-        draft.sharingWithPatientAppError = null;
-        break;
-
-      case SHARE_WITH_PATIENT_APP_SUCCESS:
-        draft.sharingWithPatientApp = false;
-        draft.sharedWithPatientApp = true;
-        break;
-
-      case SHARE_WITH_PATIENT_APP_FAILURE:
-        draft.sharingWithPatientApp = false;
-        draft.sharingWithPatientAppError = action.error;
-        break;
-
-      case SHARE_WITH_PATIENT_EMAIL_REQUEST:
-        draft.sharingWithPatientEmail = true;
-        draft.sharedWithPatientEmail = false;
-        draft.sharingWithPatientEmailError = null;
-        break;
-
-      case SHARE_WITH_PATIENT_EMAIL_SUCCESS:
-        draft.sharingWithPatientEmail = false;
-        draft.sharedWithPatientEmail = true;
-        break;
-
-      case SHARE_WITH_PATIENT_EMAIL_FAILURE:
-        draft.sharingWithPatientEmail = false;
-        draft.sharingWithPatientEmailError = action.error;
-        break;
-
       case TABLE_DOSAGE_EDITED: {
         if (action.data.rowIndex !== null) {
           const editedRow = draft.projectedSchedule.data[action.data.rowIndex];
@@ -484,12 +343,6 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         break;
 
-        // case OPEN_MODAL:
-        //   draft.prescribedDrugs!.push(action.data.drugFromRows);
-        //   draft.modal_prevRow = action.data.prevRow;
-        //   draft.modal_doubleClickedRow = action.data.doubleClickedRow;
-        //   break;
-
       case EDIT_PROJECTED_SCHEDULE_FROM_MODAL: {
         /**
          * 1. Change draft.prescribedDrugs ..?
@@ -499,12 +352,12 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
          * 2. Directly change draft.projectedSchedule..?
          * - still need to change draft.prescribedDrugs
          */
-        const prevRow = draft.modal_prevRow!;
-        const doubleClickedRow = draft.modal_doubleClickedRow;
+        // const prevRow = draft.modal_prevRow!;
+        // const doubleClickedRow = draft.modal_doubleClickedRow;
 
-        const prevDrug = draft.prescribedDrugs!.find((drug) => drug.id === draft.modal_prevRow!.prescribedDrugId)!;
-        prevDrug.targetDosage = prevRow.dosage;
-        draft.prescribedDrugs![draft.prescribedDrugs!.length - 1].applyInSchedule = true;
+        // const prevDrug = draft.prescribedDrugs!.find((drug) => drug.id === draft.modal_prevRow!.prescribedDrugId)!;
+        // prevDrug.targetDosage = prevRow.dosage;
+        // draft.prescribedDrugs![draft.prescribedDrugs!.length - 1].applyInSchedule = true;
         // prevDrug.intervalStartDate = prevRow.startDate!;
         // prevDrug.intervalEndDate = prevRow.endDate!;
         // prevDrug.intervalCount = prevRow.intervalCount;

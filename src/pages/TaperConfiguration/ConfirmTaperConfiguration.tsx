@@ -8,7 +8,7 @@ import { useHistory, useLocation } from 'react-router';
 import { useRouteMatch } from 'react-router-dom';
 import { css } from '@emotion/react';
 import { RootState } from '../../redux/reducers';
-import { TaperConfigState } from '../../redux/reducers/taperConfig/taperConfig';
+import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import {
   SHARE_WITH_PATIENT_APP_REQUEST, SHARE_WITH_PATIENT_EMAIL_REQUEST,
   TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,

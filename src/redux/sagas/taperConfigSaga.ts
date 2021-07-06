@@ -34,7 +34,7 @@ import {
 } from '../actions/taperConfig';
 import { PrescribedDrug, TaperingConfiguration } from '../../types';
 import { completePrescribedDrugs } from '../reducers/utils';
-import { TaperConfigState } from '../reducers/taperConfig';
+import { TaperConfigState } from '../reducers/taperConfig/taperConfig';
 import {
   ALLOW_SPLITTING_UNSCORED_TABLET,
   CHOOSE_BRAND,
@@ -304,6 +304,7 @@ function* watchTaperConfigFormChange() {
     EDIT_PROJECTED_SCHEDULE_FROM_MODAL],
   generateOrClearSchedule);
 }
+
 // function* watchTaperConfigFormChange() {
 //   yield takeLatest([CHOOSE_BRAND, CHOOSE_FORM, PRIOR_DOSAGE_CHANGE,
 //     ALLOW_SPLITTING_UNSCORED_TABLET, UPCOMING_DOSAGE_CHANGE, INTERVAL_START_DATE_CHANGE,

@@ -6,7 +6,7 @@ import {
 import { css } from '@emotion/react';
 import { ProjectedScheduleChart, ProjectedScheduleTable } from '.';
 import { RootState } from '../../redux/reducers';
-import { TaperConfigState } from '../../redux/reducers/taperConfig';
+import { TaperConfigState } from '../../redux/reducers/taperConfig/taperConfig';
 import { PrescribedDrug, TableRowData } from '../../types';
 import PrescribedQuantitiesForDrug from './PrescribedQuantitiesForDrug';
 

@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
 import { css } from '@emotion/react';
 import { PrescriptionFormContext } from './PrescriptionForm';
-import { TaperConfigActions } from '../../redux/reducers/taperConfig';
+import { TaperConfigActions } from '../../redux/reducers/taperConfig/taperConfig';
 import {
   SET_TARGET_DOSAGE,
   SetUpcomingDosageGoalAction,

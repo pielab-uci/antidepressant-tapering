@@ -6,7 +6,7 @@ import Button from 'antd/es/button';
 import { useDispatch, useSelector } from 'react-redux';
 import { FC, useCallback, useRef } from 'react';
 import { RootState } from '../../redux/reducers';
-import { TaperConfigState } from '../../redux/reducers/taperConfig';
+import { TaperConfigState } from '../../redux/reducers/taperConfig/taperConfig';
 import { changeMessageForPatient, changeNoteAndInstructions } from '../../redux/actions/taperConfig';
 
 const NotesToShare: FC<{ editable: boolean }> = ({ editable }) => {

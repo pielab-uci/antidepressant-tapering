@@ -1,19 +1,19 @@
 import * as React from 'react';
 import Button from 'antd/es/button';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   useCallback, useEffect, useRef,
 } from 'react';
 import {
   useHistory, useLocation,
 } from 'react-router';
-import {css} from '@emotion/react';
-import {useRouteMatch} from 'react-router-dom';
-import {PrescribedDrug} from '../../types';
+import { css } from '@emotion/react';
+import { useRouteMatch } from 'react-router-dom';
+import { PrescribedDrug } from '../../types';
 import PrescriptionForm from '../../components/PrescriptionForm/PrescriptionForm';
-import {RootState} from '../../redux/reducers';
-import {TaperConfigState} from '../../redux/reducers/taperConfig';
-import {ADD_NEW_DRUG_FORM} from '../../redux/actions/taperConfig';
+import { RootState } from '../../redux/reducers';
+import { TaperConfigState } from '../../redux/reducers/taperConfig/taperConfig';
+import { ADD_NEW_DRUG_FORM } from '../../redux/actions/taperConfig';
 
 const wrapperStyle = css`
   display: flex;
@@ -39,12 +39,12 @@ const CreateTaperConfiguration = () => {
   const {
     prescribedDrugs,
     isInputComplete,
-    patientId
+    patientId,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
-  const {path, url} = useRouteMatch();
+  const { path, url } = useRouteMatch();
 
   useEffect(() => {
     console.group('CreateTaperConfiguration');

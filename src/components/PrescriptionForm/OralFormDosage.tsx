@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
 import { css } from '@emotion/react';
 import { PrescriptionFormContext } from './PrescriptionForm';
-import { TaperConfigActions } from '../../redux/reducers/taperConfig';
+import { TaperConfigActions } from '../../redux/reducers/taperConfig/taperConfig';
 import { OralDosage } from '../../types';
 import useDosageSumDifferenceMessage from '../../hooks/useDosageSumDifferenceMessage';
 import {

@@ -5,7 +5,7 @@ import Button from 'antd/es/button';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { useDispatch, useSelector } from 'react-redux';
 import { css } from '@emotion/react';
-import { SelectInterval } from '.';
+import SelectInterval from './SelectInterval';
 import {
   initialState,
   reducer,
@@ -32,7 +32,7 @@ import {
 } from '../../redux/actions/taperConfig';
 
 import { RootState } from '../../redux/reducers';
-import { TaperConfigState } from '../../redux/reducers/taperConfig';
+import { TaperConfigState } from '../../redux/reducers/taperConfig/taperConfig';
 import PrescriptionSettingsForm from './PrescriptionSettingsForm';
 import Dosages from './Dosages';
 

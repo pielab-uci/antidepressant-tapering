@@ -27,13 +27,14 @@ const CapsuleOrTabletUnit: FC<Props> = ({
 }) => {
   const context = useContext(PrescriptionFormContext);
   const {
-    formActionDispatch, id, intervalDurationDays, allowSplittingUnscoredTablet, isModal,
+    formActionDispatch, id, intervalDurationDays, allowSplittingUnscoredTablet, modal: { isModal, modalDispatch },
   } = context;
   const { dosages } = context[time];
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
   const dispatch = (action: UpcomingDosageChangeAction | PriorDosageChangeAction) => {
     if (isModal) {
       formActionDispatch(action);
+      modalDispatch!(action);
     } else {
       formActionDispatch(action);
       taperConfigActionDispatch(action);

@@ -58,11 +58,12 @@ const SelectInterval = () => {
   const {
     formActionDispatch, intervalCount, intervalUnit,
     intervalStartDate, intervalEndDate, id,
-    upcomingDosagesQty, isModal,
+    upcomingDosagesQty, modal: { isModal, modalDispatch },
   } = useContext(PrescriptionFormContext);
   const dispatch = (action: IntervalActions) => {
     if (isModal) {
       formActionDispatch(action);
+      modalDispatch!(action);
     } else {
       formActionDispatch(action);
       taperConfigActionDispatch(action);

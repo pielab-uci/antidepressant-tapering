@@ -28,19 +28,18 @@ import { IPrescriptionFormContext, PrescriptionFormState } from './types';
 import { CapsuleOrTabletDosage, OralDosage, PrescribedDrug } from '../../types';
 import {
   CLEAR_SCHEDULE,
-  ClearScheduleAction,
   REMOVE_DRUG_FORM,
-  RemoveDrugFormAction,
 } from '../../redux/actions/taperConfig';
 
 import { RootState } from '../../redux/reducers';
 import { TaperConfigActions, TaperConfigState } from '../../redux/reducers/taperConfig';
 import PrescriptionSettingsForm from './PrescriptionSettingsForm';
 import Dosages from './Dosages';
+import { ModalActions } from '../Schedule/Modal/modalReducer';
 
 export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
   ...initialState,
-  isModal: false,
+  modal: { isModal: false },
   Prior: {
     dosages: initialState.priorDosagesQty,
   },
@@ -57,7 +56,7 @@ interface Props {
   title: string;
   numberOfMedications?: number;
   addNewPrescriptionForm?: () => void;
-  modal: { isModal: boolean, modalDispatch?: Dispatch<any> }
+  modal: { isModal: boolean, modalDispatch?: Dispatch<ModalActions> }
 }
 
 const PrescriptionForm: FC<Props> = ({
@@ -71,6 +70,7 @@ const PrescriptionForm: FC<Props> = ({
   const [state, formActionDispatch] = useReducer<PrescriptionFormReducer, PrescriptionFormState>(reducer, initialState, (init) => initialState, `PrescriptionFormReducer_${prescribedDrug.id}`);
   const externalDispatchWrapper = (isModal: boolean) => {
     if (isModal) {
+      console.log('modalDispatch');
       return modalDispatch!;
     }
     return taperConfigActionDispatch;
@@ -163,14 +163,17 @@ const PrescriptionForm: FC<Props> = ({
 
   const toggleAllowSplittingUnscoredTabletCheckbox = (e: CheckboxChangeEvent) => {
     formActionDispatch(toggleAllowSplittingUnscoredTablet({ id: prescribedDrug.id, allow: e.target.checked }));
-    externalDispatchWrapper(isModal)(toggleAllowSplittingUnscoredTablet({ id: prescribedDrug.id, allow: e.target.checked }));
+    externalDispatchWrapper(isModal)(toggleAllowSplittingUnscoredTablet({
+      id: prescribedDrug.id,
+      allow: e.target.checked,
+    }));
   };
 
   return (
     <PrescriptionFormContext.Provider value={{
       ...state,
       id: prescribedDrug.id,
-      isModal,
+      modal: { isModal, modalDispatch },
       Prior: {
         dosages: priorDosagesQty,
         dosageChangeAction: priorDosageChange,

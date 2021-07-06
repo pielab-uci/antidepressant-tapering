@@ -14,13 +14,14 @@ import { SET_IS_INPUT_COMPLETE, VALIDATE_INPUT_COMPLETION } from '../../redux/ac
 
 const TargetDosageSettingForm = () => {
   const {
-    id, targetDosage, formActionDispatch, priorDosagesQty, upcomingDosagesQty, isModal,
+    id, targetDosage, formActionDispatch, priorDosagesQty, upcomingDosagesQty, modal: { isModal, modalDispatch },
   } = useContext(PrescriptionFormContext);
   const [targetDosageValid, setTargetDosageValid] = useState(false);
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
   const dispatch = (action: SetUpcomingDosageGoalAction) => {
     if (isModal) {
       formActionDispatch(action);
+      modalDispatch!(action);
     } else {
       formActionDispatch(action);
       taperConfigActionDispatch(action);

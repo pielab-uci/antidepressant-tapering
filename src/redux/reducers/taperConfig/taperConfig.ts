@@ -38,18 +38,19 @@ import {
 import {
   calcFinalPrescription,
   calcMinimumQuantityForDosage,
-  chartDataConverter,
+  chartDataConverter, checkIntervalOverlappingRows, convert,
   generateInstructionsForPatientFromSchedule,
-  generateInstructionsForPharmacy,
+  generateInstructionsForPharmacy, generateTableRows,
   isCompleteDrugInput,
   prescription,
   ScheduleChartData,
-  scheduleGenerator,
+  scheduleGenerator, sort,
   validateCompleteInputs,
 } from '../utils';
 import {
   TaperConfigState, TaperConfigActions, emptyPrescribedDrug, initialState,
 } from './index';
+import { Converted, TableRowData } from '../../../types';
 
 const taperConfigReducer = (state: TaperConfigState = initialState, action: TaperConfigActions) => {
   console.log('taperConfigAction: ', action);
@@ -345,50 +346,59 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
 
       case EDIT_PROJECTED_SCHEDULE_FROM_MODAL: {
         /**
-         * 1. Change draft.prescribedDrugs ..?
-         * - change previous prescribedDrug - modify the target dosage to the previous row of double clicked one
-         * -> call generate_schedule event/function
-         * - update all the rows at once
-         * 2. Directly change draft.projectedSchedule..?
-         * - still need to change draft.prescribedDrugs
+         * When medication is changed: add new medication with full new settings
+         * When dosage is changed:
+         *  - when dosage was increasing before -> increase the dosage of other table rows by the same amount
+         *  - when dosage was decreasing before -> decrease the dosage of other table rows by new decreasing rate
+         * When start/end date is changed:
+         * - When start date is changed: only affect the double clicked row
+         * - - When new start date is overlapped with previous rows with the same prescribed drug:
+         * - When end date is changed: push the table rows with same prescribed drug back by the same interval unit count
          */
-        // const prevRow = draft.modal_prevRow!;
-        // const doubleClickedRow = draft.modal_doubleClickedRow;
 
-        // const prevDrug = draft.prescribedDrugs!.find((drug) => drug.id === draft.modal_prevRow!.prescribedDrugId)!;
-        // prevDrug.targetDosage = prevRow.dosage;
-        // draft.prescribedDrugs![draft.prescribedDrugs!.length - 1].applyInSchedule = true;
-        // prevDrug.intervalStartDate = prevRow.startDate!;
-        // prevDrug.intervalEndDate = prevRow.endDate!;
-        // prevDrug.intervalCount = prevRow.intervalCount;
-        // prevDrug.intervalUnit = prevRow.intervalUnit!;
+        /**
+         * Check further: when modal tries to make invalid modification, including invalid start/end dates..
+         */
 
-        //
-        // const [prevRow, doubleClickedRow] = action.data.doubleClickedRowAndBefore;
-        // const prevDrug = draft.prescribedDrugs!.find((drug) => drug.id === action.data.doubleClickedRowAndBefore[0].prescribedDrugId)!;
-        // prevDrug.targetDosage = prevRow.dosage;
-        // // TODO: need to handle different cases of start/end dates..
-        // prevDrug.intervalEndDate = prevRow.endDate;
-        // prevDrug.intervalCount = differenceInCalendarDays(prevRow.endDate!, prevRow.startDate!);
-        // prevDrug.intervalUnit = 'Days';
-        //
-        // // TODO: change draft.prescriptionFormIds, draft.lastPrescriptionFormId,..
-        // if (isBefore(prevDrug.intervalEndDate!, prevDrug.intervalStartDate)) {
-        //   // TODO: handle this case
-        // }
-        //
-        // // add new prescribed drug here
-        // draft.prescribedDrugs!.push(action.data.prescribedDrugGeneratedFromRow);
-        //
-        // /*
-        // draft.projectedSchedule.data.forEach((row, i) => {
-        //   if (row.prescribedDrugId === action.data.doubleClickedRowAndBefore.prescribedDrugId
-        //   && row.rowIndexInPrescribedDrug >= action.data.doubleClickedRowAndBefore.rowIndexInPrescribedDrug) {
-        //     draft.projectedSchedule.data.splice(i);
-        //     // draft.projectedSchedule.data.
-        //   }
-        // });
-        //  */
+        // Delete related rows
+        draft.projectedSchedule.data.forEach((row, i) => {
+          if (row.brand === action.data.doubleClickedRow.brand
+            && row.rowIndexInPrescribedDrug >= action.data.doubleClickedRow.rowIndexInPrescribedDrug) {
+            draft.projectedSchedule.data.splice(i);
+          }
+        });
+
+        const converted: Converted[] = convert([action.data.prescribedDrug]);
+
+        const generatedTableRows: TableRowData[] = generateTableRows(converted, action.data.doubleClickedRow.rowIndexInPrescribedDrug);
+
+        // const intervalOverlapChecked: TableRowData[] = checkIntervalOverlappingRows(generatedTableRows);
+        const intervalOverlapChecked: TableRowData[] = generatedTableRows;
+
+        const drugNames: string[] = [...new Set(draft.projectedSchedule.drugs.map((drug) => drug.name).concat([action.data.prescribedDrug.name]))];
+
+        const sorted: TableRowData[] = sort(drugNames, draft.projectedSchedule.data.concat(intervalOverlapChecked));
+
+        draft.projectedSchedule.data = sorted;
+        draft.projectedSchedule.drugs = draft.prescribedDrugs!.filter((drug) => drug.brand === action.data.prescribedDrug.brand).length !== 0
+          ? draft.projectedSchedule.drugs
+          : draft.projectedSchedule.drugs.concat(action.data.prescribedDrug);
+
+        // draft.projectedSchedule.data = sort(
+        //   [...new Set(draft.projectedSchedule.drugs
+        //     .map((drug) => drug.name)
+        //     .concat([action.data.prescribedDrug.name]))],
+        //   draft.projectedSchedule.data.concat(
+        //     checkIntervalOverlappingRows(
+        //       generateTableRows(
+        //         convert(
+        //           [action.data.prescribedDrug],
+        //         ),
+        //         action.data.doubleClickedRow.rowIndexInPrescribedDrug,
+        //       ),
+        //     ),
+        //   ),
+        // );
 
         break;
       }

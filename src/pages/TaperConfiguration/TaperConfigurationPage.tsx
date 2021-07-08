@@ -35,7 +35,7 @@ const navTextStyle = css`
 
 const TaperConfigurationPage = () => {
   const dispatch = useDispatch();
-  const { currentPatient } = useSelector<RootState, UserState>((state) => state.user);
+  const { me, currentPatient } = useSelector<RootState, UserState>((state) => state.user);
   const urlSearchParams = useRef<URLSearchParams>(new URLSearchParams(useLocation().search));
   const { path, url } = useRouteMatch();
   const location = useLocation();
@@ -52,14 +52,14 @@ const TaperConfigurationPage = () => {
     if (id) {
       dispatch<FetchTaperConfigRequestAction>({
         type: FETCH_TAPER_CONFIG_REQUEST,
-        data: parseInt(id, 10),
+        data: { clinicianId: me!.id, patientId: currentPatient!.id },
       });
     } else {
       dispatch<InitTaperConfigAction>({
         type: INIT_NEW_TAPER_CONFIG,
         data: {
-          clinicianId: parseInt(urlSearchParams.current.get('clinicianId')!, 10),
-          patientId: parseInt(urlSearchParams.current.get('patientId')!, 10),
+          clinicianId: me!.id,
+          patientId: currentPatient!.id,
         },
       });
     }

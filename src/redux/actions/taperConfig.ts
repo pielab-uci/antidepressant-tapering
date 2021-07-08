@@ -1,6 +1,9 @@
 import { CellEditingStoppedEvent } from 'ag-grid-community';
-import { PrescribedDrug, TableRowData, TaperingConfiguration } from '../../types';
+import {
+  PrescribedDrug, Prescription, TableRowData, TaperingConfiguration,
+} from '../../types';
 import { Schedule } from '../../components/Schedule/ProjectedSchedule';
+import { ScheduleChartData } from '../reducers/utils';
 
 export const GENERATE_SCHEDULE = 'GENERATE_SCHEDULE' as const;
 export const CLEAR_SCHEDULE = 'CLEAR_SCHEDULE' as const;
@@ -45,7 +48,7 @@ export const ADD_OR_UPDATE_TAPER_CONFIG_FAILURE = 'ADD_OR_UPDATE_TAPER_CONFIG_FA
 
 export interface AddOrUpdateTaperConfigRequestAction {
   type: typeof ADD_OR_UPDATE_TAPER_CONFIG_REQUEST,
-  data: { taperConfigId?: number, clinicianId: number, patientId: number, prescribedDrugs: PrescribedDrug[] };
+  data: Omit<TaperingConfiguration, 'id'|'createdAt'> & { taperConfigId?: number }
 }
 
 export const addOrUpdateTaperConfigRequest = (data: AddOrUpdateTaperConfigRequestAction['data']): AddOrUpdateTaperConfigRequestAction => ({
@@ -94,7 +97,7 @@ export const FETCH_TAPER_CONFIG_FAILURE = 'FETCH_TAPER_CONFIG_FAILURE' as const;
 
 export interface FetchTaperConfigRequestAction {
   type: typeof FETCH_TAPER_CONFIG_REQUEST,
-  data: number,
+  data: { clinicianId: number, patientId: number };
 }
 
 export interface FetchTaperConfigSuccessAction {
@@ -267,8 +270,7 @@ export const EDIT_PROJECTED_SCHEDULE_FROM_MODAL = 'EDIT_PROJECTED_SCHEDULE_FROM_
 
 export interface EditProjectedScheduleFromModal {
   type: typeof EDIT_PROJECTED_SCHEDULE_FROM_MODAL,
-  // data: { doubleClickedRowAndBefore: [TableRowData, TableRowData], prescribedDrugGeneratedFromRow: PrescribedDrug }
-  // data: { prevRow: TableRowData, doubleClickedRow: TableRowData; }
+  data: { prevRow: TableRowData, doubleClickedRow: TableRowData; prescribedDrug: PrescribedDrug }
 }
 
 export const OPEN_MODAL = 'OPEN_MODAL';

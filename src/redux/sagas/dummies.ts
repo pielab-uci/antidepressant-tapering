@@ -68,7 +68,7 @@ export const xiao: Omit<Patient, 'password'> = {
   recentVisit: new Date(),
 };
 
-export const stephen: Omit<Clinician, 'password'> = {
+export const christian: Omit<Clinician, 'password'> = {
   email: 'clinician@gmail.com',
   name: 'Christian Lee',
   id: 1,

@@ -50,27 +50,20 @@ const ProjectedScheduleTableRowEditingModal: FC<Props> = ({
   }, []);
 
   const onClickOk = (e: React.MouseEvent<HTMLElement>) => {
-    /**
-     * When medication is changed: add new medication with full new settings
-     * When dosage is changed:
-     *  - when dosage was increasing before -> increase the dosage of other table rows by the same amount
-     *  - when dosage was decreasing before -> decrease the dosage of other table rows by new decreasing rate
-     * When start/end date is changed:
-     * - When start date is changed: only affect the double clicked row
-     * - - When new start date is overlapped with previous rows with the same prescribed drug:
-     * - When end date is changed: push the table rows with same prescribed drug back by the same interval unit count
-     */
+
 
     // TODO: need to handle the case where Ok is clicked without any changes
 
     onOk(e);
     dispatch({
       type: EDIT_PROJECTED_SCHEDULE_FROM_MODAL,
+      data: { prevRow: doubleClickedRowAndBefore[0], doubleClickedRow: doubleClickedRowAndBefore[1], prescribedDrug },
     });
   };
 
   const onClickCancel = (e: React.MouseEvent<HTMLElement>) => {
     onCancel(e);
+    // TODO: flush prescribedDrug for modal..?
     dispatch({
       type: REMOVE_DRUG_FORM,
       // data: prescribedDrug.id,

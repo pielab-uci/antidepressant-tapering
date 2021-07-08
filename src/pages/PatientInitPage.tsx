@@ -12,18 +12,15 @@ import { ProjectedScheduleChart, ProjectedScheduleTable } from '../components/Sc
 import { RootState } from '../redux/reducers';
 import { UserState } from '../redux/reducers/user';
 import { Schedule } from '../components/Schedule/ProjectedSchedule';
-import {
-  chartDataConverter,
-  completePrescribedDrugs,
-  ScheduleChartData,
-  scheduleGenerator,
-} from '../redux/reducers/utils';
+import { ScheduleChartData } from '../redux/reducers/utils';
+import { TaperingConfiguration } from '../types';
 
 const PatientInitPage: FC = () => {
   const history = useHistory();
   const { me, currentPatient } = useSelector<RootState, UserState>((state) => state.user);
   const [projectedSchedule, setProjectedSchedule] = useState<Schedule>({ drugs: [], data: [] });
   const [chartData, setChartData] = useState<ScheduleChartData>([]);
+  const [taperConfig, setTaperConfig] = useState<TaperingConfiguration|null>(null);
   const { path, url } = useRouteMatch();
   const location = useLocation();
 
@@ -36,8 +33,9 @@ const PatientInitPage: FC = () => {
     console.log('location: ', location);
     console.groupEnd();
     if (currentPatient && currentPatient.taperingConfiguration) {
-      setProjectedSchedule(scheduleGenerator(completePrescribedDrugs(currentPatient.taperingConfiguration.prescribedDrugs)));
-      setChartData(chartDataConverter(projectedSchedule));
+      // TODO: load data from taperConfiguration
+      // setProjectedSchedule(scheduleGenerator(completePrescribedDrugs(currentPatient.taperingConfiguration.prescribedDrugs)));
+      // setChartData(chartDataConverter(projectedSchedule));
     }
   }, []);
   const onClickNewSchedule = useCallback(() => {
@@ -47,8 +45,6 @@ const PatientInitPage: FC = () => {
 
   const onClickAdjustSchedule = useCallback(() => {
     history.push(`${location.pathname}/taper-configuration/edit`);
-    // history.push('taper-configuration/edit/');
-    // history.push(`/taper-configuration/edit/?clinicianId=${me!.id}&patientId=${currentPatient!.id}`);
   }, [currentPatient]);
 
   const renderMedicationSchedule = useCallback(() => {

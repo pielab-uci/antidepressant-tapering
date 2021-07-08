@@ -42,7 +42,11 @@ const buttonStyle = css`
     width: 180px;
     height: 38px;
     border-radius: 10px;
-  }`;
+  };
+
+  & > button.return-to-patients-page {
+    width: 250px;
+}`;
 
 // TODO: remove shareProjectedScheduleWithPatient related parts
 
@@ -109,8 +113,10 @@ const ConfirmTaperConfiguration = () => {
           </div>
         </div>
       </div>
-      <Button css={css`align-self: center; border-radius: 10px; background-color:#0984E3;`} type='primary' onClick={returnToPatientsPage}>Return to Patients
-        page</Button>
+      <div css={buttonStyle}>
+        <Button onClick={moveToEditPage}>Previous</Button>
+        <Button type='primary' className='return-to-patients-page' onClick={returnToPatientsPage}>Return to Patients page</Button>
+      </div>
     </div>);
 };
 

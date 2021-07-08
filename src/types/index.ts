@@ -1,3 +1,6 @@
+import { Schedule } from '../components/Schedule/ProjectedSchedule';
+import { ScheduleChartData } from '../redux/reducers/utils';
+
 export interface Clinician {
   id: number;
   email: string;
@@ -23,7 +26,11 @@ export interface TaperingConfiguration {
   clinicianId: number;
   patientId: number;
   createdAt: Date;
-  prescribedDrugs: PrescribedDrug[];
+  projectedSchedule: Schedule;
+  instructionsForPatient: string;
+  instructionsForPharmacy: string;
+  finalPrescription: Prescription;
+  scheduleChartData: ScheduleChartData;
 }
 
 export interface Drug {

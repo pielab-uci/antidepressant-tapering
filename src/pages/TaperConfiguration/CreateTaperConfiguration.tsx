@@ -58,6 +58,7 @@ const CreateTaperConfiguration = () => {
   const addNewPrescriptionForm = useCallback(() => {
     dispatch({
       type: ADD_NEW_DRUG_FORM,
+      data: null,
     });
   }, []);
 

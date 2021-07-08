@@ -1,25 +1,32 @@
 import produce from 'immer';
-import { initialState, TaperConfigActions, TaperConfigState } from './index';
+import { initialState, TaperConfigState } from './index';
 import {
   ADD_OR_UPDATE_TAPER_CONFIG_FAILURE,
   ADD_OR_UPDATE_TAPER_CONFIG_REQUEST,
-  ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS,
+  ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS, AddOrUpdateTaperConfigAyncActions,
   FETCH_PRESCRIBED_DRUGS_FAILURE,
   FETCH_PRESCRIBED_DRUGS_REQUEST,
   FETCH_PRESCRIBED_DRUGS_SUCCESS,
   FETCH_TAPER_CONFIG_FAILURE,
   FETCH_TAPER_CONFIG_REQUEST,
-  FETCH_TAPER_CONFIG_SUCCESS,
+  FETCH_TAPER_CONFIG_SUCCESS, FetchPrescribedDrugAsyncActions, FetchTaperConfigAsyncActions,
   SHARE_WITH_PATIENT_APP_FAILURE,
   SHARE_WITH_PATIENT_APP_REQUEST,
   SHARE_WITH_PATIENT_APP_SUCCESS,
   SHARE_WITH_PATIENT_EMAIL_FAILURE,
   SHARE_WITH_PATIENT_EMAIL_REQUEST,
-  SHARE_WITH_PATIENT_EMAIL_SUCCESS,
+  SHARE_WITH_PATIENT_EMAIL_SUCCESS, ShareWithPatientAppAsyncActions, ShareWithPatientEmailAsyncActions,
 } from '../../actions/taperConfig';
 import { validateCompleteInputs } from '../utils';
 
-const taperConfigAsyncReducer = (state: TaperConfigState = initialState, action: TaperConfigActions) => {
+type TaperConfigAsyncActions =
+  | FetchTaperConfigAsyncActions
+  | FetchPrescribedDrugAsyncActions
+  | AddOrUpdateTaperConfigAyncActions
+  | ShareWithPatientAppAsyncActions
+  | ShareWithPatientEmailAsyncActions;
+
+const taperConfigAsyncReducer = (state: TaperConfigState = initialState, action: TaperConfigAsyncActions) => {
   console.log('taperConfigAsyncAction: ', action);
   return produce(state, (draft) => {
     switch (action.type) {
@@ -33,12 +40,27 @@ const taperConfigAsyncReducer = (state: TaperConfigState = initialState, action:
         draft.addingTaperConfig = false;
         draft.addedTaperConfig = true;
         draft.taperConfigId = action.data.id;
-        draft.taperConfigCreatedAt = action.data.createdAt;
-        draft.prescribedDrugs!.forEach((drug) => {
-          drug.prescribedAt = action.data.createdAt;
-        });
-        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
-        draft.isSaved = true;
+
+        // TODO: may not need taperConfigCreatedAt.
+        // draft.taperConfigCreatedAt = action.data.createdAt;
+        // draft.prescribedDrugs!.forEach((drug) => {
+        //   drug.prescribedAt = action.data.createdAt;
+        // });
+
+        const taperConfigIdx = draft.taperConfigs
+          .findIndex((config) => {
+            return config.patientId === action.data.patientId
+              && config.clinicianId === action.data.clinicianId;
+          });
+
+        if (taperConfigIdx !== -1) {
+          draft.taperConfigs[taperConfigIdx] = action.data;
+        } else {
+          draft.taperConfigs.push(action.data);
+        }
+
+        // draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
+        // draft.isSaved = true;
         break;
       }
 
@@ -60,9 +82,12 @@ const taperConfigAsyncReducer = (state: TaperConfigState = initialState, action:
         draft.fetchedTaperConfig = true;
         draft.clinicianId = action.data.clinicianId;
         draft.patientId = action.data.patientId;
-        draft.prescribedDrugs = action.data.prescribedDrugs;
-        draft.lastPrescriptionFormId = Math.max(...action.data.prescribedDrugs.map((drug) => drug.id));
-        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
+        draft.projectedSchedule = action.data.projectedSchedule;
+        draft.instructionsForPatient = action.data.instructionsForPatient;
+        draft.instructionsForPharmacy = action.data.instructionsForPharmacy;
+        draft.finalPrescription = action.data.finalPrescription;
+        draft.scheduleChartData = action.data.scheduleChartData;
+        // draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         draft.isSaved = false;
         break;
 

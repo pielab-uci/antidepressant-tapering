@@ -435,7 +435,7 @@ export const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule =
       }, 0),
       prescription: null,
       startDate: null,
-      endDate: null,
+      endDate: tableDataSorted[0].startDate,
       selected: false,
       availableDosageOptions: [],
       regularDosageOptions: null,
@@ -524,7 +524,7 @@ export const generateInstructionsForPatientFromSchedule = (schedule: Schedule): 
       const startDate = format(row.startDate!, 'MMM dd, yyyy');
       const endDate = format(row.endDate!, 'MMM dd, yyyy');
       const dosagesPrescribed = row.prescription!.message.replace(/ for.+/, '');
-      return `${message}Take ${row.drug}(${row.brand}) ${dosagesPrescribed} from ${startDate} to ${endDate} (${row.intervalCount} ${row.intervalUnit}).\n`;
+      return `${message}Take ${row.drug} (${row.brand}) ${dosagesPrescribed} from ${startDate} to ${endDate} (${row.intervalCount} ${row.intervalUnit}).\n`;
     }, '');
 };
 
@@ -548,7 +548,7 @@ export const generateInstructionsForPharmacy = (patientInstructions: string, pre
       return `${acc}${qty} X ${dos}, `;
     }, '');
 
-    return `${instruction}${name}(${brand}): ${dosages}\n`;
+    return `${instruction}${name} (${brand}): ${dosages}\n`;
   }, instructionsForPatients);
 };
 

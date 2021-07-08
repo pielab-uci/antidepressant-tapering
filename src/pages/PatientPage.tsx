@@ -42,8 +42,8 @@ const patientPageHeaderStyle = css`
   & > hr {
     border: none;
     width: 100%;
-    height: 3px;
-    margin: 18px auto;
+    height: 2px;
+    margin: 8px auto;
     background-color: #D1D1D1;
   }
 `;

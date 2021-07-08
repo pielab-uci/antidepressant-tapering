@@ -14,13 +14,15 @@ import { UserState } from '../redux/reducers/user';
 import { Schedule } from '../components/Schedule/ProjectedSchedule';
 import { ScheduleChartData } from '../redux/reducers/utils';
 import { TaperingConfiguration } from '../types';
+import { TaperConfigState } from '../redux/reducers/taperConfig';
 
 const PatientInitPage: FC = () => {
   const history = useHistory();
   const { me, currentPatient } = useSelector<RootState, UserState>((state) => state.user);
-  const [projectedSchedule, setProjectedSchedule] = useState<Schedule>({ drugs: [], data: [] });
-  const [chartData, setChartData] = useState<ScheduleChartData>([]);
-  const [taperConfig, setTaperConfig] = useState<TaperingConfiguration|null>(null);
+  const { projectedSchedule, scheduleChartData } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
+  // const [projectedSchedule, setProjectedSchedule] = useState<Schedule>({ drugs: [], data: [] });
+  // const [chartData, setChartData] = useState<ScheduleChartData>([]);
+  // const [taperConfig, setTaperConfig] = useState<TaperingConfiguration|null>(null);
   const { path, url } = useRouteMatch();
   const location = useLocation();
 
@@ -72,8 +74,8 @@ const PatientInitPage: FC = () => {
   };
 
   const renderChart = useCallback(() => {
-    if (chartData.length !== 0) {
-      return <ProjectedScheduleChart scheduleChartData={chartData} width={399} height={360}/>;
+    if (scheduleChartData.length !== 0) {
+      return <ProjectedScheduleChart scheduleChartData={scheduleChartData} width={399} height={360}/>;
     }
     return <div>
       <div css={css`
@@ -95,12 +97,12 @@ const PatientInitPage: FC = () => {
         color: #636e72;`}>Projected taper progress
       </div>
     </div>;
-  }, [chartData]);
+  }, [scheduleChartData]);
 
   const renderButton = useCallback(() => {
     const buttonStyle = css`
       border-radius: 10px;
-      background-color:#0984E3;
+      background-color: #0984E3;
     `;
     return currentPatient!.taperingConfiguration
       ? <Button type='primary' css={buttonStyle} onClick={onClickAdjustSchedule}>Edit Schedule</Button>
@@ -140,7 +142,8 @@ const PatientInitPage: FC = () => {
             justify-content: space-between;
             margin-top: 76px;`}>
             <h3>Symptom Tracker</h3>
-            <Button type='primary' css={css`border-radius: 10px; background-color:#0984E3;`}>Create New</Button>
+            <Button type='primary' css={css`border-radius: 10px;
+              background-color: #0984E3;`}>Create New</Button>
           </div>
           {renderSymptomTracker()}
         </div>

@@ -74,7 +74,7 @@ const NavBar = () => {
     margin: 6px 0 0 39px;
     color: #0984E3;
     font-size: 0.8rem;
-    padding: 5px 0 5px 28px;
+    padding: 5px 0 5px 30px;
     height: 131px;
     border-top-left-radius: 17px;
     border-bottom-left-radius: 17px;

@@ -189,7 +189,9 @@ const PrescriptionForm: FC<Props> = ({
         margin-left: 42px;
         padding-bottom: 71px;`}>
 
-        <h2>{title}</h2>
+        <h2 css={css`font-size: 1.1rem;
+          font-weight: bold;
+          color: #666666`}>{title}</h2>
         <PrescriptionSettingsForm
           prescribedDrug={prescribedDrug}
           chosenBrand={chosenBrand}

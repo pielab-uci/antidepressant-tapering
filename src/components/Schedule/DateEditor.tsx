@@ -43,7 +43,7 @@ export default forwardRef((props: any, ref) => {
     <>
       <Input type='date'
              style={{ width: '100%', height: '100%' }}
-             value={date ? format(date, 'yyyy-MM-dd') : undefined} onChange={handleDateChanged}/>
+             value={date ? format(date, 'MM-dd-yyyy') : undefined} onChange={handleDateChanged}/>
     </>
   );
 });

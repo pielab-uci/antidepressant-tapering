@@ -1,23 +1,21 @@
 import {
-  Drug, PrescribedDrug, Prescription, TableRowData, TaperingConfiguration,
+  Drug, PrescribedDrug, Prescription, TaperingConfiguration,
 } from '../../../types';
 import { Schedule } from '../../../components/Schedule/ProjectedSchedule';
 import { ScheduleChartData } from '../utils';
 import {
   AddNewDrugFormAction,
-  AddOrUpdateTaperConfigAyncActions,
   ChangeMessageForPatient,
   ChangeNoteAndInstructions,
   ClearScheduleAction, EditProjectedScheduleFromModal,
   EmptyPrescribedDrugs,
   EmptyTaperConfigPage,
-  FetchPrescribedDrugAsyncActions,
-  FetchTaperConfigAsyncActions, FinalPrescriptionQuantityChange,
+  FinalPrescriptionQuantityChange,
   GenerateScheduleAction,
   InitTaperConfigAction, OpenModalAction,
   RemoveDrugFormAction,
   ScheduleRowSelectedAction, SetIsInputComplete,
-  ShareWithPatientAppAsyncActions, ShareWithPatientEmailAsyncActions, TableEditingAction,
+  TableEditingAction,
   ToggleShareProjectedScheduleWithPatient, UpdateChartAction, ValidateInputCompletionAction,
 } from '../../actions/taperConfig';
 import { PrescriptionFormActions } from '../../../components/PrescriptionForm/actions';
@@ -74,9 +72,6 @@ export type TaperConfigActions =
   | InitTaperConfigAction
   | EmptyTaperConfigPage
   | EmptyPrescribedDrugs
-  | FetchTaperConfigAsyncActions
-  | FetchPrescribedDrugAsyncActions
-  | AddOrUpdateTaperConfigAyncActions
   | AddNewDrugFormAction
   | RemoveDrugFormAction
   | GenerateScheduleAction
@@ -85,8 +80,6 @@ export type TaperConfigActions =
   | ChangeMessageForPatient
   | ChangeNoteAndInstructions
   | ToggleShareProjectedScheduleWithPatient
-  | ShareWithPatientAppAsyncActions
-  | ShareWithPatientEmailAsyncActions
   | FinalPrescriptionQuantityChange
   | TableEditingAction
   | UpdateChartAction

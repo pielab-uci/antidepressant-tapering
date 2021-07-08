@@ -291,7 +291,7 @@ export const generateTableRows = (drugs: Converted[], startRowIndexInPrescribedD
       oralDosageInfo: drug.oralDosageInfo ? drug.oralDosageInfo : undefined,
     };
 
-    Array(lengthOfProjection - 1).fill(null).forEach((_, i) => {
+    Array(lengthOfProjection).fill(null).forEach((_, i) => {
       if (newRowData.upcomingDosageSum !== 0) {
         rows.push({
           rowIndexInPrescribedDrug: startRowIndexInPrescribedDrug + i + 1,

@@ -117,6 +117,7 @@ const PatientInitPage: FC = () => {
       </>
     );
   };
+
   return (
     <div css={css`
       overflow-y: scroll;
@@ -129,7 +130,8 @@ const PatientInitPage: FC = () => {
          className='patient-initial'>
       <div css={css`display: flex;
         justify-content: space-between;`}>
-        <div css={css`width: 447px;`}>
+         <div css={css`width: 447px;`}>
+        {/* <div css={css`width: 100%;`}> */}
           <div css={css`display: flex;
             align-items: center;
             justify-content: space-between;`}>
@@ -147,7 +149,7 @@ const PatientInitPage: FC = () => {
           </div>
           {renderSymptomTracker()}
         </div>
-        <div>
+        <div css={css`padding-right: 20px;`}>
           {renderChart()}
         </div>
       </div>

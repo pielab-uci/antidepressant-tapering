@@ -1,18 +1,24 @@
 import * as React from 'react';
 import Button from 'antd/es/button';
-import {
-  useCallback, useContext, useEffect, useRef,
-} from 'react';
-import { Prompt, useHistory, useLocation } from 'react-router';
+import { useEffect } from 'react';
+import { useHistory } from 'react-router';
 import { css } from '@emotion/react';
 import { useRouteMatch } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import ProjectedSchedule from '../../components/Schedule/ProjectedSchedule';
 import NotesToShare from '../../components/Schedule/NotesToShare';
+import {
+  ADD_OR_UPDATE_TAPER_CONFIG_REQUEST,
+  CLEAR_SCHEDULE,
+  MOVE_FROM_CREATE_TO_PRESCRIBE_PAGE,
+} from '../../redux/actions/taperConfig';
+import { RootState } from '../../redux/reducers';
+import { TaperConfigState } from '../../redux/reducers/taperConfig';
 
 const wrapperStyle = css`
-width: 100%;
-display: flex;
-flex-direction: column;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 `;
 
 const projectedScheduleStyle = css`
@@ -42,19 +48,47 @@ const buttonStyle = css`
 const EditTaperConfiguration = () => {
   const history = useHistory();
   const { url } = useRouteMatch();
+  const dispatch = useDispatch();
+  const {
+    clinicianId,
+    patientId,
+    taperConfigId,
+    instructionsForPatient,
+    instructionsForPharmacy,
+    projectedSchedule,
+    scheduleChartData,
+  } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
 
-  const moveToCreatePage = () => {
-    history.push(url.replace('edit', 'create'));
+  useEffect(() => {
+    dispatch({
+      type: MOVE_FROM_CREATE_TO_PRESCRIBE_PAGE,
+    });
+  }, []);
+
+  const moveToPrevious = () => {
+    if (url.includes('revisit')) {
+      history.goBack();
+    } else {
+      history.push(url.replace('edit', 'create'));
+    }
+    dispatch({
+      type: CLEAR_SCHEDULE,
+    });
   };
 
-  const moveToConfirmPage = () => {
-    // if (prescribedDrugs) {
-    //   dispatch(addOrUpdateTaperConfigRequest({
-    //     clinicianId: parseInt(urlSearchParams.current.get('clinicianId')!, 10),
-    //     patientId: parseInt(urlSearchParams.current.get('patientId')!, 10),
-    //     prescribedDrugs,
-    //   }));
-    // }
+  const saveTaperConfigurationAndMoveToConfirmPage = () => {
+    dispatch({
+      type: ADD_OR_UPDATE_TAPER_CONFIG_REQUEST,
+      data: {
+        taperConfigId,
+        clinicianId,
+        patientId,
+        projectedSchedule,
+        scheduleChartData,
+        instructionsForPharmacy,
+        instructionsForPatient,
+      },
+    });
     history.push(url.replace('edit', 'confirm'));
   };
 
@@ -68,8 +102,9 @@ const EditTaperConfiguration = () => {
         <NotesToShare editable={true}/>
       </div>
       <div css={buttonStyle}>
-        <Button onClick={moveToCreatePage}>Previous</Button>
-        <Button css={css`background-color:#0984E3;`} type='primary' onClick={moveToConfirmPage}>Save</Button>
+        <Button onClick={moveToPrevious}>Previous</Button>
+        <Button css={css`background-color: #0984E3;`} type='primary'
+                onClick={saveTaperConfigurationAndMoveToConfirmPage}>Save</Button>
       </div>
     </div>
   );

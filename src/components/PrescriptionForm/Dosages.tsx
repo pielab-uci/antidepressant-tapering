@@ -3,7 +3,8 @@ import { FC, useRef } from 'react';
 import { css } from '@emotion/react';
 import { SerializedStyles } from '@emotion/utils';
 import { DrugForm, isCapsuleOrTablet } from '../../types';
-import { CapsuleOrTabletDosages, OralFormDosage } from './index';
+import CapsuleOrTabletDosages from './CapsuleOrTabletDosages';
+import OralFormDosage from './OralFormDosage';
 
 interface Props {
   drugForm: DrugForm | null | undefined,

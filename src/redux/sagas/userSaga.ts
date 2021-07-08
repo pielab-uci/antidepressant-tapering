@@ -20,11 +20,11 @@ import {
 } from '../actions/user';
 import { Clinician, Patient } from '../../types';
 import {
-  stephen, xiao, sally, john,
+  christian, xiao, sally, john,
 } from './dummies';
 
 function loginAPI(action: LoginRequestAction): { data: Omit<Clinician, 'password'> } {
-  return { data: stephen };
+  return { data: christian };
 }
 
 function* logIn(action: LoginRequestAction) {

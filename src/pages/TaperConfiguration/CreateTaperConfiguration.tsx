@@ -36,7 +36,11 @@ const buttonsStyle = css`
 `;
 
 const CreateTaperConfiguration = () => {
-  const { prescribedDrugs, isInputComplete, patientId } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
+  const {
+    prescribedDrugs,
+    isInputComplete,
+    patientId,
+  } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
@@ -54,6 +58,7 @@ const CreateTaperConfiguration = () => {
   const addNewPrescriptionForm = useCallback(() => {
     dispatch({
       type: ADD_NEW_DRUG_FORM,
+      data: null,
     });
   }, []);
 
@@ -73,17 +78,18 @@ const CreateTaperConfiguration = () => {
   };
 
   const renderPrescriptionForms = (prescribedDrugs: PrescribedDrug[]) => {
-    const notFromPrevVisit = prescribedDrugs.filter((prescribedDrug) => !prescribedDrug.prevVisit);
-    return notFromPrevVisit.map(
+    const drugsToRender = prescribedDrugs.filter((prescribedDrug) => !prescribedDrug.prevVisit && !prescribedDrug.isModal);
+
+    return drugsToRender.map(
       (drug, i) => {
         return <PrescriptionForm
           key={`PrescriptionForm${drug.id}`}
           prescribedDrug={drug}
           addNewPrescriptionForm={addNewPrescriptionForm}
           // index={i}
-          isModal={false}
+          modal={{ isModal: false }}
           title={`Medication #${i + 1}`}
-          numberOfMedications={notFromPrevVisit.length}/>;
+          numberOfMedications={drugsToRender.length}/>;
       },
     );
   };
@@ -100,7 +106,8 @@ const CreateTaperConfiguration = () => {
       </div>
       <div css={buttonsStyle} className='create-taper-config-buttons'>
         <Button onClick={moveToPatientPage}>Cancel</Button>
-        <Button css={css`background-color: #0984E3;`} type='primary' onClick={moveToEditPage} disabled={!isInputComplete}>Next</Button>
+        <Button css={css`background-color: #0984E3;`} type='primary' onClick={moveToEditPage}
+                disabled={!isInputComplete}>Next</Button>
       </div>
     </div>
   );

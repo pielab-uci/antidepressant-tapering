@@ -42,7 +42,11 @@ const buttonStyle = css`
     width: 180px;
     height: 38px;
     border-radius: 10px;
-  }`;
+  };
+
+  & > button.return-to-patient-page {
+    width: 250px;
+}`;
 
 // TODO: remove shareProjectedScheduleWithPatient related parts
 
@@ -80,37 +84,36 @@ const ConfirmTaperConfiguration = () => {
   return (
     <div css={wrapperStyle}>
       <div css={scheduleStyle}>
-        <h3>Prescription has been added.</h3>
-        <NotesToShare editable={false}/>
+        <h1 css={css`font-weight: bold; font-size: 1.5rem; text-align: center;`}>Prescription has been added.</h1>
         <div css={css`margin-top: 44px;`}>
           <h3>Share projected schedule and notes with patient</h3>
           <div css={css`
             display: flex;
 
-            & > div {
-              margin-right: 30px;
+            & > button {
+              margin-right: 10px;
               display: flex;
               justify-content: center;
               align-items: center;
               flex-direction: column;
             }`}>
-            <div onClick={shareWithApp}>
-              <ShareWithAppIcon/>
+            <Button onClick={shareWithApp}>
               App
-            </div>
-            <div onClick={shareWithEmail}>
-              <ShareWithEmailIcon/>
+            </Button>
+            <Button onClick={shareWithEmail}>
               E-mail
-            </div>
-            <div onClick={shareWithPdf}>
-              <ShareWithPdfIcon/>
+            </Button>
+            <Button onClick={shareWithPdf}>
               PDF
-            </div>
+            </Button>
           </div>
         </div>
+        <NotesToShare editable={false}/>
       </div>
-      <Button css={css`align-self: center; border-radius: 10px; background-color:#0984E3;`} type='primary' onClick={returnToPatientsPage}>Return to Patients
-        page</Button>
+      <div css={buttonStyle}>
+        <Button onClick={moveToEditPage}>Previous</Button>
+        <Button type='primary' className='return-to-patient-page' onClick={returnToPatientsPage}>Return to Patient Page</Button>
+      </div>
     </div>);
 };
 

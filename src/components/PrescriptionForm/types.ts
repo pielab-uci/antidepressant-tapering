@@ -9,6 +9,7 @@ import {
   CapsuleOrTabletDosage,
   Drug, DrugForm, DrugOption, OralDosage,
 } from '../../types';
+import { ModalActions } from '../Schedule/Modal/modalReducer';
 
 export interface PrescriptionFormState {
   drugs: Drug[] | null;
@@ -35,7 +36,7 @@ export interface PrescriptionFormState {
 
 export type IPrescriptionFormContext = PrescriptionFormState
 & {
-  isModal: boolean;
+  modal: { isModal: boolean, modalDispatch?: Dispatch<ModalActions> }
   Prior: {
     dosages: typeof initialState.priorDosagesQty,
   };

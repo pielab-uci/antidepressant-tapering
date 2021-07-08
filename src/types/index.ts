@@ -1,3 +1,6 @@
+import { Schedule } from '../components/Schedule/ProjectedSchedule';
+import { ScheduleChartData } from '../redux/reducers/utils';
+
 export interface Clinician {
   id: number;
   email: string;
@@ -23,7 +26,11 @@ export interface TaperingConfiguration {
   clinicianId: number;
   patientId: number;
   createdAt: Date;
-  prescribedDrugs: PrescribedDrug[];
+  projectedSchedule: Schedule;
+  instructionsForPatient: string;
+  instructionsForPharmacy: string;
+  finalPrescription: Prescription;
+  scheduleChartData: ScheduleChartData;
 }
 
 export interface Drug {
@@ -75,7 +82,11 @@ export interface PrescribedDrug {
   minDosageUnit: number;
   availableDosageOptions: string[];
   regularDosageOptions: string[] | null;
-
+  /**
+   * In modal, keep setting false before adding to taperConfig state
+   */
+  applyInSchedule: boolean;
+  isModal: boolean;
   /**
    * When opening a PrescriptionForm in Modal, it disallows to change prior dosage
    * unless drug name or brand are not changed.
@@ -125,6 +136,7 @@ export interface Converted extends PrescribedDrug {
 }
 
 export interface TableRowData {
+  rowIndexInPrescribedDrug: number;
   prescribedDrugId: number;
   prescribedDrug: PrescribedDrug;
   isPriorDosage: boolean;

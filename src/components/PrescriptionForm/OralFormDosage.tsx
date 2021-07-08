@@ -29,7 +29,7 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
   const {
     formActionDispatch, id, chosenDrugForm, priorDosagesQty, upcomingDosagesQty,
-    intervalDurationDays, oralDosageInfo, isModal,
+    intervalDurationDays, oralDosageInfo, modal: { isModal, modalDispatch },
   } = context;
   const { dosages } = context[time];
   const dosage = useRef('1mg');
@@ -38,6 +38,7 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
   const dispatch = (action: UpcomingDosageChangeAction | PriorDosageChangeAction) => {
     if (isModal) {
       formActionDispatch(action);
+      modalDispatch!(action);
     } else {
       formActionDispatch(action);
       taperConfigActionDispatch(action);

@@ -35,11 +35,12 @@ const navTextStyle = css`
 
 const TaperConfigurationPage = () => {
   const dispatch = useDispatch();
-  const { currentPatient } = useSelector<RootState, UserState>((state) => state.user);
+  const { me, currentPatient } = useSelector<RootState, UserState>((state) => state.user);
   const urlSearchParams = useRef<URLSearchParams>(new URLSearchParams(useLocation().search));
   const { path, url } = useRouteMatch();
   const location = useLocation();
   const [step, setStep] = useState<1 | 2 | 3>(1);
+  const titles = useRef<['Create', 'Prescribe', 'Share']>(['Create', 'Prescribe', 'Share']);
 
   useEffect(() => {
     console.group('TaperConfigurationPage');
@@ -52,14 +53,14 @@ const TaperConfigurationPage = () => {
     if (id) {
       dispatch<FetchTaperConfigRequestAction>({
         type: FETCH_TAPER_CONFIG_REQUEST,
-        data: parseInt(id, 10),
+        data: { clinicianId: me!.id, patientId: currentPatient!.id },
       });
     } else {
       dispatch<InitTaperConfigAction>({
         type: INIT_NEW_TAPER_CONFIG,
         data: {
-          clinicianId: parseInt(urlSearchParams.current.get('clinicianId')!, 10),
-          patientId: parseInt(urlSearchParams.current.get('patientId')!, 10),
+          clinicianId: me!.id,
+          patientId: currentPatient!.id,
         },
       });
     }
@@ -97,24 +98,33 @@ const TaperConfigurationPage = () => {
       //height: calc(100vh - 307px);
       height: calc(100vh - 255px);
     `} className='taper-configuration'>
-      <div css={navTextStyle} className='taper-configuration-nav-text'>
-        <div css={assignStyle(1)} className='nav-step1'>Step 1. Create</div>
-        <div>&gt;&gt;</div>
-        <div css={assignStyle(2)} className='nave-step2'>Step 2. Prescribe</div>
-        <div>&gt;&gt;</div>
-        <div css={assignStyle(3)} className='nav-step3'>Step 3. Confirm</div>
+      <div css={css`
+        font-size: 1.2rem;
+        color: #0984E3;
+        font-weight: bold;
+        margin-bottom: 5px;
+
+        & > hr {
+          border: none;
+          width: 100%;
+          height: 2px;
+          margin: 5px auto;
+          background-color: #D1D1D1;
+        }`}>
+        {titles.current[step - 1]}
+        <hr/>
       </div>
-        <div css={css`display: flex;
-          height: calc(100% - 55px);
-        `} className='taper-configuration-pages'>
-          <Switch>
-            <Route path={`${path}/create`}
-                   render={checkCurrentPatientAndRender(currentPatient, CreateTaperConfiguration)}/>
-            <Route path={`${path}/edit`} render={checkCurrentPatientAndRender(currentPatient, EditTaperConfiguration)}/>
-            <Route path={`${path}/confirm`}
-                   render={checkCurrentPatientAndRender(currentPatient, ConfirmTaperConfiguration)}/>
-          </Switch>
-        </div>
+      <div css={css`display: flex;
+        height: calc(100% - 55px);
+      `} className='taper-configuration-pages'>
+        <Switch>
+          <Route path={`${path}/create`}
+                 render={checkCurrentPatientAndRender(currentPatient, CreateTaperConfiguration)}/>
+          <Route path={`${path}/edit`} render={checkCurrentPatientAndRender(currentPatient, EditTaperConfiguration)}/>
+          <Route path={`${path}/confirm`}
+                 render={checkCurrentPatientAndRender(currentPatient, ConfirmTaperConfiguration)}/>
+        </Switch>
+      </div>
     </div>
   );
 };

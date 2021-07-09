@@ -90,7 +90,12 @@ function* addOrUpdateTaperConfig(action: AddOrUpdateTaperConfigRequestAction) {
     if (existingTaperConfigIndex) {
       yield put<AddOrUpdateTaperConfigSuccessAction>({
         type: ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS,
-        data: { ...taperConfigState.taperConfigs[existingTaperConfigIndex], ...action.data },
+        data: {
+          ...taperConfigState.taperConfigs[existingTaperConfigIndex],
+          ...action.data,
+          id: taperConfigId,
+          createdAt: new Date(),
+        },
       });
     } else {
       taperConfigId += 1;

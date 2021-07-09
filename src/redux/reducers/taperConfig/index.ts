@@ -4,17 +4,17 @@ import {
 import { Schedule } from '../../../components/Schedule/ProjectedSchedule';
 import { ScheduleChartData } from '../utils';
 import {
-  AddNewDrugFormAction,
+  AddNewDrugFormAction, AddOrUpdateTaperConfigAyncActions,
   ChangeMessageForPatient,
   ChangeNoteAndInstructions,
   ClearScheduleAction, EditProjectedScheduleFromModal,
   EmptyPrescribedDrugs,
-  EmptyTaperConfigPage,
+  EmptyTaperConfigPage, FetchPrescribedDrugAsyncActions, FetchTaperConfigAsyncActions,
   FinalPrescriptionQuantityChange,
   GenerateScheduleAction,
   InitTaperConfigAction, OpenModalAction,
   RemoveDrugFormAction,
-  ScheduleRowSelectedAction, SetIsInputComplete,
+  ScheduleRowSelectedAction, SetIsInputComplete, ShareWithPatientAppAsyncActions, ShareWithPatientEmailAsyncActions,
   TableEditingAction,
   ToggleShareProjectedScheduleWithPatient, UpdateChartAction, ValidateInputCompletionAction,
 } from '../../actions/taperConfig';
@@ -68,6 +68,13 @@ export interface TaperConfigState {
   sharingWithPatientEmailError: any;
 }
 
+type TaperConfigAsyncActions =
+  | FetchTaperConfigAsyncActions
+  | FetchPrescribedDrugAsyncActions
+  | AddOrUpdateTaperConfigAyncActions
+  | ShareWithPatientAppAsyncActions
+  | ShareWithPatientEmailAsyncActions;
+
 export type TaperConfigActions =
   | InitTaperConfigAction
   | EmptyTaperConfigPage
@@ -87,7 +94,8 @@ export type TaperConfigActions =
   | OpenModalAction
   | ValidateInputCompletionAction
   | EditProjectedScheduleFromModal
-  | PrescriptionFormActions;
+  | PrescriptionFormActions
+  | TaperConfigAsyncActions;
 
 export const emptyPrescribedDrug = (id: number): PrescribedDrug => ({
   id,

@@ -10,8 +10,24 @@ import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import { changeMessageForPatient, changeNoteAndInstructions } from '../../redux/actions/taperConfig';
 
 const NotesToShare: FC<{ editable: boolean }> = ({ editable }) => {
-  const { instructionsForPatient, instructionsForPharmacy } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
+  const {
+    instructionsForPatient, instructionsForPharmacy, taperConfigs, taperConfigId,
+  } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const dispatch = useDispatch();
+
+  const patientInstructions = (editable: boolean) => {
+    if (editable) {
+      return instructionsForPatient;
+    }
+    return taperConfigs.find((config) => config.id === taperConfigId)!.instructionsForPatient;
+  };
+
+  const pharmacyInstructions = (editable: boolean) => {
+    if (editable) {
+      return instructionsForPharmacy;
+    }
+    return taperConfigs.find((config) => config.id === taperConfigId)!.instructionsForPharmacy;
+  };
 
   const onChangeMessageForPatient = useCallback((e) => {
     dispatch(changeMessageForPatient(e.target.value));
@@ -36,8 +52,8 @@ const NotesToShare: FC<{ editable: boolean }> = ({ editable }) => {
      <div>
        <h3 css={css`margin-top: 40px;`}>Notes for Patient</h3>
        <TextArea
-         value={instructionsForPatient}
-         defaultValue={instructionsForPatient}
+         value={patientInstructions(editable)}
+         defaultValue={patientInstructions(editable)}
          onChange={onChangeMessageForPatient}
          placeholder={instructionsForPatientPlaceholder.current}
          rows={6}
@@ -50,8 +66,8 @@ const NotesToShare: FC<{ editable: boolean }> = ({ editable }) => {
 
      <div>
        <h3 css={css`margin-top: 40px;`}>Notes for Pharmacy</h3>
-       <TextArea value={instructionsForPharmacy}
-                 defaultValue={instructionsForPharmacy}
+       <TextArea value={pharmacyInstructions(editable)}
+                 defaultValue={pharmacyInstructions(editable)}
                  onChange={onChangeInstructionsForPharmacy}
                  rows={6}
                  readOnly={!editable}

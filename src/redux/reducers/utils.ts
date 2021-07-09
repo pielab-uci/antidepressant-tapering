@@ -569,7 +569,8 @@ export const calcFinalPrescription = (scheduleData: TableRowData[], tableSelecte
           name: '',
           brand: '',
           form: '',
-          availableDosages: [],
+          // availableDosages: [],
+          regularDosageOptions: [],
           oralDosageInfo: null,
           dosageQty: {},
         };
@@ -579,7 +580,8 @@ export const calcFinalPrescription = (scheduleData: TableRowData[], tableSelecte
         if (row.oralDosageInfo) {
           obj.oralDosageInfo = row.oralDosageInfo;
         }
-        obj.availableDosages = row.availableDosageOptions!;
+        // obj.availableDosages = row.availableDosageOptions!;
+        obj.regularDosageOptions = row.regularDosageOptions!;
         obj.dosageQty = Object.entries(row.unitDosages!)
           .reduce((dosages, [dosage, qty]) => {
             if (!dosages[dosage]) {

@@ -125,8 +125,11 @@ export interface Prescription {
     brand: string,
     form: string,
     oralDosageInfo: OralDosage | null;
+    /*
     // available options for capsule or tablet
     availableDosages: string[];
+     */
+    regularDosageOptions: string[];
     dosageQty: { [dosage: string]: number }
   }
 }

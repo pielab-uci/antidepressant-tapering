@@ -69,7 +69,8 @@ const PrescribedQuantitiesForDrug: FC<Props> = ({ id, prescription, editable }) 
   if (prescription.oralDosageInfo) {
     return renderForms(prescription.oralDosageInfo.bottles, prescription);
   }
-  return renderForms(prescription.availableDosages, prescription);
+  // return renderForms(prescription.availableDosages, prescription);
+  return renderForms(prescription.regularDosageOptions, prescription);
 };
 
 export default PrescribedQuantitiesForDrug;

@@ -17,7 +17,8 @@ export const isCompleteDrugInput = (drug: PrescribedDrug) => {
     && drug.form !== ''
     && drug.intervalEndDate !== null
     && drug.intervalCount !== 0
-    && drug.upcomingDosages.length !== 0;
+    && drug.upcomingDosages.length !== 0
+    && !drug.upcomingDosages.every((dosage) => dosage.quantity === 0);
 };
 
 export const completePrescribedDrugs = (drugs: PrescribedDrug[] | null | undefined): PrescribedDrug[] | [] => {
@@ -235,16 +236,22 @@ const projectionLengthOfEachDrug = (drug: Converted): number => {
   if (drug.changeDirection === 'decrease') {
     return Math.floor(Math.log(drug.upcomingDosageSum) / Math.log(1 / drug.changeRate)) + 1;
   }
+
+  // when drug.changeDirection === 'same'
   return 4;
 };
 
 export const generateTableRows = (drugs: Converted[], startRowIndexInPrescribedDrug = 0): TableRowData[] => {
   // const lengthOfProjection = Math.max(...drugs.map(projectionLengthOfEachDrug));
+  console.group('generateTableRows');
   const tableRowsByDrug = drugs.map((drug) => {
     const rows: TableRowData[] = [];
     const durationInDaysCount = { days: differenceInCalendarDays(drug.intervalEndDate, drug.intervalStartDate) + 1 };
+    console.log('drug: ', drug);
     const lengthOfProjection = projectionLengthOfEachDrug(drug);
+    console.log('lengthOfProjection: ', lengthOfProjection);
     const upcomingDosages = calcProjectedDosages(drug, drug.upcomingDosageSum, lengthOfProjection);
+    console.log('upcomingDosages: ', upcomingDosages);
     rows.push({
       rowIndexInPrescribedDrug: startRowIndexInPrescribedDrug,
       prescribedDrugId: drug.id,
@@ -344,6 +351,7 @@ export const generateTableRows = (drugs: Converted[], startRowIndexInPrescribedD
     }
   });
 
+  console.groupEnd();
   return tableRowsByDrug.flatMap((drug) => drug.rows);
 };
 

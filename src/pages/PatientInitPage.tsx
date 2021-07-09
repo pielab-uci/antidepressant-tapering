@@ -6,7 +6,7 @@ import { css } from '@emotion/react';
 import Button from 'antd/es/button';
 import Input from 'antd/es/input';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router';
 import { ProjectedScheduleChart, ProjectedScheduleTable } from '../components/Schedule';
 import { RootState } from '../redux/reducers';
@@ -15,6 +15,7 @@ import { Schedule } from '../components/Schedule/ProjectedSchedule';
 import { ScheduleChartData } from '../redux/reducers/utils';
 import { TaperingConfiguration } from '../types';
 import { TaperConfigState } from '../redux/reducers/taperConfig';
+import { FETCH_TAPER_CONFIG_REQUEST, FetchTaperConfigRequestAction } from '../redux/actions/taperConfig';
 
 const PatientInitPage: FC = () => {
   const history = useHistory();
@@ -25,6 +26,7 @@ const PatientInitPage: FC = () => {
   // const [taperConfig, setTaperConfig] = useState<TaperingConfiguration|null>(null);
   const { path, url } = useRouteMatch();
   const location = useLocation();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     console.group('PatientInitPage');
@@ -34,6 +36,11 @@ const PatientInitPage: FC = () => {
     console.log('url: ', url);
     console.log('location: ', location);
     console.groupEnd();
+    // dispatch<FetchTaperConfigRequestAction>({
+    //   type: FETCH_TAPER_CONFIG_REQUEST,
+    //   data: { clinicianId: me!.id, patientId: currentPatient!.id },
+    // });
+
     if (currentPatient && currentPatient.taperingConfiguration) {
       // TODO: load data from taperConfiguration
       // setProjectedSchedule(scheduleGenerator(completePrescribedDrugs(currentPatient.taperingConfiguration.prescribedDrugs)));

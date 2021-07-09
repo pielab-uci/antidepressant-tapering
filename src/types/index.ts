@@ -80,7 +80,15 @@ export interface PrescribedDrug {
   halfLife: string;
   measureUnit: string;
   minDosageUnit: number;
+
+  /**
+   * available dosage options including splitting tablet
+   */
   availableDosageOptions: string[];
+
+  /**
+   * available dosage options without considering splitting tablet
+   */
   regularDosageOptions: string[] | null;
   /**
    * In modal, keep setting false before adding to taperConfig state

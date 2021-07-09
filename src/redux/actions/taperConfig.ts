@@ -81,7 +81,7 @@ export interface AddNewDrugFormAction {
 
 export interface RemoveDrugFormAction {
   type: typeof REMOVE_DRUG_FORM,
-  data: number;
+  data?: number;
 }
 
 export const SCHEDULE_ROW_SELECTED = 'SCHEDULE_ROW_SELECTED' as const;

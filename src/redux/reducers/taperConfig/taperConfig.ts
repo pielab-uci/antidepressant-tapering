@@ -104,10 +104,13 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         break;
 
       case REMOVE_DRUG_FORM:
-        // draft.prescriptionFormIds = draft.prescriptionFormIds.filter((id) => id !== action.data);
-        // draft.prescribedDrugs = draft.prescribedDrugs!.filter((drug) => drug.id !== action.data);
-        draft.prescriptionFormIds.pop();
-        draft.prescribedDrugs!.pop();
+        if (action.data) {
+          draft.prescriptionFormIds = draft.prescriptionFormIds.filter((id) => id !== action.data);
+          draft.prescribedDrugs = draft.prescribedDrugs!.filter((drug) => drug.id !== action.data);
+        } else {
+          draft.prescriptionFormIds.pop();
+          draft.prescribedDrugs!.pop();
+        }
         draft.isSaved = false;
         draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         break;

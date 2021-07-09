@@ -115,14 +115,18 @@ const SelectInterval = () => {
 
   const onIntervalCountChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const count = parseInt(e.target.value, 10);
-    const endDate = count === 0 ? null : sub(add(intervalStartDate, { [intervalUnit.toLowerCase()]: count }),
-      { days: 1 });
+    const endDate = count === 0
+      ? null
+      : sub(
+        add(intervalStartDate, { [intervalUnit.toLowerCase()]: count }),
+        { days: 1 },
+      );
     const intervalDurationDays = calcIntervalDurationDays(intervalStartDate, endDate);
 
     dispatch(intervalCountChange({
       count: parseInt(e.target.value, 10), id, intervalEndDate: endDate, intervalDurationDays,
     }));
-  }, [intervalStartDate, upcomingDosagesQty]);
+  }, [intervalStartDate, intervalUnit, upcomingDosagesQty]);
 
   return (
     <div css={selectIntervalStyle}>

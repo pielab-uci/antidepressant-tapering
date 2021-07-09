@@ -19,6 +19,7 @@ export interface Patient {
   patientSignedUp?: boolean; // considering Clinician's adding patient account in the office
   taperingConfiguration: TaperingConfiguration | null;
   recentVisit: Date;
+  notes: string;
 }
 
 export interface TaperingConfiguration {

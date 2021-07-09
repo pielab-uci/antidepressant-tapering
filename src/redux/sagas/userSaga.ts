@@ -2,7 +2,8 @@ import {
   all, delay, fork, put, takeLatest,
 } from 'redux-saga/effects';
 import {
-  ADD_NEW_PATIENT_FAILURE, ADD_NEW_PATIENT_REQUEST,
+  ADD_NEW_PATIENT_FAILURE,
+  ADD_NEW_PATIENT_REQUEST,
   ADD_NEW_PATIENT_SUCCESS,
   AddNewPatientFailure,
   AddNewPatientRequest,
@@ -15,7 +16,15 @@ import {
   LOGIN_SUCCESS,
   LoginFailureAction,
   LoginRequestAction,
-  LoginSuccessAction, LOAD_PATIENTS_SUCCESS, LOAD_PATIENTS_FAILURE, LOAD_PATIENTS_REQUEST,
+  LoginSuccessAction,
+  LOAD_PATIENTS_SUCCESS,
+  LOAD_PATIENTS_FAILURE,
+  LOAD_PATIENTS_REQUEST,
+  SavePatientNotesRequestAction,
+  SavePatientNotesSuccessAction,
+  SAVE_PATIENT_NOTES_SUCCESS,
+  SAVE_PATIENT_NOTES_FAILURE,
+  SavePatientNotesFailureAction, SAVE_PATIENT_NOTES_REQUEST,
 
 } from '../actions/user';
 import { Clinician, Patient } from '../../types';
@@ -89,6 +98,27 @@ function* loadPatients(action: LoadPatientsRequestAction) {
   }
 }
 
+function savePatientNotesApi(action: SavePatientNotesRequestAction): { data: SavePatientNotesSuccessAction['data'] } {
+  return { data: action.data };
+}
+
+function* savePatientNotes(action: SavePatientNotesRequestAction) {
+  try {
+    const result = savePatientNotesApi(action);
+
+    yield put<SavePatientNotesSuccessAction>({
+      type: SAVE_PATIENT_NOTES_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put<SavePatientNotesFailureAction>({
+      type: SAVE_PATIENT_NOTES_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
 function* watchLogIn() {
   yield takeLatest(LOGIN_REQUEST, logIn);
 }
@@ -101,6 +131,14 @@ function* watchLoadPatients() {
   yield takeLatest(LOAD_PATIENTS_REQUEST, loadPatients);
 }
 
+function* watchSavePatientNotes() {
+  yield takeLatest(SAVE_PATIENT_NOTES_REQUEST, savePatientNotes);
+}
+
 export default function* userSaga() {
-  yield all([fork(watchLogIn), fork(watchAddPatient), fork(watchLoadPatients)]);
+  yield all([
+    fork(watchLogIn),
+    fork(watchAddPatient),
+    fork(watchLoadPatients),
+    fork(watchSavePatientNotes)]);
 }

@@ -30,30 +30,14 @@ export const sally: Omit<Patient, 'password'> = {
   // ] as TaperingConfiguration[],
   taperingConfiguration: null,
   recentVisit: new Date(),
+  notes: '',
 };
 
 export const john: Omit<Patient, 'password'> = {
   id: 2,
   name: 'John Greenberg',
   email: 'johng@uci.edu',
-  // taperingConfigurations: [
-  //   {
-  //     id: 2,
-  //     clinicianId: 1,
-  //     patientId: 2,
-  //     createdAt: new Date(),
-  //     prescribedDrugs: [
-  //       {
-  //         name: 'Setraline',
-  //         brand: 'Zoloft',
-  //         form: 'tablet',
-  //         currentDosages: [{ dosage: '25mg', quantity: 1 }],
-  //         nextDosages: [{ dosage: '10mg', quantity: 1 }],
-  //       },
-  //     ],
-  //   },
-  // ] as TaperingConfiguration[],
-  // taperingConfiguration: { id: 1 },
+  notes: '',
   taperingConfiguration: null,
   recentVisit: new Date('2021-05-14T21:13:39.673Z'),
 };
@@ -62,10 +46,9 @@ export const xiao: Omit<Patient, 'password'> = {
   id: 3,
   email: 'xiaoz@uci.edu',
   name: 'Xiao Zhang',
-  // taperingConfigurations: [],
-  // taperingConfiguration: { id: 2 },
   taperingConfiguration: null,
   recentVisit: new Date(),
+  notes: '',
 };
 
 export const christian: Omit<Clinician, 'password'> = {

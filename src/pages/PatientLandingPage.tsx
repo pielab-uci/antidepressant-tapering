@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  FC, useCallback, useEffect, useState,
+  FC, useCallback, useEffect, useRef,
 } from 'react';
 import { css } from '@emotion/react';
 import Button from 'antd/es/button';
@@ -11,22 +11,21 @@ import { useLocation } from 'react-router';
 import { ProjectedScheduleChart, ProjectedScheduleTable } from '../components/Schedule';
 import { RootState } from '../redux/reducers';
 import { UserState } from '../redux/reducers/user';
-import { Schedule } from '../components/Schedule/ProjectedSchedule';
-import { ScheduleChartData } from '../redux/reducers/utils';
-import { TaperingConfiguration } from '../types';
 import { TaperConfigState } from '../redux/reducers/taperConfig';
-import { FETCH_TAPER_CONFIG_REQUEST, FetchTaperConfigRequestAction } from '../redux/actions/taperConfig';
+import { CHANGE_PATIENT_NOTES, SAVE_PATIENT_NOTES_REQUEST } from '../redux/actions/user';
 
-const PatientInitPage: FC = () => {
+const PatientLandingPage: FC = () => {
   const history = useHistory();
   const { me, currentPatient } = useSelector<RootState, UserState>((state) => state.user);
   const { projectedSchedule, scheduleChartData } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
-  // const [projectedSchedule, setProjectedSchedule] = useState<Schedule>({ drugs: [], data: [] });
-  // const [chartData, setChartData] = useState<ScheduleChartData>([]);
-  // const [taperConfig, setTaperConfig] = useState<TaperingConfiguration|null>(null);
   const { path, url } = useRouteMatch();
   const location = useLocation();
   const dispatch = useDispatch();
+
+  const buttonStyle = useRef(css`
+    border-radius: 10px;
+    background-color: #0984E3;
+  `);
 
   useEffect(() => {
     console.group('PatientInitPage');
@@ -71,6 +70,20 @@ const PatientInitPage: FC = () => {
     </div>;
   }, [currentPatient]);
 
+  const onChangePatientNotes = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    dispatch({
+      type: CHANGE_PATIENT_NOTES,
+      data: e.target.value,
+    });
+  };
+
+  const onClickNotesSaveButton = () => {
+    dispatch({
+      type: SAVE_PATIENT_NOTES_REQUEST,
+      data: { notes: currentPatient!.notes, patientId: currentPatient!.id },
+    });
+  };
+
   const renderSymptomTracker = () => {
     return <p css={css`
       //font-size: 20px;
@@ -107,20 +120,27 @@ const PatientInitPage: FC = () => {
   }, [scheduleChartData]);
 
   const renderButton = useCallback(() => {
-    const buttonStyle = css`
-      border-radius: 10px;
-      background-color: #0984E3;
-    `;
     return currentPatient!.taperingConfiguration
-      ? <Button type='primary' css={buttonStyle} onClick={onClickAdjustSchedule}>Edit Schedule</Button>
-      : <Button type='primary' css={buttonStyle} onClick={onClickNewSchedule}>Create New</Button>;
+      ? <Button type='primary' css={buttonStyle.current} onClick={onClickAdjustSchedule}>Edit Schedule</Button>
+      : <Button type='primary' css={buttonStyle.current} onClick={onClickNewSchedule}>Create New</Button>;
   }, [currentPatient]);
 
   const renderNoteSection = () => {
     return (
       <>
         <h3>Notes</h3>
-        <Input.TextArea/>
+        <Input.TextArea
+          css={css`border-radius: 17px;`}
+          value={currentPatient!.notes || ''}
+          onChange={onChangePatientNotes}
+          rows={6}/>
+        <Button
+          onClick={onClickNotesSaveButton}
+          type={'primary'}
+          css={css`border-radius: 10px;
+            background-color: #0984E3;
+            margin-top: 5px;
+            float: right;`}>Save</Button>
       </>
     );
   };
@@ -137,8 +157,8 @@ const PatientInitPage: FC = () => {
          className='patient-initial'>
       <div css={css`display: flex;
         justify-content: space-between;`}>
-         <div css={css`width: 447px;`}>
-        {/* <div css={css`width: 100%;`}> */}
+        <div css={css`width: 447px;`}>
+          {/* <div css={css`width: 100%;`}> */}
           <div css={css`display: flex;
             align-items: center;
             justify-content: space-between;`}>
@@ -166,4 +186,4 @@ const PatientInitPage: FC = () => {
   );
 };
 
-export default PatientInitPage;
+export default PatientLandingPage;

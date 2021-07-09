@@ -3,18 +3,23 @@ import {
   ADD_NEW_PATIENT_FAILURE,
   ADD_NEW_PATIENT_REQUEST,
   ADD_NEW_PATIENT_SUCCESS,
-  AddNewPatientFailure,
-  AddNewPatientRequest,
-  AddNewPatientSuccess, LOAD_PATIENTS_FAILURE, LOAD_PATIENTS_REQUEST, LOAD_PATIENTS_SUCCESS,
-  LoadPatientsFailureAction,
-  LoadPatientsRequestAction,
-  LoadPatientsSuccessAction,
+  AddNewPatientActions,
+  CHANGE_PATIENT_NOTES,
+  ChangePatientNotes,
+  LOAD_PATIENTS_FAILURE,
+  LOAD_PATIENTS_REQUEST,
+  LOAD_PATIENTS_SUCCESS,
+  LoadPatientsActions,
   LOGIN_FAILURE,
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
-  LoginFailureAction,
-  LoginRequestAction,
-  LoginSuccessAction, SET_CURRENT_PATIENT, SetCurrentPatientAction,
+  LoginActions,
+  SAVE_PATIENT_NOTES_FAILURE,
+  SAVE_PATIENT_NOTES_REQUEST,
+  SAVE_PATIENT_NOTES_SUCCESS,
+  SavePatientNotesActions,
+  SET_CURRENT_PATIENT,
+  SetCurrentPatientAction,
 } from '../actions/user';
 import { Clinician, Patient } from '../../types';
 import { ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS, AddOrUpdateTaperConfigSuccessAction } from '../actions/taperConfig';
@@ -23,6 +28,7 @@ export interface UserState {
   loggingIn: boolean;
   loggedIn: boolean;
   logInError: any;
+
   addingPatient: boolean;
   addedPatient: boolean;
   addPatientError: any;
@@ -30,6 +36,10 @@ export interface UserState {
   loadingPatients: boolean;
   loadedPatients: boolean;
   loadPatientsError: any;
+
+  savingPatientNotes: boolean;
+  savedPatientNotes: boolean;
+  savingPatientNotesError: any;
 
   // patients: Omit<Patient, 'password'|'taperingConfigurations'>[];
   patients: Omit<Patient, 'password'>[];
@@ -50,23 +60,23 @@ export const initialState: UserState = {
   loadedPatients: false,
   loadPatientsError: null,
 
+  savingPatientNotes: false,
+  savedPatientNotes: false,
+  savingPatientNotesError: null,
+
   patients: [],
   currentPatient: null,
   me: null,
 };
 
 type UserReducerAction =
-  | LoginRequestAction
-  | LoginSuccessAction
-  | LoginFailureAction
-  | AddNewPatientRequest
-  | AddNewPatientSuccess
-  | AddNewPatientFailure
+  | LoginActions
+  | AddNewPatientActions
   | AddOrUpdateTaperConfigSuccessAction
-  | LoadPatientsRequestAction
-  | LoadPatientsSuccessAction
-  | LoadPatientsFailureAction
-  | SetCurrentPatientAction;
+  | LoadPatientsActions
+  | ChangePatientNotes
+  | SetCurrentPatientAction
+  | SavePatientNotesActions;
 
 const userReducer = (state: UserState = initialState, action: UserReducerAction): UserState => produce(state, (draft) => {
   switch (action.type) {
@@ -121,6 +131,23 @@ const userReducer = (state: UserState = initialState, action: UserReducerAction)
       draft.loadPatientsError = action.error;
       break;
 
+    case SAVE_PATIENT_NOTES_REQUEST:
+      draft.savingPatientNotes = true;
+      draft.savedPatientNotes = false;
+      draft.savingPatientNotesError = null;
+      break;
+
+    case SAVE_PATIENT_NOTES_SUCCESS:
+      draft.savingPatientNotes = false;
+      draft.savedPatientNotes = true;
+      draft.currentPatient!.notes = action.data.notes;
+      break;
+
+    case SAVE_PATIENT_NOTES_FAILURE:
+      draft.savingPatientNotes = false;
+      draft.savingPatientNotesError = action.error;
+      break;
+
     case SET_CURRENT_PATIENT:
       if (action.data === -1) {
         draft.currentPatient = null;
@@ -130,6 +157,10 @@ const userReducer = (state: UserState = initialState, action: UserReducerAction)
 
     case ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS:
       draft.currentPatient!.taperingConfiguration = action.data;
+      break;
+
+    case CHANGE_PATIENT_NOTES:
+      draft.currentPatient!.notes = action.data;
       break;
 
     default:

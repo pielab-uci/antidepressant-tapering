@@ -18,7 +18,7 @@ import {
 import { SET_CURRENT_PATIENT, SetCurrentPatientAction } from '../redux/actions/user';
 import { checkCurrentPatientAndRender } from './utils';
 import TaperConfigurationPage from './TaperConfiguration/TaperConfigurationPage';
-import PatientInitPage from './PatientInitPage';
+import PatientLandingPage from './PatientLandingPage';
 
 const pageStyle = css`
   display: flex;
@@ -97,7 +97,7 @@ const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) =
             <hr/>
           </div>
             <Switch>
-              <Route exact path={`${path}`} component={PatientInitPage}/>
+              <Route exact path={`${path}`} component={PatientLandingPage}/>
               <Route path={`${path}/taper-configuration`}
                      render={checkCurrentPatientAndRender(currentPatient, TaperConfigurationPage)}/>
             </Switch>

@@ -9,7 +9,8 @@ import { RootState } from '../redux/reducers';
 const StyledHeader = styled.header`
   display: flex;
   //border: 1px solid blue;
-  height: 8%;
+  //height: 8%;
+  height: 5%;
   align-items: center;
   width: 100%;
 `;

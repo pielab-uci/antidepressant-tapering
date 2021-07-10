@@ -32,6 +32,10 @@ const PrescribedQuantitiesForDrug: FC<Props> = ({ id, prescription, editable }) 
     }));
   }, []);
 
+  const onWheelEventHandler = (e: React.WheelEvent<HTMLInputElement>) => {
+    e.currentTarget.blur();
+  };
+
   const renderForms = useCallback((dosages: string[], prescription: ValueOf<Prescription>) => {
     return (
       <>
@@ -57,6 +61,7 @@ const PrescribedQuantitiesForDrug: FC<Props> = ({ id, prescription, editable }) 
                        step={1}
                        width={'50px'}
                        readOnly={!editable}
+                       onWheel={onWheelEventHandler}
                        onChange={onPrescribedQuantityChange}/>
               </div>
             ))}

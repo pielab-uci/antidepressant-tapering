@@ -128,6 +128,10 @@ const SelectInterval = () => {
     }));
   }, [intervalStartDate, intervalUnit, upcomingDosagesQty]);
 
+  const onWheelEventHandler = (e: React.WheelEvent<HTMLInputElement>) => {
+    e.currentTarget.blur();
+  };
+
   return (
     <div css={selectIntervalStyle}>
       <h3>Select Interval</h3>
@@ -146,7 +150,9 @@ const SelectInterval = () => {
         <div css={css`width: 180px;
           display: flex;
           justify-content: space-between;`}>
-          <Input type="number" value={intervalCount} min={0} onChange={onIntervalCountChange} css={css`width: 70px;
+          <Input type="number" value={intervalCount} min={0}
+                 onWheel={onWheelEventHandler}
+                 onChange={onIntervalCountChange} css={css`width: 70px;
             margin-right: 9px;`}/>
           <Select value={intervalUnit} onChange={onIntervalUnitChange} css={css`
             width: 100px;

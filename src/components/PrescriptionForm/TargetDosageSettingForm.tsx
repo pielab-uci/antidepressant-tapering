@@ -67,6 +67,10 @@ const TargetDosageSettingForm = () => {
     });
   };
 
+  const onWheelEventHandler = (e: React.WheelEvent<HTMLInputElement>) => {
+    e.currentTarget.blur();
+  };
+
   const renderValidateErrorMessage = () => {
     const detail = () => {
       if (dosageChange === 'increase') {
@@ -115,6 +119,7 @@ const TargetDosageSettingForm = () => {
           <Input type='number'
                  value={targetDosage}
                  onChange={onChangeTargetDosage}
+                 onWheel={onWheelEventHandler}
                  min={0}
                  css={css`width: 100px;
                    display: inline;

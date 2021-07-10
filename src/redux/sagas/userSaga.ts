@@ -33,7 +33,18 @@ import {
 } from './dummies';
 
 function loginAPI(action: LoginRequestAction): { data: Omit<Clinician, 'password'> } {
-  return { data: christian };
+  // return { data: christian };
+  return {
+    data: {
+      id: 1,
+      email: '',
+      name: action.data.name,
+      patients: [
+        { id: sally.id, name: sally.name },
+        { id: john.id, name: john.name },
+      ],
+    },
+  };
 }
 
 function* logIn(action: LoginRequestAction) {

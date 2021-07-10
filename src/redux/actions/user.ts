@@ -6,7 +6,8 @@ export const LOGIN_FAILURE = 'LOGIN_FAILURE' as const;
 
 export interface LoginRequestAction {
   type: typeof LOGIN_REQUEST;
-  data: { email: string; password: string }
+  // data: { email: string; password: string }
+  data: { name: string };
 }
 
 export interface LoginSuccessAction {

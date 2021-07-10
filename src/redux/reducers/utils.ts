@@ -230,7 +230,7 @@ export const prescription: PrescriptionFunction = (
 const projectionLengthOfEachDrug = (drug: Converted): number => {
   if (drug.changeDirection === 'increase') {
     const increasingLength = drug.targetDosage! / drug.changeAmount;
-    return Number.isInteger(increasingLength) ? increasingLength : Math.floor(increasingLength) + 1;
+    return Number.isInteger(increasingLength) ? increasingLength - 1 : Math.floor(increasingLength);
   }
 
   if (drug.changeDirection === 'decrease') {
@@ -248,9 +248,9 @@ export const generateTableRows = (drugs: Converted[], startRowIndexInPrescribedD
     const rows: TableRowData[] = [];
     const durationInDaysCount = { days: differenceInCalendarDays(drug.intervalEndDate, drug.intervalStartDate) + 1 };
     console.log('drug: ', drug);
-    const lengthOfProjection = projectionLengthOfEachDrug(drug);
+    const lengthOfProjection: number = projectionLengthOfEachDrug(drug);
     console.log('lengthOfProjection: ', lengthOfProjection);
-    const upcomingDosages = calcProjectedDosages(drug, drug.upcomingDosageSum, lengthOfProjection);
+    const upcomingDosages: number[] = calcProjectedDosages(drug, drug.upcomingDosageSum, lengthOfProjection);
     console.log('upcomingDosages: ', upcomingDosages);
     rows.push({
       rowIndexInPrescribedDrug: startRowIndexInPrescribedDrug,

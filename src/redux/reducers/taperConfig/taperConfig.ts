@@ -231,6 +231,11 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         } else {
           drug.priorDosages[idx] = action.data.dosage;
         }
+
+        drug.priorDosageSum = drug.priorDosages.reduce((prev, { dosage, quantity }) => {
+          return prev + parseFloat(dosage) * quantity;
+        }, 0);
+
         draft.isSaved = false;
         draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         break;
@@ -246,6 +251,14 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           drug.upcomingDosages.push(action.data.dosage);
         } else {
           drug.upcomingDosages[idx] = action.data.dosage;
+        }
+
+        drug.upcomingDosageSum = drug.upcomingDosages.reduce((prev, { dosage, quantity }) => {
+          return prev + parseFloat(dosage) * quantity;
+        }, 0);
+
+        if (drug.priorDosageSum < drug.upcomingDosageSum) {
+          drug.targetDosage = drug.upcomingDosageSum;
         }
         draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         draft.isSaved = false;

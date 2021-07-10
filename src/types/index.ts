@@ -106,8 +106,8 @@ export interface PrescribedDrug {
   /**
    * priorDosageSum, upcomingDosageSum are used only in modal
    */
-  priorDosageSum: number | null;
-  upcomingDosageSum: number | null;
+  priorDosageSum: number;
+  upcomingDosageSum: number;
   targetDosage: number;
   intervalStartDate: Date;
   intervalEndDate: Date | null;

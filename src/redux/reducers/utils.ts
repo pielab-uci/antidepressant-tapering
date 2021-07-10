@@ -12,11 +12,24 @@ import {
 import { Schedule } from '../../components/Schedule/ProjectedSchedule';
 
 export const isCompleteDrugInput = (drug: PrescribedDrug) => {
+  const priorDosageSum = drug.priorDosages.reduce((prev, { dosage, quantity }) => {
+    return prev + parseFloat(dosage) * quantity;
+  }, 0);
+
+  const upcomingDosageSum = drug.upcomingDosages.reduce((prev, { dosage, quantity }) => {
+    return prev + parseFloat(dosage) * quantity;
+  }, 0);
+
   return drug.name !== ''
     && drug.brand !== ''
     && drug.form !== ''
     && drug.intervalEndDate !== null
     && drug.intervalCount !== 0
+    && (
+      (priorDosageSum < upcomingDosageSum && drug.targetDosage >= upcomingDosageSum)
+      || (priorDosageSum > upcomingDosageSum && drug.targetDosage <= upcomingDosageSum)
+      || (priorDosageSum === upcomingDosageSum && upcomingDosageSum === drug.targetDosage)
+    )
     && drug.upcomingDosages.length !== 0
     && !drug.upcomingDosages.every((dosage) => dosage.quantity === 0);
 };
@@ -238,7 +251,7 @@ const projectionLengthOfEachDrug = (drug: Converted): number => {
   }
 
   // when drug.changeDirection === 'same'
-  return 4;
+  return 2;
 };
 
 export const generateTableRows = (drugs: Converted[], startRowIndexInPrescribedDrug = 0): TableRowData[] => {

@@ -17,8 +17,11 @@ import { CHANGE_PATIENT_NOTES, SAVE_PATIENT_NOTES_REQUEST } from '../redux/actio
 const PatientLandingPage: FC = () => {
   const history = useHistory();
   const { me, currentPatient } = useSelector<RootState, UserState>((state) => state.user);
-  const { projectedSchedule, scheduleChartData } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
-  const { path, url } = useRouteMatch();
+  const {
+    projectedSchedule,
+    scheduleChartData,
+    currentTaperConfigId,
+  } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const location = useLocation();
   const dispatch = useDispatch();
 
@@ -27,25 +30,6 @@ const PatientLandingPage: FC = () => {
     background-color: #0984E3;
   `);
 
-  useEffect(() => {
-    console.group('PatientInitPage');
-    console.log('currentPatient');
-    console.log(currentPatient);
-    console.log('path: ', path);
-    console.log('url: ', url);
-    console.log('location: ', location);
-    console.groupEnd();
-    // dispatch<FetchTaperConfigRequestAction>({
-    //   type: FETCH_TAPER_CONFIG_REQUEST,
-    //   data: { clinicianId: me!.id, patientId: currentPatient!.id },
-    // });
-
-    if (currentPatient && currentPatient.taperingConfiguration) {
-      // TODO: load data from taperConfiguration
-      // setProjectedSchedule(scheduleGenerator(completePrescribedDrugs(currentPatient.taperingConfiguration.prescribedDrugs)));
-      // setChartData(chartDataConverter(projectedSchedule));
-    }
-  }, []);
   const onClickNewSchedule = useCallback(() => {
     // history.push(`/taper-configuration/create/?clinicianId=${me!.id}&patientId=${currentPatient!.id}`);
     history.push(`${location.pathname}/taper-configuration/create/`);
@@ -64,7 +48,7 @@ const PatientLandingPage: FC = () => {
         margin-top: 46px;
       `}>No medication schedule created</p>;
     }
-    return <div>
+    return <div css={css`margin-top: 15px;`}>
       <ProjectedScheduleTable editable={false}
                               projectedSchedule={projectedSchedule!}/>
     </div>;
@@ -94,21 +78,27 @@ const PatientLandingPage: FC = () => {
   };
 
   const renderChart = useCallback(() => {
+    const chartAreaStyle = css`
+      width: 95%;
+      height: 360px;
+      border-radius: 17px;
+      color: #c7c5c5;
+      //font-size: 20px;
+      font-size: 1rem;
+      border: 1px solid #707070;
+      line-height: 300px;
+      text-align: center;
+    `;
+
     if (scheduleChartData.length !== 0) {
-      return <ProjectedScheduleChart scheduleChartData={scheduleChartData} width={399} height={360}/>;
+      return <div css={css`height: 400px;
+        margin-top: 56px;`}>
+        <ProjectedScheduleChart scheduleChartData={scheduleChartData} width={399} height={360}/>
+      </div>;
     }
+
     return <div>
-      <div css={css`
-        width: 399px;
-        height: 360px;
-        border-radius: 17px;
-        color: #c7c5c5;
-        //font-size: 20px;
-        font-size: 1rem;
-        border: 1px solid #707070;
-        line-height: 300px;
-        text-align: center;
-      `}>No data.
+      <div css={chartAreaStyle}>No data.
       </div>
       <div css={css`
         text-align: center;
@@ -157,7 +147,9 @@ const PatientLandingPage: FC = () => {
          className='patient-initial'>
       <div css={css`display: flex;
         justify-content: space-between;`}>
-        <div css={css`width: 447px;`}>
+        <div css={css`
+          width: ${currentTaperConfigId === null ? '40%' : '65%'}`}>
+          {/* <div css={css`width: 447px;`}> */}
           {/* <div css={css`width: 100%;`}> */}
           <div css={css`display: flex;
             align-items: center;
@@ -176,7 +168,8 @@ const PatientLandingPage: FC = () => {
           </div>
           {renderSymptomTracker()}
         </div>
-        <div css={css`padding-right: 20px;`}>
+        <div css={css`padding-right: 20px;
+          width: 30%;`}>
           {renderChart()}
         </div>
       </div>

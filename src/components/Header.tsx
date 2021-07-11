@@ -5,6 +5,8 @@ import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { UserState } from '../redux/reducers/user';
 import { RootState } from '../redux/reducers';
+import JomhuriaWoff from '../assets/jomhuria-v12-latin-regular.woff';
+import JomhuriaWoff2 from '../assets/jomhuria-v12-latin-regular.woff2';
 
 const StyledHeader = styled.header`
   display: flex;
@@ -16,14 +18,27 @@ const StyledHeader = styled.header`
 `;
 
 const Logo = styled.div`
+  /* jomhuria-regular - latin */
+  @font-face {
+    font-family: 'Jomhuria';
+    font-style: normal;
+    font-weight: 400;
+    src: local(''),
+    url(${JomhuriaWoff2}) format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+    url(${JomhuriaWoff}) format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+  }
+  
   //flex-basis: 16%;
   //width: 16%;
   //flex: 0 0 200px;
   flex: 0 1 16%;
   text-align: center;
-  font-size: 1.5rem;
+  font-size: 3rem;
+  font-family: 'Jomhuria';
+  //font-weight: bold;
   margin: 0;
   color: #0984E3;
+
 `;
 
 const DisplayUser = styled.div`
@@ -48,7 +63,7 @@ const Header = () => {
   return (
     <>
       <StyledHeader>
-        <Logo onClick={onClickLogo}>Logo</Logo>
+        <Logo onClick={onClickLogo}>AT Planner</Logo>
         <DisplayUser>
           <span css={css`margin-right: 86px`}>Hello, Dr. {me?.name}</span>
         </DisplayUser>

@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import {
   HelpIcon, LogOutIcon, PatientsMenuIcon, SymptomTemplatesMenuIcon,
-} from '../icons';
+} from '../assets/icons';
 
 const NavBarStyle = css`
   background-color: #0984E3;

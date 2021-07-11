@@ -50,10 +50,6 @@ const ProjectedScheduleTableRowEditingModal: FC<Props> = ({
   }, []);
 
   const onClickOk = (e: React.MouseEvent<HTMLElement>) => {
-
-
-    // TODO: need to handle the case where Ok is clicked without any changes
-
     onOk(e);
     dispatch({
       type: EDIT_PROJECTED_SCHEDULE_FROM_MODAL,

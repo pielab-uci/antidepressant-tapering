@@ -15,12 +15,34 @@ export interface Schedule {
   data: TableRowData[];
 }
 
-const drugs = ['F', 'C', ' S', 'P', 'E'];
 const ProjectedSchedule: FC<{ editable: boolean, title: string }> = ({ editable, title }) => {
   const {
     projectedSchedule, scheduleChartData, finalPrescription,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
 
+  const renderColorSamples = () => {
+    const drugs = ['F', 'C', ' S', 'P', 'E'];
+    return (
+      <div css={css`width: 400px;
+        height: 200px;
+        display: flex;
+        flex-direction: row;`}>
+        {['#00B894', '#E84393', '#0984C3', '#6C48F7', '#FF7575'].map((bgc, i) => (
+          <div key={i} css={css`width: 20%;
+            display: flex;
+            flex-direction: column;`}>
+            <div css={css`height: 50%;
+              background-color: ${bgc};
+              opacity: 0.5;
+              color: black;`}>{drugs[i]}</div>
+            <div css={css`height: 50%;
+              background-color: ${bgc};
+              opacity: 0.2;
+              color: black;`}>{drugs[i]}</div>
+          </div>))}
+      </div>
+    );
+  };
   return (
     <>
       {projectedSchedule.data.length
@@ -29,18 +51,7 @@ const ProjectedSchedule: FC<{ editable: boolean, title: string }> = ({ editable,
           <h3 css={css`font-size: 1.1rem;
             color: #636E72;`}>{title}</h3>
           <p>Check all the rows that you would like to prescribe.</p>
-          <div css={css`width: 400px;
-            height: 200px;
-            display: flex;
-            flex-direction: row;`}>
-            {['#00B894', '#E84393', '#0984C3', '#6C48F7', '#FF7575'].map((bgc, i) => (
-              <div key={i} css={css`width: 20%;
-                display: flex;
-                flex-direction: column;`}>
-                <div css={css`height: 50%; background-color: ${bgc}; opacity: 0.5; color: black;`}>{drugs[i]}</div>
-                <div css={css`height: 50%; background-color:${bgc}; opacity: 0.2; color: black;`}>{drugs[i]}</div>
-              </div>))}
-          </div>
+          {/* {renderColorSamples()} */}
           <div css={css`display: flex;
             justify-content: space-between;`}>
             {projectedSchedule.data.length !== 0

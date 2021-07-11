@@ -19,7 +19,11 @@ module.exports = merge(common, {
           {loader: MiniCssExtractPlugin.loader, options: {esModule: false}},
           {loader: 'css-loader'}
         ]
-      }
+      },
+      // {
+      //   test: /\.(woff|woff2)$/i,
+      //   type: 'asset/resource',
+      // }
     ]
   },
   optimization: {

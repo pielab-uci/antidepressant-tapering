@@ -12,7 +12,7 @@ import {
 } from './actions';
 import {
   ArrowDown, ArrowUp, CapsuleIcon, ScoredTabletIcon, UnscoredTabletIcon,
-} from '../../icons';
+} from '../../assets/icons';
 
 interface Props {
   form: string;

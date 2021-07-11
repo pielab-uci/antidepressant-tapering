@@ -14,7 +14,7 @@ import {
   TOGGLE_SHARE_PROJECTED_SCHEDULE_WITH_PATIENT,
 } from '../../redux/actions/taperConfig';
 import ProjectedSchedule from '../../components/Schedule/ProjectedSchedule';
-import { ShareWithAppIcon, ShareWithEmailIcon, ShareWithPdfIcon } from '../../icons';
+import { ShareWithAppIcon, ShareWithEmailIcon, ShareWithPdfIcon } from '../../assets/icons';
 import NotesToShare from '../../components/Schedule/NotesToShare';
 
 const wrapperStyle = css`

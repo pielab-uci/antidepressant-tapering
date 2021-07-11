@@ -413,6 +413,8 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           ? draft.projectedSchedule.drugs
           : draft.projectedSchedule.drugs.concat(action.data.prescribedDrug);
 
+        draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
+
         break;
       }
 

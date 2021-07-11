@@ -11,6 +11,15 @@ module.exports = {
     app: './src/index',
   },
 
+  module: {
+    rules: [
+      {
+        test: /\.(woff|woff2)$/i,
+        type: 'asset/resource',
+      }
+    ]
+  },
+
   output: {
     filename: '[name].js',
     path: path.join(__dirname, 'dist'),
@@ -19,7 +28,8 @@ module.exports = {
   plugins: [new HtmlWebpackPlugin({
     filename: 'index.html',
     title: 'Supporting Tapering Antidepressants',
-    template: './src/index.html'
+    template: './src/index.html',
+    favicon: './src/assets/favicon-32x32.png',
   }),
   ],
 }

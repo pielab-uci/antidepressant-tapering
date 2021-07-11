@@ -15,6 +15,10 @@ module.exports = merge(common, {
       {
         test: /.css$/, use: ['style-loader', 'css-loader'],
       },
+      // {
+      //   test: /\.(woff|woff2)$/i,
+      //   type: 'asset/resource',
+      // }
     ],
   },
   devServer: {

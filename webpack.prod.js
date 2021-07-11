@@ -20,10 +20,10 @@ module.exports = merge(common, {
           {loader: 'css-loader'}
         ]
       },
-      // {
-      //   test: /\.(woff|woff2)$/i,
-      //   type: 'asset/resource',
-      // }
+      {
+        test: /\.(woff|woff2)$/i,
+        type: 'asset/resource',
+      }
     ]
   },
   optimization: {

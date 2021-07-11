@@ -23,11 +23,11 @@ const Logo = styled.div`
     font-family: 'Jomhuria';
     font-style: normal;
     font-weight: 400;
+    font-display: block;
     src: local(''),
-    url(${JomhuriaWoff2}) format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-    url(${JomhuriaWoff}) format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+    url(${JomhuriaWoff2}) format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */ 
+    url(${JomhuriaWoff}) format('woff');  /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
   }
-  
   //flex-basis: 16%;
   //width: 16%;
   //flex: 0 0 200px;
@@ -36,7 +36,7 @@ const Logo = styled.div`
   font-size: 3rem;
   font-family: 'Jomhuria';
   //font-weight: bold;
-  margin: 0;
+  margin-top: 20px;
   color: #0984E3;
 
 `;

@@ -80,7 +80,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         break;
 
       case EMPTY_TAPER_CONFIG_PAGE:
-        draft.taperConfigId = null;
+        draft.currentTaperConfigId = null;
         draft.taperConfigCreatedAt = null;
         draft.scheduleChartData = [];
         draft.isInputComplete = false;
@@ -425,7 +425,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS: {
         draft.addingTaperConfig = false;
         draft.addedTaperConfig = true;
-        draft.taperConfigId = action.data.id;
+        draft.currentTaperConfigId = action.data.id;
 
         // TODO: may not need taperConfigCreatedAt.
         // draft.taperConfigCreatedAt = action.data.createdAt;

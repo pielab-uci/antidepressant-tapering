@@ -26,7 +26,7 @@ export interface TaperConfigState {
   patientId: number;
   drugs: Drug[];
   taperConfigs: TaperingConfiguration[];
-  taperConfigId: number | null;
+  currentTaperConfigId: number | null;
   taperConfigCreatedAt: Date | null;
   lastPrescriptionFormId: number;
   prescriptionFormIds: number[];
@@ -130,7 +130,7 @@ export const initialState: TaperConfigState = {
   clinicianId: -1,
   patientId: -1,
   taperConfigs: [],
-  taperConfigId: null,
+  currentTaperConfigId: null,
   taperConfigCreatedAt: null,
   lastPrescriptionFormId: 0,
   prescriptionFormIds: [0],

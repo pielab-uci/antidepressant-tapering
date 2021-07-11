@@ -45,6 +45,8 @@ import {
   UPCOMING_DOSAGE_CHANGE,
 } from '../../components/PrescriptionForm/actions';
 import taperConfig from '../reducers/taperConfig/taperConfig';
+import { UserState } from '../reducers/user';
+import { Schedule } from '../../components/Schedule/ProjectedSchedule';
 
 let taperConfigId = 0;
 
@@ -141,19 +143,26 @@ function* fetchTaperConfig(action: FetchTaperConfigRequestAction) {
     const taperConfigState: TaperConfigState = yield select((state) => state.taperConfig);
 
     const taperConfigIndex = taperConfigState.taperConfigs.findIndex((config) => config.patientId === action.data.patientId && config.clinicianId === action.data.clinicianId);
-    if (taperConfigIndex) {
+    if (taperConfigIndex !== -1) {
       yield put<FetchTaperConfigSuccessAction>({
         type: FETCH_TAPER_CONFIG_SUCCESS,
         data: taperConfigState.taperConfigs[taperConfigIndex],
       });
     } else {
-      // TODO: give new..?
-    }
-
-    if (taperConfigState.prescribedDrugs?.filter((drug) => !drug.prevVisit).length === 0) {
-      yield put<AddNewDrugFormAction>({
-        type: ADD_NEW_DRUG_FORM,
-        data: null,
+      taperConfigId += 1;
+      yield put<FetchTaperConfigSuccessAction>({
+        type: FETCH_TAPER_CONFIG_SUCCESS,
+        data: {
+          id: taperConfigId,
+          clinicianId: action.data.clinicianId,
+          patientId: action.data.patientId,
+          createdAt: new Date(),
+          projectedSchedule: {} as Schedule,
+          instructionsForPharmacy: '',
+          instructionsForPatient: '',
+          finalPrescription: {} as Prescription,
+          scheduleChartData: [] as ScheduleChartData,
+        },
       });
     }
 

@@ -11,7 +11,7 @@ import { changeMessageForPatient, changeNoteAndInstructions } from '../../redux/
 
 const NotesToShare: FC<{ editable: boolean }> = ({ editable }) => {
   const {
-    instructionsForPatient, instructionsForPharmacy, taperConfigs, taperConfigId,
+    instructionsForPatient, instructionsForPharmacy, taperConfigs, currentTaperConfigId,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const dispatch = useDispatch();
 
@@ -19,14 +19,14 @@ const NotesToShare: FC<{ editable: boolean }> = ({ editable }) => {
     if (editable) {
       return instructionsForPatient;
     }
-    return taperConfigs.find((config) => config.id === taperConfigId)!.instructionsForPatient;
+    return taperConfigs.find((config) => config.id === currentTaperConfigId)!.instructionsForPatient;
   };
 
   const pharmacyInstructions = (editable: boolean) => {
     if (editable) {
       return instructionsForPharmacy;
     }
-    return taperConfigs.find((config) => config.id === taperConfigId)!.instructionsForPharmacy;
+    return taperConfigs.find((config) => config.id === currentTaperConfigId)!.instructionsForPharmacy;
   };
 
   const onChangeMessageForPatient = useCallback((e) => {

@@ -32,12 +32,14 @@ const mainStyle = css`
 const App = () => {
   const { me, currentPatient } = useSelector<RootState, UserState>((state) => state.user);
   const dispatch = useDispatch();
+  /*
   useEffect(() => {
     // dispatch<LoginRequestAction>({
     //   type: LOGIN_REQUEST,
     //   data: { email: 'clinician@gmail.com', password: '1234' },
     // });
   }, []);
+   */
 
   return (
     <>

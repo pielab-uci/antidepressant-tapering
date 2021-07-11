@@ -52,7 +52,7 @@ const EditTaperConfiguration = () => {
   const {
     clinicianId,
     patientId,
-    taperConfigId,
+    currentTaperConfigId,
     instructionsForPatient,
     instructionsForPharmacy,
     projectedSchedule,
@@ -80,7 +80,7 @@ const EditTaperConfiguration = () => {
     dispatch({
       type: ADD_OR_UPDATE_TAPER_CONFIG_REQUEST,
       data: {
-        taperConfigId,
+        currentTaperConfigId,
         clinicianId,
         patientId,
         projectedSchedule,

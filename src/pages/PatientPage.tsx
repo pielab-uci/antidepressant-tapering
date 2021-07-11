@@ -12,8 +12,8 @@ import { UserState } from '../redux/reducers/user';
 import { RootState } from '../redux/reducers';
 import {
   EMPTY_PRESCRIBED_DRUGS, EmptyPrescribedDrugs,
-  FETCH_PRESCRIBED_DRUGS_REQUEST,
-  FetchPrescribedDrugsRequestAction,
+  FETCH_TAPER_CONFIG_REQUEST,
+  FetchTaperConfigRequestAction,
 } from '../redux/actions/taperConfig';
 import { SET_CURRENT_PATIENT, SetCurrentPatientAction } from '../redux/actions/user';
 import { checkCurrentPatientAndRender } from './utils';
@@ -48,23 +48,22 @@ const patientPageHeaderStyle = css`
   }
 `;
 const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) => {
-  const { currentPatient } = useSelector<RootState, UserState>((state) => state.user);
+  const { me, currentPatient } = useSelector<RootState, UserState>((state) => state.user);
   const dispatch = useDispatch();
   const { path, url } = useRouteMatch();
 
   useEffect(() => {
+    const patientId = parseInt(match!.params.patientId, 10);
+
     dispatch<SetCurrentPatientAction>({
       type: SET_CURRENT_PATIENT,
-      data: parseInt(match!.params.patientId, 10),
+      data: patientId,
     });
 
-    if (currentPatient && currentPatient.taperingConfiguration) {
-      console.log('patient ', currentPatient);
-      dispatch<FetchPrescribedDrugsRequestAction>({
-        type: FETCH_PRESCRIBED_DRUGS_REQUEST,
-        data: currentPatient.taperingConfiguration.id,
-      });
-    }
+    dispatch<FetchTaperConfigRequestAction>({
+      type: FETCH_TAPER_CONFIG_REQUEST,
+      data: { patientId, clinicianId: me!.id },
+    });
 
     console.group('PatientPage');
     console.log('url: ', url);
@@ -77,16 +76,6 @@ const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) =
     };
   }, []);
 
-  useEffect(() => {
-    if (currentPatient && currentPatient.taperingConfiguration) {
-      console.log('patient ', currentPatient);
-      dispatch<FetchPrescribedDrugsRequestAction>({
-        type: FETCH_PRESCRIBED_DRUGS_REQUEST,
-        data: currentPatient.taperingConfiguration.id,
-      });
-    }
-  }, [currentPatient]);
-
   return (
     <>
       {!currentPatient ? <div>No such patient</div>
@@ -96,11 +85,11 @@ const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) =
             <div>Last Visit: {format(currentPatient.recentVisit, 'MM/dd/yyyy')}</div>
             <hr/>
           </div>
-            <Switch>
-              <Route exact path={`${path}`} component={PatientLandingPage}/>
-              <Route path={`${path}/taper-configuration`}
-                     render={checkCurrentPatientAndRender(currentPatient, TaperConfigurationPage)}/>
-            </Switch>
+          <Switch>
+            <Route exact path={`${path}`} component={PatientLandingPage}/>
+            <Route path={`${path}/taper-configuration`}
+                   render={checkCurrentPatientAndRender(currentPatient, TaperConfigurationPage)}/>
+          </Switch>
         </div>
       }
     </>

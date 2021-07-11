@@ -9,6 +9,7 @@ import { LOGIN_REQUEST, LoginRequestAction } from '../redux/actions/user';
 const LoginPage = () => {
   const { register, handleSubmit } = useForm();
   const dispatch = useDispatch();
+
   // const onSubmit = (data: { email: string; password: string }) => {
   const onSubmit = (data: { name: string }) => {
     dispatch<LoginRequestAction>({

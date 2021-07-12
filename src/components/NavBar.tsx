@@ -93,9 +93,18 @@ const NavBar = () => {
     }
   `;
 
-  const boldOnRoute = (menu: 'schedule' | 'symptomTracker' | 'report') => css`
-    font-weight: ${menu === currentMenu ? 'bold' : 'normal'}
-  `;
+  const boldOnRoute = (menu: 'schedule' | 'symptomTracker' | 'report') => {
+    if (menu === currentMenu) {
+      return css`font-weight: bold;`;
+    }
+    return css`
+      font-weight: normal;
+      color: gray;
+      opacity: 0.7;`;
+  };
+  // const boldOnRoute = (menu: 'schedule' | 'symptomTracker' | 'report') => css`
+  //     font-weight: ${menu === currentMenu ? 'bold' : 'normal'}
+  //   `;
 
   return (
     <div css={NavBarStyle}>
@@ -142,5 +151,4 @@ const NavBar = () => {
     </div>
   );
 };
-
 export default NavBar;

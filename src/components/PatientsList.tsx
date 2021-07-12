@@ -84,6 +84,7 @@ const PatientsList: FC<Props> = ({ patients }) => {
         />
         <Button
           type={'primary'}
+          disabled={true}
           css={buttonStyle}>New Patient</Button>
       </div>
       <Table

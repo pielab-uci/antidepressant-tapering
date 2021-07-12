@@ -163,8 +163,12 @@ const PatientLandingPage: FC = () => {
             justify-content: space-between;
             margin-top: 76px;`}>
             <h3>Symptom Tracker</h3>
-            <Button type='primary' css={css`border-radius: 10px;
-              background-color: #0984E3;`}>Create New</Button>
+            <Button type='primary'
+                    css={css`
+                      border-radius: 10px;
+                      background-color: #0984E3;`}
+                    disabled={true}>
+              Create New</Button>
           </div>
           {renderSymptomTracker()}
         </div>

@@ -26,6 +26,7 @@ const NotesToShare: FC<{ editable: boolean }> = ({ editable }) => {
     if (editable) {
       return instructionsForPharmacy;
     }
+
     return taperConfigs.find((config) => config.id === currentTaperConfigId)!.instructionsForPharmacy;
   };
 
@@ -48,35 +49,45 @@ const NotesToShare: FC<{ editable: boolean }> = ({ editable }) => {
   }, []);
 
   return (
-   <>
-     <div>
-       <h3 css={css`margin-top: 40px;`}>Notes for Patient</h3>
-       <TextArea
-         value={patientInstructions(editable)}
-         defaultValue={patientInstructions(editable)}
-         onChange={onChangeMessageForPatient}
-         placeholder={instructionsForPatientPlaceholder.current}
-         rows={6}
-         readOnly={!editable}
-       />
-       {!editable && <CopyToClipboard text={instructionsForPatient} onCopy={onInstructionsForPatientCopied}>
-         <Button>Copy to Clipboard</Button>
-       </CopyToClipboard>}
-     </div>
+    <>
+      <div>
+        <div css={css`display: flex; margin-top: 40px; align-items: center;`}>
+          <h3>Notes for Patient</h3>
+          {!editable && <CopyToClipboard text={instructionsForPatient} onCopy={onInstructionsForPatientCopied}>
+            <Button css={css`margin-left: 20px;`}>Copy to Clipboard</Button>
+          </CopyToClipboard>}
+        </div>
+        {editable
+          ? <TextArea
+            value={patientInstructions(editable)}
+            defaultValue={patientInstructions(editable)}
+            onChange={onChangeMessageForPatient}
+            placeholder={instructionsForPatientPlaceholder.current}
+            rows={6}
+            readOnly={!editable}
+          />
+          : <div css={css`margin: 10px 0 0 20px;`}>{patientInstructions(editable).split('\n').map((string, i) => <p key={i}>{string}</p>)}</div>}
 
-     <div>
-       <h3 css={css`margin-top: 40px;`}>Notes for Pharmacy</h3>
-       <TextArea value={pharmacyInstructions(editable)}
-                 defaultValue={pharmacyInstructions(editable)}
-                 onChange={onChangeInstructionsForPharmacy}
-                 rows={6}
-                 readOnly={!editable}
-       />
-       {!editable && <CopyToClipboard text={instructionsForPharmacy} onCopy={onInstructionsForPharmacyCopied}>
-         <Button>Copy to Clipboard</Button>
-       </CopyToClipboard>}
-     </div>
-   </>
+      </div>
+
+      <div>
+        <div css={css`display: flex; margin-top: 40px; align-items: center;`}>
+          <h3>Notes for Pharmacy</h3>
+          {!editable && <CopyToClipboard text={instructionsForPharmacy} onCopy={onInstructionsForPharmacyCopied}>
+            <Button css={css`margin-left: 20px;`}>Copy to Clipboard</Button>
+          </CopyToClipboard>}
+        </div>
+
+        {editable
+          ? <TextArea value={pharmacyInstructions(editable)}
+                      defaultValue={pharmacyInstructions(editable)}
+                      onChange={onChangeInstructionsForPharmacy}
+                      rows={6}
+                      readOnly={!editable}
+          />
+          : <div css={css`margin: 10px 0 0 20px;`}>{pharmacyInstructions(editable).split('\n').map((string, i) => <p key={i}>{string}</p>)}</div>}
+      </div>
+    </>
   );
 };
 

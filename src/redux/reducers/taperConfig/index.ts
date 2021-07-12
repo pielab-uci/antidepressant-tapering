@@ -20,6 +20,7 @@ import {
 } from '../../actions/taperConfig';
 import { PrescriptionFormActions } from '../../../components/PrescriptionForm/actions';
 import drugs from '../drugs';
+import { SetCurrentPatientAction } from '../../actions/user';
 
 export interface TaperConfigState {
   clinicianId: number;
@@ -92,6 +93,7 @@ export type TaperConfigActions =
   | UpdateChartAction
   | SetIsInputComplete
   | OpenModalAction
+  | SetCurrentPatientAction
   | ValidateInputCompletionAction
   | EditProjectedScheduleFromModal
   | PrescriptionFormActions

@@ -11,7 +11,7 @@ import { Route, Switch } from 'react-router-dom';
 import { UserState } from '../redux/reducers/user';
 import { RootState } from '../redux/reducers';
 import {
-  EMPTY_PRESCRIBED_DRUGS, EmptyPrescribedDrugs,
+  EMPTY_PRESCRIBED_DRUGS, EMPTY_TAPER_CONFIG_PAGE, EmptyPrescribedDrugs, EmptyTaperConfigPage,
   FETCH_TAPER_CONFIG_REQUEST,
   FetchTaperConfigRequestAction,
 } from '../redux/actions/taperConfig';
@@ -70,8 +70,11 @@ const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) =
     console.log('path: ', path);
     console.groupEnd();
     return () => {
-      dispatch<EmptyPrescribedDrugs>({
-        type: EMPTY_PRESCRIBED_DRUGS,
+      // dispatch<EmptyPrescribedDrugs>({
+      //   type: EMPTY_PRESCRIBED_DRUGS,
+      // });
+      dispatch<EmptyTaperConfigPage>({
+        type: EMPTY_TAPER_CONFIG_PAGE,
       });
     };
   }, []);

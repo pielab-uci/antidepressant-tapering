@@ -64,6 +64,7 @@ import {
   TaperConfigState, TaperConfigActions, emptyPrescribedDrug, initialState,
 } from './index';
 import { Converted, TableRowData } from '../../../types';
+import { SET_CURRENT_PATIENT } from '../../actions/user';
 
 const taperConfigReducer = (state: TaperConfigState = initialState, action: TaperConfigActions) => {
   console.log('taperConfigAction: ', action);
@@ -84,7 +85,8 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.taperConfigCreatedAt = null;
         draft.scheduleChartData = [];
         draft.isInputComplete = false;
-        draft.prescribedDrugs = draft.prescribedDrugs!.filter((drug) => isCompleteDrugInput(drug));
+        // draft.prescribedDrugs = draft.prescribedDrugs!.filter((drug) => isCompleteDrugInput(drug));
+        draft.prescribedDrugs = [];
         draft.projectedSchedule = { drugs: [], data: [] };
         draft.instructionsForPatient = '';
         draft.instructionsForPharmacy = '';
@@ -141,6 +143,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case CLEAR_SCHEDULE:
         draft.projectedSchedule = { data: [], drugs: [] };
         draft.scheduleChartData = [];
+        draft.tableSelectedRows = [];
         draft.showInstructionsForPatient = false;
         draft.instructionsForPharmacy = '';
         draft.instructionsForPatient = '';
@@ -417,6 +420,11 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
 
         break;
       }
+
+      // case SET_CURRENT_PATIENT:
+      //   draft.prescribedDrugs = [];
+      //   draft.projectedSchedule = { drugs: [], data: [] };
+      //   draft.scheduleChartData = [];
 
       case ADD_OR_UPDATE_TAPER_CONFIG_REQUEST:
         draft.addingTaperConfig = true;

@@ -90,7 +90,7 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
               <Input type='number' value={mlDosage} onChange={mlOnChange} readOnly={!editable} min={0}
                      style={inputStyle}/> ml
             </div>
-            <div>
+            <div css={css`display: flex; flex-direction: column; align-items: flex-end; margin-left: 10px;`}>
               {time === 'Upcoming' && dosageDifferenceMessage
               && (
                 <div css={css`color: #0984E3;`}>

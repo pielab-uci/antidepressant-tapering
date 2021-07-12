@@ -5,8 +5,6 @@ import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { UserState } from '../redux/reducers/user';
 import { RootState } from '../redux/reducers';
-import JomhuriaWoff from '../assets/jomhuria-v12-latin-regular.woff';
-import JomhuriaWoff2 from '../assets/jomhuria-v12-latin-regular.woff2';
 
 const StyledHeader = styled.header`
   display: flex;
@@ -18,16 +16,6 @@ const StyledHeader = styled.header`
 `;
 
 const Logo = styled.div`
-  /* jomhuria-regular - latin */
-  @font-face {
-    font-family: 'Jomhuria';
-    font-style: normal;
-    font-weight: 400;
-    font-display: block;
-    src: local(''),
-    url(${JomhuriaWoff2}) format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */ 
-    url(${JomhuriaWoff}) format('woff');  /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
-  }
   //flex-basis: 16%;
   //width: 16%;
   //flex: 0 0 200px;

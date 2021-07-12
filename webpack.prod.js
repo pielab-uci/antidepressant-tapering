@@ -8,7 +8,7 @@ module.exports = merge(common, {
   devtool: 'hidden-source-map',
   output: {
     // publicPath: '/',
-    publicPath: '/antidepressant-tapering'
+    publicPath: '/antidepressant-tapering/'
   },
   module: {
     rules: [

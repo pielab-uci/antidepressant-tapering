@@ -15,6 +15,7 @@ import 'antd/dist/antd.css';
 import { checkCurrentPatientAndRender } from './pages/utils';
 import NavBar from './components/NavBar';
 import Header from './components/Header';
+import './app.css';
 
 const mainStyle = css`
   flex: 1;

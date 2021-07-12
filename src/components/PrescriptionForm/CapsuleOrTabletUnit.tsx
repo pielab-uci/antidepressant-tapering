@@ -42,10 +42,13 @@ const CapsuleOrTabletUnit: FC<Props> = ({
   };
 
   const quantity = (change: 'increment' | 'decrement', dosages: { [dosage: string]: number }, dosage: string) => {
-    if (isScored) {
-      return change === 'increment' ? dosages[dosage] + 0.5 : dosages[dosage] - 0.5;
-    }
-    return change === 'increment' ? dosages[dosage] + 1 : dosages[dosage] - 1;
+    const changeAmount = isScored || allowSplittingUnscoredTablet ? 0.5 : 1;
+
+    return change === 'increment' ? dosages[dosage] + changeAmount : dosages[dosage] - changeAmount;
+    // if (isScored) {
+    //   return change === 'increment' ? dosages[dosage] + 0.5 : dosages[dosage] - 0.5;
+    // }
+    // return change === 'increment' ? dosages[dosage] + 1 : dosages[dosage] - 1;
   };
 
   const onIncrement = useCallback(() => {

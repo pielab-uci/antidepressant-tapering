@@ -8,11 +8,34 @@ import Input from 'antd/es/input';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router';
+import { format } from 'date-fns';
 import { ProjectedScheduleChart, ProjectedScheduleTable } from '../components/Schedule';
 import { RootState } from '../redux/reducers';
 import { UserState } from '../redux/reducers/user';
 import { TaperConfigState } from '../redux/reducers/taperConfig';
 import { CHANGE_PATIENT_NOTES, SAVE_PATIENT_NOTES_REQUEST } from '../redux/actions/user';
+
+const patientPageHeaderStyle = css`
+  & > h2 {
+    //font-size: 32px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
+  }
+
+  &:nth-child(2) {
+    //font-size: 20px;
+    font-size: 0.8rem;
+  }
+
+  & > hr {
+    border: none;
+    width: 100%;
+    height: 2px;
+    margin: 8px auto;
+    background-color: #D1D1D1;
+  }
+`;
 
 const PatientLandingPage: FC = () => {
   const history = useHistory();
@@ -145,6 +168,12 @@ const PatientLandingPage: FC = () => {
         color: #636272;
       }`}
          className='patient-initial'>
+      <div css={patientPageHeaderStyle}>
+        <h2>{currentPatient!.name}</h2>
+        <div>Last Visit: {format(currentPatient!.recentVisit, 'MM/dd/yyyy')}</div>
+        <hr/>
+      </div>
+
       <div css={css`display: flex;
         justify-content: space-between;`}>
         <div css={css`

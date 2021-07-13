@@ -26,27 +26,6 @@ const pageStyle = css`
   height: 100%;
 `;
 
-const patientPageHeaderStyle = css`
-  & > h2 {
-    //font-size: 32px;
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin: 0;
-  }
-
-  &:nth-child(2) {
-    //font-size: 20px;
-    font-size: 0.8rem;
-  }
-
-  & > hr {
-    border: none;
-    width: 100%;
-    height: 2px;
-    margin: 8px auto;
-    background-color: #D1D1D1;
-  }
-`;
 const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) => {
   const { me, currentPatient } = useSelector<RootState, UserState>((state) => state.user);
   const dispatch = useDispatch();
@@ -83,11 +62,11 @@ const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) =
     <>
       {!currentPatient ? <div>No such patient</div>
         : <div css={pageStyle}>
-          <div css={patientPageHeaderStyle}>
-            <h2>{currentPatient.name}</h2>
-            <div>Last Visit: {format(currentPatient.recentVisit, 'MM/dd/yyyy')}</div>
-            <hr/>
-          </div>
+          {/* <div css={patientPageHeaderStyle}> */}
+          {/*  <h2>{currentPatient.name}</h2> */}
+          {/*  <div>Last Visit: {format(currentPatient.recentVisit, 'MM/dd/yyyy')}</div> */}
+          {/*  <hr/> */}
+          {/* </div> */}
           <Switch>
             <Route exact path={`${path}`} component={PatientLandingPage}/>
             <Route path={`${path}/taper-configuration`}

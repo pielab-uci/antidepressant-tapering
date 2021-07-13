@@ -19,12 +19,12 @@ const wrapperStyle = css`
   display: flex;
   flex-direction: column;
   flex: 1;
-  overflow-y: hidden;
+  //overflow-y: hidden;
   //height: 100%;
 `;
 
 const buttonsStyle = css`
-  margin-bottom: 21px;
+  //margin-bottom: 21px;
   display: flex;
   justify-content: space-between;
 
@@ -66,8 +66,8 @@ const CreateTaperConfiguration = () => {
     padding-top: ${prescribedDrugs && prescribedDrugs.length !== 0 ? '25px' : '0px'};
     background-color: white;
     border-radius: 17px;
-    height: 100%;
-    overflow-y: scroll;
+    //height: 100%;
+    //overflow-y: scroll;
     margin-bottom: 34px;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
   `;
@@ -82,14 +82,17 @@ const CreateTaperConfiguration = () => {
 
     return drugsToRender.map(
       (drug, i) => {
-        return <PrescriptionForm
-          key={`PrescriptionForm${drug.id}`}
-          prescribedDrug={drug}
-          addNewPrescriptionForm={addNewPrescriptionForm}
-          // index={i}
-          modal={{ isModal: false }}
-          title={`Medication #${i + 1}`}
-          numberOfMedications={drugsToRender.length}/>;
+        return <div className='create-taper-configuration-prescription-forms' key={`PrescriptionForm${drug.id}-wrapper`}
+                    css={prescriptionFormStyle}>
+          <PrescriptionForm
+            key={`PrescriptionForm${drug.id}`}
+            prescribedDrug={drug}
+            addNewPrescriptionForm={addNewPrescriptionForm}
+            // index={i}
+            modal={{ isModal: false }}
+            title={`Medication #${i + 1}`}
+            numberOfMedications={drugsToRender.length}/>
+        </div>;
       },
     );
   };
@@ -101,9 +104,7 @@ const CreateTaperConfiguration = () => {
     <div
       className='create-taper-configuration'
       css={wrapperStyle}>
-      <div className='create-taper-configuration-prescription-forms' css={prescriptionFormStyle}>
-        {prescribedDrugs && renderPrescriptionForms(prescribedDrugs)}
-      </div>
+      {prescribedDrugs && renderPrescriptionForms(prescribedDrugs)}
       <div css={buttonsStyle} className='create-taper-config-buttons'>
         <Button onClick={moveToPatientPage}>Cancel</Button>
         <Button css={css`background-color: #0984E3;`} type='primary' onClick={moveToEditPage}

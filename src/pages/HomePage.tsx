@@ -40,8 +40,6 @@ const HomePage = () => {
           <Switch>
             <Route exact path="/" render={() => <PatientsList patients={patients}/>}/>
             <Route path="/patient/:patientId" component={PatientPage}/>
-            {/* <Route path='/taper-configuration' */}
-            {/*       render={checkCurrentPatientAndRender(currentPatient, TaperConfigurationPage)}/> */}
           </Switch>
         </section>
   );

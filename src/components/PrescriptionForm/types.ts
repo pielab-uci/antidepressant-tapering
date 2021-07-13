@@ -23,7 +23,9 @@ export interface PrescriptionFormState {
   regularDosageOptions: string[]|null;
   minDosageUnit: number;
   priorDosagesQty: { [key: string]: number };
+  priorDosageSum: number;
   upcomingDosagesQty: { [key: string]: number };
+  upcomingDosageSum: number;
   targetDosage: number;
   allowSplittingUnscoredTablet: boolean;
   oralDosageInfo: { rate: { mg: number, ml: number }, bottles: string[] } | null;

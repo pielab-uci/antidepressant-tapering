@@ -14,7 +14,9 @@ import { SET_IS_INPUT_COMPLETE, VALIDATE_INPUT_COMPLETION } from '../../redux/ac
 
 const TargetDosageSettingForm = () => {
   const {
-    id, targetDosage, formActionDispatch, priorDosagesQty, upcomingDosagesQty, modal: { isModal, modalDispatch },
+    id, targetDosage, formActionDispatch, priorDosagesQty, priorDosageSum,
+    upcomingDosagesQty, upcomingDosageSum,
+    modal: { isModal, modalDispatch },
   } = useContext(PrescriptionFormContext);
   const [targetDosageValid, setTargetDosageValid] = useState(false);
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
@@ -28,25 +30,10 @@ const TargetDosageSettingForm = () => {
     }
   };
 
-  const [dosageChange, setDosageChange] = useState<'increase' | 'decrease' | 'same' | null>(null);
-
   useEffect(() => {
-    const priorDosageSum = Object.entries(priorDosagesQty)
-      .reduce((prev, [dosage, qty]) => prev + parseFloat(dosage) * qty, 0);
-    const upcomingDosageSum = Object.entries(upcomingDosagesQty)
-      .reduce((prev, [dosage, qty]) => prev + parseFloat(dosage) * qty, 0);
-
-    if (priorDosageSum > upcomingDosageSum) {
-      setDosageChange('decrease');
-    } else if (priorDosageSum < upcomingDosageSum) {
-      setDosageChange('increase');
-    } else {
-      setDosageChange('same');
-    }
-
-    if ((dosageChange === 'increase' && targetDosage < upcomingDosageSum)
-      || (dosageChange === 'decrease' && targetDosage > upcomingDosageSum)
-      || (dosageChange === 'same' && targetDosage !== upcomingDosageSum)) {
+    if ((priorDosageSum < upcomingDosageSum && targetDosage < upcomingDosageSum)
+      || (priorDosageSum > upcomingDosageSum && targetDosage > upcomingDosageSum)
+      || (priorDosageSum === upcomingDosageSum && targetDosage !== upcomingDosageSum)) {
       setTargetDosageValid(false);
       taperConfigActionDispatch({
         type: SET_IS_INPUT_COMPLETE,
@@ -58,7 +45,7 @@ const TargetDosageSettingForm = () => {
         type: VALIDATE_INPUT_COMPLETION,
       });
     }
-  }, [upcomingDosagesQty, priorDosagesQty, targetDosage]);
+  }, [upcomingDosageSum, priorDosageSum, targetDosage]);
 
   const onChangeTargetDosage = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
@@ -72,11 +59,11 @@ const TargetDosageSettingForm = () => {
   };
 
   const renderValidateErrorMessage = () => {
-    const detail = () => {
-      if (dosageChange === 'increase') {
+    const message = () => {
+      if (priorDosageSum < upcomingDosageSum) {
         return 'When you increase the dosage, target dosage must be more than upcoming dosage.';
       }
-      if (dosageChange === 'decrease') {
+      if (priorDosageSum > upcomingDosageSum) {
         return 'When you decrease the dosage, target dosage must be less than upcoming dosage.';
       }
       return 'When you do not make any change to the dosage, target dosage must be equal to upcoming dosage.';
@@ -85,7 +72,7 @@ const TargetDosageSettingForm = () => {
     return <div css={css`color: red;
       margin-left: 20px;`}>
       Invalid target dosage.<br/>
-      {detail()}
+      {message()}
     </div>;
   };
 

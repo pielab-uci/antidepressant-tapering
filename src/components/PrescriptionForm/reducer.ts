@@ -29,7 +29,9 @@ export const initialState: PrescriptionFormState = {
   regularDosageOptions: [],
   minDosageUnit: 0,
   priorDosagesQty: {},
+  priorDosageSum: 0,
   upcomingDosagesQty: {},
+  upcomingDosageSum: 0,
   targetDosage: 0,
   allowSplittingUnscoredTablet: false,
   oralDosageInfo: null,
@@ -132,28 +134,41 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         break;
       }
 
-      case PRIOR_DOSAGE_CHANGE:
+      case PRIOR_DOSAGE_CHANGE: {
         if (action.data.dosage.quantity >= 0) {
           draft.priorDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;
-        }
-        break;
-
-      case UPCOMING_DOSAGE_CHANGE:
-        if (action.data.dosage.quantity >= 0) {
-          draft.upcomingDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;
-          const upcomingDosageSum = Object.entries(draft.upcomingDosagesQty).reduce((prev, [k, v]) => {
+          draft.priorDosageSum = Object.entries(draft.priorDosagesQty).reduce((prev, [k, v]) => {
             return prev + parseFloat(k) * v;
           }, 0);
 
-          const priorDosageSum = Object.entries(draft.priorDosagesQty).reduce((prev, [k, v]) => {
-            return prev + parseFloat(k) * v;
-          }, 0);
-
-          if (priorDosageSum < upcomingDosageSum) {
-            draft.targetDosage = upcomingDosageSum;
+          if (draft.upcomingDosageSum > draft.priorDosageSum) {
+            draft.targetDosage = draft.upcomingDosageSum;
+          } else if (draft.upcomingDosageSum < draft.priorDosageSum) {
+            draft.targetDosage = 0;
+          } else {
+            draft.targetDosage = draft.priorDosageSum;
           }
         }
         break;
+      }
+
+      case UPCOMING_DOSAGE_CHANGE: {
+        if (action.data.dosage.quantity >= 0) {
+          draft.upcomingDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;
+          draft.upcomingDosageSum = Object.entries(draft.upcomingDosagesQty).reduce((prev, [k, v]) => {
+            return prev + parseFloat(k) * v;
+          }, 0);
+
+          if (draft.priorDosageSum < draft.upcomingDosageSum) {
+            draft.targetDosage = draft.upcomingDosageSum;
+          } else if (draft.priorDosageSum > draft.upcomingDosageSum) {
+            draft.targetDosage = 0;
+          } else {
+            draft.targetDosage = draft.upcomingDosageSum;
+          }
+        }
+        break;
+      }
 
       case SET_TARGET_DOSAGE:
         draft.targetDosage = action.data.dosage;

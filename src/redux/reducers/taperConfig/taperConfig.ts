@@ -19,7 +19,7 @@ import {
   FETCH_TAPER_CONFIG_SUCCESS,
   FINAL_PRESCRIPTION_QUANTITY_CHANGE,
   GENERATE_SCHEDULE,
-  INIT_NEW_TAPER_CONFIG,
+  INIT_NEW_TAPER_CONFIG, LOAD_SCHEDULE,
   REMOVE_DRUG_FORM,
   SCHEDULE_ROW_SELECTED,
   SET_IS_INPUT_COMPLETE,
@@ -239,6 +239,14 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           return prev + parseFloat(dosage) * quantity;
         }, 0);
 
+        if (drug.priorDosageSum > drug.upcomingDosageSum) {
+          drug.targetDosage = 0;
+        } else if (drug.priorDosageSum < drug.upcomingDosageSum) {
+          drug.targetDosage = drug.upcomingDosageSum;
+        } else {
+          drug.targetDosage = drug.priorDosageSum;
+        }
+
         draft.isSaved = false;
         draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         break;
@@ -262,7 +270,12 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
 
         if (drug.priorDosageSum < drug.upcomingDosageSum) {
           drug.targetDosage = drug.upcomingDosageSum;
+        } else if (drug.priorDosageSum > drug.upcomingDosageSum) {
+          drug.targetDosage = 0;
+        } else {
+          drug.targetDosage = drug.upcomingDosageSum;
         }
+
         draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         draft.isSaved = false;
         break;

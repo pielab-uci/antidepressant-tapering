@@ -49,10 +49,13 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
     const mg = parseInt(e.target.value, 10);
     const ml = mg / (chosenDrugForm!.dosages as OralDosage).rate.mg * (chosenDrugForm!.dosages as OralDosage).rate.ml;
     const actionData = { id, dosage: { dosage: dosage.current, quantity: mg } };
-    if (time === 'Upcoming') {
-      dispatch(upcomingDosageChange(actionData));
-    } else {
-      dispatch(priorDosageChange(actionData));
+
+    if (actionData.dosage.quantity >= 0) {
+      if (time === 'Upcoming') {
+        dispatch(upcomingDosageChange(actionData));
+      } else {
+        dispatch(priorDosageChange(actionData));
+      }
     }
 
     setmlDosage(ml);
@@ -63,10 +66,13 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
     setmlDosage(ml);
     const mg = ml / (chosenDrugForm!.dosages as OralDosage).rate.ml * (chosenDrugForm!.dosages as OralDosage).rate.mg;
     const actionData = { id, dosage: { dosage: dosage.current, quantity: mg } };
-    if (time === 'Upcoming') {
-      dispatch(upcomingDosageChange(actionData));
-    } else {
-      dispatch(priorDosageChange(actionData));
+
+    if (actionData.dosage.quantity >= 0) {
+      if (time === 'Upcoming') {
+        dispatch(upcomingDosageChange(actionData));
+      } else {
+        dispatch(priorDosageChange(actionData));
+      }
     }
   }, [chosenDrugForm, intervalDurationDays, upcomingDosagesQty, oralDosageInfo]);
 
@@ -78,35 +84,42 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
       </h3>
       <div css={css`display: flex;
         flex-direction: column;`}>
-        <div>
+        <div css={css`display: flex;`}>
           <div css={css`
             display: flex;
-            width: 500px;
+            width: 550px;
+            height: 50px;
+            align-items: center;
             justify-content: space-between;
-            margin-left: 90px;`}>
+            margin-left: 64px;`}>
             <div>
               <Input type='number' value={dosages['1mg']} onChange={mgOnChange} readOnly={!editable} min={0}
                      style={inputStyle}/> mg =
               <Input type='number' value={mlDosage} onChange={mlOnChange} readOnly={!editable} min={0}
                      style={inputStyle}/> ml
             </div>
-            <div css={css`display: flex; flex-direction: column; align-items: flex-end; margin-left: 10px;`}>
-              {time === 'Upcoming' && dosageDifferenceMessage
-              && (
-                <div css={css`color: #0984E3;`}>
-                  {dosageDifferenceMessage}
-                </div>
-              )}
-              <div>
-                Total: {dosageSum}
-                {' '}
-                {chosenDrugForm!.measureUnit}
+          </div>
+          <div css={css`
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            margin-left: 20px;`}>
+            {time === 'Upcoming' && dosageDifferenceMessage
+            && (
+              <div css={css`color: #0984E3;`}>
+                {dosageDifferenceMessage}
               </div>
+            )}
+            <div>
+              Total:
+              {dosageSum}
+              {' '}
+              {chosenDrugForm!.measureUnit}
             </div>
           </div>
-          {time === 'Upcoming' && <TargetDosageSettingForm/>}
         </div>
-
+        {time === 'Upcoming' && <TargetDosageSettingForm/>}
       </div>
     </>
   );

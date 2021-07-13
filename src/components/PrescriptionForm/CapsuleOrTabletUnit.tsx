@@ -59,10 +59,12 @@ const CapsuleOrTabletUnit: FC<Props> = ({
       },
     };
 
-    if (time === 'Upcoming') {
-      dispatch(upcomingDosageChange(actionData));
-    } else {
-      dispatch(priorDosageChange(actionData));
+    if (actionData.dosage.quantity >= 0) {
+      if (time === 'Upcoming') {
+        dispatch(upcomingDosageChange(actionData));
+      } else {
+        dispatch(priorDosageChange(actionData));
+      }
     }
   }, [dosages, intervalDurationDays, allowSplittingUnscoredTablet]);
 
@@ -75,10 +77,12 @@ const CapsuleOrTabletUnit: FC<Props> = ({
       },
     };
 
-    if (time === 'Upcoming') {
-      dispatch(upcomingDosageChange(actionData));
-    } else {
-      dispatch(priorDosageChange(actionData));
+    if (actionData.dosage.quantity >= 0) {
+      if (time === 'Upcoming') {
+        dispatch(upcomingDosageChange(actionData));
+      } else {
+        dispatch(priorDosageChange(actionData));
+      }
     }
   }, [dosages, intervalDurationDays, allowSplittingUnscoredTablet]);
 
@@ -119,12 +123,14 @@ const CapsuleOrTabletUnit: FC<Props> = ({
             justify-content: flex-end;
           }`}>
           <div>
-            <button onClick={editable ? onIncrement : () => {}}>
+            <button onClick={editable ? onIncrement : () => {
+            }}>
               <ArrowUp/>
             </button>
           </div>
           <div>
-            <button onClick={editable ? onDecrement : () => {}}>
+            <button onClick={editable ? onDecrement : () => {
+            }}>
               <ArrowDown/>
             </button>
           </div>

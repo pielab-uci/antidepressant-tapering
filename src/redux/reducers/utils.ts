@@ -561,16 +561,20 @@ export const generateInstructionsForPharmacy = (patientInstructions: string, pre
       return `${prev}\t${line}\n`;
     }, '')}\n---------------------------------------------------\n`;
 
-  return Object.values(prescription).reduce((instruction, { name, brand, dosageQty }, i, prescriptionArr) => {
-    const dosages = Object.entries(dosageQty).reduce((acc, [dos, qty], j, dosageArr) => {
-      if (j === dosageArr.length - 1) {
-        return `${acc}${qty} X ${dos}`;
-      }
-      return `${acc}${qty} X ${dos}, `;
-    }, '');
+  return Object.values(prescription)
+    .reduce((instruction, { name, brand, dosageQty }, i, prescriptionArr) => {
+      const dosages = Object
+        .entries(dosageQty)
+        .filter(([dos, qty]) => qty !== 0)
+        .reduce((acc, [dos, qty], j, dosageArr) => {
+          if (j === dosageArr.length - 1) {
+            return `${acc}${qty} X ${dos}`;
+          }
+          return `${acc}${qty} X ${dos}, `;
+        }, '');
 
-    return `${instruction}${name} (${brand}): ${dosages}\n`;
-  }, instructionsForPatients);
+      return `${instruction}${name} (${brand}): ${dosages}\n`;
+    }, instructionsForPatients);
 };
 
 export const calcFinalPrescription = (scheduleData: TableRowData[], tableSelectedRows: (number | null)[]): Prescription => {

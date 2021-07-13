@@ -103,7 +103,7 @@ const PatientLandingPage: FC = () => {
   const renderChart = useCallback(() => {
     const chartAreaStyle = css`
       width: 95%;
-      height: 360px;
+      height: 350px;
       border-radius: 17px;
       color: #c7c5c5;
       //font-size: 20px;
@@ -190,7 +190,7 @@ const PatientLandingPage: FC = () => {
           <div css={css`display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-top: 76px;`}>
+            margin-top: 70px;`}>
             <h3>Symptom Tracker</h3>
             <Button type='primary'
                     css={css`

@@ -24,7 +24,6 @@ const wrapperStyle = css`
 const projectedScheduleStyle = css`
   display: flex;
   flex-direction: column;
-  overflow-y: scroll;
   width: 100%;
   background-color: white;
   padding: 21px 38px 71px 38px;

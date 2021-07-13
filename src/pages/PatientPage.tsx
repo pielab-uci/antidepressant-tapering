@@ -62,11 +62,6 @@ const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) =
     <>
       {!currentPatient ? <div>No such patient</div>
         : <div css={pageStyle}>
-          {/* <div css={patientPageHeaderStyle}> */}
-          {/*  <h2>{currentPatient.name}</h2> */}
-          {/*  <div>Last Visit: {format(currentPatient.recentVisit, 'MM/dd/yyyy')}</div> */}
-          {/*  <hr/> */}
-          {/* </div> */}
           <Switch>
             <Route exact path={`${path}`} component={PatientLandingPage}/>
             <Route path={`${path}/taper-configuration`}

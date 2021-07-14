@@ -1,51 +1,34 @@
 import {
-  all, put, fork, takeLatest, select,
+  all, fork, put, select, takeLatest,
 } from 'redux-saga/effects';
 import {
-  ADD_NEW_DRUG_FORM,
   ADD_OR_UPDATE_TAPER_CONFIG_FAILURE,
   ADD_OR_UPDATE_TAPER_CONFIG_REQUEST,
   ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS,
-  AddNewDrugFormAction,
   AddOrUpdateTaperConfigFailureAction,
   AddOrUpdateTaperConfigRequestAction,
   AddOrUpdateTaperConfigSuccessAction,
   CLEAR_SCHEDULE,
-  ClearScheduleAction, EDIT_PROJECTED_SCHEDULE_FROM_MODAL,
-  FETCH_PRESCRIBED_DRUGS_FAILURE,
-  FETCH_PRESCRIBED_DRUGS_REQUEST,
-  FETCH_PRESCRIBED_DRUGS_SUCCESS,
+  ClearScheduleAction,
   FETCH_TAPER_CONFIG_FAILURE,
   FETCH_TAPER_CONFIG_REQUEST,
   FETCH_TAPER_CONFIG_SUCCESS,
-  FetchPrescribedDrugsFailureAction,
-  FetchPrescribedDrugsRequestAction,
-  FetchPrescribedDrugsSuccessAction,
   FetchTaperConfigFailureAction,
   FetchTaperConfigRequestAction,
   FetchTaperConfigSuccessAction,
   GENERATE_SCHEDULE,
-  GenerateScheduleAction, MOVE_FROM_CREATE_TO_PRESCRIBE_PAGE,
+  GenerateScheduleAction,
+  MOVE_FROM_CREATE_TO_PRESCRIBE_PAGE,
+  MoveFromCreateToPrescribePage,
   TABLE_DOSAGE_EDITED,
   TABLE_END_DATE_EDITED,
   TABLE_START_DATE_EDITED,
   UPDATE_CHART,
   UpdateChartAction,
 } from '../actions/taperConfig';
-import {
-  PrescribedDrug, Prescription, TableRowData, TaperingConfiguration,
-} from '../../types';
+import { Prescription } from '../../types';
 import { completePrescribedDrugs, ScheduleChartData } from '../reducers/utils';
 import { TaperConfigState } from '../reducers/taperConfig';
-import {
-  ALLOW_SPLITTING_UNSCORED_TABLET,
-  CHOOSE_BRAND,
-  CHOOSE_FORM, INTERVAL_COUNT_CHANGE, INTERVAL_END_DATE_CHANGE, INTERVAL_START_DATE_CHANGE, INTERVAL_UNIT_CHANGE,
-  PRIOR_DOSAGE_CHANGE, SET_TARGET_DOSAGE,
-  UPCOMING_DOSAGE_CHANGE,
-} from '../../components/PrescriptionForm/actions';
-import taperConfig from '../reducers/taperConfig/taperConfig';
-import { UserState } from '../reducers/user';
 import { Schedule } from '../../components/Schedule/ProjectedSchedule';
 
 let taperConfigId = 0;
@@ -59,12 +42,15 @@ function* generateOrClearSchedule() {
       type: GENERATE_SCHEDULE,
       data: validPrescribedDrugsInputs,
     });
+  } else if (taperConfigState.currentTaperConfigId && taperConfigState.taperConfigs[taperConfigState.currentTaperConfigId]) {
+
   } else {
     yield put<ClearScheduleAction>({
       type: CLEAR_SCHEDULE,
     });
   }
 }
+
 //
 // function addOrUpdateTaperConfigAPI(action: AddOrUpdateTaperConfigRequestAction): { data: TaperingConfiguration } {
 //   if (taperConfigState.taperConfigs.findIndex((config) => config.patientId === action.data.patientId && config.clinicianId === action.data.clinicianId)) {
@@ -186,11 +172,20 @@ function* updateChart() {
   });
 }
 
+function* moveToPrescribePage() {
+  const taperConfigState: TaperConfigState = yield select((state) => state.taperConfig);
+  const { prescribedDrugs, isInputComplete } = taperConfigState;
+  if (prescribedDrugs && prescribedDrugs.length !== 0 && isInputComplete) {
+    yield generateOrClearSchedule();
+  }
+}
+
 function* watchTaperConfigFormChange() {
   yield takeLatest([MOVE_FROM_CREATE_TO_PRESCRIBE_PAGE,
     // EDIT_PROJECTED_SCHEDULE_FROM_MODAL
   ],
-  generateOrClearSchedule);
+  // generateOrClearSchedule);
+  moveToPrescribePage);
 }
 
 function* watchProjectedScheduleTableEdit() {

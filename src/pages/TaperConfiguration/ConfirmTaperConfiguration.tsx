@@ -28,7 +28,7 @@ const scheduleStyle = css`
   padding: 21px 38px 71px 38px;
   background-color: white;
   border-radius: 17px;
-  overflow-y: scroll;
+  //overflow-y: scroll;
   margin-bottom: 34px;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
 `;

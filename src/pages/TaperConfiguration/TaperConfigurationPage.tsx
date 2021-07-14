@@ -122,12 +122,13 @@ const TaperConfigurationPage = () => {
       //height: calc(100vh - 255px);
       height: 100%;
       overflow-y: scroll;
+      padding-right: 10px;
     `} className='taper-configuration'>
-       <div css={patientPageHeaderStyle}>
+      <div css={patientPageHeaderStyle}>
         <h2>{currentPatient!.name}</h2>
         <div>Last Visit: {format(currentPatient!.recentVisit, 'MM/dd/yyyy')}</div>
         <hr/>
-       </div>
+      </div>
       <div css={css`
         font-size: 1.2rem;
         color: #0984E3;

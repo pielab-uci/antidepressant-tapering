@@ -24,6 +24,7 @@ const pageStyle = css`
   display: flex;
   flex-direction: column;
   height: 100%;
+  margin-right: 10px;
 `;
 
 const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) => {

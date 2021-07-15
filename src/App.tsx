@@ -19,14 +19,16 @@ import './app.css';
 
 const mainStyle = css`
   flex: 1;
-  padding: 0 35px 34px 35px;
+  //padding: 0 35px 34px 35px;
+  padding: 0 15px 20px 15px;
 
   & > div {
     background-color: #fafafa;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
     border-radius: 20px;
     height: 100%;
-    padding: 31px 45px 21px 45px;
+    //padding: 31px 45px 21px 45px;
+    padding: 20px 10px 15px 20px;
   }
 `;
 const App = () => {
@@ -61,7 +63,8 @@ const App = () => {
                 <section css={css`
                   display: flex;
                   height: 95%;
-                  padding-top: 2%;
+                  //padding-top: 2%;
+                  padding-top: 1%;
                 `}>
                   <NavBar/>
                   <main css={mainStyle}>

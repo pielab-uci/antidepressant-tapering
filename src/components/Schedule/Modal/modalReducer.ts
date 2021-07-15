@@ -4,7 +4,7 @@ import {
   ALLOW_SPLITTING_UNSCORED_TABLET,
   CHOOSE_BRAND,
   CHOOSE_FORM, INTERVAL_COUNT_CHANGE, INTERVAL_END_DATE_CHANGE, INTERVAL_START_DATE_CHANGE, INTERVAL_UNIT_CHANGE,
-  PRIOR_DOSAGE_CHANGE, SET_TARGET_DOSAGE,
+  PRIOR_DOSAGE_CHANGE, SET_GOAL_DOSAGE,
   UPCOMING_DOSAGE_CHANGE,
 } from '../../PrescriptionForm/actions';
 import drugs from '../../../redux/reducers/drugs';
@@ -140,7 +140,7 @@ const reducer = (state: RowEditingModalState = initialState, action: ModalAction
         break;
       }
 
-      case SET_TARGET_DOSAGE:
+      case SET_GOAL_DOSAGE:
         draft.prescribedDrug!.targetDosage = action.data.dosage;
         break;
 

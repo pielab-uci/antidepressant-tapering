@@ -13,7 +13,6 @@ import useDosageSumDifferenceMessage from '../../hooks/useDosageSumDifferenceMes
 import {
   priorDosageChange, PriorDosageChangeAction, upcomingDosageChange, UpcomingDosageChangeAction,
 } from './actions';
-import TargetDosageSettingForm from './TargetDosageSettingForm';
 
 interface Props {
   time: 'Prior' | 'Upcoming';

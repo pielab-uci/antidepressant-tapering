@@ -34,7 +34,7 @@ export interface PrescriptionFormState {
   priorDosageSum: number;
   upcomingDosagesQty: { [key: string]: number };
   upcomingDosageSum: number;
-  targetDosage: number;
+  goalDosage: number;
   allowSplittingUnscoredTablet: boolean;
   oralDosageInfo: { rate: { mg: number, ml: number }, bottles: string[] } | null;
   intervalStartDate: Date;

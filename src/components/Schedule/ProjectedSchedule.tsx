@@ -62,7 +62,7 @@ const ProjectedSchedule: FC<{ editable: boolean, title: string }> = ({ editable,
               <ProjectedScheduleTable editable={editable} projectedSchedule={projectedSchedule}/>
             </div>}
             <div css={css`margin: 25px 0;`}>
-              <ProjectedScheduleChart scheduleChartData={scheduleChartData} width={300} height={300}/>
+              <ProjectedScheduleChart scheduleChartData={scheduleChartData} width={400} height={400}/>
             </div>
           </div>
           <h3 css={css`font-size: 18px;

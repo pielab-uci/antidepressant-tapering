@@ -12,7 +12,7 @@ import {
   LOAD_PRESCRIPTION_DATA,
   PrescriptionFormActions,
   PRIOR_DOSAGE_CHANGE,
-  SET_TARGET_DOSAGE,
+  SET_GOAL_DOSAGE,
   UPCOMING_DOSAGE_CHANGE,
 } from './actions';
 import { CapsuleOrTabletDosage, isCapsuleOrTablet } from '../../types';
@@ -32,7 +32,7 @@ export const initialState: PrescriptionFormState = {
   priorDosageSum: 0,
   upcomingDosagesQty: {},
   upcomingDosageSum: 0,
-  targetDosage: 0,
+  goalDosage: 0,
   allowSplittingUnscoredTablet: false,
   oralDosageInfo: null,
   intervalStartDate: new Date(),
@@ -57,7 +57,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.drugFormOptions = draft.chosenBrand.forms;
         draft.chosenDrugForm = draft.drugFormOptions.find((form) => form.form === action.data.form)!;
         draft.dosageOptions = draft.chosenDrugForm.dosages;
-        draft.targetDosage = action.data.targetDosage;
+        draft.goalDosage = action.data.targetDosage;
         draft.priorDosagesQty = action.data.priorDosages.reduce(
           (prev: { [dosage: string]: number }, currentDosage) => {
             prev[currentDosage.dosage] = currentDosage.quantity;
@@ -112,7 +112,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.drugs!.splice(0, 0, draft.drugs!.splice(chosenDrugIdx, 1)[0]);
         draft.chosenBrand = chosenBrandOption;
         draft.chosenDrugForm = null;
-        draft.targetDosage = 0;
+        draft.goalDosage = 0;
         draft.drugFormOptions = chosenBrandOption.forms;
         draft.priorDosagesQty = {};
         draft.oralDosageInfo = null;
@@ -152,11 +152,11 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
           }, 0);
 
           if (draft.upcomingDosageSum > draft.priorDosageSum) {
-            draft.targetDosage = draft.upcomingDosageSum;
+            draft.goalDosage = draft.upcomingDosageSum;
           } else if (draft.upcomingDosageSum < draft.priorDosageSum) {
-            draft.targetDosage = 0;
+            draft.goalDosage = 0;
           } else {
-            draft.targetDosage = draft.priorDosageSum;
+            draft.goalDosage = draft.priorDosageSum;
           }
         }
         break;
@@ -170,18 +170,18 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
           }, 0);
 
           if (draft.priorDosageSum < draft.upcomingDosageSum) {
-            draft.targetDosage = draft.upcomingDosageSum;
+            draft.goalDosage = draft.upcomingDosageSum;
           } else if (draft.priorDosageSum > draft.upcomingDosageSum) {
-            draft.targetDosage = 0;
+            draft.goalDosage = 0;
           } else {
-            draft.targetDosage = draft.upcomingDosageSum;
+            draft.goalDosage = draft.upcomingDosageSum;
           }
         }
         break;
       }
 
-      case SET_TARGET_DOSAGE:
-        draft.targetDosage = action.data.dosage;
+      case SET_GOAL_DOSAGE:
+        draft.goalDosage = action.data.dosage;
         break;
 
       case ALLOW_SPLITTING_UNSCORED_TABLET:

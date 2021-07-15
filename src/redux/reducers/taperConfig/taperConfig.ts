@@ -45,7 +45,7 @@ import {
   INTERVAL_UNIT_CHANGE,
   PrescriptionFormActions,
   PRIOR_DOSAGE_CHANGE,
-  SET_TARGET_DOSAGE,
+  SET_GOAL_DOSAGE,
   UPCOMING_DOSAGE_CHANGE,
 } from '../../../components/PrescriptionForm/actions';
 import {
@@ -283,7 +283,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         break;
       }
 
-      case SET_TARGET_DOSAGE: {
+      case SET_GOAL_DOSAGE: {
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         drug.targetDosage = action.data.dosage;
         break;

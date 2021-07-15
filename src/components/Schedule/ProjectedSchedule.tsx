@@ -53,12 +53,16 @@ const ProjectedSchedule: FC<{ editable: boolean, title: string }> = ({ editable,
           <p>Check all the rows that you would like to prescribe.</p>
           {/* {renderColorSamples()} */}
           <div css={css`display: flex;
-            justify-content: space-between;`}>
+            //justify-content: space-between;
+            flex-direction: column;`}>
+
             {projectedSchedule.data.length !== 0
-            && <div css={css`flex: 3;`}><ProjectedScheduleTable editable={editable} projectedSchedule={projectedSchedule}/>
+            // && <div css={css`flex: 3;`}>
+            && <div>
+              <ProjectedScheduleTable editable={editable} projectedSchedule={projectedSchedule}/>
             </div>}
             <div>
-              <ProjectedScheduleChart scheduleChartData={scheduleChartData} width={400} height={400}/>
+              <ProjectedScheduleChart scheduleChartData={scheduleChartData} width={300} height={300}/>
             </div>
           </div>
           <h3 css={css`font-size: 18px;

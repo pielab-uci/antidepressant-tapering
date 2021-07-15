@@ -5,6 +5,7 @@ import {
 import format from 'date-fns/format';
 import { FC, useMemo, useRef } from 'react';
 import rgbHex from 'rgb-hex';
+import { css } from '@emotion/react';
 import { ScheduleChartData } from '../../redux/reducers/utils';
 
 interface Props {
@@ -41,8 +42,7 @@ const ProjectedScheduleChart: FC<Props> = ({ scheduleChartData, width, height })
   });
 
   return (
-    <ResponsiveContainer width={width} height={height}>
-      <LineChart data={scheduleChartData}>
+      <LineChart data={scheduleChartData} width={width} height={height}>
         <CartesianGrid strokeDasharray="3 3"/>
         <XAxis height={60} dataKey="timestamp" type="number" tick={(props) => <CustomizedAxisTick {...props}/>}
                tickFormatter={(time) => format(time, 'MM-dd')}
@@ -55,7 +55,6 @@ const ProjectedScheduleChart: FC<Props> = ({ scheduleChartData, width, height })
                 stroke={lineColors.current[drug.name]}/>
         ))}
       </LineChart>
-    </ResponsiveContainer>
   );
 };
 

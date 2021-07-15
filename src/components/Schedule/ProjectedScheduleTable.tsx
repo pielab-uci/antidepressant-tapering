@@ -175,6 +175,7 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
     // params.api.sizeColumnsToFit();
     // gridColumnApi?.autoSizeAllColumns();
     // params.columnApi.autoSizeColumns(['startDate', 'endDate']);
+    params.columnApi.autoSizeColumn('Medication');
     params.columnApi.autoSizeColumn('startDate');
     params.columnApi.autoSizeColumn('endDate');
   };
@@ -223,7 +224,7 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
     <div className='ProjectedScheduleTable' css={css`
       display: flex;
       flex-direction: row;
-      height: 500px;
+      height: 300px;
       width: 100%;`}>
       <div className='ag-theme-alpine'
            css={css`
@@ -256,7 +257,7 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
           columnDefs={columnDefs.current}
           rowSelection='multiple'
           rowClassRules={rowClassRules.current}
-          rowHeight={40}
+          rowHeight={35}
           rowStyle={rowStyle.current}
           onRowSelected={onRowSelected}
           onRowDoubleClicked={editable ? openModal : undefined}
@@ -268,6 +269,7 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
           frameworkComponents={{ datePicker: DateEditor, numberEditor: NumberEditor }}
           suppressDragLeaveHidesColumns={true}
           suppressRowClickSelection={true}
+          skipHeaderOnAutoSize={true}
         />
         {doubleClickedRowAndBefore
         && showModal

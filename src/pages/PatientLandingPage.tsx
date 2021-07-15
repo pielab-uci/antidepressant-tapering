@@ -63,7 +63,8 @@ const PatientLandingPage: FC = () => {
   }, [currentPatient]);
 
   const renderMedicationSchedule = useCallback(() => {
-    if (!currentPatient!.taperingConfiguration) {
+    // if (!currentPatient!.taperingConfiguration) {
+    if (!currentTaperConfigId) {
       return <p css={css`
         //font-size: 20px;
         font-size: 1rem;
@@ -114,20 +115,21 @@ const PatientLandingPage: FC = () => {
     `;
 
     if (scheduleChartData.length !== 0) {
-      return <div css={css`height: 400px;
+      return <div css={css`height: 300px;
+        width: 300px;
         margin-top: 56px;`}>
-        <ProjectedScheduleChart scheduleChartData={scheduleChartData} width={399} height={360}/>
+        <ProjectedScheduleChart scheduleChartData={scheduleChartData} width={300} height={300}/>
       </div>;
     }
 
     return <div>
-      <div css={chartAreaStyle}>No data.
-      </div>
       <div css={css`
         text-align: center;
         //font-size: 20px;
         font-size: 1rem;
         color: #636e72;`}>Projected taper progress
+      </div>
+      <div css={chartAreaStyle}>No data.
       </div>
     </div>;
   }, [scheduleChartData]);
@@ -174,38 +176,41 @@ const PatientLandingPage: FC = () => {
         <hr/>
       </div>
 
-      <div css={css`display: flex;
-        justify-content: space-between;`}>
-        <div css={css`
-          width: ${currentTaperConfigId === null ? '40%' : '65%'}`}>
-          {/* <div css={css`width: 447px;`}> */}
-          {/* <div css={css`width: 100%;`}> */}
-          <div css={css`display: flex;
-            align-items: center;
-            justify-content: space-between;`}>
-            <h3>Medication Schedule</h3>
-            {renderButton()}
-          </div>
-          {renderMedicationSchedule()}
-          <div css={css`display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 70px;`}>
-            <h3>Symptom Tracker</h3>
-            <Button type='primary'
-                    css={css`
-                      border-radius: 10px;
-                      background-color: #0984E3;`}
-                    disabled={true}>
-              Create New</Button>
-          </div>
-          {renderSymptomTracker()}
+      {/* <div css={css`display: flex; */}
+      {/*  justify-content: space-between;`}> */}
+      <div css={css`
+        width: ${currentTaperConfigId === null ? '40%' : '100%;'}`}>
+        {/* <div css={css`width: 447px;`}> */}
+        {/* <div css={css`width: 100%;`}> */}
+        <div css={css`display: flex;
+          align-items: center;
+          justify-content: space-between;`}>
+          <h3>Medication Schedule</h3>
+          {renderButton()}
         </div>
-        <div css={css`padding-right: 20px;
-          width: 30%;`}>
+
+        {renderMedicationSchedule()}
+
+        {currentTaperConfigId !== null && <div css={css`padding-right: 20px;`}>
           {renderChart()}
-        </div>
+        </div>}
       </div>
+      <div css={css`width: 40%;`}>
+        <div css={css`display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-top: 70px;`}>
+          <h3>Symptom Tracker</h3>
+          <Button type='primary'
+                  css={css`
+                    border-radius: 10px;
+                    background-color: #0984E3;`}
+                  disabled={true}>
+            Create New</Button>
+        </div>
+        {renderSymptomTracker()}
+      </div>
+      {/* </div> */}
       <hr/>
       {renderNoteSection()}
     </div>

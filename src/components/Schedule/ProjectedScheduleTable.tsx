@@ -140,6 +140,7 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
       field: 'prescription.message',
       suppressSizeToFit: true,
       minWidth: 200,
+      cellStyle: { display: 'flex', justifyContent: 'center', alignItems: 'center' },
       flex: 1,
       // editable: (params: EditableCallbackParams) => editable && !params.data.isPriorDosage,
     }],
@@ -250,6 +251,8 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
              .ag-selection-checkbox {
                margin: 0 !important;
              }
+             
+             
            `}>
         <AgGridReact
           rowData={projectedSchedule.data}

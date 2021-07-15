@@ -135,7 +135,8 @@ const PatientLandingPage: FC = () => {
   }, [scheduleChartData]);
 
   const renderButton = useCallback(() => {
-    return currentPatient!.taperingConfiguration
+    // return currentPatient!.taperingConfiguration
+    return currentTaperConfigId !== null
       ? <Button type='primary' css={buttonStyle.current} onClick={onClickAdjustSchedule}>Edit Schedule</Button>
       : <Button type='primary' css={buttonStyle.current} onClick={onClickNewSchedule}>Create New</Button>;
   }, [currentPatient]);

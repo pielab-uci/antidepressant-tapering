@@ -50,9 +50,6 @@ const PatientPage: FC<RouteChildrenProps<{ patientId: string }>> = ({ match }) =
     console.log('path: ', path);
     console.groupEnd();
     return () => {
-      // dispatch<EmptyPrescribedDrugs>({
-      //   type: EMPTY_PRESCRIBED_DRUGS,
-      // });
       dispatch<EmptyTaperConfigPage>({
         type: EMPTY_TAPER_CONFIG_PAGE,
       });

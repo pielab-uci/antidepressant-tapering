@@ -87,6 +87,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.isInputComplete = false;
         // draft.prescribedDrugs = draft.prescribedDrugs!.filter((drug) => isCompleteDrugInput(drug));
         draft.prescribedDrugs = [];
+        draft.tableSelectedRows = [];
         draft.projectedSchedule = { drugs: [], data: [] };
         draft.instructionsForPatient = '';
         draft.instructionsForPharmacy = '';
@@ -499,6 +500,12 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.instructionsForPharmacy = action.data.instructionsForPharmacy;
         draft.finalPrescription = action.data.finalPrescription;
         draft.scheduleChartData = action.data.scheduleChartData;
+        draft.tableSelectedRows = action.data.projectedSchedule.data.map((row, i) => {
+          if (row.selected) {
+            return i;
+          }
+          return -1;
+        }).filter((idx) => idx !== -1);
         // draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         draft.isSaved = false;
         break;

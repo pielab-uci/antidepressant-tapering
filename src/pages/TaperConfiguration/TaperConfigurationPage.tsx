@@ -14,7 +14,7 @@ import {
   FETCH_TAPER_CONFIG_REQUEST,
   FetchTaperConfigRequestAction,
   INIT_NEW_TAPER_CONFIG,
-  InitTaperConfigAction,
+  InitNewTaperConfigAction,
   EMPTY_TAPER_CONFIG_PAGE,
   EmptyTaperConfigPage,
 } from '../../redux/actions/taperConfig';
@@ -79,7 +79,7 @@ const TaperConfigurationPage = () => {
         data: { clinicianId: me!.id, patientId: currentPatient!.id },
       });
     } else {
-      dispatch<InitTaperConfigAction>({
+      dispatch<InitNewTaperConfigAction>({
         type: INIT_NEW_TAPER_CONFIG,
         data: {
           clinicianId: me!.id,

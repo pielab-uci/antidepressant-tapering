@@ -83,6 +83,15 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
           });
           draft.oralDosageInfo = null;
         }
+
+        draft.priorDosageSum = Object.entries(draft.priorDosagesQty).reduce((prev, [dosage, qty]) => {
+          return prev + parseFloat(dosage) * qty;
+        }, 0);
+
+        draft.upcomingDosageSum = Object.entries(draft.upcomingDosagesQty).reduce((prev, [dosage, qty]) => {
+          return prev + parseFloat(dosage) * qty;
+        }, 0);
+
         draft.intervalStartDate = action.data.intervalStartDate;
         draft.intervalEndDate = action.data.intervalEndDate;
         draft.intervalCount = action.data.intervalCount;
@@ -103,6 +112,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.drugs!.splice(0, 0, draft.drugs!.splice(chosenDrugIdx, 1)[0]);
         draft.chosenBrand = chosenBrandOption;
         draft.chosenDrugForm = null;
+        draft.targetDosage = 0;
         draft.drugFormOptions = chosenBrandOption.forms;
         draft.priorDosagesQty = {};
         draft.oralDosageInfo = null;

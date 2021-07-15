@@ -25,7 +25,7 @@ export interface UpdateChartAction {
 
 export const INIT_NEW_TAPER_CONFIG = 'INIT_NEW_TAPER_CONFIG' as const;
 
-export interface InitTaperConfigAction {
+export interface InitNewTaperConfigAction {
   type: typeof INIT_NEW_TAPER_CONFIG,
   data: { clinicianId: number, patientId: number }
 }

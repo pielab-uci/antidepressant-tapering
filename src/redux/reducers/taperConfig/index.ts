@@ -12,7 +12,7 @@ import {
   EmptyTaperConfigPage, FetchPrescribedDrugAsyncActions, FetchTaperConfigAsyncActions,
   FinalPrescriptionQuantityChange,
   GenerateScheduleAction,
-  InitTaperConfigAction, OpenModalAction,
+  InitNewTaperConfigAction, OpenModalAction,
   RemoveDrugFormAction,
   ScheduleRowSelectedAction, SetIsInputComplete, ShareWithPatientAppAsyncActions, ShareWithPatientEmailAsyncActions,
   TableEditingAction,
@@ -77,7 +77,7 @@ type TaperConfigAsyncActions =
   | ShareWithPatientEmailAsyncActions;
 
 export type TaperConfigActions =
-  | InitTaperConfigAction
+  | InitNewTaperConfigAction
   | EmptyTaperConfigPage
   | EmptyPrescribedDrugs
   | AddNewDrugFormAction

@@ -19,8 +19,16 @@ export interface PrescriptionFormState {
   brandOptions: DrugOption[] | null;
   drugFormOptions: DrugForm[] | null;
   dosageOptions: CapsuleOrTabletDosage[]| OralDosage;
+  /**
+   * available dosage options including splitting tablet
+   */
   availableDosageOptions: string[];
+
+  /**
+   * available dosage options without considering splitting tablet
+   */
   regularDosageOptions: string[]|null;
+
   minDosageUnit: number;
   priorDosagesQty: { [key: string]: number };
   priorDosageSum: number;

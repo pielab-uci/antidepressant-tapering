@@ -17,7 +17,7 @@ import {
   FetchTaperConfigRequestAction,
   FetchTaperConfigSuccessAction,
   GENERATE_SCHEDULE,
-  GenerateScheduleAction,
+  GenerateScheduleAction, INIT_NEW_TAPER_CONFIG, InitNewTaperConfigAction,
   MOVE_FROM_CREATE_TO_PRESCRIBE_PAGE,
   MoveFromCreateToPrescribePage,
   TABLE_DOSAGE_EDITED,
@@ -42,7 +42,7 @@ function* generateOrClearSchedule() {
       type: GENERATE_SCHEDULE,
       data: validPrescribedDrugsInputs,
     });
-  } else if (taperConfigState.currentTaperConfigId && taperConfigState.taperConfigs[taperConfigState.currentTaperConfigId]) {
+  } else if (taperConfigState.currentTaperConfigId && taperConfigState.taperConfigs.find((config) => config.id === taperConfigState.currentTaperConfigId)) {
 
   } else {
     yield put<ClearScheduleAction>({
@@ -135,24 +135,29 @@ function* fetchTaperConfig(action: FetchTaperConfigRequestAction) {
         data: taperConfigState.taperConfigs[taperConfigIndex],
       });
     } else {
+      // add new taper config
       taperConfigId += 1;
-      yield put<FetchTaperConfigSuccessAction>({
-        type: FETCH_TAPER_CONFIG_SUCCESS,
-        data: {
-          id: taperConfigId,
-          clinicianId: action.data.clinicianId,
-          patientId: action.data.patientId,
-          createdAt: new Date(),
-          projectedSchedule: {} as Schedule,
-          instructionsForPharmacy: '',
-          instructionsForPatient: '',
-          finalPrescription: {} as Prescription,
-          scheduleChartData: [] as ScheduleChartData,
-        },
+      yield put<InitNewTaperConfigAction>({
+        type: INIT_NEW_TAPER_CONFIG,
+        data: { clinicianId: action.data.clinicianId, patientId: action.data.patientId },
       });
+      // yield put<FetchTaperConfigSuccessAction>({
+      //   type: FETCH_TAPER_CONFIG_SUCCESS,
+      //   data: {
+      //     id: taperConfigId,
+      //     clinicianId: action.data.clinicianId,
+      //     patientId: action.data.patientId,
+      //     createdAt: new Date(),
+      //     projectedSchedule: {} as Schedule,
+      //     instructionsForPharmacy: '',
+      //     instructionsForPatient: '',
+      //     finalPrescription: {} as Prescription,
+      //     scheduleChartData: [] as ScheduleChartData,
+      //   },
+      // });
     }
 
-    yield generateOrClearSchedule();
+    // yield generateOrClearSchedule();
   } catch (err) {
     console.error(err);
     yield put<FetchTaperConfigFailureAction>({

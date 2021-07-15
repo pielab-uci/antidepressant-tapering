@@ -199,6 +199,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.oralDosageInfo = null;
         drug.priorDosages = [];
         drug.upcomingDosages = [];
+        drug.targetDosage = 0;
         draft.isInputComplete = false;
         draft.isSaved = false;
         draft.instructionsForPatient = '';
@@ -484,6 +485,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.fetchingTaperConfig = true;
         draft.fetchedTaperConfig = false;
         draft.fetchingTaperConfigError = null;
+        draft.currentTaperConfigId = null;
         break;
 
       case FETCH_TAPER_CONFIG_SUCCESS:
@@ -491,6 +493,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.fetchedTaperConfig = true;
         draft.clinicianId = action.data.clinicianId;
         draft.patientId = action.data.patientId;
+        draft.currentTaperConfigId = action.data.id;
         draft.projectedSchedule = action.data.projectedSchedule;
         draft.instructionsForPatient = action.data.instructionsForPatient;
         draft.instructionsForPharmacy = action.data.instructionsForPharmacy;

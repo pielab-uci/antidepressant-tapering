@@ -25,7 +25,7 @@ import {
 const { Option } = Select;
 
 const selectIntervalStyle = css`
-  margin-top: 65px;
+  margin-top: 44px;
   width: 330px;
 
   & > h3 {

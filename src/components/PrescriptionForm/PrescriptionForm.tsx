@@ -36,6 +36,7 @@ import { TaperConfigActions, TaperConfigState } from '../../redux/reducers/taper
 import PrescriptionSettingsForm from './PrescriptionSettingsForm';
 import Dosages from './Dosages';
 import { ModalActions } from '../Schedule/Modal/modalReducer';
+import TargetDosageSettingForm from './TargetDosageSettingForm';
 
 export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
   ...initialState,
@@ -205,6 +206,7 @@ const PrescriptionForm: FC<Props> = ({
         <Dosages drugForm={chosenDrugForm} time={'Upcoming'} editable={true}/>
 
         <SelectInterval/>
+        <TargetDosageSettingForm/>
 
         {addNewPrescriptionForm && numberOfMedications && numberOfMedications < 2
         && <Button css={css`border-radius: 10px;

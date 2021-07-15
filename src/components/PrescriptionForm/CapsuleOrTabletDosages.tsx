@@ -69,7 +69,6 @@ const CapsuleOrTabletDosages: FC<Props> = ({ time, editable }) => {
             </div>
           </div>
         </div>
-        {time === 'Upcoming' && <TargetDosageSettingForm/>}
       </div>
     </>
   );

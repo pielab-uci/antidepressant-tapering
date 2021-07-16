@@ -9,6 +9,18 @@ import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import { changeMessageForPatient, changeNoteAndInstructions } from '../../redux/actions/taperConfig';
 
+const wrapperStyle = css`
+  display: flex; 
+  margin-top: 40px; 
+  width: 400px; 
+  justify-content: space-between; 
+  align-items: center;
+  
+  & > h3 {
+    margin: 0;
+  }
+`;
+
 const NotesToShare: FC<{ editable: boolean }> = ({ editable }) => {
   const {
     instructionsForPatient, instructionsForPharmacy, taperConfigs, currentTaperConfigId,
@@ -51,7 +63,7 @@ const NotesToShare: FC<{ editable: boolean }> = ({ editable }) => {
   return (
     <>
       <div>
-        <div css={css`display: flex; margin-top: 40px; align-items: center;`}>
+        <div css={wrapperStyle}>
           <h3>Notes for Patient</h3>
           {!editable && <CopyToClipboard text={instructionsForPatient} onCopy={onInstructionsForPatientCopied}>
             <Button css={css`margin-left: 20px;`}>Copy to Clipboard</Button>
@@ -71,7 +83,7 @@ const NotesToShare: FC<{ editable: boolean }> = ({ editable }) => {
       </div>
 
       <div>
-        <div css={css`display: flex; margin-top: 40px; align-items: center;`}>
+        <div css={wrapperStyle}>
           <h3>Notes for Pharmacy</h3>
           {!editable && <CopyToClipboard text={instructionsForPharmacy} onCopy={onInstructionsForPharmacyCopied}>
             <Button css={css`margin-left: 20px;`}>Copy to Clipboard</Button>

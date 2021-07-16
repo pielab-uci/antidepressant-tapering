@@ -115,8 +115,9 @@ const PatientLandingPage: FC = () => {
     `;
 
     if (scheduleChartData.length !== 0) {
-      return <div css={css`height: 400px;
-        width: 400px;
+      return <div css={css`
+        //height: 400px;
+        //width: 400px;
         margin-top: 56px;`}>
         <ProjectedScheduleChart scheduleChartData={scheduleChartData} width={400} height={400}/>
       </div>;

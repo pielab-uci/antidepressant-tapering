@@ -59,7 +59,7 @@ const PatientLandingPage: FC = () => {
   }, [me, currentPatient]);
 
   const onClickAdjustSchedule = useCallback(() => {
-    history.push(`${location.pathname}/taper-configuration/edit`);
+    history.push(`${location.pathname}/taper-configuration/edit/revisit`);
   }, [currentPatient]);
 
   const renderMedicationSchedule = useCallback(() => {

@@ -3,7 +3,7 @@ import Button from 'antd/es/button';
 import { useEffect } from 'react';
 import { useHistory } from 'react-router';
 import { css } from '@emotion/react';
-import { useRouteMatch } from 'react-router-dom';
+import { useLocation, useRouteMatch } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import ProjectedSchedule from '../../components/Schedule/ProjectedSchedule';
 import NotesToShare from '../../components/Schedule/NotesToShare';
@@ -46,6 +46,7 @@ const buttonStyle = css`
 
 const EditTaperConfiguration = () => {
   const history = useHistory();
+  const location = useLocation();
   const { url } = useRouteMatch();
   const dispatch = useDispatch();
   const {
@@ -66,14 +67,15 @@ const EditTaperConfiguration = () => {
   }, []);
 
   const moveToPrevious = () => {
-    if (url.includes('revisit')) {
+    if (location.pathname.includes('revisit')) {
       history.goBack();
     } else {
+      console.log('location.pathname doesnt include revisit');
       history.push(url.replace('edit', 'create'));
+      dispatch({
+        type: CLEAR_SCHEDULE,
+      });
     }
-    dispatch({
-      type: CLEAR_SCHEDULE,
-    });
   };
 
   const saveTaperConfigurationAndMoveToConfirmPage = () => {

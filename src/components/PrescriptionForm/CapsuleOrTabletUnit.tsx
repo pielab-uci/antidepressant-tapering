@@ -119,6 +119,7 @@ const CapsuleOrTabletUnit: FC<Props> = ({
             background-color: white;
             padding: 5px 5px;
             display: flex;
+            cursor: pointer;
             flex-direction: column;
             justify-content: flex-end;
           }`}>

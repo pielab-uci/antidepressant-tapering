@@ -88,7 +88,7 @@ const PatientsList: FC<Props> = ({ patients }) => {
           css={buttonStyle}>New Patient</Button>
       </div>
       <Table
-        css={css`font-size: 1.2rem;`}
+        css={css`font-size: 1.2rem; cursor: pointer;`}
         columns={columns}
         dataSource={patients.map((d) => ({ ...d, key: `${d.name}_${d.id}` }))}
         onRow={(record) => ({

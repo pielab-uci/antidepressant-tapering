@@ -19,6 +19,7 @@ const Logo = styled.div`
   //flex-basis: 16%;
   //width: 16%;
   //flex: 0 0 200px;
+  cursor: pointer;
   flex: 0 1 16%;
   text-align: center;
   font-size: 3rem;

@@ -141,7 +141,7 @@ const GoalDosageSettingForm = () => {
         <div css={css`display: flex;
         //margin-left: 64px;
         align-items: center;
-        margin-left: 10px;
+        margin-left: 24px;
 
         & input::-webkit-inner-spin-button,
         & input::-webkit-outer-spin-button {

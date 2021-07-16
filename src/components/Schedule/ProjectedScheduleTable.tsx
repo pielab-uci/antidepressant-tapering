@@ -263,7 +263,8 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
           rowHeight={35}
           rowStyle={rowStyle.current}
           onRowSelected={onRowSelected}
-          onRowDoubleClicked={editable ? openModal : undefined}
+          // onRowDoubleClicked={editable ? openModal : undefined}
+          onRowClicked={editable ? openModal : undefined}
           onRowDataChanged={onRowDataChanged}
           onSelectionChanged={onSelectionChanged}
           onFirstDataRendered={onFirstDataRendered}

@@ -247,6 +247,9 @@ const projectionLengthOfEachDrug = (drug: Converted): number => {
   }
 
   if (drug.changeDirection === 'decrease') {
+    if (drug.targetDosage === drug.upcomingDosageSum) {
+      return 2;
+    }
     return Math.floor(Math.log(drug.upcomingDosageSum) / Math.log(1 / drug.changeRate)) + 1;
   }
 

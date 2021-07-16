@@ -42,12 +42,20 @@ const ProjectedScheduleChart: FC<Props> = ({ scheduleChartData, width, height })
   });
 
   return (
-      <LineChart data={scheduleChartData} width={width + 300} height={height}>
+      // <LineChart data={scheduleChartData} width={width + 300} height={height}>
+      <LineChart data={scheduleChartData} width={width} height={height}>
         <CartesianGrid strokeDasharray="3 3"/>
-        <XAxis height={50} dataKey="timestamp" type="number" tick={(props) => <CustomizedAxisTick {...props}/>}
+        <XAxis height={70} dataKey="timestamp" type="number" tick={(props) => <CustomizedAxisTick {...props}/>}
                tickFormatter={(time) => format(time, 'MM-dd')}
                domain={['auto', 'auto']} scale="time"/>
-        <Legend chartWidth={width} width={300} layout='vertical' verticalAlign='middle' align='right' wrapperStyle={{ paddingLeft: '20px' }}/>
+        <Legend
+          // chartWidth={width}
+          // width={300}
+          // layout='vertical'
+          // verticalAlign='middle'
+          // align='right'
+          wrapperStyle={{ paddingLeft: '10px' }}/>
+          {/* wrapperStyle={{ paddingLeft: '20px' }}/> */}
         <YAxis dataKey="dosage"/>
         <Tooltip formatter={(value: number) => `${value}mg`} labelFormatter={(time: number) => format(time, 'MM-dd')}/>
         {scheduleChartData.map((drug, i) => (

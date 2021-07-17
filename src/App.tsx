@@ -28,7 +28,7 @@ const mainStyle = css`
     border-radius: 20px;
     height: 100%;
     //padding: 31px 45px 21px 45px;
-    padding: 20px 10px 15px 20px;
+    padding: 20px 20px 15px 30px;
   }
 `;
 const App = () => {

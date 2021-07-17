@@ -56,10 +56,10 @@ const ProjectedScheduleTableRowEditingModal: FC<Props> = ({
     console.log('Modal.onCancel');
     onCancel(e);
     // TODO: flush prescribedDrug for modal..?
-    dispatch({
-      type: REMOVE_DRUG_FORM,
-      // data: prescribedDrug.id,
-    });
+    // dispatch({
+    //   type: REMOVE_DRUG_FORM,
+    // data: prescribedDrug.id,
+    // });
   };
 
   return prescribedDrug

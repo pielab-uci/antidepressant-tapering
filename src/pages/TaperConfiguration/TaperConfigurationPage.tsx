@@ -104,13 +104,6 @@ const TaperConfigurationPage = () => {
     }
   }, [location]);
 
-  useEffect(() => {
-    console.group('TaperConfigurationPage Url/location');
-    console.log('location: ', location);
-    console.log(url);
-    console.groupEnd();
-  });
-
   const assignStyle = (stepNumber: number) => {
     return css`
       ${stepNumber === step ? 'color: #0984E3; font-weight: bold;' : 'color: 636E72; font-weight: normal;'}`;

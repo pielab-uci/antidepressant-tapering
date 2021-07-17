@@ -73,7 +73,6 @@ const CreateTaperConfiguration = () => {
   `;
 
   const moveToEditPage = () => {
-    // TODO: continue from here - it makes taper-configuration/create/taper-configuration/edit..
     history.push(url.replace('create', 'edit'));
   };
 

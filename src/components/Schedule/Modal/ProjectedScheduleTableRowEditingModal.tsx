@@ -27,12 +27,6 @@ const ProjectedScheduleTableRowEditingModal: FC<Props> = ({
   doubleClickedRowAndBefore,
   visible, onCancel, onOk,
 }) => {
-  const {
-    drugs,
-    lastPrescriptionFormId,
-    projectedSchedule,
-    prescribedDrugs,
-  } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   // const [drugFromRow, setDrugFromRow] = useState<PrescribedDrug | null>(null);
   const [state, modalDispatch] = useReducer<RowEditingModalReducer, RowEditingModalState>(reducer, initialState, (init) => initialState, 'ProjectedScheduleTableRowEditingModal');
   const { prescribedDrug } = state;
@@ -50,6 +44,7 @@ const ProjectedScheduleTableRowEditingModal: FC<Props> = ({
   }, []);
 
   const onClickOk = (e: React.MouseEvent<HTMLElement>) => {
+    console.log('Modal.onOk');
     onOk(e);
     dispatch({
       type: EDIT_PROJECTED_SCHEDULE_FROM_MODAL,
@@ -58,6 +53,7 @@ const ProjectedScheduleTableRowEditingModal: FC<Props> = ({
   };
 
   const onClickCancel = (e: React.MouseEvent<HTMLElement>) => {
+    console.log('Modal.onCancel');
     onCancel(e);
     // TODO: flush prescribedDrug for modal..?
     dispatch({
@@ -66,14 +62,16 @@ const ProjectedScheduleTableRowEditingModal: FC<Props> = ({
     });
   };
 
-  return prescribedDrug && <Modal visible={visible}
-                                  onCancel={onClickCancel}
-                                  onOk={onClickOk}
-                                  width={'50%'}
-                                  css={css`height: 85%;
-                                    overflow-y: scroll;`}>
-    <PrescriptionForm prescribedDrug={prescribedDrug} title={''} modal={{ isModal: true, modalDispatch }}/>
-  </Modal>;
+  return prescribedDrug
+    && <Modal visible={visible}
+           onCancel={onClickCancel}
+           onOk={onClickOk}
+           width={'70%'}
+           centered={true}
+           css={css`height: 90%;
+             overflow-y: scroll; padding: 0;`}>
+      <PrescriptionForm prescribedDrug={prescribedDrug} title={''} modal={{ isModal: true, modalDispatch }}/>
+    </Modal>;
 };
 
 export default ProjectedScheduleTableRowEditingModal;

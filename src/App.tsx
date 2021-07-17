@@ -54,6 +54,7 @@ const App = () => {
                 display: flex;
                 font-family: Verdana;
                 flex-direction: column;
+                overflow-y: hidden;
 
                 input[type=number]::-webkit-inner-spin-button,
                 input[type=number]::-webkit-outer-spin-button {

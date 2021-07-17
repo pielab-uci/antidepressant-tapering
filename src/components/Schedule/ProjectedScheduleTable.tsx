@@ -91,7 +91,7 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
       sortable: true,
       unSortIcon: true,
       minWidth: 80,
-      cellStyle: { display: 'flex', justifyContent: 'center', alignItems: 'center' },
+      cellStyle: { display: 'flex', justifyContent: 'flex-start', alignItems: 'center' },
     }, {
       headerName: 'Dosage',
       field: 'dosage',
@@ -102,7 +102,7 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
       // need to keep below valueSetter
       valueSetter: (params: ValueSetterParams) => params.newValue,
       // valueSetter: valueSetter((x: string) => parseFloat(x) >= 0),
-      cellStyle: { display: 'flex', justifyContent: 'center', alignItems: 'center' },
+      cellStyle: { display: 'flex', justifyContent: 'flex-start', alignItems: 'center' },
     }, {
       headerName: 'Start Date',
       field: 'startDate',
@@ -117,7 +117,7 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
       },
       // need to keep below valueSetter
       valueSetter: (params: ValueSetterParams) => params.newValue,
-      cellStyle: { display: 'flex', justifyContent: 'center', alignItems: 'center' },
+      cellStyle: { display: 'flex', justifyContent: 'flex-start', alignItems: 'center' },
       suppressSizeToFit: true,
     }, {
       headerName: 'End Date',
@@ -133,14 +133,14 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
       },
       // need to keep below valueSetter
       valueSetter: (params: ValueSetterParams) => params.newValue,
-      cellStyle: { display: 'flex', justifyContent: 'center', alignItems: 'center' },
+      cellStyle: { display: 'flex', justifyContent: 'flex-start', alignItems: 'center' },
       suppressSizeToFit: true,
     }, {
       headerName: 'Prescription',
       field: 'prescription.message',
       suppressSizeToFit: true,
       minWidth: 200,
-      cellStyle: { display: 'flex', justifyContent: 'center', alignItems: 'center' },
+      cellStyle: { display: 'flex', justifyContent: 'flex-start', alignItems: 'center' },
       flex: 1,
       // editable: (params: EditableCallbackParams) => editable && !params.data.isPriorDosage,
     }],
@@ -175,10 +175,10 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
   const onFirstDataRendered = (params: FirstDataRenderedEvent) => {
     // params.api.sizeColumnsToFit();
     // gridColumnApi?.autoSizeAllColumns();
-    // params.columnApi.autoSizeColumns(['startDate', 'endDate']);
-    params.columnApi.autoSizeColumn('Medication');
-    params.columnApi.autoSizeColumn('startDate');
-    params.columnApi.autoSizeColumn('endDate');
+    params.columnApi.autoSizeColumns(['Medication', 'startDate', 'endDate']);
+    // params.columnApi.autoSizeColumn('Medication');
+    // params.columnApi.autoSizeColumn('startDate');
+    // params.columnApi.autoSizeColumn('endDate');
   };
 
   const openModal = (event: RowDoubleClickedEvent) => {
@@ -234,7 +234,7 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
              overflow: hidden;
 
              .ag-header-cell-label {
-               justify-content: center !important;
+               //justify-content: center !important;
              }
 
              .ag-header-cell-text {

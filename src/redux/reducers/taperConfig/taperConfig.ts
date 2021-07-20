@@ -270,13 +270,13 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           return prev + parseFloat(dosage) * quantity;
         }, 0);
 
-        if (drug.priorDosageSum < drug.upcomingDosageSum) {
-          drug.targetDosage = drug.upcomingDosageSum;
-        } else if (drug.priorDosageSum > drug.upcomingDosageSum) {
-          drug.targetDosage = 0;
-        } else {
-          drug.targetDosage = drug.upcomingDosageSum;
-        }
+        // if (drug.priorDosageSum < drug.upcomingDosageSum) {
+        //   drug.targetDosage = drug.upcomingDosageSum;
+        // } else if (drug.priorDosageSum > drug.upcomingDosageSum) {
+        //   drug.targetDosage = 0;
+        // } else {
+        //   drug.targetDosage = drug.upcomingDosageSum;
+        // }
 
         draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         draft.isSaved = false;

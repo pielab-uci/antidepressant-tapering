@@ -64,7 +64,7 @@ const TaperConfigurationPage = () => {
   const location = useLocation();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const titles = useRef<['Create', 'Prescribe', 'Share']>(['Create', 'Prescribe', 'Share']);
-
+  const taperConfigRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     console.group('TaperConfigurationPage');
     const id = urlSearchParams.current.get('id');
@@ -104,6 +104,10 @@ const TaperConfigurationPage = () => {
     }
   }, [location]);
 
+  useEffect(() => {
+    taperConfigRef.current!.scrollTo(0, 0);
+  }, [location.pathname]);
+
   const assignStyle = (stepNumber: number) => {
     return css`
       ${stepNumber === step ? 'color: #0984E3; font-weight: bold;' : 'color: 636E72; font-weight: normal;'}`;
@@ -116,7 +120,8 @@ const TaperConfigurationPage = () => {
       height: 100%;
       overflow-y: scroll;
       padding-right: 10px;
-    `} className='taper-configuration'>
+    `} className='taper-configuration'
+    ref={taperConfigRef}>
       <div css={patientPageHeaderStyle}>
         <h2>{currentPatient!.name}</h2>
         <div>Last Visit: {format(currentPatient!.recentVisit, 'MM/dd/yyyy')}</div>

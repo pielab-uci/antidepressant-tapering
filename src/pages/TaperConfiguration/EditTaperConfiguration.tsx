@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Button from 'antd/es/button';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useHistory } from 'react-router';
 import { css } from '@emotion/react';
 import { useLocation, useRouteMatch } from 'react-router-dom';
@@ -58,7 +58,6 @@ const EditTaperConfiguration = () => {
     projectedSchedule,
     scheduleChartData,
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
-
   useEffect(() => {
     // Triggers GENERATE_SCHEDULE event in saga
     dispatch({
@@ -95,7 +94,7 @@ const EditTaperConfiguration = () => {
   };
 
   return (
-    <div css={wrapperStyle}>
+    <div className='edit-taper-configuration' css={wrapperStyle}>
       <div css={projectedScheduleStyle}>
         {/* <Prompt when={!isSaved} */}
         {/*        message={'Are you sure you want to leave?'}/> */}

@@ -42,11 +42,12 @@ const buttonStyle = css`
     width: 180px;
     height: 38px;
     border-radius: 10px;
-  };
+  }
+;
 
   & > button.return-to-patient-page {
     width: 250px;
-}`;
+  }`;
 
 // TODO: remove shareProjectedScheduleWithPatient related parts
 
@@ -84,7 +85,9 @@ const ConfirmTaperConfiguration = () => {
   return (
     <div css={wrapperStyle}>
       <div css={scheduleStyle}>
-        <h1 css={css`font-weight: bold; font-size: 1.5rem; text-align: center;`}>Prescription has been added.</h1>
+        <h1 css={css`font-weight: bold;
+          font-size: 1.5rem;
+          text-align: center;`}>Prescription has been added.</h1>
         <div css={css`margin-top: 44px;`}>
           <h3>Share projected schedule and notes with patient</h3>
           <div css={css`
@@ -112,7 +115,8 @@ const ConfirmTaperConfiguration = () => {
       </div>
       <div css={buttonStyle}>
         <Button onClick={moveToEditPage}>Previous</Button>
-        <Button type='primary' className='return-to-patient-page' onClick={returnToPatientsPage}>Return to Patient Page</Button>
+        <Button type='primary' className='return-to-patient-page' onClick={returnToPatientsPage}>Return to Patient
+          Page</Button>
       </div>
     </div>);
 };

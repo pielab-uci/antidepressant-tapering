@@ -51,6 +51,7 @@ const App = () => {
             <Router>
               <div css={css`
                 height: 100%;
+                //height: auto;
                 display: flex;
                 font-family: Verdana;
                 flex-direction: column;

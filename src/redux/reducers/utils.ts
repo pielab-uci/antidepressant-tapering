@@ -254,7 +254,8 @@ const projectionLengthOfEachDrug = (drug: Converted): number => {
       return Math.floor(Math.log(drug.upcomingDosageSum) / Math.log(1 / drug.changeRate)) + 1;
     }
 
-    return Math.floor(Math.log(drug.targetDosage / drug.upcomingDosageSum) / Math.log(drug.changeRate));
+    return Math.floor(Math.log(drug.upcomingDosageSum) / Math.log(1 / drug.changeRate)) + 1;
+    // return Math.floor(Math.log(drug.targetDosage / drug.upcomingDosageSum) / Math.log(drug.changeRate));
   }
 
   // when drug.changeDirection === 'same'
@@ -271,14 +272,20 @@ export const generateTableRows = (drugs: Converted[], startRowIndexInPrescribedD
     const lengthOfProjection: number = projectionLengthOfEachDrug(drug);
     console.log('lengthOfProjection: ', lengthOfProjection);
     const upcomingDosages: number[] = calcProjectedDosages(drug, drug.upcomingDosageSum, lengthOfProjection);
+
+    // correct error in upcomingDosage caculation
+    const upcomingDosagesNoRepetition = [...new Set(upcomingDosages)];
     console.log('upcomingDosages: ', upcomingDosages);
+    console.log('upcomingDosagesNoRepetition: ', upcomingDosagesNoRepetition);
     rows.push({
       rowIndexInPrescribedDrug: startRowIndexInPrescribedDrug,
       prescribedDrugId: drug.id,
       prescribedDrug: drug,
       drug: drug.name,
       brand: drug.brand,
-      dosage: upcomingDosages[0],
+      // dosage: upcomingDosages[0],
+      dosage: upcomingDosagesNoRepetition[0],
+      changeDirection: drug.changeDirection,
       startDate: drug.intervalStartDate,
       endDate: drug.intervalEndDate,
       prescription: prescription({ ...drug }, drug.upcomingDosages.reduce(
@@ -305,9 +312,11 @@ export const generateTableRows = (drugs: Converted[], startRowIndexInPrescribedD
     const newEndDate = sub(add(projectionStartDate, durationInDaysCount), { days: 1 });
     const newRowData = {
       Drug: drug.name,
-      upcomingDosageSum: upcomingDosages[1],
+      // upcomingDosageSum: upcomingDosages[1],
+      upcomingDosageSum: upcomingDosagesNoRepetition[1],
       // prescribedDosages: calcMinimumQuantityForDosage(drug.availableDosageOptions, upcomingDosages[1], drug.regularDosageOptions),
-      unitDosages: calcMinimumQuantityForDosage(drug.availableDosageOptions, upcomingDosages[1], drug.regularDosageOptions),
+      // unitDosages: calcMinimumQuantityForDosage(drug.availableDosageOptions, upcomingDosages[1], drug.regularDosageOptions),
+      unitDosages: calcMinimumQuantityForDosage(drug.availableDosageOptions, upcomingDosagesNoRepetition[1], drug.regularDosageOptions),
       startDate: projectionStartDate,
       endDate: newEndDate,
       selected: false,
@@ -318,7 +327,8 @@ export const generateTableRows = (drugs: Converted[], startRowIndexInPrescribedD
       oralDosageInfo: drug.oralDosageInfo ? drug.oralDosageInfo : undefined,
     };
 
-    Array(lengthOfProjection).fill(null).forEach((_, i) => {
+    // Array(lengthOfProjection).fill(null).forEach((_, i) => {
+    Array(upcomingDosagesNoRepetition.length).fill(null).forEach((_, i) => {
       if (newRowData.upcomingDosageSum !== 0) {
         rows.push({
           rowIndexInPrescribedDrug: startRowIndexInPrescribedDrug + i + 1,
@@ -342,15 +352,17 @@ export const generateTableRows = (drugs: Converted[], startRowIndexInPrescribedD
           measureUnit: drug.measureUnit,
           form: drug.form,
           oralDosageInfo: drug.oralDosageInfo ? drug.oralDosageInfo : undefined,
+          changeDirection: drug.changeDirection,
         });
 
-        newRowData.upcomingDosageSum = upcomingDosages[i + 2];
+        // newRowData.upcomingDosageSum = upcomingDosages[i + 2];
+        newRowData.upcomingDosageSum = upcomingDosagesNoRepetition[i + 2];
         newRowData.unitDosages = calcMinimumQuantityForDosage(drug.availableDosageOptions, newRowData.upcomingDosageSum, drug.regularDosageOptions);
         newRowData.startDate = add(newRowData.endDate, { days: 1 });
         newRowData.endDate = sub(add(newRowData.startDate, durationInDaysCount), { days: 1 });
       }
     });
-    return { drug: drug.name, lastEndDate: rows[rows.length - 1].endDate!, rows };
+    return { drug: drug.name, lastEndDate: rows[rows.length - 1].endDate!, rows: rows.filter((row) => row.dosage !== undefined) };
   });
 
   const endDates = tableRowsByDrug.map((d) => d.lastEndDate);
@@ -449,11 +461,13 @@ export const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule =
   const tableDataSorted: TableRowData[] = sort(drugNames, rows);
   console.log('tableData: ', tableDataSorted);
   // tableDataSorted.unshift(...prescribedDrugs.map((drug) => ({
-  tableDataSorted.unshift(...drugsToApplyInSchedule
+  // tableDataSorted.unshift(...drugsToApplyInSchedule
+  tableDataSorted.unshift(...converted
     .filter((drug) => !drug.isModal)
     .map((drug) => ({
       rowIndexInPrescribedDrug: -1,
       prescribedDrugId: drug.id,
+      changeDirection: drug.changeDirection,
       isPriorDosage: true,
       prescribedDrug: drug,
       drug: drug.name,
@@ -555,6 +569,51 @@ export const generateInstructionsForPatientFromSchedule = (schedule: Schedule): 
       return `${message}Take ${row.drug} (${row.brand}) ${dosagesPrescribed} from ${startDate} to ${endDate} (${row.intervalCount} ${row.intervalUnit}).\n`;
     }, '');
 };
+
+export const instructionsForPatientFromSchedule = (schedule: Schedule): string => {
+  console.log('groupByDrug');
+  const rowsGroupByDrug: { [drug: string]: TableRowData[] } = JSON.parse(JSON.stringify(schedule.data.reduce((acc, row) => {
+    return Object.keys(acc).includes(row.drug)
+      ? { ...acc, [row.drug]: [...acc[row.drug], row] }
+      : { ...acc, [row.drug]: [] };
+  }, {} as { [drug: string]: TableRowData[] })));
+
+  return '';
+  // return Object.entries(rowsGroupByDrug)
+  //   .map(([drug, rows]) => {
+  //     const messageHeading = rows[0].changeDirection === 'decrease' ? 'Reduce' : 'Take';
+  //     rows
+  //       .filter((row) => row.selected && !row.isPriorDosage)
+  //       .reduce((message, row) => {
+  //         Object.entries(row.prescription!.data.dosage).reduce((prev, [dosage, qty]) => {
+  //
+  //         });
+  //         return `${messageHeading}\n\t${Object.entries(row.prescription!.data.dosage).reduce()}`;
+  //       }, messageHeading);
+  //   })
+  //   .reduce((acc, message) => `${acc}\n\n${message}`, '');
+
+  // return schedule.data
+  //   .filter((row) => row.selected && !row.isPriorDosage)
+  //   .reduce((message, row) => {
+  //     const startDate = format(row.startDate!, 'MMM dd, yyyy');
+  //     const endDate = format(row.endDate!, 'MMM dd, yyyy');
+  //     const dosagesPrescribed = row.prescription!.message.replace(/ for.+/, '');
+  //     return `${message}Take ${row.drug} (${row.brand}) ${dosagesPrescribed} from ${startDate} to ${endDate} (${row.intervalCount} ${row.intervalUnit}).\n`;
+  //   }, '');
+};
+
+// export const instructionsForPatientFromSchedule = (schedule: Schedule): string => {
+//   console.log(groupBy(schedule.data));
+//   return schedule.data
+//     .filter((row) => row.selectd && !row.isPriorDosage)
+//     .reduce((message, row) => {
+//       const startDate = format(row.startDate!, 'MMM dd, yyyy');
+//       const endDate = format(row.endDate!, 'MMM dd, yyyy');
+//       const dosagesPrescribed = row.prescription!.message.replace(/ for.+/, '');
+//       return `${message}\n${row.drug}`;
+//     }, headingOnChangeDirection);
+// };
 
 export const generateInstructionsForPharmacy = (patientInstructions: string, prescription: Prescription): string => {
   const instructionsForPatients = `Instructions for Patient:

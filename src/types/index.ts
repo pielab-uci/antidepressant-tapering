@@ -187,5 +187,6 @@ export interface TableRowData {
   intervalUnit: 'Days' | 'Weeks' | 'Months' | null,
   oralDosageInfo?: OralDosage,
   measureUnit: string,
-  form: string
+  form: string,
+  changeDirection: 'increase'|'decrease'|'same';
 }

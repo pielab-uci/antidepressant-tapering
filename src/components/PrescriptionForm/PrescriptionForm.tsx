@@ -22,7 +22,7 @@ import {
   ChooseFormAction,
   ChooseBrandAction,
   FetchDrugsAction,
-  LOAD_PRESCRIPTION_DATA, toggleAllowSplittingUnscoredTablet, PrescriptionFormActions,
+  LOAD_PRESCRIPTION_DATA, toggleAllowSplittingUnscoredTablet, PrescriptionFormActions, SET_IS_MODAL,
 } from './actions';
 import { IPrescriptionFormContext, PrescriptionFormState } from './types';
 import { CapsuleOrTabletDosage, OralDosage, PrescribedDrug } from '../../types';
@@ -90,6 +90,10 @@ const PrescriptionForm: FC<Props> = ({
     };
     formActionDispatch(action);
 
+    formActionDispatch({
+      type: SET_IS_MODAL,
+      data: { isModal },
+    });
     if (prescribedDrug.name !== '') {
       formActionDispatch({ type: LOAD_PRESCRIPTION_DATA, data: prescribedDrug });
     }

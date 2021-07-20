@@ -28,7 +28,7 @@ export interface PrescriptionFormState {
    * available dosage options without considering splitting tablet
    */
   regularDosageOptions: string[]|null;
-
+  isModal: boolean;
   minDosageUnit: number;
   priorDosagesQty: { [key: string]: number };
   priorDosageSum: number;

@@ -138,6 +138,13 @@ export const intervalUnitChange = (data: IntervalUnitChangeAction['data']): Inte
   data,
 });
 
+export const SET_IS_MODAL = 'SET_IS_MODAL' as const;
+
+export interface SetIsModalAction {
+  type: typeof SET_IS_MODAL,
+  data: { isModal: boolean }
+}
+
 export type IntervalActions =
   | IntervalStartDateChangeAction
   | IntervalEndDateChangeAction
@@ -153,4 +160,5 @@ export type PrescriptionFormActions =
   | UpcomingDosageChangeAction
   | SetUpcomingDosageGoalAction
   | AllowSplittingUnscoredTabletAction
+  | SetIsModalAction
   | IntervalActions;

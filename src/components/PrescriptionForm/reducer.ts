@@ -29,6 +29,7 @@ export const initialState: PrescriptionFormState = {
   regularDosageOptions: [],
   minDosageUnit: 0,
   priorDosagesQty: {},
+  isModal: false,
   priorDosageSum: 0,
   upcomingDosagesQty: {},
   upcomingDosageSum: 0,
@@ -169,13 +170,15 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
             return prev + parseFloat(k) * v;
           }, 0);
 
-          // if (draft.priorDosageSum < draft.upcomingDosageSum) {
-          //   draft.goalDosage = draft.upcomingDosageSum;
-          // } else if (draft.priorDosageSum > draft.upcomingDosageSum) {
-          //   draft.goalDosage = 0;
-          // } else {
-          //   draft.goalDosage = draft.upcomingDosageSum;
-          // }
+          if (draft.priorDosageSum < draft.upcomingDosageSum) {
+            draft.goalDosage = draft.upcomingDosageSum;
+          } else if (draft.priorDosageSum > draft.upcomingDosageSum) {
+            if (!draft.isModal) {
+              draft.goalDosage = 0;
+            }
+          } else {
+            draft.goalDosage = draft.upcomingDosageSum;
+          }
         }
         break;
       }

@@ -14,11 +14,12 @@ import Select from 'antd/es/select';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
 import { css } from '@emotion/react';
+import isBefore from 'date-fns/esm/isBefore';
 import { PrescriptionFormContext } from './PrescriptionForm';
 import { TaperConfigActions } from '../../redux/reducers/taperConfig';
 import {
   IntervalActions,
-  intervalCountChange, intervalEndDateChange,
+  intervalCountChange, intervalEndDateChange, IntervalEndDateChangeData,
   intervalStartDateChange, IntervalStartDateChangeData, intervalUnitChange,
 } from './actions';
 
@@ -82,10 +83,10 @@ const SelectInterval = () => {
     data.intervalStartDate = new Date(date.valueOf() + date.getTimezoneOffset() * 60 * 1000);
     if (intervalEndDate) {
       if (isAfter(data.intervalStartDate, intervalEndDate)) {
-        data.intervalEndDate = add(data.intervalStartDate, { [intervalUnit.toLowerCase()]: intervalCount });
+        data.intervalEndDate = add(data.intervalStartDate, { [intervalUnit.toLowerCase()]: intervalCount - 1 });
       } else {
         data.intervalUnit = 'Days';
-        data.intervalDurationDays = differenceInCalendarDays(intervalEndDate, data.intervalStartDate);
+        data.intervalDurationDays = differenceInCalendarDays(intervalEndDate, data.intervalStartDate) + 1;
         data.intervalCount = data.intervalDurationDays;
       }
     }
@@ -96,21 +97,24 @@ const SelectInterval = () => {
     }));
   };
 
-  const onIntervalEndDateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const tempEndDate = new Date(e.target.value);
-    const newEndDate = new Date(tempEndDate.valueOf() + tempEndDate.getTimezoneOffset() * 60 * 1000);
-    const intervalDurationDays = calcIntervalDurationDays(intervalStartDate, newEndDate);
-    if (isSameDay(newEndDate, intervalStartDate) || isAfter(newEndDate, intervalStartDate)) {
-      dispatch(intervalEndDateChange({
-        date: newEndDate, id, intervalDurationDays,
-      }));
+  const onIntervalEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const data = {} as IntervalEndDateChangeData;
+    const date = new Date(e.target.value);
+    data.intervalEndDate = new Date(date.valueOf() + date.getTimezoneOffset() * 60 * 1000);
+
+    if (isBefore(data.intervalEndDate, intervalStartDate)) {
+      data.intervalStartDate = sub(data.intervalEndDate, { [intervalUnit.toLowerCase()]: intervalCount - 1 });
     } else {
-      alert('End date cannot be before the start date.');
-      dispatch(intervalEndDateChange({
-        date: null, id, intervalDurationDays,
-      }));
+      data.intervalDurationDays = differenceInCalendarDays(data.intervalEndDate, intervalStartDate) + 1;
+      data.intervalUnit = 'Days';
+      data.intervalCount = data.intervalDurationDays;
     }
-  }, [intervalStartDate, upcomingDosagesQty]);
+
+    dispatch(intervalEndDateChange({
+      ...data,
+      id,
+    }));
+  };
 
   const onIntervalUnitChange = useCallback((value: 'Days' | 'Weeks' | 'Months') => {
     const endDate = sub(add(intervalStartDate, { [value.toLowerCase()]: intervalCount }), { days: 1 });
@@ -158,7 +162,7 @@ const SelectInterval = () => {
         <div css={css`width: 180px;
           display: flex;
           justify-content: space-between;`}>
-          <Input type="number" value={intervalCount} min={0}
+          <Input type="number" value={intervalCount} min={1}
                  onWheel={onWheelEventHandler}
                  onChange={onIntervalCountChange} css={css`width: 70px;
             margin-right: 9px;`}/>

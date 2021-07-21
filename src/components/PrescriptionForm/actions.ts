@@ -99,12 +99,17 @@ export const intervalStartDateChange = (data: IntervalStartDateChangeAction['dat
 
 export const INTERVAL_END_DATE_CHANGE = 'INTERVAL_END_DATE_CHANGE' as const;
 
+export interface IntervalEndDateChangeData {
+  intervalStartDate?: Date;
+  intervalEndDate: Date;
+  intervalDurationDays?: number;
+  intervalUnit? :'Days' | 'Weeks' | 'Months';
+  intervalCount?: number;
+  id: number;
+}
 export interface IntervalEndDateChangeAction {
   type: typeof INTERVAL_END_DATE_CHANGE,
-  data: {
-    date: Date | null;
-    intervalDurationDays: number,
-    id: number }
+  data: IntervalEndDateChangeData;
 }
 
 export const intervalEndDateChange = (data: IntervalEndDateChangeAction['data']): IntervalEndDateChangeAction => ({

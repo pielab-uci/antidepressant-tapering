@@ -150,13 +150,6 @@ const reducer = (state: RowEditingModalState = initialState, action: ModalAction
 
       case INTERVAL_START_DATE_CHANGE: {
         const drug = draft.prescribedDrug!;
-        // drug.intervalStartDate = new Date(action.data.date.valueOf() + action.data.date.getTimezoneOffset() * 60 * 1000);
-        //
-        // if (drug.intervalEndDate) {
-        //   drug.intervalUnit = 'Days';
-        //   drug.intervalCount = action.data.intervalDurationDays;
-        //   drug.intervalDurationDays = action.data.intervalDurationDays;
-        // }
         drug.intervalStartDate = action.data.intervalStartDate;
         drug.intervalEndDate = action.data.intervalEndDate || drug.intervalEndDate;
         drug.intervalDurationDays = action.data.intervalDurationDays || drug.intervalDurationDays;
@@ -169,11 +162,11 @@ const reducer = (state: RowEditingModalState = initialState, action: ModalAction
 
       case INTERVAL_END_DATE_CHANGE: {
         const drug = draft.prescribedDrug!;
-        drug.intervalEndDate = action.data.date;
-        drug.intervalUnit = 'Days';
-        drug.intervalCount = action.data.intervalDurationDays;
-        drug.intervalDurationDays = action.data.intervalDurationDays;
-        draft.isModalInputComplete = validateCompleteInputs([drug]);
+        drug.intervalEndDate = action.data.intervalEndDate;
+        drug.intervalStartDate = action.data.intervalStartDate || drug.intervalStartDate;
+        drug.intervalCount = action.data.intervalCount || drug.intervalCount;
+        drug.intervalUnit = action.data.intervalUnit || drug.intervalUnit;
+        drug.intervalDurationDays = action.data.intervalDurationDays || drug.intervalDurationDays;
         break;
       }
 

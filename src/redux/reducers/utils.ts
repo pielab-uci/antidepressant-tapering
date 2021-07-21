@@ -206,7 +206,26 @@ export const calcMinimumQuantityForDosage = (availableOptions: string[], dosage:
   return dosages;
 };
 
-type PrescriptionFunction = (args: { form: string, intervalCount: number, intervalUnit: 'Days' | 'Weeks' | 'Months' | null, oralDosageInfo?: OralDosage | null }, dosageQty: { [dosage: string]: number }) => { message: string; data: { form: string, unit: string; dosage: { [dosage: string]: number } } };
+interface PrescriptionFunction {
+  (args: {
+    form: string,
+    intervalCount: number,
+    intervalUnit: 'Days' | 'Weeks' | 'Months' | null,
+    oralDosageInfo?: OralDosage | null
+  },
+    dosageQty: { [dosage: string]: number })
+  : {
+    message: string;
+    data: {
+      form: string,
+      unit: string;
+      intervalCount: number;
+      intervalUnit: 'Days' | 'Weeks' | 'Months' | null;
+      dosage: { [dosage: string]: number }
+    }
+  };
+}
+
 export const prescription: PrescriptionFunction = (
   {
     form, intervalCount, intervalUnit, oralDosageInfo,
@@ -232,6 +251,8 @@ export const prescription: PrescriptionFunction = (
     form,
     unit: oralDosageInfo !== null ? 'ml' : 'mg',
     dosage: dosageQty,
+    intervalCount,
+    intervalUnit,
   };
 
   return {
@@ -288,9 +309,9 @@ export const generateTableRows = (drugs: Converted[], startRowIndexInPrescribedD
       changeDirection: drug.changeDirection,
       startDate: drug.intervalStartDate,
       endDate: drug.intervalEndDate,
-      prescription: prescription({ ...drug }, drug.upcomingDosages.reduce(
-        (prev, d) => ({ ...prev, [d.dosage]: d.quantity }), {},
-      )),
+      goalDosage: drug.targetDosage,
+      prescription: prescription({ ...drug },
+        drug.upcomingDosages.reduce((prev, d) => ({ ...prev, [d.dosage]: d.quantity }), {})),
       unitDosages: drug.upcomingDosages.reduce((prev, { dosage, quantity }) => {
         prev[dosage] = quantity;
         return prev;
@@ -341,6 +362,7 @@ export const generateTableRows = (drugs: Converted[], startRowIndexInPrescribedD
           endDate: newRowData.endDate,
           prescription: prescription({ ...drug }, newRowData.unitDosages),
           selected: false,
+          goalDosage: drug.targetDosage,
           addedInCurrentVisit: !drug.prevVisit,
           availableDosageOptions: drug.availableDosageOptions,
           regularDosageOptions: drug.regularDosageOptions,
@@ -362,7 +384,11 @@ export const generateTableRows = (drugs: Converted[], startRowIndexInPrescribedD
         newRowData.endDate = sub(add(newRowData.startDate, durationInDaysCount), { days: 1 });
       }
     });
-    return { drug: drug.name, lastEndDate: rows[rows.length - 1].endDate!, rows: rows.filter((row) => row.dosage !== undefined) };
+    return {
+      drug: drug.name,
+      lastEndDate: rows[rows.length - 1].endDate!,
+      rows: rows.filter((row) => row.dosage !== undefined),
+    };
   });
 
   const endDates = tableRowsByDrug.map((d) => d.lastEndDate);
@@ -484,6 +510,7 @@ export const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule =
       unitDosages: {},
       addedInCurrentVisit: false,
       intervalDurationDays: -1,
+      goalDosage: drug.targetDosage,
       intervalCount: -1,
       intervalUnit: null,
       measureUnit: drug.measureUnit,
@@ -560,60 +587,43 @@ export const chartDataConverter = (schedule: Schedule): ScheduleChartData => {
 };
 
 export const generateInstructionsForPatientFromSchedule = (schedule: Schedule): string => {
-  return schedule.data
-    .filter((row) => row.selected && !row.isPriorDosage)
-    .reduce((message, row) => {
-      const startDate = format(row.startDate!, 'MMM dd, yyyy');
-      const endDate = format(row.endDate!, 'MMM dd, yyyy');
-      const dosagesPrescribed = row.prescription!.message.replace(/ for.+/, '');
-      return `${message}Take ${row.drug} (${row.brand}) ${dosagesPrescribed} from ${startDate} to ${endDate} (${row.intervalCount} ${row.intervalUnit}).\n`;
-    }, '');
+  const rowsGroupByDrug: { [drug: string]: TableRowData[] } = JSON.parse(
+    JSON.stringify(
+      schedule.data
+        // .filter((row) => row.selected && !row.isPriorDosage)
+        .reduce((acc, row) => {
+          return Object.keys(acc).includes(row.drug)
+            ? { ...acc, [row.drug]: [...acc[row.drug], row] }
+            : { ...acc, [row.drug]: [] };
+        }, {} as { [drug: string]: TableRowData[] }),
+    ),
+  );
+
+  console.log('rowsGroupByDrug');
+  console.log(rowsGroupByDrug);
+  return Object.entries(rowsGroupByDrug)
+    .map(([drug, rows]) => {
+      const messageHeading = rows[0].changeDirection === 'decrease' ? `Reduce ${drug} to\n` : `Take ${drug}\n`;
+
+      return rows
+        .filter((row) => row.selected && !row.isPriorDosage)
+        .reduce((message, row, j, rowArr) => {
+          const rowPrescription = row.prescription!;
+          const messageLine = Object.entries(rowPrescription.data.dosage)
+            .reduce((prev, [dosage, qty], i, arr) => {
+              if (i === arr.length - 1) {
+                if (j === rowArr.length - 1) {
+                  return `${prev} ${dosage} ${rowPrescription.data.form}s, ${qty} ${rowPrescription.data.form} daily for ${rowPrescription.data.intervalCount} ${rowPrescription.data.intervalUnit?.toLowerCase().replace('s', '(s)')}, then STOP.\n`;
+                }
+                return `${prev} ${dosage} ${rowPrescription.data.form}s, ${qty} ${rowPrescription.data.form} daily for ${rowPrescription.data.intervalCount} ${rowPrescription.data.intervalUnit} then,\n`;
+              }
+              return `${prev} ${dosage} ${rowPrescription.data.form}s, ${qty} ${rowPrescription.data.form} + `;
+            }, '');
+          return `${message}\t${messageLine}`;
+        }, messageHeading);
+    })
+    .reduce((acc, message) => `${acc}\n${message}`, '');
 };
-
-export const instructionsForPatientFromSchedule = (schedule: Schedule): string => {
-  console.log('groupByDrug');
-  const rowsGroupByDrug: { [drug: string]: TableRowData[] } = JSON.parse(JSON.stringify(schedule.data.reduce((acc, row) => {
-    return Object.keys(acc).includes(row.drug)
-      ? { ...acc, [row.drug]: [...acc[row.drug], row] }
-      : { ...acc, [row.drug]: [] };
-  }, {} as { [drug: string]: TableRowData[] })));
-
-  return '';
-  // return Object.entries(rowsGroupByDrug)
-  //   .map(([drug, rows]) => {
-  //     const messageHeading = rows[0].changeDirection === 'decrease' ? 'Reduce' : 'Take';
-  //     rows
-  //       .filter((row) => row.selected && !row.isPriorDosage)
-  //       .reduce((message, row) => {
-  //         Object.entries(row.prescription!.data.dosage).reduce((prev, [dosage, qty]) => {
-  //
-  //         });
-  //         return `${messageHeading}\n\t${Object.entries(row.prescription!.data.dosage).reduce()}`;
-  //       }, messageHeading);
-  //   })
-  //   .reduce((acc, message) => `${acc}\n\n${message}`, '');
-
-  // return schedule.data
-  //   .filter((row) => row.selected && !row.isPriorDosage)
-  //   .reduce((message, row) => {
-  //     const startDate = format(row.startDate!, 'MMM dd, yyyy');
-  //     const endDate = format(row.endDate!, 'MMM dd, yyyy');
-  //     const dosagesPrescribed = row.prescription!.message.replace(/ for.+/, '');
-  //     return `${message}Take ${row.drug} (${row.brand}) ${dosagesPrescribed} from ${startDate} to ${endDate} (${row.intervalCount} ${row.intervalUnit}).\n`;
-  //   }, '');
-};
-
-// export const instructionsForPatientFromSchedule = (schedule: Schedule): string => {
-//   console.log(groupBy(schedule.data));
-//   return schedule.data
-//     .filter((row) => row.selectd && !row.isPriorDosage)
-//     .reduce((message, row) => {
-//       const startDate = format(row.startDate!, 'MMM dd, yyyy');
-//       const endDate = format(row.endDate!, 'MMM dd, yyyy');
-//       const dosagesPrescribed = row.prescription!.message.replace(/ for.+/, '');
-//       return `${message}\n${row.drug}`;
-//     }, headingOnChangeDirection);
-// };
 
 export const generateInstructionsForPharmacy = (patientInstructions: string, prescription: Prescription): string => {
   const instructionsForPatients = `Instructions for Patient:

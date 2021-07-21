@@ -160,6 +160,8 @@ export interface TableRowData {
     data: {
       form: string,
       unit: string,
+      intervalCount: number;
+      intervalUnit: 'Days' | 'Weeks' | 'Months' | null;
       oralDosageInfo?: OralDosage
       dosage: { [dosage: string]: number },
     }
@@ -188,5 +190,6 @@ export interface TableRowData {
   oralDosageInfo?: OralDosage,
   measureUnit: string,
   form: string,
+  goalDosage: number;
   changeDirection: 'increase'|'decrease'|'same';
 }

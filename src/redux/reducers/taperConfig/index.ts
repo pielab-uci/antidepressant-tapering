@@ -118,9 +118,15 @@ export const emptyPrescribedDrug = (id: number): PrescribedDrug => ({
   availableDosageOptions: [],
   regularDosageOptions: [],
   allowSplittingUnscoredTablet: false,
-  intervalStartDate: new Date(),
-  intervalEndDate: null,
-  intervalCount: 0,
+  intervalStartDate: (() => {
+    const date = new Date();
+    return new Date(date.valueOf() + date.getTimezoneOffset() * 60 * 1000);
+  })(),
+  intervalEndDate: (() => {
+    const date = new Date();
+    return new Date(date.valueOf() + date.getTimezoneOffset() * 60 * 1000 + 1000);
+  })(),
+  intervalCount: 1,
   intervalUnit: 'Days',
   intervalDurationDays: 0,
   prevVisit: false,

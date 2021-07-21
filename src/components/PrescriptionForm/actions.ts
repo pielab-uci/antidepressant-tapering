@@ -78,12 +78,18 @@ export const toggleAllowSplittingUnscoredTablet = (data: AllowSplittingUnscoredT
 
 export const INTERVAL_START_DATE_CHANGE = 'INTERVAL_START_DATE_CHANGE' as const;
 
+export interface IntervalStartDateChangeData {
+  intervalStartDate: Date;
+  intervalEndDate?: Date;
+  intervalDurationDays?: number;
+  intervalUnit?: 'Days'|'Weeks'|'Months';
+  intervalCount?: number;
+  id: number;
+}
+
 export interface IntervalStartDateChangeAction {
   type: typeof INTERVAL_START_DATE_CHANGE,
-  data: {
-    date: Date,
-    intervalDurationDays: number,
-    id: number; } ;
+  data: IntervalStartDateChangeData;
 }
 
 export const intervalStartDateChange = (data: IntervalStartDateChangeAction['data']): IntervalStartDateChangeAction => ({

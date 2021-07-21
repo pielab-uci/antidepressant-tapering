@@ -1,5 +1,9 @@
 import produce from 'immer';
 import differenceInCalendarDays from 'date-fns/esm/differenceInCalendarDays';
+import isAfter from 'date-fns/esm/isAfter';
+import add from 'date-fns/esm/add';
+import isBefore from 'date-fns/esm/isBefore';
+import sub from 'date-fns/esm/sub';
 import {
   ADD_NEW_DRUG_FORM,
   ADD_OR_UPDATE_TAPER_CONFIG_FAILURE,
@@ -298,26 +302,43 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         break;
       }
 
+      // case INTERVAL_START_DATE_CHANGE: {
+      //   const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
+      //   drug.intervalStartDate = new Date(action.data.date.valueOf() + action.data.date.getTimezoneOffset() * 60 * 1000);
+      //
+      //   if (drug.intervalEndDate) {
+      //     if (isAfter(drug.intervalStartDate, drug.intervalEndDate)) {
+      //       drug.intervalEndDate = add(drug.intervalStartDate, { [drug.intervalUnit.toLowerCase()]: drug.intervalCount });
+      //     } else {
+      //       drug.intervalUnit = 'Days';
+      //       drug.intervalDurationDays = differenceInCalendarDays(drug.intervalEndDate, drug.intervalStartDate) + 1;
+      //       drug.intervalCount = drug.intervalDurationDays;
+      //     }
+      //   }
+      //   draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
+      //   draft.isSaved = false;
+      //   break;
+      // }
       case INTERVAL_START_DATE_CHANGE: {
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
-        drug.intervalStartDate = new Date(action.data.date.valueOf() + action.data.date.getTimezoneOffset() * 60 * 1000);
-
-        if (drug.intervalEndDate) {
-          drug.intervalUnit = 'Days';
-          drug.intervalCount = action.data.intervalDurationDays;
-          drug.intervalDurationDays = action.data.intervalDurationDays;
-        }
-        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
-        draft.isSaved = false;
+        drug.intervalStartDate = action.data.intervalStartDate;
+        drug.intervalEndDate = action.data.intervalEndDate || drug.intervalEndDate;
+        drug.intervalUnit = action.data.intervalUnit || drug.intervalUnit;
+        drug.intervalDurationDays = action.data.intervalDurationDays || drug.intervalDurationDays;
+        drug.intervalCount = action.data.intervalCount || drug.intervalCount;
         break;
       }
 
       case INTERVAL_END_DATE_CHANGE: {
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         drug.intervalEndDate = action.data.date;
-        drug.intervalUnit = 'Days';
-        drug.intervalCount = action.data.intervalDurationDays;
-        drug.intervalDurationDays = action.data.intervalDurationDays;
+        if (isBefore(drug.intervalEndDate!, drug.intervalStartDate)) {
+          drug.intervalStartDate = sub(drug.intervalEndDate!, { [drug.intervalUnit.toLowerCase()]: drug.intervalCount });
+        } else {
+          drug.intervalUnit = 'Days';
+          drug.intervalDurationDays = differenceInCalendarDays(drug.intervalEndDate!, drug.intervalStartDate) + 1;
+          drug.intervalCount = drug.intervalDurationDays;
+        }
         draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         draft.isSaved = false;
         break;

@@ -1,4 +1,9 @@
 import produce from 'immer';
+import add from 'date-fns/esm/add';
+import differenceInCalendarDays from 'date-fns/esm/differenceInCalendarDays';
+import isBefore from 'date-fns/esm/isBefore';
+import sub from 'date-fns/esm/sub';
+import isAfter from 'date-fns/esm/isAfter';
 import { PrescriptionFormState } from './types';
 import {
   ALLOW_SPLITTING_UNSCORED_TABLET,
@@ -199,20 +204,39 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         }
         break;
 
+        // case INTERVAL_START_DATE_CHANGE:
+        //   draft.intervalStartDate = new Date(action.data.date.valueOf() + action.data.date.getTimezoneOffset() * 60 * 1000);
+        //   if (draft.intervalEndDate) {
+        //     if (isAfter(draft.intervalStartDate, draft.intervalEndDate)) {
+        //       draft.intervalEndDate = add(draft.intervalStartDate, { [draft.intervalUnit.toLowerCase()]: draft.intervalCount });
+        //       // draft.intervalUnit = 'Days';
+        //       // draft.intervalDurationDays = differenceInCalendarDays(draft.intervalEndDate, draft.intervalStartDate) + 1;
+        //       // draft.intervalCount = draft.intervalDurationDays;
+        //     } else {
+        //       draft.intervalUnit = 'Days';
+        //       draft.intervalDurationDays = differenceInCalendarDays(draft.intervalEndDate, draft.intervalStartDate) + 1;
+        //       draft.intervalCount = draft.intervalDurationDays;
+        //     }
+        //   }
+        //   break;
+
       case INTERVAL_START_DATE_CHANGE:
-        draft.intervalStartDate = new Date(action.data.date.valueOf() + action.data.date.getTimezoneOffset() * 60 * 1000);
-        draft.intervalUnit = 'Days';
-        if (draft.intervalEndDate) {
-          draft.intervalCount = action.data.intervalDurationDays;
-          draft.intervalDurationDays = action.data.intervalDurationDays;
-        }
+        draft.intervalStartDate = action.data.intervalStartDate;
+        draft.intervalEndDate = action.data.intervalEndDate || draft.intervalEndDate;
+        draft.intervalUnit = action.data.intervalUnit || draft.intervalUnit;
+        draft.intervalDurationDays = action.data.intervalDurationDays || draft.intervalDurationDays;
+        draft.intervalCount = action.data.intervalCount || draft.intervalCount;
         break;
 
       case INTERVAL_END_DATE_CHANGE:
         draft.intervalEndDate = action.data.date;
-        draft.intervalUnit = 'Days';
-        draft.intervalDurationDays = action.data.intervalDurationDays;
-        draft.intervalCount = draft.intervalDurationDays;
+        if (isBefore(draft.intervalEndDate!, draft.intervalStartDate)) {
+          draft.intervalStartDate = sub(draft.intervalEndDate!, { [draft.intervalUnit.toLowerCase()]: draft.intervalCount });
+        } else {
+          draft.intervalDurationDays = differenceInCalendarDays(draft.intervalEndDate!, draft.intervalStartDate) + 1;
+          draft.intervalUnit = 'Days';
+          draft.intervalCount = draft.intervalDurationDays;
+        }
         break;
 
       case INTERVAL_UNIT_CHANGE:

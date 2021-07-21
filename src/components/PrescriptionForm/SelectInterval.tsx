@@ -19,7 +19,7 @@ import { TaperConfigActions } from '../../redux/reducers/taperConfig';
 import {
   IntervalActions,
   intervalCountChange, intervalEndDateChange,
-  intervalStartDateChange, intervalUnitChange,
+  intervalStartDateChange, IntervalStartDateChangeData, intervalUnitChange,
 } from './actions';
 
 const { Option } = Select;
@@ -76,17 +76,25 @@ const SelectInterval = () => {
     return !endDate ? 0 : differenceInCalendarDays(endDate, startDate) + 1;
   }, []);
 
-  const onIntervalStartDateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const onIntervalStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const data = {} as IntervalStartDateChangeData;
     const date = new Date(e.target.value);
-    if (intervalEndDate && isAfter(date, intervalEndDate)) {
-      alert('Interval start date must be before the interval end date.');
-    } else {
-      const intervalDurationDays = calcIntervalDurationDays(date, intervalEndDate);
-      dispatch(intervalStartDateChange({
-        date, id, intervalDurationDays,
-      }));
+    data.intervalStartDate = new Date(date.valueOf() + date.getTimezoneOffset() * 60 * 1000);
+    if (intervalEndDate) {
+      if (isAfter(data.intervalStartDate, intervalEndDate)) {
+        data.intervalEndDate = add(data.intervalStartDate, { [intervalUnit.toLowerCase()]: intervalCount });
+      } else {
+        data.intervalUnit = 'Days';
+        data.intervalDurationDays = differenceInCalendarDays(intervalEndDate, data.intervalStartDate);
+        data.intervalCount = data.intervalDurationDays;
+      }
     }
-  }, [intervalEndDate, upcomingDosagesQty]);
+
+    dispatch(intervalStartDateChange({
+      ...data,
+      id,
+    }));
+  };
 
   const onIntervalEndDateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const tempEndDate = new Date(e.target.value);

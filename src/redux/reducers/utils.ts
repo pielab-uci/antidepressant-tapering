@@ -237,11 +237,11 @@ export const prescription: PrescriptionFunction = (
     .filter(([dosage, qty]) => qty !== 0)
     .reduce((res, [dosage, qty], i, arr) => {
       if (oralDosageInfo) {
-        return `${res} ${qty / oralDosageInfo.rate.mg * oralDosageInfo.rate.ml}ml ${form} for ${intervalCount} ${intervalUnit!.toLowerCase()}`;
+        return `${res} ${qty / oralDosageInfo.rate.mg * oralDosageInfo.rate.ml}ml ${form} for ${intervalCount} ${intervalUnit!.toLowerCase().replace('s', '(s')}`;
       }
 
       if (i === arr.length - 1) {
-        return `${res} ${qty} X ${dosage} ${form} for ${intervalCount} ${intervalUnit!.toLowerCase()}`;
+        return `${res} ${qty} X ${dosage} ${form} for ${intervalCount} ${intervalUnit!.toLowerCase().replace('s', '(s)')}`;
       }
 
       return `${res} ${qty} X ${dosage} ${form}, `;
@@ -587,17 +587,24 @@ export const chartDataConverter = (schedule: Schedule): ScheduleChartData => {
 };
 
 export const generateInstructionsForPatientFromSchedule = (schedule: Schedule): string => {
-  const rowsGroupByDrug: { [drug: string]: TableRowData[] } = JSON.parse(
-    JSON.stringify(
-      schedule.data
-        // .filter((row) => row.selected && !row.isPriorDosage)
-        .reduce((acc, row) => {
-          return Object.keys(acc).includes(row.drug)
-            ? { ...acc, [row.drug]: [...acc[row.drug], row] }
-            : { ...acc, [row.drug]: [] };
-        }, {} as { [drug: string]: TableRowData[] }),
-    ),
-  );
+  const rowsGroupByDrug: { [drug: string]: TableRowData[] } = schedule.data
+  // .filter((row) => row.selected && !row.isPriorDosage)
+    .reduce((acc, row) => {
+      return Object.keys(acc).includes(row.drug)
+        ? { ...acc, [row.drug]: [...acc[row.drug], row] }
+        : { ...acc, [row.drug]: [] };
+    }, {} as { [drug: string]: TableRowData[] });
+  // const rowsGroupByDrug: { [drug: string]: TableRowData[] } = JSON.parse(
+  //     JSON.stringify(
+  //       schedule.data
+  //         // .filter((row) => row.selected && !row.isPriorDosage)
+  //         .reduce((acc, row) => {
+  //           return Object.keys(acc).includes(row.drug)
+  //             ? { ...acc, [row.drug]: [...acc[row.drug], row] }
+  //             : { ...acc, [row.drug]: [] };
+  //         }, {} as { [drug: string]: TableRowData[] }),
+  //     ),
+  //   );
 
   console.log('rowsGroupByDrug');
   console.log(rowsGroupByDrug);
@@ -622,7 +629,7 @@ export const generateInstructionsForPatientFromSchedule = (schedule: Schedule): 
           return `${message}\t${messageLine}`;
         }, messageHeading);
     })
-    .reduce((acc, message) => `${acc}\n${message}`, '');
+    .reduce((acc, message) => `${acc}${message}\n`, '');
 };
 
 export const generateInstructionsForPharmacy = (patientInstructions: string, prescription: Prescription): string => {
@@ -637,7 +644,9 @@ export const generateInstructionsForPharmacy = (patientInstructions: string, pre
       return `${prev}\t${line}\n`;
     }, '')}\n---------------------------------------------------\n`;
 
-  return Object.values(prescription)
+  // return Object.values(prescription)
+  const parsedPrescription: Prescription = JSON.parse(JSON.stringify(prescription));
+  return Object.values(parsedPrescription)
     .reduce((instruction, { name, brand, dosageQty }, i, prescriptionArr) => {
       const dosages = Object
         .entries(dosageQty)

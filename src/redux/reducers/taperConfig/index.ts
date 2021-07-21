@@ -128,7 +128,7 @@ export const emptyPrescribedDrug = (id: number): PrescribedDrug => ({
   })(),
   intervalCount: 1,
   intervalUnit: 'Days',
-  intervalDurationDays: 0,
+  intervalDurationDays: 1,
   prevVisit: false,
   prescribedAt: new Date(),
 });

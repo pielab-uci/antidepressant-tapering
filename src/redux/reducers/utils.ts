@@ -317,7 +317,7 @@ export const generateTableRows = (drugs: Converted[], startRowIndexInPrescribedD
         return prev;
       }, {} as { [dosage: string]: number }),
       addedInCurrentVisit: !drug.prevVisit,
-      selected: !drug.prevVisit,
+      selected: true,
       availableDosageOptions: drug.availableDosageOptions,
       regularDosageOptions: drug.regularDosageOptions,
       form: drug.form,

@@ -252,6 +252,7 @@ export const prescription: PrescriptionFunction = (
     form,
     unit: oralDosageInfo !== null ? 'ml' : 'mg',
     dosage: dosageQty,
+    oralDosageInfo,
     intervalCount,
     intervalUnit,
   };
@@ -587,50 +588,46 @@ export const chartDataConverter = (schedule: Schedule): ScheduleChartData => {
   return scheduleChartData;
 };
 
+const generateMessageFromRowByDrugForm = (rows: TableRowData[]): string => {
+  const drugTitle = rows[0].brand.includes('generic')
+    ? `${rows[0].drug.replace(' (generic)', '')} (${drugNameBrandPairs[rows[0].drug]})`
+    : `${rows[0].brand.split(' ')[0]} (${rows[0].drug})`;
+
+  const messageHeading = rows[0].changeDirection === 'decrease' ? `Reduce ${drugTitle} to\n` : `Take ${drugTitle}\n`;
+
+  return rows
+    .filter((row) => row.selected && !row.isPriorDosage)
+    .reduce((message, row, j, rowArr) => {
+      const rowPrescription = row.prescription!;
+      const messageLine = Object.entries(rowPrescription.data.dosage)
+        .reduce((prev, [dosage, qty], i, arr) => {
+          // const dosageToPrint = !rowPrescription.data.oralDosageInfo ? dosage : rowPrescription
+          const quantity = qty === 0.5 ? '1/2' : qty;
+          if (i === arr.length - 1) {
+            if (j === rowArr.length - 1) {
+              return `${prev} ${dosage} ${rowPrescription.data.form}s, ${quantity} ${rowPrescription.data.form} by mouth daily for ${rowPrescription.data.intervalCount} ${rowPrescription.data.intervalUnit!.toLowerCase().replace('s', '(s)')}, then STOP.\n`;
+            }
+            return `${prev} ${dosage} ${rowPrescription.data.form}s, ${quantity} ${rowPrescription.data.form} by mouth daily for ${rowPrescription.data.intervalCount} ${rowPrescription.data.intervalUnit!.toLowerCase().replace('s', '(s)')} then,\n`;
+          }
+          return `${prev} ${dosage} ${rowPrescription.data.form}s, ${quantity} ${rowPrescription.data.form} +`;
+        }, '');
+      return `${message}\t${messageLine}`;
+    }, messageHeading);
+};
+
 export const generateInstructionsForPatientFromSchedule = (schedule: Schedule): string => {
   const rowsGroupByDrug: { [drug: string]: TableRowData[] } = schedule.data
-  // .filter((row) => row.selected && !row.isPriorDosage)
+    // .filter((row) => row.selected && !row.isPriorDosage)
     .reduce((acc, row) => {
       return Object.keys(acc).includes(row.drug)
         ? { ...acc, [row.drug]: [...acc[row.drug], row] }
         : { ...acc, [row.drug]: [] };
     }, {} as { [drug: string]: TableRowData[] });
-  // const rowsGroupByDrug: { [drug: string]: TableRowData[] } = JSON.parse(
-  //     JSON.stringify(
-  //       schedule.data
-  //         // .filter((row) => row.selected && !row.isPriorDosage)
-  //         .reduce((acc, row) => {
-  //           return Object.keys(acc).includes(row.drug)
-  //             ? { ...acc, [row.drug]: [...acc[row.drug], row] }
-  //             : { ...acc, [row.drug]: [] };
-  //         }, {} as { [drug: string]: TableRowData[] }),
-  //     ),
-  //   );
 
   console.log('rowsGroupByDrug');
   console.log(rowsGroupByDrug);
-  return Object.entries(rowsGroupByDrug)
-    .map(([drug, rows]) => {
-      const drugTitle = rows[0].brand.includes('generic') ? `${rows[0].drug.replace(' (generic)', '')} (${drugNameBrandPairs[rows[0].drug]})` : `${rows[0].brand.split(' ')[0]} (${drug})`;
-      const messageHeading = rows[0].changeDirection === 'decrease' ? `Reduce ${drugTitle} to\n` : `Take ${drugTitle}\n`;
-
-      return rows
-        .filter((row) => row.selected && !row.isPriorDosage)
-        .reduce((message, row, j, rowArr) => {
-          const rowPrescription = row.prescription!;
-          const messageLine = Object.entries(rowPrescription.data.dosage)
-            .reduce((prev, [dosage, qty], i, arr) => {
-              if (i === arr.length - 1) {
-                if (j === rowArr.length - 1) {
-                  return `${prev} ${dosage} ${rowPrescription.data.form}s, ${qty} ${rowPrescription.data.form} daily for ${rowPrescription.data.intervalCount} ${rowPrescription.data.intervalUnit?.toLowerCase().replace('s', '(s)')}, then STOP.\n`;
-                }
-                return `${prev} ${dosage} ${rowPrescription.data.form}s, ${qty} ${rowPrescription.data.form} daily for ${rowPrescription.data.intervalCount} ${rowPrescription.data.intervalUnit} then,\n`;
-              }
-              return `${prev} ${dosage} ${rowPrescription.data.form}s, ${qty} ${rowPrescription.data.form} + `;
-            }, '');
-          return `${message}\t${messageLine}`;
-        }, messageHeading);
-    })
+  return Object.values(rowsGroupByDrug)
+    .map((rows) => generateMessageFromRowByDrugForm(rows))
     .reduce((acc, message) => `${acc}${message}\n`, '');
 };
 
@@ -655,12 +652,15 @@ export const generateInstructionsForPharmacy = (patientInstructions: string, pre
         .filter(([dos, qty]) => qty !== 0)
         .reduce((acc, [dos, qty], j, dosageArr) => {
           if (j === dosageArr.length - 1) {
-            return `${acc}${qty} X ${dos}`;
+            return `${acc}${Math.ceil(qty as number)} X ${dos}`;
           }
-          return `${acc}${qty} X ${dos}, `;
+          return `${acc}${Math.ceil(qty as number)} X ${dos}, `;
         }, '');
 
-      return `${instruction}${name} (${brand}): ${dosages}\n`;
+      const drugTitle = brand.includes('generic')
+        ? `${brand.replace(' (generic)', '')} (${drugNameBrandPairs[name]})`
+        : `${brand.split(' ')[0]} (${name})`;
+      return `${instruction}${drugTitle}: ${dosages}\n`;
     }, instructionsForPatients);
 };
 

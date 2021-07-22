@@ -4,13 +4,17 @@ import { useDispatch } from 'react-redux';
 import Input from 'antd/es/input';
 import { css } from '@emotion/react';
 import Button from 'antd/es/button';
+import { useEffect, useRef } from 'react';
 import { LOGIN_REQUEST, LoginRequestAction } from '../redux/actions/user';
 
 const LoginPage = () => {
   const { register, handleSubmit } = useForm();
   const dispatch = useDispatch();
-
+  const nameFieldRef = useRef<Input>(null);
   // const onSubmit = (data: { email: string; password: string }) => {
+  useEffect(() => {
+    nameFieldRef.current?.focus();
+  });
   const onSubmit = (data: { name: string }) => {
     dispatch<LoginRequestAction>({
       type: LOGIN_REQUEST,
@@ -35,7 +39,7 @@ const LoginPage = () => {
             {/* <input type="email" {...register('email', { required: true })} placeholder="Email address" /> */}
             {/* <input type="password" {...register('password', { required: true })} placeholder="password" /> */}
             <div css={css`display: flex;`}>
-              <Input {...register('name', { required: true })} placeholder={'Please enter your name to sign in.'} />
+              <Input {...register('name', { required: true })} ref={nameFieldRef} placeholder={'Please enter your name to sign in.'} />
               <Button css={css`margin-left: 5px;`} htmlType='submit'>Sign In</Button>
             </div>
           </form>

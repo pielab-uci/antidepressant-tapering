@@ -10,6 +10,7 @@ import {
   OralDosage, PrescribedDrug, TableRowData, Converted, Prescription, ValueOf,
 } from '../../types';
 import { Schedule } from '../../components/Schedule/ProjectedSchedule';
+import { drugNameBrandPairs } from './drugs';
 
 export const isCompleteDrugInput = (drug: PrescribedDrug) => {
   const priorDosageSum = drug.priorDosages.reduce((prev, { dosage, quantity }) => {
@@ -610,7 +611,8 @@ export const generateInstructionsForPatientFromSchedule = (schedule: Schedule): 
   console.log(rowsGroupByDrug);
   return Object.entries(rowsGroupByDrug)
     .map(([drug, rows]) => {
-      const messageHeading = rows[0].changeDirection === 'decrease' ? `Reduce ${drug} to\n` : `Take ${drug}\n`;
+      const drugTitle = rows[0].brand.includes('generic') ? `${rows[0].drug.replace(' (generic)', '')} (${drugNameBrandPairs[rows[0].drug]})` : `${rows[0].brand.split(' ')[0]} (${drug})`;
+      const messageHeading = rows[0].changeDirection === 'decrease' ? `Reduce ${drugTitle} to\n` : `Take ${drugTitle}\n`;
 
       return rows
         .filter((row) => row.selected && !row.isPriorDosage)

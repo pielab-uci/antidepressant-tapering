@@ -2,6 +2,14 @@ import {
   CapsuleOrTabletForm, Drug, OralDosage, OralForm,
 } from '../../types';
 
+export const drugNameBrandPairs: { [name: string]: string } = {
+  Fluoxetine: 'Prozac',
+  Citalopram: 'Celexa',
+  Sertraline: 'Zoloft',
+  Paroxetine: 'Paxil',
+  Escitalopram: 'Lexapro',
+};
+
 const drugs: Drug[] = [
   {
     name: 'Fluoxetine',
@@ -9,7 +17,7 @@ const drugs: Drug[] = [
     options:
       [
         {
-          brand: 'generic (Prozac / Fluoxetine)',
+          brand: 'Fluoxetine (generic)',
           forms: [
             {
               // form: 'bottle of oral solution',
@@ -30,7 +38,7 @@ const drugs: Drug[] = [
           ],
         },
         {
-          brand: 'Prozac',
+          brand: 'Prozac (brand)',
           forms: [
             {
               form: 'capsule',
@@ -46,7 +54,7 @@ const drugs: Drug[] = [
     halfLife: '35 hours',
     options: [
       {
-        brand: 'generic (Celexa / Citalopram)',
+        brand: 'Citalopram (generic)',
         forms: [
           {
             // form: 'ml of oral solution',
@@ -69,7 +77,7 @@ const drugs: Drug[] = [
         ],
       },
       {
-        brand: 'Celexa',
+        brand: 'Celexa (brand)',
         forms: [
           {
             form: 'tablet',
@@ -88,7 +96,7 @@ const drugs: Drug[] = [
     halfLife: '24 hours',
     options: [
       {
-        brand: 'generic (Zoloft / Sertraline)',
+        brand: 'Sertraline (generic)',
         forms: [
           {
             form: 'oral solution',
@@ -109,7 +117,7 @@ const drugs: Drug[] = [
         ],
       },
       {
-        brand: 'Zoloft',
+        brand: 'Zoloft (brand)',
         forms: [
           {
             form: 'oral solution',
@@ -134,7 +142,7 @@ const drugs: Drug[] = [
     halfLife: '21 hours',
     options: [
       {
-        brand: 'generic (Brisdelle / Paxil / Paroxetine)',
+        brand: 'Paroxetine (generic)',
         forms: [
           {
             form: 'tablet',
@@ -148,7 +156,7 @@ const drugs: Drug[] = [
         ],
       },
       {
-        brand: 'Paxil',
+        brand: 'Paxil (brand)',
         forms: [
           {
             form: 'oral suspension',
@@ -176,7 +184,7 @@ const drugs: Drug[] = [
     halfLife: '27-32 hours',
     options: [
       {
-        brand: 'generic (Lexapro/ Escitalopram)',
+        brand: 'Escitalopram (generic)',
         forms: [
           {
             // form: 'ml of oral solution',
@@ -198,7 +206,7 @@ const drugs: Drug[] = [
         ],
       },
       {
-        brand: 'Lexapro',
+        brand: 'Lexapro (brand)',
         forms: [
           {
             form: 'tablet',

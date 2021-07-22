@@ -33,6 +33,7 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
   const { dosages } = context[time];
   const dosage = useRef('1mg');
   const [mlDosage, setmlDosage] = useState(dosages['1mg']);
+
   const [dosageDifferenceMessage, dosageSum] = useDosageSumDifferenceMessage(time, priorDosagesQty, upcomingDosagesQty);
   const dispatch = (action: UpcomingDosageChangeAction | PriorDosageChangeAction) => {
     if (isModal) {
@@ -45,8 +46,11 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
   };
 
   const mgOnChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const mg = parseInt(e.target.value, 10);
-    const ml = mg / (chosenDrugForm!.dosages as OralDosage).rate.mg * (chosenDrugForm!.dosages as OralDosage).rate.ml;
+    const { rate } = chosenDrugForm!.dosages as OralDosage;
+    const input = parseInt(e.target.value, 10);
+    const ml = input / rate.mg * rate.ml;
+    const mg = ml / rate.ml * rate.mg;
+
     const actionData = { id, dosage: { dosage: dosage.current, quantity: mg } };
 
     if (actionData.dosage.quantity >= 0) {
@@ -62,8 +66,9 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
 
   const mlOnChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const ml = parseInt(e.target.value, 10);
+    const { rate } = chosenDrugForm!.dosages as OralDosage;
     setmlDosage(ml);
-    const mg = ml / (chosenDrugForm!.dosages as OralDosage).rate.ml * (chosenDrugForm!.dosages as OralDosage).rate.mg;
+    const mg = ml / rate.ml * rate.mg;
     const actionData = { id, dosage: { dosage: dosage.current, quantity: mg } };
 
     if (actionData.dosage.quantity >= 0) {
@@ -92,14 +97,13 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
             justify-content: space-between;
             margin-left: 64px;`}>
             <div>
-              <Input type='number'
+               <Input type='number'
                      value={dosages['1mg']}
                      onChange={mgOnChange}
                      readOnly={!editable}
                      min={0}
-                     step={(chosenDrugForm!.dosages as OralDosage).rate.mg}
                      style={inputStyle}/> mg =
-              <Input type='number'
+               <Input type='number'
                      value={mlDosage}
                      onChange={mlOnChange}
                      readOnly={!editable}

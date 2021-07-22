@@ -107,6 +107,12 @@ const calcProjectedDosages = (drug: Converted, prescribedDosage: number, length:
       } else {
         res.push(drug.targetDosage!);
       }
+      if (drug.oralDosageInfo) {
+        const { rate } = drug.oralDosageInfo;
+        const mlRounded = Math.round((res[i + 1] / rate.mg) * rate.ml);
+        const mg = (mlRounded / rate.ml) * rate.mg;
+        res[i + 1] = mg;
+      }
     });
   } else {
     // decreasing
@@ -133,6 +139,12 @@ const calcProjectedDosages = (drug: Converted, prescribedDosage: number, length:
         } else {
           res.push(ceiling);
         }
+      }
+      if (drug.oralDosageInfo) {
+        const { rate } = drug.oralDosageInfo;
+        const mlRounded = Math.round((res[i + 1] / rate.mg) * rate.ml);
+        const mg = (mlRounded / rate.ml) * rate.mg;
+        res[i + 1] = mg;
       }
     });
   }
@@ -597,6 +609,19 @@ export const chartDataConverter = (schedule: Schedule): ScheduleChartData => {
   });
 
   return scheduleChartData;
+};
+
+const counts = {
+  1: 'one',
+  2: 'two',
+  3: 'three',
+  4: 'four',
+  5: 'five',
+  6: 'six',
+  7: 'seven',
+  8: 'eight',
+  9: 'nine',
+  10: 'ten',
 };
 
 const generateMessageFromRowByDrugForm = (rows: TableRowData[]): string => {

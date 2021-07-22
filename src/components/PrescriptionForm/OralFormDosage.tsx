@@ -48,8 +48,8 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
   const mgOnChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { rate } = chosenDrugForm!.dosages as OralDosage;
     const input = parseInt(e.target.value, 10);
-    const ml = input / rate.mg * rate.ml;
-    const mg = ml / rate.ml * rate.mg;
+    const ml = (input / rate.mg) * rate.ml;
+    const mg = (ml / rate.ml) * rate.mg;
 
     const actionData = { id, dosage: { dosage: dosage.current, quantity: mg } };
 
@@ -68,7 +68,7 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
     const ml = parseInt(e.target.value, 10);
     const { rate } = chosenDrugForm!.dosages as OralDosage;
     setmlDosage(ml);
-    const mg = ml / rate.ml * rate.mg;
+    const mg = (ml / rate.ml) * rate.mg;
     const actionData = { id, dosage: { dosage: dosage.current, quantity: mg } };
 
     if (actionData.dosage.quantity >= 0) {

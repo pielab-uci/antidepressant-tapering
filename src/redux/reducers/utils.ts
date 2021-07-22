@@ -638,14 +638,25 @@ const generateMessageFromRowByDrugForm = (rows: TableRowData[]): string => {
       const messageLine = Object.entries(rowPrescription.data.dosage)
         .reduce((prev, [dosage, qty], i, arr) => {
           // const dosageToPrint = !rowPrescription.data.oralDosageInfo ? dosage : rowPrescription
-          const quantity = qty === 0.5 ? '1/2' : qty;
+          if (!row.oralDosageInfo) {
+            const quantity = qty === 0.5 ? '1/2' : qty;
+            if (i === arr.length - 1) {
+              if (j === rowArr.length - 1) {
+                return `${prev} ${dosage} ${rowPrescription.data.form}s, ${quantity} ${rowPrescription.data.form}(s) by mouth daily for ${rowPrescription.data.intervalCount} ${rowPrescription.data.intervalUnit!.toLowerCase().replace('s', '(s)')}, then STOP.\n`;
+              }
+              return `${prev} ${dosage} ${rowPrescription.data.form}s, ${quantity} ${rowPrescription.data.form}(s) by mouth daily for ${rowPrescription.data.intervalCount} ${rowPrescription.data.intervalUnit!.toLowerCase().replace('s', '(s)')} then,\n`;
+            }
+            return `${prev} ${dosage} ${rowPrescription.data.form}s, ${quantity} ${rowPrescription.data.form}(s) +`;
+          }
+          const { rate } = row.oralDosageInfo;
+          const formCapitalized = rowPrescription.data.form.charAt(0).toUpperCase() + rowPrescription.data.form.slice(1);
           if (i === arr.length - 1) {
             if (j === rowArr.length - 1) {
-              return `${prev} ${dosage} ${rowPrescription.data.form}s, ${quantity} ${rowPrescription.data.form}(s) by mouth daily for ${rowPrescription.data.intervalCount} ${rowPrescription.data.intervalUnit!.toLowerCase().replace('s', '(s)')}, then STOP.\n`;
+              return `${prev} ${formCapitalized}, ${(qty / rate.mg) * rate.ml}ml ${rowPrescription.data.form} by mouth daily for ${rowPrescription.data.intervalCount} ${rowPrescription.data.intervalUnit!.toLowerCase().replace('s', '(s)')}, then STOP.\n`;
             }
-            return `${prev} ${dosage} ${rowPrescription.data.form}s, ${quantity} ${rowPrescription.data.form}(s) by mouth daily for ${rowPrescription.data.intervalCount} ${rowPrescription.data.intervalUnit!.toLowerCase().replace('s', '(s)')} then,\n`;
+            return `${prev} ${formCapitalized}, ${(qty / rate.mg) * rate.ml}ml ${rowPrescription.data.form} by mouth daily for ${rowPrescription.data.intervalCount} ${rowPrescription.data.intervalUnit?.toLowerCase().replace('s', '(s)')} then,\n`;
           }
-          return `${prev} ${dosage} ${rowPrescription.data.form}s, ${quantity} ${rowPrescription.data.form}(s) +`;
+          return `${prev} ${formCapitalized}, ${(qty / rate.mg) * rate.ml}ml ${rowPrescription.data.form} +`;
         }, '');
       return `${message}\t${messageLine}`;
     }, messageHeading);

@@ -92,9 +92,18 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
             justify-content: space-between;
             margin-left: 64px;`}>
             <div>
-              <Input type='number' value={dosages['1mg']} onChange={mgOnChange} readOnly={!editable} min={0}
+              <Input type='number'
+                     value={dosages['1mg']}
+                     onChange={mgOnChange}
+                     readOnly={!editable}
+                     min={0}
+                     step={(chosenDrugForm!.dosages as OralDosage).rate.mg}
                      style={inputStyle}/> mg =
-              <Input type='number' value={mlDosage} onChange={mlOnChange} readOnly={!editable} min={0}
+              <Input type='number'
+                     value={mlDosage}
+                     onChange={mlOnChange}
+                     readOnly={!editable}
+                     min={0}
                      style={inputStyle}/> ml
             </div>
           </div>

@@ -270,7 +270,10 @@ export const prescription: PrescriptionFunction = (
   const data = {
     form,
     unit: oralDosageInfo !== null ? 'ml' : 'mg',
-    dosage: dosageQty,
+    dosage: Object.entries(dosageQty).filter(([dosage, qty]) => qty !== 0).reduce((prev, [dosage, qty]) => {
+      prev[dosage] = qty;
+      return prev;
+    }, {} as { [dosage: string]: number }),
     oralDosageInfo,
     intervalCount,
     intervalUnit,
@@ -482,6 +485,10 @@ export const sort = (drugNames: string[], rows: TableRowData[]): TableRowData[] 
       .findIndex((drug) => drug === a.drug) < drugNames.findIndex((drug) => drug === b.drug);
 
     if (compareDrugNames) {
+      return -1;
+    }
+
+    if (a.isPriorDosage && !b.isPriorDosage) {
       return -1;
     }
     return 1;

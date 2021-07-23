@@ -462,8 +462,9 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
 
         // Delete related rows
         draft.projectedSchedule.data = draft.projectedSchedule.data
-          .filter((row) => row.brand === action.data.clickedRow.brand
-            && row.rowIndexInPrescribedDrug < action.data.clickedRow.rowIndexInPrescribedDrug);
+          .filter((row) => (row.brand !== action.data.clickedRow.brand)
+            || (row.brand === action.data.clickedRow.brand
+            && row.rowIndexInPrescribedDrug < action.data.clickedRow.rowIndexInPrescribedDrug));
 
         const converted: Converted[] = convert([action.data.prescribedDrug]);
 
@@ -483,6 +484,9 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
 
         draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
 
+        draft.tableSelectedRows = [];
+        const notes = generateInstructionsFromSchedule(draft.projectedSchedule, 'both');
+        [draft.instructionsForPatient, draft.instructionsForPharmacy] = [notes.patient!, notes.pharmacy!];
         break;
       }
 

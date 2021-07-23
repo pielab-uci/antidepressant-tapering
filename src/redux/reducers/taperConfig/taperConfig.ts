@@ -73,6 +73,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case INIT_NEW_TAPER_CONFIG:
         draft.clinicianId = action.data.clinicianId;
         draft.patientId = action.data.patientId;
+        draft.chosenDrugs = [];
         draft.taperConfigCreatedAt = null;
         draft.lastPrescriptionFormId += 1;
         draft.prescribedDrugs = [emptyPrescribedDrug(draft.lastPrescriptionFormId)];
@@ -84,6 +85,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.currentTaperConfigId = null;
         draft.taperConfigCreatedAt = null;
         draft.scheduleChartData = [];
+        draft.chosenDrugs = [];
         draft.isInputComplete = false;
         // draft.prescribedDrugs = draft.prescribedDrugs!.filter((drug) => isCompleteDrugInput(drug));
         draft.prescribedDrugs = [];

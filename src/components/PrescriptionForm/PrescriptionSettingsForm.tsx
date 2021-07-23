@@ -4,13 +4,16 @@ import Select from 'antd/es/select';
 import Tooltip from 'antd/es/tooltip';
 import { GrCircleInformation } from 'react-icons/gr';
 import Checkbox, { CheckboxChangeEvent } from 'antd/es/checkbox';
-import { FC, useEffect, useState } from 'react';
+import {
+  FC, useContext, useEffect, useState,
+} from 'react';
 import { useSelector } from 'react-redux';
 import {
   CapsuleOrTabletForm, DrugForm, DrugOption, OralForm, PrescribedDrug,
 } from '../../types';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import { RootState } from '../../redux/reducers';
+import { PrescriptionFormContext } from './PrescriptionForm';
 
 const { OptGroup, Option } = Select;
 
@@ -33,7 +36,10 @@ const PrescriptionSettingsForm: FC<Props> = ({
   allowSplittingUnscoredTablet,
   toggleAllowSplittingUnscoredTabletCheckbox,
 }) => {
-  const { drugs, chosenDrugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
+  const {
+    drugs, chosenDrugs, prescribedDrugs,
+  } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
+  const { id } = useContext(PrescriptionFormContext);
   const [drugFormOptions, setDrugFormOptions] = useState<DrugForm[] | null>(null);
 
   useEffect(() => {
@@ -59,12 +65,22 @@ const PrescriptionSettingsForm: FC<Props> = ({
             <label>Brand:</label>
             <Select showSearch value={chosenBrand?.brand} onChange={onBrandChange} css={css`width: 200px`}>
               {drugs?.map(
-                (drug) => (
-                  <OptGroup key={`${drug.name}_group`} label={drug.name}>
-                    {drug.options.map(
-                      (option) => <Option key={option.brand} value={option.brand} disabled={chosenDrugs.includes(drug.name)}>{option.brand}</Option>,
-                    )}
-                  </OptGroup>),
+                (drug) => {
+                  const anotherFormId = Object.keys(chosenDrugs).find((k) => parseInt(k, 10) !== id);
+                  // console.group('Select...');
+                  // console.log('id: ', id);
+                  // console.log('anotherFormId: ', anotherFormId);
+                  // console.groupEnd();
+                  return (<OptGroup key={`${drug.name}_group`} label={drug.name}>
+                      {drug.options.map(
+                        (option) => {
+                          const disabled = anotherFormId !== undefined && drug.name === chosenDrugs[parseInt(anotherFormId, 10)].drug;
+                          return <Option key={option.brand} value={option.brand}
+                                         disabled={disabled}>{option.brand}</Option>;
+                        },
+                      )}
+                    </OptGroup>);
+                },
               )}
             </Select>
           </div>

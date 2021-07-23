@@ -26,7 +26,7 @@ export interface TaperConfigState {
   clinicianId: number;
   patientId: number;
   drugs: Drug[];
-  chosenDrugs: string[];
+  chosenDrugs: { [prescribedDrugId: number]: { drug: string, brand: string } };
   taperConfigs: TaperingConfiguration[];
   currentTaperConfigId: number | null;
   taperConfigCreatedAt: Date | null;

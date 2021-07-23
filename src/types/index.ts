@@ -36,7 +36,6 @@ export interface TaperingConfiguration {
 
 export interface Drug {
   name: string;
-  selected: boolean;
   halfLife: string;
   options: DrugOption[]
 }

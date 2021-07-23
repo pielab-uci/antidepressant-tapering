@@ -125,11 +125,11 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         if (action.data) {
           draft.prescriptionFormIds = draft.prescriptionFormIds.filter((id) => id !== action.data);
           draft.prescribedDrugs = draft.prescribedDrugs!.filter((drug) => drug.id !== action.data);
-          draft.chosenDrugs = draft.prescribedDrugs.map((drug) => drug.name);
+          delete draft.chosenDrugs[action.data];
         } else {
           draft.prescriptionFormIds.pop();
           draft.prescribedDrugs!.pop();
-          draft.chosenDrugs = draft.prescribedDrugs!.map((drug) => drug.name);
+          // draft.chosenDrugs = draft.prescribedDrugs!.map((drug) => drug.name);
         }
         draft.isSaved = false;
         draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
@@ -218,14 +218,31 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         const correspondingDrugData = draft.drugs.find((d) => d.options.find((option) => option.brand === action.data.brand))!;
         const previousDrugName = drug.name;
-        draft.chosenDrugs = draft.chosenDrugs.filter((drugName) => drugName !== previousDrugName);
-        draft.chosenDrugs.push(correspondingDrugData.name);
-        draft.drugs = draft.drugs.map((drugData) => {
-          return {
-            ...drugData,
-            selected: draft.chosenDrugs.includes(correspondingDrugData.name),
-          };
-        });
+
+        draft.chosenDrugs[action.data.id] = {
+          drug: correspondingDrugData.name,
+          brand: action.data.brand,
+        };
+
+        // draft.chosenDrugs = draft.chosenDrugs.filter((drugName) => drugName !== previousDrugName);
+        // draft.chosenDrugs.push(correspondingDrugData.name);
+        //
+        // draft.drugs = draft.drugs.map((drugData) => {
+        //   return {
+        //     ...drugData,
+        //     selected: draft.chosenDrugs.includes(correspondingDrugData.name),
+        //   };
+        // });
+        //
+        // if (draft.prescribedDrugs!.length !== 1) {
+        //   draft.drugs = draft.drugs.map(drugData => {
+        //     return {
+        //       ...drugData,
+        //
+        //     }
+        //   })
+        //
+        // }
         drug.name = correspondingDrugData.name;
         drug.halfLife = correspondingDrugData.halfLife;
         // drug.name = draft.drugs.find(

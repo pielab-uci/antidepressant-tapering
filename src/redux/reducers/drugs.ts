@@ -14,7 +14,6 @@ const drugs: Drug[] = [
   {
     name: 'Fluoxetine',
     halfLife: 'Fluoxetine: 4-6 days\nNorfluoxetine (active metabolite): 4-16 days',
-    selected: false,
     options:
       [
         {
@@ -53,7 +52,6 @@ const drugs: Drug[] = [
   {
     name: 'Citalopram',
     halfLife: '35 hours',
-    selected: false,
     options: [
       {
         brand: 'Citalopram (generic)',
@@ -96,7 +94,6 @@ const drugs: Drug[] = [
   {
     name: 'Sertraline',
     halfLife: '24 hours',
-    selected: false,
     options: [
       {
         brand: 'Sertraline (generic)',
@@ -143,7 +140,6 @@ const drugs: Drug[] = [
   }, {
     name: 'Paroxetine',
     halfLife: '21 hours',
-    selected: false,
     options: [
       {
         brand: 'Paroxetine (generic)',
@@ -186,7 +182,6 @@ const drugs: Drug[] = [
   {
     name: 'Escitalopram',
     halfLife: '27-32 hours',
-    selected: false,
     options: [
       {
         brand: 'Escitalopram (generic)',

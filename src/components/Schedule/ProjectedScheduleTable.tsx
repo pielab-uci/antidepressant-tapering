@@ -45,6 +45,7 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
   const [gridColumnApi, setGridColumnApi] = useState<ColumnApi | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [doubleClickedRowAndBefore, setDoubleClickedRowAndBefore] = useState<[TableRowData, TableRowData] | null>(null);
+  const [getSelectedRow, setGetSelectedRow] = useState(true);
 
   const onGridReady = (params: GridReadyEvent) => {
     console.log('onGridReady');
@@ -156,10 +157,44 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
   });
 
   const onRowSelected = (e: RowSelectedEvent) => {
-    console.log(e);
+    /*
+    console.group('onRowSelected: ', e);
+    const rowIdx = e.rowIndex!;
+
+    // dispatch<ScheduleRowSelectedAction>({
+    //   type: SCHEDULE_ROW_SELECTED,
+    //   data: { rowIdx, selected: e.node.isSelected()! },
+    // });
+    console.groupEnd();
+     */
   };
 
   const onSelectionChanged = (e: SelectionChangedEvent) => {
+    /*
+    console.log('onSelectionChanged: ', e);
+    // const rowIdx =
+    // dispatch<ScheduleRowSelectedAction>({ type: SCHEDULE_ROW_SELECTED, data: selectedNodes });
+
+    const selectedNodes: number[] = e.api.getSelectedNodes().map((row) => row.rowIndex) as number[];
+    console.log('selectedNodes: ', selectedNodes);
+
+    let maxConsecutiveIdx = selectedNodes[0];
+    for (const [i, rowIdx] of selectedNodes.entries()) {
+      if (i !== 0) {
+        if (rowIdx === selectedNodes[i - 1] + 1) {
+          maxConsecutiveIdx = rowIdx;
+        } else {
+          break;
+        }
+      }
+    }
+    console.log('maxConsecutiveIdx: ', maxConsecutiveIdx);
+    dispatch<ScheduleRowSelectedAction>({
+      type: SCHEDULE_ROW_SELECTED,
+      data: maxConsecutiveIdx,
+    });
+     */
+
     const selectedNodes = e.api.getSelectedNodes().map((row) => row.rowIndex);
     dispatch<ScheduleRowSelectedAction>({ type: SCHEDULE_ROW_SELECTED, data: selectedNodes });
   };

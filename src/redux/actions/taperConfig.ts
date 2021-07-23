@@ -91,6 +91,11 @@ export interface ScheduleRowSelectedAction {
   data: (number | null)[];
 }
 
+// export interface ScheduleRowSelectedAction {
+//   type: typeof SCHEDULE_ROW_SELECTED,
+//   data: { rowIdx: number, selected: boolean }
+// }
+
 export const FETCH_TAPER_CONFIG_REQUEST = 'FETCH_TAPER_CONFIG_REQUEST' as const;
 export const FETCH_TAPER_CONFIG_SUCCESS = 'FETCH_TAPER_CONFIG_SUCCESS' as const;
 export const FETCH_TAPER_CONFIG_FAILURE = 'FETCH_TAPER_CONFIG_FAILURE' as const;

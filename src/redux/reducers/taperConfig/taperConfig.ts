@@ -160,6 +160,31 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.projectedSchedule.data.forEach((row, i) => {
           row.selected = draft.tableSelectedRows.includes(i);
         });
+
+        /*
+        // const maxIdx = action.data.selected ? action.data.rowIdx : action.data.rowIdx - 1;
+        // draft.tableSelectedRows = [];
+        // draft.projectedSchedule.data.forEach((row) => {
+        //   row.selected = false;
+        // });
+        // draft.projectedSchedule.data.forEach((row, i) => {
+        //   if (i <= maxIdx && !row.isPriorDosage) {
+        //     row.selected = true;
+        //     draft.tableSelectedRows.push(i);
+        //   }
+        // });
+
+        draft.tableSelectedRows = [];
+        draft.projectedSchedule.data.forEach((row, i) => {
+          if (i <= action.data && !row.isPriorDosage) {
+            row.selected = true;
+            draft.tableSelectedRows.push(i);
+          } else {
+            row.selected = false;
+          }
+        });
+         */
+
         const instructions: { patient: string | null, pharmacy: string | null } = generateInstructionsFromSchedule(draft.projectedSchedule, 'both');
         draft.instructionsForPatient = instructions.patient!;
         draft.instructionsForPharmacy = instructions.pharmacy!;

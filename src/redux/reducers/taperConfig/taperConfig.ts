@@ -123,9 +123,11 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         if (action.data) {
           draft.prescriptionFormIds = draft.prescriptionFormIds.filter((id) => id !== action.data);
           draft.prescribedDrugs = draft.prescribedDrugs!.filter((drug) => drug.id !== action.data);
+          draft.chosenDrugs = draft.prescribedDrugs.map((drug) => drug.name);
         } else {
           draft.prescriptionFormIds.pop();
           draft.prescribedDrugs!.pop();
+          draft.chosenDrugs = draft.prescribedDrugs!.map((drug) => drug.name);
         }
         draft.isSaved = false;
         draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
@@ -213,8 +215,15 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case CHOOSE_BRAND: {
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         const correspondingDrugData = draft.drugs.find((d) => d.options.find((option) => option.brand === action.data.brand))!;
-        // const correspondingBrand = draft.drugs.flatMap((drug) => drug.options).find((option) => option.brand === action.data.brand)!;
-        // correspondingBrand.selected = true;
+        const previousDrugName = drug.name;
+        draft.chosenDrugs = draft.chosenDrugs.filter((drugName) => drugName !== previousDrugName);
+        draft.chosenDrugs.push(correspondingDrugData.name);
+        draft.drugs = draft.drugs.map((drugData) => {
+          return {
+            ...drugData,
+            selected: draft.chosenDrugs.includes(correspondingDrugData.name),
+          };
+        });
         drug.name = correspondingDrugData.name;
         drug.halfLife = correspondingDrugData.halfLife;
         // drug.name = draft.drugs.find(

@@ -33,7 +33,7 @@ const PrescriptionSettingsForm: FC<Props> = ({
   allowSplittingUnscoredTablet,
   toggleAllowSplittingUnscoredTabletCheckbox,
 }) => {
-  const { drugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
+  const { drugs, chosenDrugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const [drugFormOptions, setDrugFormOptions] = useState<DrugForm[] | null>(null);
 
   useEffect(() => {
@@ -62,7 +62,7 @@ const PrescriptionSettingsForm: FC<Props> = ({
                 (drug) => (
                   <OptGroup key={`${drug.name}_group`} label={drug.name}>
                     {drug.options.map(
-                      (option) => <Option key={option.brand} value={option.brand}>{option.brand}</Option>,
+                      (option) => <Option key={option.brand} value={option.brand} disabled={chosenDrugs.includes(drug.name)}>{option.brand}</Option>,
                     )}
                   </OptGroup>),
               )}

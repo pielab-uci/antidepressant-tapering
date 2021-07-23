@@ -44,8 +44,7 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
   const [gridApi, setGridApi] = useState<GridApi | null>(null);
   const [gridColumnApi, setGridColumnApi] = useState<ColumnApi | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [doubleClickedRowAndBefore, setDoubleClickedRowAndBefore] = useState<[TableRowData, TableRowData] | null>(null);
-  const [getSelectedRow, setGetSelectedRow] = useState(true);
+  const [clickedRowAndBefore, setClickedRowAndBefore] = useState<[TableRowData, TableRowData] | null>(null);
 
   const onGridReady = (params: GridReadyEvent) => {
     console.log('onGridReady');
@@ -221,9 +220,7 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
     console.log('event: ', event);
     // if (event.rowIndex !== 0) {
     if (event.data.rowIndexInPrescribedDrug !== -1) {
-      // const prevRow: TableRowData = event.api.getRowNode(`${parseFloat(event.node.id!) - 1}`)!.data;
       console.log('setDoubleClickedRowAndBefore');
-      // TODO: this prevRow must be the previous row with the same prescribed with the double clicked row.
       const prevAndDoubleClickedRow: [TableRowData, TableRowData] = [] as unknown as [TableRowData, TableRowData];
 
       event.api.forEachNode((row, i) => {
@@ -235,8 +232,9 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
         return null;
       });
       console.log('prevAndDoubleClickedRow: ', prevAndDoubleClickedRow);
-      setDoubleClickedRowAndBefore(prevAndDoubleClickedRow);
-      console.log('doubleClickedRowAndBefore: ', doubleClickedRowAndBefore);
+      setClickedRowAndBefore(prevAndDoubleClickedRow);
+      // not changed yet..
+      console.log('doubleClickedRowAndBefore: ', clickedRowAndBefore);
       setShowModal(true);
       // dispatch({
       //   type: OPEN_MODAL_FOR_EDITING_TABLE_ROW,
@@ -310,10 +308,10 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
           suppressRowClickSelection={true}
           skipHeaderOnAutoSize={true}
         />
-        {doubleClickedRowAndBefore
+        {clickedRowAndBefore
         && showModal
         && <ProjectedScheduleTableRowEditingModal
-          doubleClickedRowAndBefore={doubleClickedRowAndBefore}
+          clickedRowAndBefore={clickedRowAndBefore}
           visible={showModal} onCancel={handleModalCancel}
           onOk={handleModalOk}/>}
       </div>

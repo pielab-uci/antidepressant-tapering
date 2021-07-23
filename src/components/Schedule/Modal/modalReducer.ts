@@ -12,25 +12,30 @@ import { VALIDATE_INPUT_COMPLETION } from '../../../redux/actions/taperConfig';
 import { TaperConfigActions } from '../../../redux/reducers/taperConfig';
 import { validateCompleteInputs } from '../../../redux/reducers/utils';
 
-export const POPULATE_PRESCRIBED_DRUG_FROM_DOUBLE_CLICKED_ROW_AND_BEFORE = 'POPULATE_PRESCRIBED_DRUG_FROM_DOUBLE_CLICKED_ROW_AND_BEFORE';
-export interface PopulatePrescribedDrug {
-  type: typeof POPULATE_PRESCRIBED_DRUG_FROM_DOUBLE_CLICKED_ROW_AND_BEFORE;
-  data: { prevRow: TableRowData; doubleClickedRow: TableRowData }
+export const INIT_MODAL = 'INIT_MODAL';
+
+export interface InitModalAction {
+  type: typeof INIT_MODAL;
+  data: { prevRow: TableRowData; clickedRow: TableRowData, prescribedDrugs: PrescribedDrug[] | null }
 }
 
 export type ModalActions =
   | TaperConfigActions
-  | PopulatePrescribedDrug;
+  | InitModalAction;
 
 export interface RowEditingModalState {
   drugs: Drug[];
   prescribedDrug: PrescribedDrug | null;
+  initialPrescribedDrug: PrescribedDrug | null;
+  prescribedDrugs: PrescribedDrug[] | null;
   isModalInputComplete: boolean;
 }
 
 export const initialState: RowEditingModalState = {
   drugs,
+  initialPrescribedDrug: null,
   prescribedDrug: null,
+  prescribedDrugs: null,
   isModalInputComplete: true,
 };
 
@@ -55,34 +60,28 @@ const reducer = (state: RowEditingModalState = initialState, action: ModalAction
   console.log('modalAction: ', action);
   return produce(state, (draft) => {
     switch (action.type) {
-      case POPULATE_PRESCRIBED_DRUG_FROM_DOUBLE_CLICKED_ROW_AND_BEFORE: {
-        const { prevRow } = action.data;
-        const { doubleClickedRow } = action.data;
-
-        const priorDosageSum = (action.data.prevRow.prescription
-        && Object.entries(action.data.prevRow.prescription.data.dosage)
-          .reduce((prev, [dosage, qty]) => prev + parseFloat(dosage) * qty, 0)) || 0;
-
-        const upcomingDosageSum = (action.data.doubleClickedRow.prescription
-        && Object.entries(action.data.doubleClickedRow.prescription.data.dosage)
-          .reduce((prev, [dosage, qty]) => prev + parseFloat(dosage) * qty, 0)) || 0;
+      case INIT_MODAL: {
+        const { prevRow, clickedRow, prescribedDrugs } = action.data;
 
         draft.prescribedDrug = {
-          ...doubleClickedRow.prescribedDrug,
+          ...clickedRow.prescribedDrug,
           isModal: true,
           applyInSchedule: false,
           // id..?
           allowChangePriorDosage: false,
-          intervalStartDate: doubleClickedRow.startDate!,
-          intervalEndDate: doubleClickedRow.endDate!,
-          intervalUnit: doubleClickedRow.intervalUnit!,
-          intervalCount: doubleClickedRow.intervalCount,
+          intervalStartDate: clickedRow.startDate!,
+          intervalEndDate: clickedRow.endDate!,
+          intervalUnit: clickedRow.intervalUnit!,
+          intervalCount: clickedRow.intervalCount,
           priorDosages: prescriptionToDosages(prevRow),
-          upcomingDosages: prescriptionToDosages(doubleClickedRow),
-          priorDosageSum,
-          upcomingDosageSum,
-          targetDosage: upcomingDosageSum,
+          upcomingDosages: prescriptionToDosages(clickedRow),
+          priorDosageSum: prevRow.dosage,
+          upcomingDosageSum: clickedRow.dosage,
+          targetDosage: prescribedDrugs?.find((drug) => drug.brand === clickedRow.brand)?.targetDosage
+            || (clickedRow.changeDirection === 'decrease' ? 0 : clickedRow.dosage),
         };
+
+        draft.initialPrescribedDrug = { ...draft.prescribedDrug };
         break;
       }
 

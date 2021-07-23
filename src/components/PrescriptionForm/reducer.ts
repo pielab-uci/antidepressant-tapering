@@ -76,13 +76,14 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
             return prev;
           }, {},
         );
+        draft.priorDosageSum = action.data.priorDosageSum;
         draft.upcomingDosagesQty = action.data.upcomingDosages.reduce(
           (prev: { [dosage: string]: number }, nextDosage) => {
             prev[nextDosage.dosage] = nextDosage.quantity;
             return prev;
           }, {},
         );
-
+        draft.upcomingDosageSum = action.data.upcomingDosageSum;
         if (isCapsuleOrTablet(draft.chosenDrugForm)) {
           (draft.dosageOptions as CapsuleOrTabletDosage[]).forEach((dosage) => {
             if (!Object.keys(draft.priorDosagesQty).includes(dosage.dosage)) {
@@ -95,14 +96,14 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
           });
           draft.oralDosageInfo = null;
         }
-
-        draft.priorDosageSum = Object.entries(draft.priorDosagesQty).reduce((prev, [dosage, qty]) => {
-          return prev + parseFloat(dosage) * qty;
-        }, 0);
-
-        draft.upcomingDosageSum = Object.entries(draft.upcomingDosagesQty).reduce((prev, [dosage, qty]) => {
-          return prev + parseFloat(dosage) * qty;
-        }, 0);
+        //
+        // draft.priorDosageSum = Object.entries(draft.priorDosagesQty).reduce((prev, [dosage, qty]) => {
+        //   return prev + parseFloat(dosage) * qty;
+        // }, 0);
+        //
+        // draft.upcomingDosageSum = Object.entries(draft.upcomingDosagesQty).reduce((prev, [dosage, qty]) => {
+        //   return prev + parseFloat(dosage) * qty;
+        // }, 0);
 
         draft.intervalStartDate = action.data.intervalStartDate;
         draft.intervalEndDate = action.data.intervalEndDate;

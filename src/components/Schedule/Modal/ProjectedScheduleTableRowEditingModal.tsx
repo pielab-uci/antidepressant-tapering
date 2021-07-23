@@ -11,34 +11,35 @@ import PrescriptionForm from '../../PrescriptionForm/PrescriptionForm';
 import { EDIT_PROJECTED_SCHEDULE_FROM_MODAL, REMOVE_DRUG_FORM } from '../../../redux/actions/taperConfig';
 import reducer, {
   initialState,
-  POPULATE_PRESCRIBED_DRUG_FROM_DOUBLE_CLICKED_ROW_AND_BEFORE,
+  INIT_MODAL,
   RowEditingModalReducer,
   RowEditingModalState,
 } from './modalReducer';
 
 interface Props {
   visible: boolean;
-  doubleClickedRowAndBefore: [TableRowData, TableRowData];
+  clickedRowAndBefore: [TableRowData, TableRowData];
   onCancel: (e: React.MouseEvent<HTMLElement>) => void;
   onOk: (e: React.MouseEvent<HTMLElement>) => void;
 }
 
 const ProjectedScheduleTableRowEditingModal: FC<Props> = ({
-  doubleClickedRowAndBefore,
+  clickedRowAndBefore,
   visible, onCancel, onOk,
 }) => {
   // const [drugFromRow, setDrugFromRow] = useState<PrescribedDrug | null>(null);
   const [state, modalDispatch] = useReducer<RowEditingModalReducer, RowEditingModalState>(reducer, initialState, (init) => initialState, 'ProjectedScheduleTableRowEditingModal');
+  const { prescribedDrugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   const { prescribedDrug } = state;
   const dispatch = useDispatch();
   // const [prescribedDrugId, setPrescribedDrugId] = useState<number>(-1);
 
   useEffect(() => {
     console.group('ProjectedScheduleTableRowEditingModal');
-    console.log(doubleClickedRowAndBefore);
+    console.log(clickedRowAndBefore);
     modalDispatch({
-      type: POPULATE_PRESCRIBED_DRUG_FROM_DOUBLE_CLICKED_ROW_AND_BEFORE,
-      data: { prevRow: doubleClickedRowAndBefore[0], doubleClickedRow: doubleClickedRowAndBefore[1] },
+      type: INIT_MODAL,
+      data: { prevRow: clickedRowAndBefore[0], clickedRow: clickedRowAndBefore[1], prescribedDrugs },
     });
     console.groupEnd();
   }, []);
@@ -48,7 +49,7 @@ const ProjectedScheduleTableRowEditingModal: FC<Props> = ({
     onOk(e);
     dispatch({
       type: EDIT_PROJECTED_SCHEDULE_FROM_MODAL,
-      data: { prevRow: doubleClickedRowAndBefore[0], doubleClickedRow: doubleClickedRowAndBefore[1], prescribedDrug },
+      data: { prevRow: clickedRowAndBefore[0], doubleClickedRow: clickedRowAndBefore[1], prescribedDrug },
     });
   };
 

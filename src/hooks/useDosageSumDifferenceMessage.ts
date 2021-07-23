@@ -1,19 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 
-type Type = (time: 'Prior'|'Upcoming', priorDosageQty: { [dosage: string]: number }, upcomingDosageQty: { [dosage: string]: number }) => [(string|null), number];
+type Type = (time: 'Prior'|'Upcoming', priorDosageSum: number, upcomingDosageSum: number) => string | null;
 
-const useDosageSumDifferenceMessage: Type = (time, priorDosageQty, upcomingDosageQty) => {
+const useDosageSumDifferenceMessage: Type = (time, priorDosageSum, upcomingDosageSum) => {
   const [dosageDifferenceMessage, setDosageDifferenceMessage] = useState<string|null>(null);
 
-  const calculateDosageSum = useCallback((dosages: { [key: string]: number }): number => Object
-    .entries(dosages)
-    .reduce((acc, [dosage, count]) => acc + parseFloat(dosage) * count, 0), []);
-
-  const [dosageSum, setDosageSum] = useState(0);
-
   useEffect(() => {
-    const priorDosageSum = calculateDosageSum(priorDosageQty);
-    const upcomingDosageSum = calculateDosageSum(upcomingDosageQty);
     if (time === 'Upcoming') {
       if (priorDosageSum === 0) {
         setDosageDifferenceMessage(null);
@@ -26,13 +18,10 @@ const useDosageSumDifferenceMessage: Type = (time, priorDosageQty, upcomingDosag
       } else {
         setDosageDifferenceMessage(null);
       }
-      setDosageSum(upcomingDosageSum);
-    } else {
-      setDosageSum(priorDosageSum);
     }
-  }, [priorDosageQty, upcomingDosageQty]);
+  }, [priorDosageSum, upcomingDosageSum]);
 
-  return [dosageDifferenceMessage, dosageSum];
+  return dosageDifferenceMessage;
 };
 
 export default useDosageSumDifferenceMessage;

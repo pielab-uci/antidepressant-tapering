@@ -27,14 +27,15 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
   const context = useContext(PrescriptionFormContext);
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
   const {
-    formActionDispatch, id, chosenDrugForm, priorDosagesQty, upcomingDosagesQty,
+    formActionDispatch, id, chosenDrugForm, upcomingDosagesQty,
+    priorDosageSum, upcomingDosageSum,
     intervalDurationDays, oralDosageInfo, modal: { isModal, modalDispatch },
   } = context;
   const { dosages } = context[time];
   const dosage = useRef('1mg');
   const [mlDosage, setmlDosage] = useState(dosages['1mg']);
 
-  const [dosageDifferenceMessage, dosageSum] = useDosageSumDifferenceMessage(time, priorDosagesQty, upcomingDosagesQty);
+  const dosageDifferenceMessage = useDosageSumDifferenceMessage(time, priorDosageSum, upcomingDosageSum);
   const dispatch = (action: UpcomingDosageChangeAction | PriorDosageChangeAction) => {
     if (isModal) {
       formActionDispatch(action);
@@ -62,7 +63,7 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
     }
 
     setmlDosage(ml);
-  }, [chosenDrugForm, intervalDurationDays, upcomingDosagesQty, oralDosageInfo]);
+  }, [chosenDrugForm, intervalDurationDays, priorDosageSum, upcomingDosageSum, oralDosageInfo]);
 
   const mlOnChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const ml = parseInt(e.target.value, 10);
@@ -78,7 +79,7 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
         dispatch(priorDosageChange(actionData));
       }
     }
-  }, [chosenDrugForm, intervalDurationDays, upcomingDosagesQty, oralDosageInfo]);
+  }, [chosenDrugForm, intervalDurationDays, priorDosageSum, upcomingDosageSum, oralDosageInfo]);
 
   return (
     <>
@@ -125,7 +126,7 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
             )}
             <div>
               Total:
-              {dosageSum}
+              {time === 'Upcoming' ? upcomingDosageSum : priorDosageSum}
               {' '}
               {chosenDrugForm!.measureUnit}
             </div>

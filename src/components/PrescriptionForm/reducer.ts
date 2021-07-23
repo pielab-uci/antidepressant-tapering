@@ -137,7 +137,8 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.chosenDrugForm = chosenDrugForm;
         draft.priorDosagesQty = {};
         draft.upcomingDosagesQty = {};
-
+        draft.priorDosageSum = 0;
+        draft.upcomingDosageSum = 0;
         draft.minDosageUnit = action.data.minDosageUnit;
         draft.regularDosageOptions = action.data.regularDosageOptions;
         draft.availableDosageOptions = action.data.availableDosageOptions;

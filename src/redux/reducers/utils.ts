@@ -701,13 +701,13 @@ const generateNotesForPharmacyFromRows = (rows: TableRowData[]): string => {
 
           const { rate } = row.oralDosageInfo;
           if (i === arr.length - 1) {
-            const messageBeforeThen = `${prev}${i === 0 ? `${drugTitle}, take ` : ''}${(qty / rate.mg) * rate.ml}ml ${rowPrescription.data.form} by mouth daily (total: ${(qty / rate.mg) * rate.ml * rowPrescription.data.intervalDurationDays}`;
+            const messageBeforeThen = `${prev}${i === 0 ? `${drugTitle}, take ` : ''}${(qty / rate.mg) * rate.ml}ml ${rowPrescription.data.form} by mouth daily (total: ${(qty / rate.mg) * rate.ml * rowPrescription.data.intervalDurationDays}ml)`;
             if (j === rowArr.length - 1) {
               return `${messageBeforeThen}.\n`;
             }
             return `${messageBeforeThen};\n`;
           }
-          return `${prev}${i === 0 ? `${drugTitle}, take ` : ''}${(qty / rate.ml) * rate.ml}ml ${rowPrescription.data.form} by mouth daily (total: ${(qty / rate.mg) * rate.ml * rowPrescription.data.intervalDurationDays}) + `;
+          return `${prev}${i === 0 ? `${drugTitle}, take ` : ''}${(qty / rate.ml) * rate.ml}ml ${rowPrescription.data.form} by mouth daily (total: ${(qty / rate.mg) * rate.ml * rowPrescription.data.intervalDurationDays}ml) + `;
         }, '');
       return `${message}${messageLine}`;
     }, '');

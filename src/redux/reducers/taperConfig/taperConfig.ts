@@ -1,9 +1,5 @@
 import produce from 'immer';
 import differenceInCalendarDays from 'date-fns/esm/differenceInCalendarDays';
-import isAfter from 'date-fns/esm/isAfter';
-import add from 'date-fns/esm/add';
-import isBefore from 'date-fns/esm/isBefore';
-import sub from 'date-fns/esm/sub';
 import {
   ADD_NEW_DRUG_FORM,
   ADD_OR_UPDATE_TAPER_CONFIG_FAILURE,
@@ -56,8 +52,8 @@ import {
   calcFinalPrescription,
   calcMinimumQuantityForDosage,
   chartDataConverter, checkIntervalOverlappingRows, convert,
-  generateInstructionsForPatientFromSchedule,
-  generateInstructionsForPharmacy, generateTableRows,
+  generateInstructionsFromSchedule,
+  generateTableRows,
   isCompleteDrugInput,
   prescription,
   ScheduleChartData,
@@ -138,8 +134,8 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case GENERATE_SCHEDULE: {
         draft.projectedSchedule = scheduleGenerator(action.data);
         draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
-        draft.instructionsForPatient = generateInstructionsForPatientFromSchedule(draft.projectedSchedule);
-        draft.instructionsForPharmacy = generateInstructionsForPharmacy(draft.instructionsForPatient, draft.finalPrescription);
+        const notes = generateInstructionsFromSchedule(draft.projectedSchedule, 'both');
+        [draft.instructionsForPatient, draft.instructionsForPharmacy] = [notes.patient!, notes.pharmacy!];
         draft.showInstructionsForPatient = true;
         draft.isSaved = false;
         break;
@@ -164,15 +160,16 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.projectedSchedule.data.forEach((row, i) => {
           row.selected = draft.tableSelectedRows.includes(i);
         });
-        draft.instructionsForPatient = generateInstructionsForPatientFromSchedule(draft.projectedSchedule);
+        const instructions: { patient: string | null, pharmacy: string | null } = generateInstructionsFromSchedule(draft.projectedSchedule, 'both');
+        draft.instructionsForPatient = instructions.patient!;
+        draft.instructionsForPharmacy = instructions.pharmacy!;
         draft.finalPrescription = calcFinalPrescription(draft.projectedSchedule.data, draft.tableSelectedRows);
-        draft.instructionsForPharmacy = generateInstructionsForPharmacy(draft.instructionsForPatient, draft.finalPrescription);
         break;
       }
 
       case FINAL_PRESCRIPTION_QUANTITY_CHANGE:
         draft.finalPrescription[action.data.id].dosageQty[action.data.dosage] = action.data.quantity;
-        draft.instructionsForPharmacy = generateInstructionsForPharmacy(draft.instructionsForPatient, draft.finalPrescription);
+        draft.instructionsForPharmacy = generateInstructionsFromSchedule(draft.projectedSchedule, 'pharmacyOnly').pharmacy!;
         draft.isSaved = false;
         break;
 
@@ -191,6 +188,8 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case CHOOSE_BRAND: {
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         const correspondingDrugData = draft.drugs.find((d) => d.options.find((option) => option.brand === action.data.brand))!;
+        // const correspondingBrand = draft.drugs.flatMap((drug) => drug.options).find((option) => option.brand === action.data.brand)!;
+        // correspondingBrand.selected = true;
         drug.name = correspondingDrugData.name;
         drug.halfLife = correspondingDrugData.halfLife;
         // drug.name = draft.drugs.find(

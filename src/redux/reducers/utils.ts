@@ -222,6 +222,7 @@ export const calcMinimumQuantityForDosage = (availableOptions: string[], dosage:
 interface PrescriptionFunction {
   (args: {
     form: string,
+    intervalDurationDays: number,
     intervalCount: number,
     intervalUnit: 'Days' | 'Weeks' | 'Months' | null,
     oralDosageInfo?: OralDosage | null
@@ -234,14 +235,19 @@ interface PrescriptionFunction {
       unit: string;
       intervalCount: number;
       intervalUnit: 'Days' | 'Weeks' | 'Months' | null;
+      intervalDurationDays: number;
       dosage: { [dosage: string]: number }
     }
-  };
+  }
 }
 
 export const prescription: PrescriptionFunction = (
   {
-    form, intervalCount, intervalUnit, oralDosageInfo,
+    form,
+    intervalCount,
+    intervalUnit,
+    oralDosageInfo,
+    intervalDurationDays,
   },
   dosageQty,
 ) => {
@@ -253,16 +259,6 @@ export const prescription: PrescriptionFunction = (
         const { rate } = oralDosageInfo;
         return `${res} ${(qty / rate.mg) * rate.ml}ml ${form} by mouth for daily ${intervalCount} ${intervalUnit!.toLowerCase().replace('s', '(s)')}`;
       }
-
-      // if (oralDosageInfo) {
-      //   return `${res} ${qty / oralDosageInfo.rate.mg * oralDosageInfo.rate.ml}ml ${form} for ${intervalCount} ${intervalUnit!.toLowerCase().replace('s', '(s')}`;
-      // }
-
-      // if (i === arr.length - 1) {
-      //   return `${res} ${qty} X ${dosage} ${form} for ${intervalCount} ${intervalUnit!.toLowerCase().replace('s', '(s)')}`;
-      // }
-
-      // return `${res} ${qty} X ${dosage} ${form}, `;
 
       if (i === arr.length - 1) {
         return `${res} ${dosage} ${form}s, ${qty} ${form}(s) by mouth daily for ${intervalCount} ${intervalUnit!.toLowerCase().replace('s', '(s)')}`;
@@ -278,6 +274,7 @@ export const prescription: PrescriptionFunction = (
     oralDosageInfo,
     intervalCount,
     intervalUnit,
+    intervalDurationDays,
   };
 
   return {
@@ -453,6 +450,7 @@ export const checkIntervalOverlappingRows = (rows: TableRowData[]): TableRowData
           form: fromPrev.form,
           intervalCount: fromPrev.intervalCount,
           intervalUnit: fromPrev.intervalUnit,
+          intervalDurationDays: fromPrev.intervalDurationDays,
         },
         fromPrev.unitDosages!);
 
@@ -639,7 +637,7 @@ const capitalize = (str: string): string => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
-const generateMessageFromRowByDrugForm = (rows: TableRowData[]): string => {
+const generateNotesForPatientFromRows = (rows: TableRowData[]): string => {
   const drugTitle = rows[0].brand.includes('generic')
     ? `${rows[0].drug.replace(' (generic)', '')} (${drugNameBrandPairs[rows[0].drug]})`
     : `${rows[0].brand.split(' ')[0]} (${rows[0].drug})`;
@@ -652,24 +650,25 @@ const generateMessageFromRowByDrugForm = (rows: TableRowData[]): string => {
       const rowPrescription = row.prescription!;
       const messageLine = Object.entries(rowPrescription.data.dosage)
         .reduce((prev, [dosage, qty], i, arr) => {
-          // const dosageToPrint = !rowPrescription.data.oralDosageInfo ? dosage : rowPrescription
           if (!row.oralDosageInfo) {
             const quantity = getCountRead(qty);
             if (i === arr.length - 1) {
+              const messageBeforeThen = `${prev}${dosage} ${rowPrescription.data.form}s, ${quantity} ${rowPrescription.data.form}(s) by mouth daily for ${rowPrescription.data.intervalCount} ${rowPrescription.data.intervalUnit!.toLowerCase().replace('s', '(s)')}`;
               if (j === rowArr.length - 1) {
-                return `${prev}${dosage} ${rowPrescription.data.form}s, ${quantity} ${rowPrescription.data.form}(s) by mouth daily for ${rowPrescription.data.intervalCount} ${rowPrescription.data.intervalUnit!.toLowerCase().replace('s', '(s)')},\n\tThen STOP.\n`;
+                return `${messageBeforeThen},\n\tThen STOP.\n`;
               }
-              return `${prev}${dosage} ${rowPrescription.data.form}s, ${quantity} ${rowPrescription.data.form}(s) by mouth daily for ${rowPrescription.data.intervalCount} ${rowPrescription.data.intervalUnit!.toLowerCase().replace('s', '(s)')} then,\n`;
+              return `${messageBeforeThen} then,\n`;
             }
             return `${prev}${dosage} ${rowPrescription.data.form}s, ${quantity} ${rowPrescription.data.form}(s) + `;
           }
           const { rate } = row.oralDosageInfo;
           const formCapitalized = capitalize(rowPrescription.data.form);
           if (i === arr.length - 1) {
+            const messageBeforeThen = `${prev}${formCapitalized}, ${(qty / rate.mg) * rate.ml}ml ${rowPrescription.data.form} by mouth daily for ${rowPrescription.data.intervalCount} ${rowPrescription.data.intervalUnit!.toLowerCase().replace('s', '(s)')}`;
             if (j === rowArr.length - 1) {
-              return `${prev}${formCapitalized}, ${(qty / rate.mg) * rate.ml}ml ${rowPrescription.data.form} by mouth daily for ${rowPrescription.data.intervalCount} ${rowPrescription.data.intervalUnit!.toLowerCase().replace('s', '(s)')},\n\tThen STOP.\n`;
+              return `${messageBeforeThen},\n\tThen STOP.\n`;
             }
-            return `${prev}${formCapitalized}, ${(qty / rate.mg) * rate.ml}ml ${rowPrescription.data.form} by mouth daily for ${rowPrescription.data.intervalCount} ${rowPrescription.data.intervalUnit?.toLowerCase().replace('s', '(s)')} then,\n`;
+            return `${messageBeforeThen} then,\n`;
           }
           return `${prev}${formCapitalized}, ${(qty / rate.mg) * rate.ml}ml ${rowPrescription.data.form} + `;
         }, '');
@@ -677,53 +676,64 @@ const generateMessageFromRowByDrugForm = (rows: TableRowData[]): string => {
     }, messageHeading);
 };
 
-export const generateInstructionsForPatientFromSchedule = (schedule: Schedule): string => {
+const generateNotesForPharmacyFromRows = (rows: TableRowData[]): string => {
+  const drugTitle = rows[0].brand.includes('generic')
+    ? `${rows[0].drug.replace(' (generic)', '')} (${drugNameBrandPairs[rows[0].drug]})`
+    : `${rows[0].brand.split(' ')[0]} (${rows[0].drug})`;
+
+  return rows
+    .filter((row) => row.selected && !row.isPriorDosage)
+    .reduce((message, row, j, rowArr) => {
+      const rowPrescription = row.prescription!;
+      const messageLine = Object.entries(rowPrescription.data.dosage)
+        .reduce((prev, [dosage, qty], i, arr) => {
+          if (!row.oralDosageInfo) {
+            const quantity = getCountRead(qty);
+            if (i === arr.length - 1) {
+              const messageBeforeThen = `${prev}${i === 0 ? `${drugTitle}, take ` : ''}${quantity} ${dosage} ${rowPrescription.data.form}(s) by mouth daily (total: ${qty * rowPrescription.data.intervalDurationDays})`;
+              if (j === rowArr.length - 1) {
+                return `${messageBeforeThen}.\n`;
+              }
+              return `${messageBeforeThen};\n`;
+            }
+            return `${prev}${i === 0 ? `${drugTitle}, take ` : ''}${quantity} ${dosage} ${rowPrescription.data.form}(s) by mouth daily (total: ${qty * rowPrescription.data.intervalDurationDays}) + `;
+          }
+
+          const { rate } = row.oralDosageInfo;
+          if (i === arr.length - 1) {
+            const messageBeforeThen = `${prev}${i === 0 ? `${drugTitle}, take ` : ''}${(qty / rate.mg) * rate.ml}ml ${rowPrescription.data.form} by mouth daily (total: ${(qty / rate.mg) * rate.ml * rowPrescription.data.intervalDurationDays}`;
+            if (j === rowArr.length - 1) {
+              return `${messageBeforeThen}.\n`;
+            }
+            return `${messageBeforeThen};\n`;
+          }
+          return `${prev}${i === 0 ? `${drugTitle}, take ` : ''}${(qty / rate.ml) * rate.ml}ml ${rowPrescription.data.form} by mouth daily (total: ${(qty / rate.mg) * rate.ml * rowPrescription.data.intervalDurationDays}) + `;
+        }, '');
+      return `${message}${messageLine}`;
+    }, '');
+};
+
+export const generateInstructionsFromSchedule = (schedule: Schedule, idx: 'both'|'patientOnly'|'pharmacyOnly'): { patient: string|null, pharmacy: string|null } => {
   const rowsGroupByDrug: { [drug: string]: TableRowData[] } = schedule.data
-    // .filter((row) => row.selected && !row.isPriorDosage)
     .reduce((acc, row) => {
       return Object.keys(acc).includes(row.drug)
         ? { ...acc, [row.drug]: [...acc[row.drug], row] }
         : { ...acc, [row.drug]: [] };
     }, {} as { [drug: string]: TableRowData[] });
+  const notesForPatient = idx === 'pharmacyOnly'
+    ? null
+    : Object.values(rowsGroupByDrug)
+      .map((rows) => generateNotesForPatientFromRows(rows))
+      .reduce((acc, message) => `${acc}${message}\n`, '');
 
-  console.log('rowsGroupByDrug');
-  console.log(rowsGroupByDrug);
-  return Object.values(rowsGroupByDrug)
-    .map((rows) => generateMessageFromRowByDrugForm(rows))
-    .reduce((acc, message) => `${acc}${message}\n`, '');
-};
-
-export const generateInstructionsForPharmacy = (patientInstructions: string, prescription: Prescription): string => {
-  const instructionsForPatients = `Instructions for Patient:
-  ${patientInstructions
-    .split('\n')
-    .filter((instruction) => instruction !== '')
-    .reduce((prev, line, i, instructionsArr) => {
-      if (i === instructionsArr.length - 1) {
-        return `${prev}\t${line}`;
-      }
-      return `${prev}\t${line}\n`;
-    }, '')}\n---------------------------------------------------\n`;
-
-  // return Object.values(prescription)
-  const parsedPrescription: Prescription = JSON.parse(JSON.stringify(prescription));
-  return Object.values(parsedPrescription)
-    .reduce((instruction, { name, brand, dosageQty }, i, prescriptionArr) => {
-      const dosages = Object
-        .entries(dosageQty)
-        .filter(([dos, qty]) => qty !== 0)
-        .reduce((acc, [dos, qty], j, dosageArr) => {
-          if (j === dosageArr.length - 1) {
-            return `${acc}${Math.ceil(qty as number)} X ${dos}`;
-          }
-          return `${acc}${Math.ceil(qty as number)} X ${dos}, `;
-        }, '');
-
-      const drugTitle = brand.includes('generic')
-        ? `${brand.replace(' (generic)', '')} (${drugNameBrandPairs[name]})`
-        : `${brand.split(' ')[0]} (${name})`;
-      return `${instruction}${drugTitle}: ${dosages}\n`;
-    }, instructionsForPatients);
+  const notesForPharmacy = idx === 'patientOnly'
+    ? null
+    : Object.values(rowsGroupByDrug)
+      .map((rows) => generateNotesForPharmacyFromRows(rows))
+      .reduce((acc, message) => `${acc}${message}\n`, '');
+  return {
+    patient: notesForPatient, pharmacy: notesForPharmacy,
+  };
 };
 
 export const calcFinalPrescription = (scheduleData: TableRowData[], tableSelectedRows: (number | null)[]): Prescription => {

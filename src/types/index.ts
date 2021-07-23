@@ -162,6 +162,7 @@ export interface TableRowData {
       unit: string,
       intervalCount: number;
       intervalUnit: 'Days' | 'Weeks' | 'Months' | null;
+      intervalDurationDays: number;
       oralDosageInfo?: OralDosage
       dosage: { [dosage: string]: number },
     }

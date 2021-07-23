@@ -275,7 +275,7 @@ export const EDIT_PROJECTED_SCHEDULE_FROM_MODAL = 'EDIT_PROJECTED_SCHEDULE_FROM_
 
 export interface EditProjectedScheduleFromModal {
   type: typeof EDIT_PROJECTED_SCHEDULE_FROM_MODAL,
-  data: { prevRow: TableRowData, doubleClickedRow: TableRowData; prescribedDrug: PrescribedDrug }
+  data: { prevRow: TableRowData, clickedRow: TableRowData; prescribedDrug: PrescribedDrug }
 }
 
 export const OPEN_MODAL = 'OPEN_MODAL';

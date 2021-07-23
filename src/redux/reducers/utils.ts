@@ -61,16 +61,16 @@ const rowIntervalIsAfter = (fromPrev: TableRowData, fromCurrent: TableRowData) =
 
 export const convert = (drugs: PrescribedDrug[]): Converted[] => {
   return drugs.map((drug) => {
-    const priorDosageSum = drug.priorDosages
-      .reduce((acc, d) => acc + parseFloat(d.dosage) * d.quantity, 0);
-    const upcomingDosageSum = drug.upcomingDosages
-      .reduce((acc, d) => acc + parseFloat(d.dosage) * d.quantity, 0);
+    // const priorDosageSum = drug.priorDosages
+    //   .reduce((acc, d) => acc + parseFloat(d.dosage) * d.quantity, 0);
+    // const upcomingDosageSum = drug.upcomingDosages
+    //   .reduce((acc, d) => acc + parseFloat(d.dosage) * d.quantity, 0);
 
     const changeDirection = (() => {
-      if (priorDosageSum < upcomingDosageSum) {
+      if (drug.priorDosageSum < drug.upcomingDosageSum) {
         return 'increase';
       }
-      if (priorDosageSum > upcomingDosageSum) {
+      if (drug.priorDosageSum > drug.upcomingDosageSum) {
         return 'decrease';
       }
       return 'same';
@@ -78,10 +78,10 @@ export const convert = (drugs: PrescribedDrug[]): Converted[] => {
 
     return {
       ...drug,
-      priorDosageSum,
-      upcomingDosageSum,
-      changeAmount: upcomingDosageSum - priorDosageSum,
-      changeRate: upcomingDosageSum / priorDosageSum,
+      // priorDosageSum,
+      // upcomingDosageSum,
+      changeAmount: drug.upcomingDosageSum - drug.priorDosageSum,
+      changeRate: drug.upcomingDosageSum / drug.priorDosageSum,
       intervalEndDate: drug.intervalEndDate!,
       changeDirection,
     };

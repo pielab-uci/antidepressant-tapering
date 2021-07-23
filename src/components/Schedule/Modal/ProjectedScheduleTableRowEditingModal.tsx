@@ -49,7 +49,7 @@ const ProjectedScheduleTableRowEditingModal: FC<Props> = ({
     onOk(e);
     dispatch({
       type: EDIT_PROJECTED_SCHEDULE_FROM_MODAL,
-      data: { prevRow: clickedRowAndBefore[0], doubleClickedRow: clickedRowAndBefore[1], prescribedDrug },
+      data: { prevRow: clickedRowAndBefore[0], clickedRow: clickedRowAndBefore[1], prescribedDrug },
     });
   };
 

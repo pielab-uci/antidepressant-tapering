@@ -158,7 +158,7 @@ const GoalDosageSettingForm = () => {
                  onChange={onChangeGoalDosage}
                  onWheel={onWheelEventHandler}
                  min={0}
-                 disabled={isModal}
+                 // disabled={isModal}
                  css={css`width: 100px;
                  display: inline;
                `}/> mg

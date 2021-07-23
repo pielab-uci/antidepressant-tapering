@@ -461,19 +461,16 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
          */
 
         // Delete related rows
-        draft.projectedSchedule.data.forEach((row, i) => {
-          if (row.brand === action.data.doubleClickedRow.brand
-            && row.rowIndexInPrescribedDrug >= action.data.doubleClickedRow.rowIndexInPrescribedDrug) {
-            draft.projectedSchedule.data.splice(i);
-          }
-        });
+        draft.projectedSchedule.data = draft.projectedSchedule.data
+          .filter((row) => row.brand === action.data.clickedRow.brand
+            && row.rowIndexInPrescribedDrug < action.data.clickedRow.rowIndexInPrescribedDrug);
 
         const converted: Converted[] = convert([action.data.prescribedDrug]);
 
-        const generatedTableRows: TableRowData[] = generateTableRows(converted, action.data.doubleClickedRow.rowIndexInPrescribedDrug);
+        const generatedTableRows: TableRowData[] = generateTableRows(converted, action.data.clickedRow.rowIndexInPrescribedDrug);
 
-        // const intervalOverlapChecked: TableRowData[] = checkIntervalOverlappingRows(generatedTableRows);
-        const intervalOverlapChecked: TableRowData[] = generatedTableRows;
+        const intervalOverlapChecked: TableRowData[] = checkIntervalOverlappingRows(generatedTableRows);
+        // const intervalOverlapChecked: TableRowData[] = generatedTableRows;
 
         const drugNames: string[] = [...new Set(draft.projectedSchedule.drugs.map((drug) => drug.name).concat([action.data.prescribedDrug.name]))];
 

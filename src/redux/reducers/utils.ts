@@ -655,12 +655,13 @@ const generateNotesForPatientFromRows = (rows: TableRowData[]): string => {
     .filter((row) => row.selected && !row.isPriorDosage)
     .reduce((message, row, j, rowArr) => {
       const rowPrescription = row.prescription!;
+      const intervalUnit = rowPrescription.data.intervalCount === 1 ? rowPrescription.data.intervalUnit!.toLowerCase().replace('s', '') : rowPrescription.data.intervalUnit!.toLowerCase();
       const messageLine = Object.entries(rowPrescription.data.dosage)
         .reduce((prev, [dosage, qty], i, arr) => {
           if (!row.oralDosageInfo) {
             const quantity = getCountRead(qty);
             if (i === arr.length - 1) {
-              const messageBeforeThen = `${prev}${dosage} ${rowPrescription.data.form}s, ${quantity} ${rowPrescription.data.form}(s) by mouth daily for ${rowPrescription.data.intervalCount} ${rowPrescription.data.intervalUnit!.toLowerCase().replace('s', '(s)')}`;
+              const messageBeforeThen = `${prev}${dosage} ${rowPrescription.data.form}s, ${quantity} ${rowPrescription.data.form}(s) by mouth daily from ${format(row.startDate!, 'MM/dd/yyyy')} to ${format(row.endDate!, 'MM/dd/yyyy')} (${rowPrescription.data.intervalCount} ${intervalUnit})`;
               if (j === rowArr.length - 1) {
                 return `${messageBeforeThen},\n\tThen STOP.\n`;
               }
@@ -671,7 +672,7 @@ const generateNotesForPatientFromRows = (rows: TableRowData[]): string => {
           const { rate } = row.oralDosageInfo;
           const formCapitalized = capitalize(rowPrescription.data.form);
           if (i === arr.length - 1) {
-            const messageBeforeThen = `${prev}${formCapitalized}, ${(qty / rate.mg) * rate.ml}ml ${rowPrescription.data.form} by mouth daily for ${rowPrescription.data.intervalCount} ${rowPrescription.data.intervalUnit!.toLowerCase().replace('s', '(s)')}`;
+            const messageBeforeThen = `${prev}${formCapitalized}, ${(qty / rate.mg) * rate.ml}ml ${rowPrescription.data.form} by mouth daily from ${format(row.startDate!, 'MM/dd/yyyy')} to ${format(row.endDate!, 'MM/dd/yyyy')} (${rowPrescription.data.intervalCount} ${intervalUnit}).`;
             if (j === rowArr.length - 1) {
               return `${messageBeforeThen},\n\tThen STOP.\n`;
             }

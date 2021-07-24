@@ -125,7 +125,7 @@ const drugs: Drug[] = [
               rate: { ml: 1, mg: 20 },
               bottles: ['60ml'],
             },
-            measureUnit: 'ml',
+            measureUnit: 'mg',
           } as OralForm,
           {
             form: 'tablet',

@@ -47,11 +47,11 @@ export const initialState: PrescriptionFormState = {
   })(),
   intervalEndDate: (() => {
     const date = new Date();
-    return new Date(date.valueOf() + date.getTimezoneOffset() * 60 * 1000 + 1000);
+    return add(new Date(date.valueOf() + date.getTimezoneOffset() * 60 * 1000), { days: 6 });
   })(),
-  intervalCount: 1,
+  intervalCount: 7,
   intervalUnit: 'Days',
-  intervalDurationDays: 1,
+  intervalDurationDays: 7,
 };
 
 export const reducer = (state: PrescriptionFormState, action: PrescriptionFormActions): PrescriptionFormState => {
@@ -230,6 +230,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
 
       case INTERVAL_UNIT_CHANGE:
         draft.intervalUnit = action.data.unit;
+        draft.intervalCount = action.data.intervalCount;
         draft.intervalEndDate = action.data.intervalEndDate;
         draft.intervalDurationDays = action.data.intervalDurationDays;
         break;

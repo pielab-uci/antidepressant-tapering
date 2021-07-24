@@ -140,6 +140,7 @@ export interface IntervalUnitChangeAction {
   data: {
     unit: 'Days' | 'Weeks' | 'Months',
     intervalEndDate: Date,
+    intervalCount: number,
     intervalDurationDays: number,
     id: number }
 }

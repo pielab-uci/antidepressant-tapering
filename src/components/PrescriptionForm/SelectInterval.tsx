@@ -116,14 +116,24 @@ const SelectInterval = () => {
     }));
   };
 
-  const onIntervalUnitChange = useCallback((value: 'Days' | 'Weeks' | 'Months') => {
-    const endDate = sub(add(intervalStartDate, { [value.toLowerCase()]: intervalCount }), { days: 1 });
+  const onIntervalUnitChange = (value: 'Days' | 'Weeks' | 'Months') => {
+    const newIntervalCount = value === 'Days' ? 7 : 1;
+    const endDate = sub(add(intervalStartDate, { [value.toLowerCase()]: newIntervalCount }), { days: 1 });
     const intervalDurationDays = calcIntervalDurationDays(intervalStartDate, endDate);
 
     dispatch(intervalUnitChange({
-      unit: value, intervalEndDate: endDate, intervalDurationDays, id,
+      unit: value, intervalEndDate: endDate, intervalDurationDays, intervalCount: newIntervalCount, id,
     }));
-  }, [intervalStartDate, intervalCount, upcomingDosagesQty]);
+  };
+
+  // const onIntervalUnitChange = useCallback((value: 'Days' | 'Weeks' | 'Months') => {
+  //   const endDate = sub(add(intervalStartDate, { [value.toLowerCase()]: intervalCount }), { days: 1 });
+  //   const intervalDurationDays = calcIntervalDurationDays(intervalStartDate, endDate);
+  //
+  //   dispatch(intervalUnitChange({
+  //     unit: value, intervalEndDate: endDate, intervalDurationDays, id,
+  //   }));
+  // }, [intervalStartDate, intervalCount, upcomingDosagesQty]);
 
   const onIntervalCountChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const count = parseInt(e.target.value, 10);

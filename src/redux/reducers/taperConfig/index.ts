@@ -1,3 +1,4 @@
+import add from 'date-fns/esm/add';
 import {
   Drug, PrescribedDrug, Prescription, TaperingConfiguration,
 } from '../../../types';
@@ -125,11 +126,11 @@ export const emptyPrescribedDrug = (id: number): PrescribedDrug => ({
   })(),
   intervalEndDate: (() => {
     const date = new Date();
-    return new Date(date.valueOf() + date.getTimezoneOffset() * 60 * 1000 + 1000);
+    return add(new Date(date.valueOf() + date.getTimezoneOffset() * 60 * 1000), { days: 6 });
   })(),
-  intervalCount: 1,
+  intervalCount: 7,
   intervalUnit: 'Days',
-  intervalDurationDays: 1,
+  intervalDurationDays: 7,
   prevVisit: false,
   prescribedAt: new Date(),
 });

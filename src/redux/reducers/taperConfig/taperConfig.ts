@@ -378,6 +378,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         drug.intervalUnit = action.data.unit;
         drug.intervalEndDate = action.data.intervalEndDate;
+        drug.intervalCount = action.data.intervalCount;
         drug.intervalDurationDays = action.data.intervalDurationDays;
         draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
         draft.isSaved = false;

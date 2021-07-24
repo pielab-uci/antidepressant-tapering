@@ -151,7 +151,7 @@ export const initialState: TaperConfigState = {
   projectedSchedule: { data: [], drugs: [] },
   scheduleChartData: [],
   tableSelectedRows: [],
-  finalPrescription: [],
+  finalPrescription: {},
   isInputComplete: false,
 
   intervalDurationDays: 0,

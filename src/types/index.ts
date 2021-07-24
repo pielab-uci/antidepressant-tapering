@@ -121,8 +121,8 @@ export interface PrescribedDrug {
 }
 
 export interface Prescription {
-  [id: number]: {
-    name: string,
+  [drugName: string]: {
+    // name: string,
     brand: string,
     form: string,
     oralDosageInfo: OralDosage | null;

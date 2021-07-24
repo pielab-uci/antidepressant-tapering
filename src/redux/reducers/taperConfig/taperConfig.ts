@@ -138,7 +138,9 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case GENERATE_SCHEDULE: {
         draft.projectedSchedule = scheduleGenerator(action.data);
         draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
-        const notes = generateInstructionsFromSchedule(draft.projectedSchedule, 'both');
+        draft.tableSelectedRows = draft.projectedSchedule.data.map((row, i) => (row.selected ? i : -1)).filter((idx) => idx !== -1);
+        draft.finalPrescription = calcFinalPrescription(draft.projectedSchedule.data, draft.tableSelectedRows);
+        const notes = generateInstructionsFromSchedule(draft.projectedSchedule, 'both', draft.finalPrescription);
         [draft.instructionsForPatient, draft.instructionsForPharmacy] = [notes.patient!, notes.pharmacy!];
         draft.showInstructionsForPatient = true;
         draft.isSaved = false;
@@ -188,17 +190,18 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           }
         });
          */
-
-        const instructions: { patient: string | null, pharmacy: string | null } = generateInstructionsFromSchedule(draft.projectedSchedule, 'both');
-        draft.instructionsForPatient = instructions.patient!;
-        draft.instructionsForPharmacy = instructions.pharmacy!;
         draft.finalPrescription = calcFinalPrescription(draft.projectedSchedule.data, draft.tableSelectedRows);
+        const notes = generateInstructionsFromSchedule(draft.projectedSchedule, 'both', draft.finalPrescription);
+        [draft.instructionsForPatient, draft.instructionsForPharmacy] = [notes.patient!, notes.pharmacy!];
+        // const instructions: { patient: string | null, pharmacy: string | null } = generateInstructionsFromSchedule(draft.projectedSchedule, 'both', draft.finalPrescription);
+        // draft.instructionsForPatient = instructions.patient!;
+        // draft.instructionsForPharmacy = instructions.pharmacy!;
         break;
       }
 
       case FINAL_PRESCRIPTION_QUANTITY_CHANGE:
         draft.finalPrescription[action.data.id].dosageQty[action.data.dosage] = action.data.quantity;
-        draft.instructionsForPharmacy = generateInstructionsFromSchedule(draft.projectedSchedule, 'pharmacyOnly').pharmacy!;
+        draft.instructionsForPharmacy = generateInstructionsFromSchedule(draft.projectedSchedule, 'pharmacyOnly', draft.finalPrescription).pharmacy!;
         draft.isSaved = false;
         break;
 
@@ -486,7 +489,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
 
         draft.tableSelectedRows = [];
-        const notes = generateInstructionsFromSchedule(draft.projectedSchedule, 'both');
+        const notes = generateInstructionsFromSchedule(draft.projectedSchedule, 'both', draft.finalPrescription);
         [draft.instructionsForPatient, draft.instructionsForPharmacy] = [notes.patient!, notes.pharmacy!];
         break;
       }

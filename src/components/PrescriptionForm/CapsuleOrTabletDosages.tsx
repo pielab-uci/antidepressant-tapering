@@ -9,7 +9,7 @@ import { CapsuleOrTabletDosage } from '../../types';
 import useDosageSumDifferenceMessage from '../../hooks/useDosageSumDifferenceMessage';
 
 interface Props {
-  time: 'Prior' | 'Upcoming';
+  time: 'Current' | 'Next';
   editable: boolean;
 }
 
@@ -54,7 +54,7 @@ const CapsuleOrTabletDosages: FC<Props> = ({ time, editable }) => {
             align-items: flex-start;
             justify-content: center;
             margin-left: 64px;`}>
-            {time === 'Upcoming' && dosageDifferenceMessage
+            {time === 'Next' && dosageDifferenceMessage
             && (
               <div css={css`color: #0984E3;`}>
                 {dosageDifferenceMessage}
@@ -63,7 +63,7 @@ const CapsuleOrTabletDosages: FC<Props> = ({ time, editable }) => {
             <div>
               Total:
               {/* {dosageSum} */}
-              {time === 'Upcoming' ? upcomingDosageSum : priorDosageSum}
+              {time === 'Next' ? upcomingDosageSum : priorDosageSum}
               {' '}
               {chosenDrugForm!.measureUnit}
             </div>

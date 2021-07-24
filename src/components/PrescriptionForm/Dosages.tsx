@@ -8,7 +8,7 @@ import OralFormDosage from './OralFormDosage';
 
 interface Props {
   drugForm: DrugForm | null | undefined,
-  time: 'Prior' | 'Upcoming'
+  time: 'Current' | 'Next'
   editable: boolean;
 }
 

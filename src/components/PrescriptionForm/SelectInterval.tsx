@@ -146,7 +146,7 @@ const SelectInterval = () => {
 
   return (
     <div css={selectIntervalStyle}>
-      <h3>Select Interval</h3>
+      <h3>How often should the dosage change?</h3>
       <div className='select-interval-form'>
         <label>Start on:</label>
         <Input

@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 
-type Type = (time: 'Prior'|'Upcoming', priorDosageSum: number, upcomingDosageSum: number) => string | null;
+type Type = (time: 'Current'|'Next', priorDosageSum: number, upcomingDosageSum: number) => string | null;
 
 const useDosageSumDifferenceMessage: Type = (time, priorDosageSum, upcomingDosageSum) => {
   const [dosageDifferenceMessage, setDosageDifferenceMessage] = useState<string|null>(null);
 
   useEffect(() => {
-    if (time === 'Upcoming') {
+    if (time === 'Next') {
       if (priorDosageSum === 0) {
         setDosageDifferenceMessage(null);
       }

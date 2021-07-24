@@ -16,7 +16,7 @@ import {
 
 interface Props {
   form: string;
-  time: 'Prior' | 'Upcoming'
+  time: 'Current' | 'Next'
   dosage: string;
   editable: boolean;
   isScored?: boolean;
@@ -60,7 +60,7 @@ const CapsuleOrTabletUnit: FC<Props> = ({
     };
 
     if (actionData.dosage.quantity >= 0) {
-      if (time === 'Upcoming') {
+      if (time === 'Next') {
         dispatch(upcomingDosageChange(actionData));
       } else {
         dispatch(priorDosageChange(actionData));
@@ -78,7 +78,7 @@ const CapsuleOrTabletUnit: FC<Props> = ({
     };
 
     if (actionData.dosage.quantity >= 0) {
-      if (time === 'Upcoming') {
+      if (time === 'Next') {
         dispatch(upcomingDosageChange(actionData));
       } else {
         dispatch(priorDosageChange(actionData));

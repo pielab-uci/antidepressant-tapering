@@ -15,7 +15,7 @@ import {
 } from './actions';
 
 interface Props {
-  time: 'Prior' | 'Upcoming';
+  time: 'Current' | 'Next';
   editable: boolean;
 }
 
@@ -55,7 +55,7 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
     const actionData = { id, dosage: { dosage: dosage.current, quantity: mg } };
 
     if (actionData.dosage.quantity >= 0) {
-      if (time === 'Upcoming') {
+      if (time === 'Next') {
         dispatch(upcomingDosageChange(actionData));
       } else {
         dispatch(priorDosageChange(actionData));
@@ -73,7 +73,7 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
     const actionData = { id, dosage: { dosage: dosage.current, quantity: mg } };
 
     if (actionData.dosage.quantity >= 0) {
-      if (time === 'Upcoming') {
+      if (time === 'Next') {
         dispatch(upcomingDosageChange(actionData));
       } else {
         dispatch(priorDosageChange(actionData));
@@ -118,7 +118,7 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
             align-items: flex-start;
             justify-content: center;
             margin-left: 20px;`}>
-            {time === 'Upcoming' && dosageDifferenceMessage
+            {time === 'Next' && dosageDifferenceMessage
             && (
               <div css={css`color: #0984E3;`}>
                 {dosageDifferenceMessage}
@@ -126,7 +126,7 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
             )}
             <div>
               Total:
-              {time === 'Upcoming' ? upcomingDosageSum : priorDosageSum}
+              {time === 'Next' ? upcomingDosageSum : priorDosageSum}
               {' '}
               {chosenDrugForm!.measureUnit}
             </div>

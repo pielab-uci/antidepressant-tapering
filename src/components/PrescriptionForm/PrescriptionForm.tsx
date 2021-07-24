@@ -41,10 +41,10 @@ import GoalDosageSettingForm from './GoalDosageSettingForm';
 export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
   ...initialState,
   modal: { isModal: false },
-  Prior: {
+  Current: {
     dosages: initialState.priorDosagesQty,
   },
-  Upcoming: {
+  Next: {
     dosages: initialState.upcomingDosagesQty,
   },
   formActionDispatch: () => {
@@ -179,11 +179,11 @@ const PrescriptionForm: FC<Props> = ({
       ...state,
       id: prescribedDrug.id,
       modal: { isModal, modalDispatch },
-      Prior: {
+      Current: {
         dosages: priorDosagesQty,
         dosageChangeAction: priorDosageChange,
       },
-      Upcoming: {
+      Next: {
         dosages: upcomingDosagesQty,
         dosageChangeAction: upcomingDosageChange,
       },
@@ -206,8 +206,8 @@ const PrescriptionForm: FC<Props> = ({
           allowSplittingUnscoredTablet={allowSplittingUnscoredTablet}
           toggleAllowSplittingUnscoredTabletCheckbox={toggleAllowSplittingUnscoredTabletCheckbox}/>
 
-        <Dosages drugForm={chosenDrugForm} time={'Prior'} editable={prescribedDrug.allowChangePriorDosage}/>
-        <Dosages drugForm={chosenDrugForm} time={'Upcoming'} editable={true}/>
+        <Dosages drugForm={chosenDrugForm} time={'Current'} editable={prescribedDrug.allowChangePriorDosage}/>
+        <Dosages drugForm={chosenDrugForm} time={'Next'} editable={true}/>
 
         <SelectInterval/>
         <GoalDosageSettingForm/>

@@ -47,10 +47,10 @@ export interface PrescriptionFormState {
 export type IPrescriptionFormContext = PrescriptionFormState
 & {
   modal: { isModal: boolean, modalDispatch?: Dispatch<ModalActions> }
-  Prior: {
+  Current: {
     dosages: typeof initialState.priorDosagesQty,
   };
-  Upcoming: {
+  Next: {
     dosages: typeof initialState.upcomingDosagesQty,
   };
   formActionDispatch: Dispatch<PrescriptionFormActions>;

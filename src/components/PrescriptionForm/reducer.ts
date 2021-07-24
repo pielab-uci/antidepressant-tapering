@@ -94,17 +94,8 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
               draft.upcomingDosagesQty[dosage.dosage] = 0;
             }
           });
-          draft.oralDosageInfo = null;
         }
-        //
-        // draft.priorDosageSum = Object.entries(draft.priorDosagesQty).reduce((prev, [dosage, qty]) => {
-        //   return prev + parseFloat(dosage) * qty;
-        // }, 0);
-        //
-        // draft.upcomingDosageSum = Object.entries(draft.upcomingDosagesQty).reduce((prev, [dosage, qty]) => {
-        //   return prev + parseFloat(dosage) * qty;
-        // }, 0);
-
+        draft.oralDosageInfo = action.data.oralDosageInfo || null;
         draft.intervalStartDate = action.data.intervalStartDate;
         draft.intervalEndDate = action.data.intervalEndDate;
         draft.intervalCount = action.data.intervalCount;

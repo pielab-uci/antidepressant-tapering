@@ -40,11 +40,10 @@ export const initialState: RowEditingModalState = {
 };
 
 const prescriptionToDosages = (row: TableRowData): { dosage: string, quantity: number }[] => {
-  if (row.prescription === null) {
-    return [];
-  }
-
   if (row.form === 'capsule' || row.form === 'tablet') {
+    if (row.prescription === null) {
+      return [];
+    }
     const dosages = row.prescribedDrug.regularDosageOptions!.map((option) => ({ dosage: option, quantity: 0 }));
 
     Object.entries(row.prescription.data.dosage).forEach(([dosage, quantity]) => {
@@ -53,7 +52,7 @@ const prescriptionToDosages = (row: TableRowData): { dosage: string, quantity: n
     return dosages;
   }
 
-  return [{ dosage: '1mg', quantity: row.prescription.data.dosage['1mg'] }];
+  return [{ dosage: '1mg', quantity: row.dosage }];
 };
 
 const reducer = (state: RowEditingModalState = initialState, action: ModalActions): RowEditingModalState => {

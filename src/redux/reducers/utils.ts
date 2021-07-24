@@ -252,19 +252,22 @@ export const prescription: PrescriptionFunction = (
   dosageQty,
 ) => {
   console.log('oralDosageInfo: ', oralDosageInfo);
+  const checkedIntervalUnit = intervalCount === 1 ? intervalUnit!.toLowerCase().replace('s', '') : intervalUnit!.toLowerCase();
+
   const message = Object.entries(dosageQty)
     .filter(([dosage, qty]) => qty !== 0)
     .reduce((res, [dosage, qty], i, arr) => {
       if (oralDosageInfo) {
         const { rate } = oralDosageInfo;
-        return `${res} ${(qty / rate.mg) * rate.ml}ml ${form} by mouth for daily ${intervalCount} ${intervalUnit!.toLowerCase().replace('s', '(s)')}`;
+        return `${res} ${(qty / rate.mg) * rate.ml}ml ${form} by mouth for daily ${intervalCount} ${checkedIntervalUnit}`;
       }
 
+      const checkedForm = qty === 1 ? form : `${form}s`;
       if (i === arr.length - 1) {
-        return `${res} ${dosage} ${form}s, ${qty} ${form}(s) by mouth daily for ${intervalCount} ${intervalUnit!.toLowerCase().replace('s', '(s)')}`;
+        return `${res} ${dosage} ${checkedForm}, ${qty} ${checkedForm} by mouth daily for ${intervalCount} ${checkedIntervalUnit}`;
       }
 
-      return `${res} ${dosage} ${form}s, ${qty} ${form}(s) +`;
+      return `${res} ${dosage} ${checkedForm}, ${qty} ${checkedForm} +`;
     }, '');
 
   const data = {

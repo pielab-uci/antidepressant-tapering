@@ -89,33 +89,10 @@ export const convert = (drugs: PrescribedDrug[]): Converted[] => {
 };
 
 const calcProjectedDosages = (drug: Converted, prescribedDosage: number, length: number): number[] => {
-  console.group('calcProjectedDosages');
-  console.log('drug: ', drug);
-  console.log('prescribedDosage: ', prescribedDosage);
-  console.log('length: ', length);
-  console.groupEnd();
-
   const res: number[] = [];
   res.push(prescribedDosage);
 
-  // increasing
-  if (drug.changeDirection === 'increase') {
-    // Array(length - 1).fill(null).forEach((_, i) => {
-    Array(length).fill(null).forEach((_, i) => {
-      if (res[i] + drug.changeAmount < drug.targetDosage!) {
-        res.push(res[i] + drug.changeAmount);
-      } else {
-        res.push(drug.targetDosage!);
-      }
-      if (drug.oralDosageInfo) {
-        const { rate } = drug.oralDosageInfo;
-        const mlRounded = Math.round((res[i + 1] / rate.mg) * rate.ml);
-        const mg = (mlRounded / rate.ml) * rate.mg;
-        res[i + 1] = mg;
-      }
-    });
-  } else {
-    // decreasing
+  if (drug.growth === 'exponential') {
     const minDosage = parseFloat(drug.availableDosageOptions[0]);
     // Array(length - 1).fill(null).forEach((_, i) => {
     Array(length).fill(null).forEach((_, i) => {
@@ -140,6 +117,36 @@ const calcProjectedDosages = (drug: Converted, prescribedDosage: number, length:
           res.push(ceiling);
         }
       }
+      if (drug.oralDosageInfo) {
+        const { rate } = drug.oralDosageInfo;
+        const mlRounded = Math.round((res[i + 1] / rate.mg) * rate.ml);
+        const mg = (mlRounded / rate.ml) * rate.mg;
+        res[i + 1] = mg;
+      }
+    });
+  } else if (drug.changeDirection === 'increase') { // growth: linear, increase
+    // Array(length - 1).fill(null).forEach((_, i) => {
+    Array(length).fill(null).forEach((_, i) => {
+      if (res[i] + drug.changeAmount < drug.targetDosage!) {
+        res.push(res[i] + drug.changeAmount);
+      } else {
+        res.push(drug.targetDosage!);
+      }
+      if (drug.oralDosageInfo) {
+        const { rate } = drug.oralDosageInfo;
+        const mlRounded = Math.round((res[i + 1] / rate.mg) * rate.ml);
+        const mg = (mlRounded / rate.ml) * rate.mg;
+        res[i + 1] = mg;
+      }
+    });
+  } else { // growth: linear, decrease
+    Array(length).fill(null).forEach((_, i) => {
+      if (res[i] - drug.changeAmount > drug.targetDosage!) {
+        res.push(res[i] - drug.changeAmount);
+      } else {
+        res.push(drug.targetDosage!);
+      }
+
       if (drug.oralDosageInfo) {
         const { rate } = drug.oralDosageInfo;
         const mlRounded = Math.round((res[i + 1] / rate.mg) * rate.ml);

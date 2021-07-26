@@ -13,6 +13,7 @@ import useDosageSumDifferenceMessage from '../../hooks/useDosageSumDifferenceMes
 import {
   priorDosageChange, PriorDosageChangeAction, upcomingDosageChange, UpcomingDosageChangeAction,
 } from './actions';
+import SelectGrowth from './SelectGrowth';
 
 interface Props {
   time: 'Current' | 'Next';
@@ -133,6 +134,7 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
           </div>
         </div>
       </div>
+      {time === 'Next' && <SelectGrowth/>}
     </>
   );
 };

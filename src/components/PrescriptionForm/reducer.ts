@@ -17,7 +17,7 @@ import {
   LOAD_PRESCRIPTION_DATA,
   PrescriptionFormActions,
   PRIOR_DOSAGE_CHANGE,
-  SET_GOAL_DOSAGE,
+  SET_GOAL_DOSAGE, SET_GROWTH,
   UPCOMING_DOSAGE_CHANGE,
 } from './actions';
 import { CapsuleOrTabletDosage, isCapsuleOrTablet } from '../../types';
@@ -52,6 +52,7 @@ export const initialState: PrescriptionFormState = {
   intervalCount: 7,
   intervalUnit: 'Days',
   intervalDurationDays: 7,
+  growth: 'linear',
 };
 
 export const reducer = (state: PrescriptionFormState, action: PrescriptionFormActions): PrescriptionFormState => {
@@ -230,6 +231,10 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.intervalCount = action.data.count;
         draft.intervalEndDate = action.data.intervalEndDate;
         draft.intervalDurationDays = action.data.intervalDurationDays;
+        break;
+
+      case SET_GROWTH:
+        draft.growth = action.data.growth;
         break;
     }
   });

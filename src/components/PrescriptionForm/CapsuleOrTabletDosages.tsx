@@ -7,6 +7,7 @@ import CapsuleOrTabletUnit from './CapsuleOrTabletUnit';
 import { PrescriptionFormContext } from './PrescriptionForm';
 import { CapsuleOrTabletDosage } from '../../types';
 import useDosageSumDifferenceMessage from '../../hooks/useDosageSumDifferenceMessage';
+import SelectGrowth from './SelectGrowth';
 
 interface Props {
   time: 'Current' | 'Next';
@@ -70,6 +71,7 @@ const CapsuleOrTabletDosages: FC<Props> = ({ time, editable }) => {
           </div>
         </div>
       </div>
+      {time === 'Next' && <SelectGrowth/>}
     </>
   );
 };

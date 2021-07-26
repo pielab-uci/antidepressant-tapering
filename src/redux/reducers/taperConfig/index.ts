@@ -19,7 +19,7 @@ import {
   TableEditingAction,
   ToggleShareProjectedScheduleWithPatient, UpdateChartAction, ValidateInputCompletionAction,
 } from '../../actions/taperConfig';
-import { PrescriptionFormActions } from '../../../components/PrescriptionForm/actions';
+import { PrescriptionFormActions, SetGrowthAction } from '../../../components/PrescriptionForm/actions';
 import drugs from '../drugs';
 import { SetCurrentPatientAction } from '../../actions/user';
 
@@ -94,6 +94,7 @@ export type TaperConfigActions =
   | TableEditingAction
   | UpdateChartAction
   | SetIsInputComplete
+  | SetGrowthAction
   | OpenModalAction
   | SetCurrentPatientAction
   | ValidateInputCompletionAction
@@ -117,6 +118,7 @@ export const emptyPrescribedDrug = (id: number): PrescribedDrug => ({
   upcomingDosages: [],
   upcomingDosageSum: 0,
   targetDosage: 0,
+  growth: 'linear',
   availableDosageOptions: [],
   regularDosageOptions: [],
   allowSplittingUnscoredTablet: false,

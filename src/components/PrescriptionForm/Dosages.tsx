@@ -5,6 +5,7 @@ import { SerializedStyles } from '@emotion/utils';
 import { DrugForm, isCapsuleOrTablet } from '../../types';
 import CapsuleOrTabletDosages from './CapsuleOrTabletDosages';
 import OralFormDosage from './OralFormDosage';
+import SelectGrowth from './SelectGrowth';
 
 interface Props {
   drugForm: DrugForm | null | undefined,

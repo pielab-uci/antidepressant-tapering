@@ -157,6 +157,13 @@ export interface SetIsModalAction {
   data: { isModal: boolean }
 }
 
+export const SET_GROWTH = 'SET_GROWTH' as const;
+
+export interface SetGrowthAction {
+  type: typeof SET_GROWTH,
+  data: { growth: 'linear' | 'exponential', id: number };
+}
+
 export type IntervalActions =
   | IntervalStartDateChangeAction
   | IntervalEndDateChangeAction
@@ -173,4 +180,5 @@ export type PrescriptionFormActions =
   | SetUpcomingDosageGoalAction
   | AllowSplittingUnscoredTabletAction
   | SetIsModalAction
+  | SetGrowthAction
   | IntervalActions;

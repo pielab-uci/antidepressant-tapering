@@ -42,6 +42,7 @@ export interface PrescriptionFormState {
   intervalUnit: 'Days'|'Weeks'|'Months';
   intervalCount: number;
   intervalDurationDays: number;
+  growth: 'linear' | 'exponential';
 }
 
 export type IPrescriptionFormContext = PrescriptionFormState

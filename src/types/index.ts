@@ -109,6 +109,7 @@ export interface PrescribedDrug {
   priorDosageSum: number;
   upcomingDosageSum: number;
   targetDosage: number;
+  growth: 'linear' | 'exponential';
   intervalStartDate: Date;
   intervalEndDate: Date | null;
   intervalCount: number;

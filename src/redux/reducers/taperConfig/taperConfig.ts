@@ -45,7 +45,7 @@ import {
   INTERVAL_UNIT_CHANGE,
   PrescriptionFormActions,
   PRIOR_DOSAGE_CHANGE,
-  SET_GOAL_DOSAGE,
+  SET_GOAL_DOSAGE, SET_GROWTH,
   UPCOMING_DOSAGE_CHANGE,
 } from '../../../components/PrescriptionForm/actions';
 import {
@@ -398,6 +398,11 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         break;
       }
 
+      case SET_GROWTH: {
+        const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
+        drug.growth = action.data.growth;
+        break;
+      }
       case TABLE_DOSAGE_EDITED: {
         if (action.data.rowIndex !== null) {
           const editedRow = draft.projectedSchedule.data[action.data.rowIndex];

@@ -88,6 +88,14 @@ export const convert = (drugs: PrescribedDrug[]): Converted[] => {
   });
 };
 
+const compareDosageToTargetDosage = (dosage: number, changeAmount: number, targetDosage: number, direction: 'increase' | 'decrease' | 'same'): boolean => {
+  if (direction === 'increase') {
+    return dosage + changeAmount < targetDosage;
+  }
+
+  return dosage + changeAmount > targetDosage;
+};
+
 const calcProjectedDosages = (drug: Converted, prescribedDosage: number, length: number): number[] => {
   const res: number[] = [];
   res.push(prescribedDosage);
@@ -124,25 +132,10 @@ const calcProjectedDosages = (drug: Converted, prescribedDosage: number, length:
         res[i + 1] = mg;
       }
     });
-  } else if (drug.changeDirection === 'increase') { // growth: linear, increase
-    // Array(length - 1).fill(null).forEach((_, i) => {
+  } else {
     Array(length).fill(null).forEach((_, i) => {
-      if (res[i] + drug.changeAmount < drug.targetDosage!) {
+      if (compareDosageToTargetDosage(res[i], drug.changeAmount, drug.targetDosage!, drug.changeDirection)) {
         res.push(res[i] + drug.changeAmount);
-      } else {
-        res.push(drug.targetDosage!);
-      }
-      if (drug.oralDosageInfo) {
-        const { rate } = drug.oralDosageInfo;
-        const mlRounded = Math.round((res[i + 1] / rate.mg) * rate.ml);
-        const mg = (mlRounded / rate.ml) * rate.mg;
-        res[i + 1] = mg;
-      }
-    });
-  } else { // growth: linear, decrease
-    Array(length).fill(null).forEach((_, i) => {
-      if (res[i] - drug.changeAmount > drug.targetDosage!) {
-        res.push(res[i] - drug.changeAmount);
       } else {
         res.push(drug.targetDosage!);
       }
@@ -520,7 +513,6 @@ export const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule =
   const rows: TableRowData[] = generateTableRows(converted);
   console.log('rows: ', rows);
 
-  // TODO: reflect later for saving feature
   const intervalOverlapCheckedRows: TableRowData[] = checkIntervalOverlappingRows(rows);
   console.log('intervalOverlapCheckedRows: ', intervalOverlapCheckedRows);
   // const tableDataSorted: TableRowData[] = sort(drugNames, intervalOverlapCheckedRows);

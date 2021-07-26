@@ -494,6 +494,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.scheduleChartData = chartDataConverter(draft.projectedSchedule);
 
         draft.tableSelectedRows = [];
+        draft.finalPrescription = {};
         const notes = generateInstructionsFromSchedule(draft.projectedSchedule, 'both', draft.finalPrescription);
         [draft.instructionsForPatient, draft.instructionsForPharmacy] = [notes.patient!, notes.pharmacy!];
         break;

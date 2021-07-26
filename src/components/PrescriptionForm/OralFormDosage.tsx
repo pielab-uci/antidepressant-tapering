@@ -29,14 +29,14 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
   const {
     formActionDispatch, id, chosenDrugForm, upcomingDosagesQty,
-    priorDosageSum, upcomingDosageSum,
+    priorDosageSum, upcomingDosageSum, growth,
     intervalDurationDays, oralDosageInfo, modal: { isModal, modalDispatch },
   } = context;
   const { dosages } = context[time];
   const dosage = useRef('1mg');
   const [mlDosage, setmlDosage] = useState((dosages['1mg'] / oralDosageInfo!.rate.mg) * oralDosageInfo!.rate.ml);
 
-  const dosageDifferenceMessage = useDosageSumDifferenceMessage(time, priorDosageSum, upcomingDosageSum);
+  const dosageDifferenceMessage = useDosageSumDifferenceMessage(time, priorDosageSum, upcomingDosageSum, growth);
   const dispatch = (action: UpcomingDosageChangeAction | PriorDosageChangeAction) => {
     if (isModal) {
       formActionDispatch(action);

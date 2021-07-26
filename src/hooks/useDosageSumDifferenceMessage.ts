@@ -1,25 +1,29 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-type Type = (time: 'Current'|'Next', priorDosageSum: number, upcomingDosageSum: number) => string | null;
+type Type = (time: 'Current'|'Next', priorDosageSum: number, upcomingDosageSum: number, growth: 'linear' | 'exponential') => string | null;
 
-const useDosageSumDifferenceMessage: Type = (time, priorDosageSum, upcomingDosageSum) => {
+const useDosageSumDifferenceMessage: Type = (time, priorDosageSum, upcomingDosageSum, growth) => {
   const [dosageDifferenceMessage, setDosageDifferenceMessage] = useState<string|null>(null);
 
   useEffect(() => {
     if (time === 'Next') {
-      if (priorDosageSum === 0) {
-        setDosageDifferenceMessage(null);
-      }
+      const change = priorDosageSum > upcomingDosageSum ? 'decrease'
+        : priorDosageSum < upcomingDosageSum ? 'increase'
+          : null;
 
-      if (priorDosageSum > upcomingDosageSum) { // decreasing -> decrease by rate
-        setDosageDifferenceMessage(`${Math.abs((upcomingDosageSum - priorDosageSum) / priorDosageSum * 100).toFixed(2)} % decrease`);
-      } else if (priorDosageSum < upcomingDosageSum) { // increasing -> increase by amount
-        setDosageDifferenceMessage(`${upcomingDosageSum - priorDosageSum} mg increase`);
-      } else {
+      const difference = growth === 'linear'
+        ? `${Math.abs(priorDosageSum - upcomingDosageSum)} mg`
+        : priorDosageSum === 0
+          ? '100%'
+          : `${Math.abs((upcomingDosageSum - priorDosageSum) / priorDosageSum * 100).toFixed(2)} %`;
+
+      if (!change) {
         setDosageDifferenceMessage(null);
+      } else {
+        setDosageDifferenceMessage(`${difference} ${change}`);
       }
     }
-  }, [priorDosageSum, upcomingDosageSum]);
+  }, [priorDosageSum, upcomingDosageSum, growth]);
 
   return dosageDifferenceMessage;
 };

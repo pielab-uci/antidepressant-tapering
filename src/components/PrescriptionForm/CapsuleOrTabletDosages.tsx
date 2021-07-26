@@ -17,9 +17,9 @@ interface Props {
 const CapsuleOrTabletDosages: FC<Props> = ({ time, editable }) => {
   const context = useContext(PrescriptionFormContext);
   const {
-    chosenDrugForm, dosageOptions, priorDosageSum, upcomingDosageSum,
+    chosenDrugForm, dosageOptions, priorDosageSum, upcomingDosageSum, growth,
   } = context;
-  const dosageDifferenceMessage = useDosageSumDifferenceMessage(time, priorDosageSum, upcomingDosageSum);
+  const dosageDifferenceMessage = useDosageSumDifferenceMessage(time, priorDosageSum, upcomingDosageSum, growth);
 
   return (
     <>

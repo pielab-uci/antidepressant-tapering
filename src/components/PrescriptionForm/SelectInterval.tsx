@@ -81,15 +81,16 @@ const SelectInterval = () => {
     const data = {} as IntervalStartDateChangeData;
     const date = new Date(e.target.value);
     data.intervalStartDate = new Date(date.valueOf() + date.getTimezoneOffset() * 60 * 1000);
-    if (intervalEndDate) {
-      if (isAfter(data.intervalStartDate, intervalEndDate)) {
-        data.intervalEndDate = add(data.intervalStartDate, { [intervalUnit.toLowerCase()]: intervalCount - 1 });
-      } else {
-        data.intervalUnit = 'Days';
-        data.intervalDurationDays = differenceInCalendarDays(intervalEndDate, data.intervalStartDate) + 1;
-        data.intervalCount = data.intervalDurationDays;
-      }
-    }
+    data.intervalEndDate = add(data.intervalStartDate, { [intervalUnit.toLowerCase()]: intervalCount });
+    // if (intervalEndDate) {
+    //   if (isAfter(data.intervalStartDate, intervalEndDate)) {
+    //     data.intervalEndDate = add(data.intervalStartDate, { [intervalUnit.toLowerCase()]: intervalCount - 1 });
+    //   } else {
+    //     data.intervalUnit = 'Days';
+    //     data.intervalDurationDays = differenceInCalendarDays(intervalEndDate, data.intervalStartDate) + 1;
+    //     data.intervalCount = data.intervalDurationDays;
+    //   }
+    // }
 
     dispatch(intervalStartDateChange({
       ...data,
@@ -104,6 +105,10 @@ const SelectInterval = () => {
 
     if (isBefore(data.intervalEndDate, intervalStartDate)) {
       data.intervalStartDate = sub(data.intervalEndDate, { [intervalUnit.toLowerCase()]: intervalCount - 1 });
+      // data.intervalStartDate = sub(data.intervalEndDate, { days: 1 });
+      // data.intervalUnit = 'Days';
+      // data.intervalCount = 1;
+      // data.intervalDurationDays = 1;
     } else {
       data.intervalDurationDays = differenceInCalendarDays(data.intervalEndDate, intervalStartDate) + 1;
       data.intervalUnit = 'Days';

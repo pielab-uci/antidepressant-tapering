@@ -132,7 +132,7 @@ const calcProjectedDosages = (drug: Converted, prescribedDosage: number, length:
         res[i + 1] = mg;
       }
     });
-  } else {
+  } else { // linear
     Array(length).fill(null).forEach((_, i) => {
       if (compareDosageToTargetDosage(res[i], drug.changeAmount, drug.targetDosage!, drug.changeDirection)) {
         res.push(res[i] + drug.changeAmount);
@@ -722,14 +722,16 @@ const generateNotesForPharmacyFromRows = (rows: TableRowData[], finalPrescriptio
       return `${message}${messageLine}`;
     }, '');
 
-  const linesWithTotal = Object.entries(finalPrescription.dosageQty).reduce((prev, [dosage, qty], idx, entryArr) => {
-    return `${prev}${drugTitle} ${dosage} ${finalPrescription.form} (total: ${Math.round(qty)}).\n`;
-  }, '');
+  const linesWithTotal = finalPrescription && Object.keys(finalPrescription).length === 0
+    ? ''
+    : Object.entries(finalPrescription.dosageQty).reduce((prev, [dosage, qty], idx, entryArr) => {
+      return `${prev}${drugTitle} ${dosage} ${finalPrescription.form} (total: ${Math.round(qty)}).\n`;
+    }, '');
 
   return `${linesWithSubtotal}${linesWithTotal}`;
 };
 
-export const generateInstructionsFromSchedule = (schedule: Schedule, idx: 'both'|'patientOnly'|'pharmacyOnly', finalPrescription: Prescription): { patient: string|null, pharmacy: string|null } => {
+export const generateInstructionsFromSchedule = (schedule: Schedule, idx: 'both' | 'patientOnly' | 'pharmacyOnly', finalPrescription: Prescription): { patient: string | null, pharmacy: string | null } => {
   const rowsGroupByDrug: { [drug: string]: TableRowData[] } = schedule.data
     .reduce((acc, row) => {
       return Object.keys(acc).includes(row.drug)

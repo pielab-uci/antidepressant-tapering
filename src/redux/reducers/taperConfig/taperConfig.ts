@@ -191,11 +191,13 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         });
          */
         draft.finalPrescription = calcFinalPrescription(draft.projectedSchedule.data, draft.tableSelectedRows);
-        const notes = generateInstructionsFromSchedule(draft.projectedSchedule, 'both', draft.finalPrescription);
-        [draft.instructionsForPatient, draft.instructionsForPharmacy] = [notes.patient!, notes.pharmacy!];
-        // const instructions: { patient: string | null, pharmacy: string | null } = generateInstructionsFromSchedule(draft.projectedSchedule, 'both', draft.finalPrescription);
-        // draft.instructionsForPatient = instructions.patient!;
-        // draft.instructionsForPharmacy = instructions.pharmacy!;
+        if (draft.finalPrescription && Object.keys(draft.finalPrescription).length === 0) {
+          draft.instructionsForPatient = '';
+          draft.instructionsForPharmacy = '';
+        } else {
+          const notes = generateInstructionsFromSchedule(draft.projectedSchedule, 'both', draft.finalPrescription);
+          [draft.instructionsForPatient, draft.instructionsForPharmacy] = [notes.patient!, notes.pharmacy!];
+        }
         break;
       }
 
@@ -495,8 +497,10 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
 
         draft.tableSelectedRows = [];
         draft.finalPrescription = {};
-        const notes = generateInstructionsFromSchedule(draft.projectedSchedule, 'both', draft.finalPrescription);
-        [draft.instructionsForPatient, draft.instructionsForPharmacy] = [notes.patient!, notes.pharmacy!];
+        draft.instructionsForPatient = '';
+        draft.instructionsForPharmacy = '';
+        // const notes = generateInstructionsFromSchedule(draft.projectedSchedule, 'both', draft.finalPrescription);
+        // [draft.instructionsForPatient, draft.instructionsForPharmacy] = [notes.patient!, notes.pharmacy!];
         break;
       }
 

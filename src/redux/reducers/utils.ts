@@ -441,6 +441,39 @@ export const generateTableRows = (drugs: Converted[], startRowIndexInPrescribedD
   return tableRowsByDrug.flatMap((drug) => drug.rows);
 };
 
+export const fixIntervalOverlapping = (rows: TableRowData[], clickedRowIndex: number, prescribedDrugFromModal: PrescribedDrug): TableRowData[] => {
+  const overlappingRowsIndices = rows.map((row, i) => {
+    if (areIntervalsOverlapping({ start: row.startDate!, end: row.endDate! },
+      { start: prescribedDrugFromModal.intervalStartDate, end: prescribedDrugFromModal.intervalEndDate! })) {
+      return i;
+    }
+    return -1;
+  })
+    .filter((row, i) => i !== -1);
+
+  return rows.map((row, idx) => {
+    if (overlappingRowsIndices.includes(idx)) {
+      if (idx < clickedRowIndex) {
+        const endDate = sub(prescribedDrugFromModal.intervalEndDate!, { days: (clickedRowIndex - idx) * prescribedDrugFromModal.intervalDurationDays + 1 });
+        const startDate = sub(endDate, { days: prescribedDrugFromModal.intervalDurationDays - 1 });
+        return {
+          ...row,
+          startDate,
+          endDate,
+        };
+      }
+      const startDate = add(prescribedDrugFromModal.intervalEndDate!, { days: (idx - clickedRowIndex) * prescribedDrugFromModal.intervalDurationDays + 1 });
+      const endDate = add(startDate, { days: prescribedDrugFromModal.intervalDurationDays - 1 });
+      return {
+        ...row,
+        startDate,
+        endDate,
+      };
+    }
+    return row;
+  });
+};
+
 export const checkIntervalOverlappingRows = (rows: TableRowData[]): TableRowData[] => {
   const rowsAddedInCurrentVisit = rows.filter((row) => row.addedInCurrentVisit);
   const rowsFromPreviousVisits = rows.filter((row) => !row.addedInCurrentVisit);
@@ -513,8 +546,8 @@ export const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule =
   const rows: TableRowData[] = generateTableRows(converted);
   console.log('rows: ', rows);
 
-  const intervalOverlapCheckedRows: TableRowData[] = checkIntervalOverlappingRows(rows);
-  console.log('intervalOverlapCheckedRows: ', intervalOverlapCheckedRows);
+  // const intervalOverlapCheckedRows: TableRowData[] = checkIntervalOverlappingRows(rows);
+  // console.log('intervalOverlapCheckedRows: ', intervalOverlapCheckedRows);
   // const tableDataSorted: TableRowData[] = sort(drugNames, intervalOverlapCheckedRows);
   const tableDataSorted: TableRowData[] = sort(drugNames, rows);
   console.log('tableData: ', tableDataSorted);

@@ -51,7 +51,7 @@ import {
 import {
   calcFinalPrescription,
   calcMinimumQuantityForDosage,
-  chartDataConverter, checkIntervalOverlappingRows, convert,
+  chartDataConverter, checkIntervalOverlappingRows, convert, fixIntervalOverlapping,
   generateInstructionsFromSchedule,
   generateTableRows,
   isCompleteDrugInput,
@@ -481,8 +481,8 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
 
         const generatedTableRows: TableRowData[] = generateTableRows(converted, action.data.clickedRow.rowIndexInPrescribedDrug);
 
-        const intervalOverlapChecked: TableRowData[] = checkIntervalOverlappingRows(generatedTableRows);
-        // const intervalOverlapChecked: TableRowData[] = generatedTableRows;
+        // const intervalOverlapChecked: TableRowData[] = checkIntervalOverlappingRows(generatedTableRows);
+        const intervalOverlapChecked: TableRowData[] = fixIntervalOverlapping(generatedTableRows, action.data.clickedRow.rowIndexInPrescribedDrug, action.data.prescribedDrug);
 
         const drugNames: string[] = [...new Set(draft.projectedSchedule.drugs.map((drug) => drug.name).concat([action.data.prescribedDrug.name]))];
 

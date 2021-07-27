@@ -1,5 +1,5 @@
 import { Schedule } from '../components/Schedule/ProjectedSchedule';
-import { ScheduleChartData } from '../redux/reducers/utils';
+import { ScheduleChartData } from '../utils/taperConfig';
 
 export interface Clinician {
   id: number;

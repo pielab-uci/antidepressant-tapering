@@ -27,7 +27,7 @@ import {
   UpdateChartAction,
 } from '../actions/taperConfig';
 import { Prescription } from '../../types';
-import { completePrescribedDrugs, ScheduleChartData } from '../reducers/utils';
+import { completePrescribedDrugs, ScheduleChartData } from '../../utils/taperConfig';
 import { TaperConfigState } from '../reducers/taperConfig';
 import { Schedule } from '../../components/Schedule/ProjectedSchedule';
 

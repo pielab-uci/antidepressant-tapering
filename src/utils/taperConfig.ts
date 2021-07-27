@@ -8,9 +8,9 @@ import sub from 'date-fns/esm/sub';
 
 import {
   OralDosage, PrescribedDrug, TableRowData, Converted, Prescription, ValueOf,
-} from '../../types';
-import { Schedule } from '../../components/Schedule/ProjectedSchedule';
-import { drugNameBrandPairs } from './drugs';
+} from '../types';
+import { Schedule } from '../components/Schedule/ProjectedSchedule';
+import { drugNameBrandPairs } from '../redux/reducers/drugs';
 
 export const isCompleteDrugInput = (drug: PrescribedDrug) => {
   const priorDosageSum = drug.priorDosages.reduce((prev, { dosage, quantity }) => {
@@ -451,6 +451,7 @@ export const fixIntervalOverlapping = (rows: TableRowData[], clickedRowIndex: nu
   })
     .filter((row, i) => i !== -1);
 
+  // TODO: need to check the overlap with prior dosage row
   return rows.map((row, idx) => {
     if (overlappingRowsIndices.includes(idx)) {
       if (idx < clickedRowIndex) {

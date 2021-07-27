@@ -16,7 +16,7 @@ import {
   FetchTaperConfigRequestAction,
 } from '../redux/actions/taperConfig';
 import { SET_CURRENT_PATIENT, SetCurrentPatientAction } from '../redux/actions/user';
-import { checkCurrentPatientAndRender } from './utils';
+import { checkCurrentPatientAndRender } from '../utils/pages';
 import TaperConfigurationPage from './TaperConfiguration/TaperConfigurationPage';
 import PatientLandingPage from './PatientLandingPage';
 

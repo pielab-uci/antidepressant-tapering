@@ -6,7 +6,7 @@ import format from 'date-fns/format';
 import { FC, useMemo, useRef } from 'react';
 import rgbHex from 'rgb-hex';
 import { css } from '@emotion/react';
-import { ScheduleChartData } from '../../redux/reducers/utils';
+import { ScheduleChartData } from '../../utils/taperConfig';
 
 interface Props {
   scheduleChartData: ScheduleChartData;

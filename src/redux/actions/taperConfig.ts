@@ -3,7 +3,7 @@ import {
   PrescribedDrug, Prescription, TableRowData, TaperingConfiguration,
 } from '../../types';
 import { Schedule } from '../../components/Schedule/ProjectedSchedule';
-import { ScheduleChartData } from '../reducers/utils';
+import { ScheduleChartData } from '../../utils/taperConfig';
 
 export const GENERATE_SCHEDULE = 'GENERATE_SCHEDULE' as const;
 export const CLEAR_SCHEDULE = 'CLEAR_SCHEDULE' as const;

@@ -20,7 +20,7 @@ import {
 } from '../../redux/actions/taperConfig';
 import { CreateTaperConfiguration, EditTaperConfiguration, ConfirmTaperConfiguration } from './index';
 import { UserState } from '../../redux/reducers/user';
-import { checkCurrentPatientAndRender } from '../utils';
+import { checkCurrentPatientAndRender } from '../../utils/pages';
 
 const navTextStyle = css`
   display: flex;

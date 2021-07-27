@@ -59,7 +59,7 @@ import {
   ScheduleChartData,
   scheduleGenerator, sort,
   validateCompleteInputs,
-} from '../utils';
+} from '../../../utils/taperConfig';
 import {
   TaperConfigState, TaperConfigActions, emptyPrescribedDrug, initialState,
 } from './index';

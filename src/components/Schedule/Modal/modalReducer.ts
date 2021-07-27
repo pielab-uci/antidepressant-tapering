@@ -10,7 +10,7 @@ import {
 import drugs from '../../../redux/reducers/drugs';
 import { VALIDATE_INPUT_COMPLETION } from '../../../redux/actions/taperConfig';
 import { TaperConfigActions } from '../../../redux/reducers/taperConfig';
-import { validateCompleteInputs } from '../../../redux/reducers/utils';
+import { validateCompleteInputs } from '../../../utils/taperConfig';
 
 export const INIT_MODAL = 'INIT_MODAL';
 

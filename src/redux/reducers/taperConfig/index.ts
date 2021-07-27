@@ -3,7 +3,7 @@ import {
   Drug, PrescribedDrug, Prescription, TaperingConfiguration,
 } from '../../../types';
 import { Schedule } from '../../../components/Schedule/ProjectedSchedule';
-import { ScheduleChartData } from '../utils';
+import { ScheduleChartData } from '../../../utils/taperConfig';
 import {
   AddNewDrugFormAction, AddOrUpdateTaperConfigAyncActions,
   ChangeMessageForPatient,

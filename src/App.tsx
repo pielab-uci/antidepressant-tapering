@@ -12,7 +12,7 @@ import { RootState } from './redux/reducers';
 import { UserState } from './redux/reducers/user';
 import LoginPage from './pages/LoginPage';
 import 'antd/dist/antd.css';
-import { checkCurrentPatientAndRender } from './pages/utils';
+import { checkCurrentPatientAndRender } from './utils/pages';
 import NavBar from './components/NavBar';
 import Header from './components/Header';
 import './app.css';

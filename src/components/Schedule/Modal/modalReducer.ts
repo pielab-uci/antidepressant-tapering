@@ -3,12 +3,17 @@ import { Drug, PrescribedDrug, TableRowData } from '../../../types';
 import {
   ALLOW_SPLITTING_UNSCORED_TABLET,
   CHOOSE_BRAND,
-  CHOOSE_FORM, INTERVAL_COUNT_CHANGE, INTERVAL_END_DATE_CHANGE, INTERVAL_START_DATE_CHANGE, INTERVAL_UNIT_CHANGE,
-  PRIOR_DOSAGE_CHANGE, SET_GOAL_DOSAGE,
+  CHOOSE_FORM,
+  INTERVAL_COUNT_CHANGE,
+  INTERVAL_END_DATE_CHANGE,
+  INTERVAL_START_DATE_CHANGE,
+  INTERVAL_UNIT_CHANGE,
+  PRIOR_DOSAGE_CHANGE,
+  SET_GOAL_DOSAGE,
   UPCOMING_DOSAGE_CHANGE,
 } from '../../PrescriptionForm/actions';
 import drugs from '../../../redux/reducers/drugs';
-import { VALIDATE_INPUT_COMPLETION } from '../../../redux/actions/taperConfig';
+import { EDIT_PROJECTED_SCHEDULE_FROM_MODAL, VALIDATE_INPUT_COMPLETION } from '../../../redux/actions/taperConfig';
 import { TaperConfigActions } from '../../../redux/reducers/taperConfig';
 import { validateCompleteInputs } from '../../../utils/taperConfig';
 
@@ -76,8 +81,9 @@ const reducer = (state: RowEditingModalState = initialState, action: ModalAction
           upcomingDosages: prescriptionToDosages(clickedRow),
           priorDosageSum: prevRow.dosage,
           upcomingDosageSum: clickedRow.dosage,
-          targetDosage: prescribedDrugs?.find((drug) => drug.brand === clickedRow.brand)?.targetDosage
-            || (clickedRow.changeDirection === 'decrease' ? 0 : clickedRow.dosage),
+          // targetDosage: prescribedDrugs?.find((drug) => drug.brand === clickedRow.brand)?.targetDosage
+          //   || (clickedRow.changeDirection === 'decrease' ? 0 : clickedRow.dosage),
+          targetDosage: clickedRow.goalDosage,
         };
 
         draft.initialPrescribedDrug = { ...draft.prescribedDrug };

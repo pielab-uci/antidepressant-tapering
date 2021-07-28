@@ -336,6 +336,7 @@ export const alignEndDates = (tableRowsByDrug: TableRowsByDrug): TableRowData[] 
         intervalUnit,
         intervalDurationDays,
         intervalCount,
+        rowIndexInPrescribedDrug: drug.rows[drug.rows.length - 1].rowIndexInPrescribedDrug + 1,
         prescription: prescription({
           form: drug.rows[drug.rows.length - 1].form,
           oralDosageInfo: drug.rows[drug.rows.length - 1].oralDosageInfo,
@@ -568,6 +569,9 @@ export const handleIntervalOverlap = ({
   const rowsUnchanged = overlapCheckedRows.filter((row) => row.drug !== prescribedDrugFromModal.name);
 
   // return [...rowsWithEditedDrug, ...rowsUnchanged];
+  if (rowsUnchanged.length === 0) {
+    return [{ drug: rowsWithEditedDrug[0].drug, lastEndDate: rowsWithEditedDrug[rowsWithEditedDrug.length - 1].endDate!, rows: rowsWithEditedDrug }];
+  }
   return [{ drug: rowsWithEditedDrug[0].drug, lastEndDate: rowsWithEditedDrug[rowsWithEditedDrug.length - 1].endDate!, rows: rowsWithEditedDrug },
     { drug: rowsUnchanged[0].drug, lastEndDate: rowsUnchanged[rowsUnchanged.length - 1].endDate!, rows: rowsUnchanged }];
 };
@@ -776,13 +780,18 @@ const getCountRead = (num: number): string => {
 const capitalize = (str: string): string => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
-
 const generateNotesForPatientFromRows = (rows: TableRowData[]): string => {
   const drugTitle = rows[0].brand.includes('generic')
     ? `${rows[0].drug.replace(' (generic)', '')} (${drugNameBrandPairs[rows[0].drug]})`
     : `${rows[0].brand.split(' ')[0]} (${rows[0].drug})`;
 
   const messageHeading = rows[0].changeDirection === 'decrease' ? `Reduce ${drugTitle} to\n` : `Take ${drugTitle}\n`;
+
+  const selectedRows = rows.filter((row) => row.selected && !row.isPriorDosage);
+
+  if (selectedRows.length === 0) {
+    return '';
+  }
 
   return rows
     .filter((row) => row.selected && !row.isPriorDosage)
@@ -853,7 +862,7 @@ const generateNotesForPharmacyFromRows = (rows: TableRowData[], finalPrescriptio
       return `${message}${messageLine}`;
     }, '');
 
-  const linesWithTotal = finalPrescription && Object.keys(finalPrescription).length === 0
+  const linesWithTotal = !finalPrescription || Object.keys(finalPrescription).length === 0
     ? ''
     : Object.entries(finalPrescription.dosageQty).reduce((prev, [dosage, qty], idx, entryArr) => {
       return `${prev}${drugTitle} ${dosage} ${finalPrescription.form} (total: ${Math.round(qty)}).\n`;

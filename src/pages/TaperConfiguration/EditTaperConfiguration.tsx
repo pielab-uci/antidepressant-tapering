@@ -60,9 +60,11 @@ const EditTaperConfiguration = () => {
   } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
   useEffect(() => {
     // Triggers GENERATE_SCHEDULE event in saga
-    dispatch({
-      type: MOVE_FROM_CREATE_TO_PRESCRIBE_PAGE,
-    });
+    if (!location.pathname.includes('revisit')) {
+      dispatch({
+        type: MOVE_FROM_CREATE_TO_PRESCRIBE_PAGE,
+      });
+    }
   }, []);
 
   const moveToPrevious = () => {

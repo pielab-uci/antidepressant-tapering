@@ -49,6 +49,7 @@ import {
   UPCOMING_DOSAGE_CHANGE,
 } from '../../../components/PrescriptionForm/actions';
 import {
+  alignEndDates,
   calcFinalPrescription,
   calcMinimumQuantityForDosage,
   chartDataConverter, checkIntervalOverlappingRows, convert,
@@ -57,7 +58,7 @@ import {
   isCompleteDrugInput,
   prescription,
   ScheduleChartData,
-  scheduleGenerator, sort,
+  scheduleGenerator, sort, TableRowsByDrug,
   validateCompleteInputs,
 } from '../../../utils/taperConfig';
 import {
@@ -222,39 +223,13 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case CHOOSE_BRAND: {
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         const correspondingDrugData = draft.drugs.find((d) => d.options.find((option) => option.brand === action.data.brand))!;
-        const previousDrugName = drug.name;
-
         draft.chosenDrugs[action.data.id] = {
           drug: correspondingDrugData.name,
           brand: action.data.brand,
         };
 
-        // draft.chosenDrugs = draft.chosenDrugs.filter((drugName) => drugName !== previousDrugName);
-        // draft.chosenDrugs.push(correspondingDrugData.name);
-        //
-        // draft.drugs = draft.drugs.map((drugData) => {
-        //   return {
-        //     ...drugData,
-        //     selected: draft.chosenDrugs.includes(correspondingDrugData.name),
-        //   };
-        // });
-        //
-        // if (draft.prescribedDrugs!.length !== 1) {
-        //   draft.drugs = draft.drugs.map(drugData => {
-        //     return {
-        //       ...drugData,
-        //
-        //     }
-        //   })
-        //
-        // }
         drug.name = correspondingDrugData.name;
         drug.halfLife = correspondingDrugData.halfLife;
-        // drug.name = draft.drugs.find(
-        //   (d) => d.options.find(
-        //     (option) => option.brand === action.data.brand,
-        //   ),
-        // )!.name;
         drug.brand = action.data.brand;
         drug.form = '';
         drug.allowChangePriorDosage = true;
@@ -482,20 +457,19 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
 
         const generatedTableRows: TableRowData[] = generateTableRows(converted, action.data.clickedRow.rowIndexInPrescribedDrug);
 
-        // const intervalOverlapChecked: TableRowData[] = checkIntervalOverlappingRows(generatedTableRows);
-        // const intervalOverlapChecked: TableRowData[] = fixIntervalOverlapping(generatedTableRows, action.data.clickedRow.rowIndexInPrescribedDrug, action.data.prescribedDrug);
-        // const intervalOverlapChecked: TableRowData[] = fixIntervalOverlapping(draft.projectedSchedule.data.concat(generatedTableRows), action.data.clickedRow.rowIndexInPrescribedDrug, action.data.prescribedDrug);
-        const intervalOverlapChecked: TableRowData[] = handleIntervalOverlap({
+        const intervalOverlapChecked: TableRowsByDrug = handleIntervalOverlap({
           originalRows: draft.projectedSchedule.data,
           newRows: generatedTableRows,
           prescribedDrugFromModal: action.data.prescribedDrug,
           clickedRowIndex: action.data.clickedRow.rowIndexInPrescribedDrug,
         });
 
+        const tableRowsEndDatesAligned = alignEndDates(intervalOverlapChecked);
         const drugNames: string[] = [...new Set(draft.projectedSchedule.drugs.map((drug) => drug.name).concat([action.data.prescribedDrug.name]))];
 
         // const sorted: TableRowData[] = sort(drugNames, draft.projectedSchedule.data.concat(intervalOverlapChecked));
-        const sorted: TableRowData[] = sort(drugNames, intervalOverlapChecked);
+        // const sorted: TableRowData[] = sort(drugNames, intervalOverlapChecked);
+        const sorted: TableRowData[] = sort(drugNames, tableRowsEndDatesAligned);
 
         draft.projectedSchedule.data = sorted;
         draft.projectedSchedule.drugs = draft.prescribedDrugs!.filter((drug) => drug.brand === action.data.prescribedDrug.brand).length !== 0

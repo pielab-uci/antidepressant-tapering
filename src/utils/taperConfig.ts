@@ -311,6 +311,44 @@ const projectionLengthOfEachDrug = (drug: Converted): number => {
   return 0;
 };
 
+export type TableRowsByDrug = { drug: string, lastEndDate: Date, rows: TableRowData[] }[];
+export const alignEndDates = (tableRowsByDrug: TableRowsByDrug): TableRowData[] => {
+  const endDates = tableRowsByDrug.map((d) => d.lastEndDate);
+  const lastEndDateAndIndex: [number, Date] = endDates.reduce(([i, prev], curr, j) => {
+    if (isAfter(prev, curr)) {
+      return [i, prev];
+    }
+    return [j, curr];
+  }, [0, endDates[0]]);
+
+  tableRowsByDrug.forEach((drug, i) => {
+    if (i !== lastEndDateAndIndex[0]) {
+      const startDate = add(drug.lastEndDate, { days: 1 });
+      const endDate = lastEndDateAndIndex[1];
+      const intervalDurationDays = differenceInCalendarDays(endDate, startDate) + 1;
+      const intervalCount = intervalDurationDays;
+      const intervalUnit = 'Days';
+
+      drug.rows.push({
+        ...drug.rows[drug.rows.length - 1],
+        startDate,
+        endDate,
+        intervalUnit,
+        intervalDurationDays,
+        intervalCount,
+        prescription: prescription({
+          form: drug.rows[drug.rows.length - 1].form,
+          oralDosageInfo: drug.rows[drug.rows.length - 1].oralDosageInfo,
+          intervalCount,
+          intervalUnit,
+          intervalDurationDays,
+        }, drug.rows[drug.rows.length - 1].unitDosages!),
+      });
+    }
+  });
+  return tableRowsByDrug.flatMap((drug) => drug.rows);
+};
+
 export const generateTableRows = (drugs: Converted[], startRowIndexInPrescribedDrug = 0): TableRowData[] => {
   // const lengthOfProjection = Math.max(...drugs.map(projectionLengthOfEachDrug));
   console.group('generateTableRows');
@@ -412,33 +450,14 @@ export const generateTableRows = (drugs: Converted[], startRowIndexInPrescribedD
         newRowData.endDate = sub(add(newRowData.startDate, durationInDaysCount), { days: 1 });
       }
     });
+    const rowsToReturn = rows.filter((row) => row.dosage !== undefined);
     return {
       drug: drug.name,
-      lastEndDate: rows[rows.length - 1].endDate!,
-      rows: rows.filter((row) => row.dosage !== undefined),
+      rows: rowsToReturn,
+      lastEndDate: rowsToReturn[rowsToReturn.length - 1].endDate!,
     };
   });
-
-  const endDates = tableRowsByDrug.map((d) => d.lastEndDate);
-  const lastEndDateAndIndex: [number, Date] = endDates.reduce(([i, prev], curr, j) => {
-    if (isAfter(prev, curr)) {
-      return [i, prev];
-    }
-    return [j, curr];
-  }, [0, endDates[0]]);
-
-  tableRowsByDrug.forEach((drug, i) => {
-    if (i !== lastEndDateAndIndex[0]) {
-      drug.rows.push({
-        ...drug.rows[drug.rows.length - 1],
-        startDate: add(drug.lastEndDate, { days: 1 }),
-        endDate: lastEndDateAndIndex[1],
-      });
-    }
-  });
-
-  console.groupEnd();
-  return tableRowsByDrug.flatMap((drug) => drug.rows);
+  return alignEndDates(tableRowsByDrug);
 };
 
 // todo: check with two drugs..
@@ -449,7 +468,7 @@ export const replaceRowsWithModifiedNewOnes = (originalRows: TableRowData[], new
   return [...originalRowsWithSameDrug.filter((row) => row.rowIndexInPrescribedDrug < newRowsMinIdx), ...newRows, ...restRows];
 };
 
-interface IhandleIntervalOverlap {
+interface IHandleIntervalOverlap {
   originalRows: TableRowData[];
   newRows: TableRowData[];
   clickedRowIndex: number;
@@ -461,7 +480,7 @@ export const handleIntervalOverlap = ({
   newRows,
   clickedRowIndex,
   prescribedDrugFromModal,
-}: IhandleIntervalOverlap): TableRowData[] => {
+}: IHandleIntervalOverlap): TableRowsByDrug => {
   // remove old rows and merge the newly generated ones
   const rowsReplacedWithNewOnes = replaceRowsWithModifiedNewOnes(originalRows, newRows);
 
@@ -548,7 +567,9 @@ export const handleIntervalOverlap = ({
 
   const rowsUnchanged = overlapCheckedRows.filter((row) => row.drug !== prescribedDrugFromModal.name);
 
-  return [...rowsWithEditedDrug, ...rowsUnchanged];
+  // return [...rowsWithEditedDrug, ...rowsUnchanged];
+  return [{ drug: rowsWithEditedDrug[0].drug, lastEndDate: rowsWithEditedDrug[rowsWithEditedDrug.length - 1].endDate!, rows: rowsWithEditedDrug },
+    { drug: rowsUnchanged[0].drug, lastEndDate: rowsUnchanged[rowsUnchanged.length - 1].endDate!, rows: rowsUnchanged }];
 };
 
 export const checkIntervalOverlappingRows = (rows: TableRowData[]): TableRowData[] => {

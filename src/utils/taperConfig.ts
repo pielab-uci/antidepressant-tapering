@@ -441,34 +441,90 @@ export const generateTableRows = (drugs: Converted[], startRowIndexInPrescribedD
   return tableRowsByDrug.flatMap((drug) => drug.rows);
 };
 
-export const fixIntervalOverlapping = (rows: TableRowData[], clickedRowIndex: number, prescribedDrugFromModal: PrescribedDrug): TableRowData[] => {
-  const overlappingRowsIndices = rows.map((row, i) => {
-    if (areIntervalsOverlapping({ start: row.startDate!, end: row.endDate! },
-      { start: prescribedDrugFromModal.intervalStartDate, end: prescribedDrugFromModal.intervalEndDate! })) {
-      return i;
-    }
-    return -1;
-  })
-    .filter((row, i) => i !== -1);
+// todo: check with two drugs..
+export const replaceRowsWithModifiedNewOnes = (originalRows: TableRowData[], newRows: TableRowData[]): TableRowData[] => {
+  const newRowsMinIdx = Math.min(...newRows.map((row) => row.rowIndexInPrescribedDrug));
+  const originalRowsWithSameDrug = originalRows.filter((row) => row.drug === newRows[0].drug);
+  const restRows = originalRows.filter((row) => row.drug !== newRows[0].drug);
+  return [...originalRowsWithSameDrug.filter((row) => row.rowIndexInPrescribedDrug < newRowsMinIdx), ...newRows, ...restRows];
+};
 
-  // TODO: need to check the overlap with prior dosage row
-  return rows.map((row, idx) => {
-    if (overlappingRowsIndices.includes(idx)) {
-      if (idx < clickedRowIndex) {
-        const endDate = sub(prescribedDrugFromModal.intervalEndDate!, { days: (clickedRowIndex - idx) * prescribedDrugFromModal.intervalDurationDays + 1 });
-        const startDate = sub(endDate, { days: prescribedDrugFromModal.intervalDurationDays - 1 });
+interface IhandleIntervalOverlap {
+  originalRows: TableRowData[];
+  newRows: TableRowData[];
+  clickedRowIndex: number;
+  prescribedDrugFromModal: PrescribedDrug
+}
+
+export const handleIntervalOverlap = ({
+  originalRows,
+  newRows,
+  clickedRowIndex,
+  prescribedDrugFromModal,
+}: IhandleIntervalOverlap): TableRowData[] => {
+  // remove old rows and merge the newly generated ones
+  const rowsReplacedWithNewOnes = replaceRowsWithModifiedNewOnes(originalRows, newRows);
+
+  // fix interval overlapping
+  const overlappingRowsIndices = rowsReplacedWithNewOnes.map((row, i) => {
+    if (row.rowIndexInPrescribedDrug !== clickedRowIndex && areIntervalsOverlapping({ start: row.startDate || row.endDate!, end: row.endDate! }, {
+      start: prescribedDrugFromModal.intervalStartDate, end: prescribedDrugFromModal.intervalEndDate!,
+    })) {
+      return row.rowIndexInPrescribedDrug;
+    }
+    return null;
+  }).filter((rowIdx) => rowIdx !== null);
+
+  const overlappingRowsAboveClickedRowsIndices = overlappingRowsIndices.filter((rowIdx) => rowIdx! && rowIdx! < clickedRowIndex).reverse();
+  const newStartDateCoversMultipleRows = overlappingRowsAboveClickedRowsIndices.length !== 0
+  && overlappingRowsAboveClickedRowsIndices[0]
+  && overlappingRowsAboveClickedRowsIndices[0] < clickedRowIndex - 1;
+
+  return rowsReplacedWithNewOnes.map((row) => {
+    if (overlappingRowsIndices.includes(row.rowIndexInPrescribedDrug)) {
+      if (row.rowIndexInPrescribedDrug < clickedRowIndex) {
+        // TODO: cover the case where user doesn't want to push the start date of the rows before the clicked row..?
+
+        const endDate = sub(prescribedDrugFromModal.intervalStartDate!, { days: (clickedRowIndex - row.rowIndexInPrescribedDrug - 1) * prescribedDrugFromModal.intervalDurationDays + 1 });
+        const startDate = row.isPriorDosage ? null : sub(endDate, { days: prescribedDrugFromModal.intervalDurationDays - 1 });
+        const intervalCount = prescribedDrugFromModal.intervalDurationDays;
+        const intervalUnit = 'Days';
+
         return {
           ...row,
           startDate,
           endDate,
+          intervalCount,
+          intervalUnit,
+          intervalDurationDays: intervalCount,
+          prescription: prescription({
+            form: row.form,
+            intervalCount,
+            intervalUnit,
+            intervalDurationDays: intervalCount,
+            oralDosageInfo: row.oralDosageInfo,
+          }, row.unitDosages!),
         };
       }
-      const startDate = add(prescribedDrugFromModal.intervalEndDate!, { days: (idx - clickedRowIndex) * prescribedDrugFromModal.intervalDurationDays + 1 });
+      const startDate = add(prescribedDrugFromModal.intervalEndDate!, { days: (row.rowIndexInPrescribedDrug - clickedRowIndex) * prescribedDrugFromModal.intervalDurationDays + 1 });
       const endDate = add(startDate, { days: prescribedDrugFromModal.intervalDurationDays - 1 });
+      const intervalCount = prescribedDrugFromModal.intervalDurationDays;
+      const intervalUnit = 'Days';
+
       return {
         ...row,
         startDate,
         endDate,
+        intervalCount,
+        intervalUnit,
+        intervalDurationDays: intervalCount,
+        prescription: prescription({
+          form: row.form,
+          intervalCount,
+          intervalUnit,
+          intervalDurationDays: intervalCount,
+          oralDosageInfo: row.oralDosageInfo,
+        }, row.unitDosages!),
       };
     }
     return row;

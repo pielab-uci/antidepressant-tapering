@@ -51,9 +51,9 @@ import {
 import {
   calcFinalPrescription,
   calcMinimumQuantityForDosage,
-  chartDataConverter, checkIntervalOverlappingRows, convert, fixIntervalOverlapping,
+  chartDataConverter, checkIntervalOverlappingRows, convert,
   generateInstructionsFromSchedule,
-  generateTableRows,
+  generateTableRows, handleIntervalOverlap,
   isCompleteDrugInput,
   prescription,
   ScheduleChartData,
@@ -472,6 +472,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
          */
 
         // Delete related rows
+        // TODO: delete rows within the rows with same drug
         draft.projectedSchedule.data = draft.projectedSchedule.data
           .filter((row) => (row.brand !== action.data.clickedRow.brand)
             || (row.brand === action.data.clickedRow.brand
@@ -482,11 +483,19 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         const generatedTableRows: TableRowData[] = generateTableRows(converted, action.data.clickedRow.rowIndexInPrescribedDrug);
 
         // const intervalOverlapChecked: TableRowData[] = checkIntervalOverlappingRows(generatedTableRows);
-        const intervalOverlapChecked: TableRowData[] = fixIntervalOverlapping(generatedTableRows, action.data.clickedRow.rowIndexInPrescribedDrug, action.data.prescribedDrug);
+        // const intervalOverlapChecked: TableRowData[] = fixIntervalOverlapping(generatedTableRows, action.data.clickedRow.rowIndexInPrescribedDrug, action.data.prescribedDrug);
+        // const intervalOverlapChecked: TableRowData[] = fixIntervalOverlapping(draft.projectedSchedule.data.concat(generatedTableRows), action.data.clickedRow.rowIndexInPrescribedDrug, action.data.prescribedDrug);
+        const intervalOverlapChecked: TableRowData[] = handleIntervalOverlap({
+          originalRows: draft.projectedSchedule.data,
+          newRows: generatedTableRows,
+          prescribedDrugFromModal: action.data.prescribedDrug,
+          clickedRowIndex: action.data.clickedRow.rowIndexInPrescribedDrug,
+        });
 
         const drugNames: string[] = [...new Set(draft.projectedSchedule.drugs.map((drug) => drug.name).concat([action.data.prescribedDrug.name]))];
 
-        const sorted: TableRowData[] = sort(drugNames, draft.projectedSchedule.data.concat(intervalOverlapChecked));
+        // const sorted: TableRowData[] = sort(drugNames, draft.projectedSchedule.data.concat(intervalOverlapChecked));
+        const sorted: TableRowData[] = sort(drugNames, intervalOverlapChecked);
 
         draft.projectedSchedule.data = sorted;
         draft.projectedSchedule.drugs = draft.prescribedDrugs!.filter((drug) => drug.brand === action.data.prescribedDrug.brand).length !== 0

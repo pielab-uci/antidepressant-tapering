@@ -752,6 +752,7 @@ export const chartDataConverter = (schedule: Schedule): ScheduleChartData => {
 
   return scheduleChartData;
 };
+
 const getCountRead = (num: number): string => {
   const counts: { [num: string]: string } = {
     1: 'one',
@@ -771,7 +772,8 @@ const getCountRead = (num: number): string => {
     const numStrSplit = numStr.split('.');
     const intCount = counts[numStrSplit[0]] || numStrSplit[0];
     const decimalCount = 'a half';
-    return `${parseFloat(intCount) !== 0 ? intCount : ''} and ${decimalCount}`;
+    return parseFloat(intCount) !== 0 ? `${intCount} and ${decimalCount}` : `${decimalCount}`;
+    // return `${parseFloat(intCount) !== 0 ? intCount : ''} and ${decimalCount}`;
   }
 
   return counts[numStr] || numStr;
@@ -780,6 +782,7 @@ const getCountRead = (num: number): string => {
 const capitalize = (str: string): string => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
+
 const generateNotesForPatientFromRows = (rows: TableRowData[]): string => {
   const drugTitle = rows[0].brand.includes('generic')
     ? `${rows[0].drug.replace(' (generic)', '')} (${drugNameBrandPairs[rows[0].drug]})`

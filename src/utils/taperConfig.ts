@@ -39,7 +39,7 @@ export const completePrescribedDrugs = (drugs: PrescribedDrug[] | null | undefin
   return drugs ? drugs.filter((drug) => isCompleteDrugInput(drug)) : [];
 };
 
-export const validateCompleteInputs = (drugs: PrescribedDrug[] | null | undefined): boolean => {
+export const validateCompleteInputs = (drugs: PrescribedDrug[] | null | undefined, isCompleteDrugInput: (drug: PrescribedDrug) => boolean): boolean => {
   return !(drugs === null || drugs === undefined || drugs.length === 0) && drugs
     .map((drug) => isCompleteDrugInput(drug))
     .every((cond) => cond);

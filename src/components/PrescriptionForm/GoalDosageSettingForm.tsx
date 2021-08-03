@@ -1,5 +1,7 @@
 import * as React from 'react';
-import { useContext, useEffect, useState } from 'react';
+import {
+  useCallback, useContext, useEffect, useState,
+} from 'react';
 import Input from 'antd/es/input';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
@@ -30,7 +32,7 @@ const GoalDosageSettingForm = () => {
     }
   };
 
-  const isGoalDosageInvalid = (priorDosageSum: number, upcomingDosageSum: number, goalDosage: number, availableDosageOptions: string[]) => {
+  const isGoalDosageInvalid = useCallback((priorDosageSum: number, upcomingDosageSum: number, goalDosage: number, availableDosageOptions: string[]) => {
     const notValidIncreasing = priorDosageSum < upcomingDosageSum && goalDosage < upcomingDosageSum;
     const notValidDecreasing = priorDosageSum > upcomingDosageSum && goalDosage > upcomingDosageSum;
     const notValidSame = priorDosageSum === upcomingDosageSum && goalDosage !== upcomingDosageSum;
@@ -71,7 +73,7 @@ const GoalDosageSettingForm = () => {
     }
     console.groupEnd();
     return notValidIncreasing || notValidDecreasing || notValidSame || notDividable;
-  };
+  }, []);
 
   useEffect(() => {
     // if ((priorDosageSum < upcomingDosageSum && targetDosage < upcomingDosageSum)
@@ -79,15 +81,30 @@ const GoalDosageSettingForm = () => {
     //   || (priorDosageSum === upcomingDosageSum && targetDosage !== upcomingDosageSum)) {
     if (isGoalDosageInvalid(priorDosageSum, upcomingDosageSum, goalDosage, availableDosageOptions)) {
       setGoalDosageValid(false);
-      taperConfigActionDispatch({
-        type: SET_IS_INPUT_COMPLETE,
-        data: { isComplete: false },
-      });
+      if (isModal) {
+        modalDispatch!({
+          type: SET_IS_INPUT_COMPLETE,
+          data: { isComplete: false },
+        });
+      } else {
+        taperConfigActionDispatch({
+          type: SET_IS_INPUT_COMPLETE,
+          data: { isComplete: false },
+        });
+      }
     } else {
       setGoalDosageValid(true);
-      taperConfigActionDispatch({
-        type: VALIDATE_INPUT_COMPLETION,
-      });
+      if (isModal) {
+        modalDispatch!({
+          type: VALIDATE_INPUT_COMPLETION,
+          data: { isGoalDosageValid: true },
+        });
+      } else {
+        taperConfigActionDispatch({
+          type: VALIDATE_INPUT_COMPLETION,
+          data: { isGoalDosageValid: true },
+        });
+      }
     }
   }, [upcomingDosageSum, priorDosageSum, goalDosage]);
 

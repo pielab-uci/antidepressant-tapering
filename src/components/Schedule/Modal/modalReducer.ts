@@ -13,7 +13,11 @@ import {
   UPCOMING_DOSAGE_CHANGE,
 } from '../../PrescriptionForm/actions';
 import drugs from '../../../redux/reducers/drugs';
-import { EDIT_PROJECTED_SCHEDULE_FROM_MODAL, VALIDATE_INPUT_COMPLETION } from '../../../redux/actions/taperConfig';
+import {
+  EDIT_PROJECTED_SCHEDULE_FROM_MODAL,
+  SET_IS_INPUT_COMPLETE,
+  VALIDATE_INPUT_COMPLETION,
+} from '../../../redux/actions/taperConfig';
 import { TaperConfigActions } from '../../../redux/reducers/taperConfig';
 import { validateCompleteInputs } from '../../../utils/taperConfig';
 
@@ -58,6 +62,16 @@ const prescriptionToDosages = (row: TableRowData): { dosage: string, quantity: n
   }
 
   return [{ dosage: '1mg', quantity: row.dosage }];
+};
+
+const isModalInputComplete = (drug: PrescribedDrug): boolean => {
+  return drug.name !== ''
+  && drug.brand !== ''
+  && drug.form !== ''
+  && drug.intervalEndDate !== null
+  && drug.intervalCount !== 0
+  && drug.upcomingDosages.length !== 0
+  && !drug.upcomingDosages.every((dosage) => dosage.quantity === 0);
 };
 
 const reducer = (state: RowEditingModalState = initialState, action: ModalActions): RowEditingModalState => {
@@ -131,7 +145,7 @@ const reducer = (state: RowEditingModalState = initialState, action: ModalAction
         drug.priorDosageSum = drug.priorDosages.reduce((prev, { dosage, quantity }) => {
           return prev + parseFloat(dosage) * quantity;
         }, 0);
-        draft.isModalInputComplete = validateCompleteInputs([drug]);
+        draft.isModalInputComplete = validateCompleteInputs([drug], isModalInputComplete);
         break;
       }
 
@@ -148,7 +162,7 @@ const reducer = (state: RowEditingModalState = initialState, action: ModalAction
           return prev + parseFloat(dosage) * quantity;
         }, 0);
 
-        draft.isModalInputComplete = validateCompleteInputs([drug]);
+        draft.isModalInputComplete = validateCompleteInputs([drug], isModalInputComplete);
 
         break;
       }
@@ -169,7 +183,7 @@ const reducer = (state: RowEditingModalState = initialState, action: ModalAction
         drug.intervalUnit = action.data.intervalUnit || drug.intervalUnit;
         drug.intervalCount = action.data.intervalCount || drug.intervalCount;
 
-        draft.isModalInputComplete = validateCompleteInputs([drug]);
+        draft.isModalInputComplete = validateCompleteInputs([drug], isModalInputComplete);
         break;
       }
 
@@ -188,7 +202,7 @@ const reducer = (state: RowEditingModalState = initialState, action: ModalAction
         drug.intervalCount = action.data.count;
         drug.intervalEndDate = action.data.intervalEndDate;
         drug.intervalDurationDays = action.data.intervalDurationDays;
-        draft.isModalInputComplete = validateCompleteInputs([drug]);
+        draft.isModalInputComplete = validateCompleteInputs([drug], isModalInputComplete);
         break;
       }
 
@@ -197,14 +211,17 @@ const reducer = (state: RowEditingModalState = initialState, action: ModalAction
         drug.intervalUnit = action.data.unit;
         drug.intervalEndDate = action.data.intervalEndDate;
         drug.intervalDurationDays = action.data.intervalDurationDays;
-        draft.isModalInputComplete = validateCompleteInputs([drug]);
+        draft.isModalInputComplete = validateCompleteInputs([drug], isModalInputComplete);
         break;
       }
 
       case VALIDATE_INPUT_COMPLETION: {
-        draft.isModalInputComplete = validateCompleteInputs([draft.prescribedDrug!]);
+        draft.isModalInputComplete = validateCompleteInputs([draft.prescribedDrug!], isModalInputComplete) && action.data!.isGoalDosageValid;
         break;
       }
+
+      case SET_IS_INPUT_COMPLETE:
+        draft.isModalInputComplete = action.data.isComplete;
     }
   });
 };

@@ -1,4 +1,5 @@
 import { Drug, OralDosage, PrescribedDrug } from '../../types';
+import { SetIsInputComplete, ValidateInputCompletionAction } from '../../redux/actions/taperConfig';
 
 export const LOAD_PRESCRIPTION_DATA = 'LOAD_PRESCRIPTION_DATA' as const;
 
@@ -181,4 +182,6 @@ export type PrescriptionFormActions =
   | AllowSplittingUnscoredTabletAction
   | SetIsModalAction
   | SetGrowthAction
+  | SetIsInputComplete
+  | ValidateInputCompletionAction
   | IntervalActions;

@@ -269,6 +269,7 @@ export const VALIDATE_INPUT_COMPLETION = 'VALIDATE_INPUT_COMPLETION' as const;
 
 export interface ValidateInputCompletionAction {
   type: typeof VALIDATE_INPUT_COMPLETION;
+  data?: { isGoalDosageValid: boolean; }
 }
 
 export const EDIT_PROJECTED_SCHEDULE_FROM_MODAL = 'EDIT_PROJECTED_SCHEDULE_FROM_MODAL';

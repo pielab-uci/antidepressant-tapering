@@ -30,7 +30,7 @@ const ProjectedScheduleTableRowEditingModal: FC<Props> = ({
   // const [drugFromRow, setDrugFromRow] = useState<PrescribedDrug | null>(null);
   const [state, modalDispatch] = useReducer<RowEditingModalReducer, RowEditingModalState>(reducer, initialState, (init) => initialState, 'ProjectedScheduleTableRowEditingModal');
   const { prescribedDrugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
-  const { prescribedDrug } = state;
+  const { prescribedDrug, isModalInputComplete } = state;
   const dispatch = useDispatch();
   // const [prescribedDrugId, setPrescribedDrugId] = useState<number>(-1);
 
@@ -65,12 +65,14 @@ const ProjectedScheduleTableRowEditingModal: FC<Props> = ({
 
   return prescribedDrug
     && <Modal visible={visible}
-           onCancel={onClickCancel}
-           onOk={onClickOk}
-           width={'70%'}
-           centered={true}
-           css={css`height: 90%;
-             overflow-y: scroll; padding: 0;`}>
+              onCancel={onClickCancel}
+              onOk={onClickOk}
+              okButtonProps={{ disabled: !isModalInputComplete }}
+              width={'70%'}
+              centered={true}
+              css={css`height: 90%;
+                overflow-y: scroll;
+                padding: 0;`}>
       <PrescriptionForm prescribedDrug={prescribedDrug} title={''} modal={{ isModal: true, modalDispatch }}/>
     </Modal>;
 };

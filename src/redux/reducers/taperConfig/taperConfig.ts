@@ -133,7 +133,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           // draft.chosenDrugs = draft.prescribedDrugs!.map((drug) => drug.name);
         }
         draft.isSaved = false;
-        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
+        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs, isCompleteDrugInput);
         break;
 
       case GENERATE_SCHEDULE: {
@@ -286,7 +286,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         }
 
         draft.isSaved = false;
-        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
+        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs, isCompleteDrugInput);
         break;
       }
 
@@ -316,7 +316,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
           drug.targetDosage = drug.upcomingDosageSum;
         }
 
-        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
+        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs, isCompleteDrugInput);
         draft.isSaved = false;
         break;
       }
@@ -360,7 +360,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.intervalEndDate = action.data.intervalEndDate;
         drug.intervalCount = action.data.intervalCount;
         drug.intervalDurationDays = action.data.intervalDurationDays;
-        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
+        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs, isCompleteDrugInput);
         draft.isSaved = false;
         break;
       }
@@ -370,7 +370,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.intervalCount = action.data.count;
         drug.intervalEndDate = action.data.count !== null ? action.data.intervalEndDate : null;
         drug.intervalDurationDays = action.data.intervalDurationDays;
-        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
+        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs, isCompleteDrugInput);
         draft.isSaved = false;
         break;
       }
@@ -427,7 +427,11 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         break;
 
       case VALIDATE_INPUT_COMPLETION:
-        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
+        if (!action.data) {
+          draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs, isCompleteDrugInput);
+        } else {
+          draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs, isCompleteDrugInput) && action.data.isGoalDosageValid;
+        }
         break;
 
       case EDIT_PROJECTED_SCHEDULE_FROM_MODAL: {
@@ -530,7 +534,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.addingTaperConfig = false;
         draft.addedTaperConfig = false;
         draft.addingTaperConfigError = action.error;
-        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
+        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs, isCompleteDrugInput);
         break;
 
       case FETCH_TAPER_CONFIG_REQUEST:
@@ -576,7 +580,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         draft.fetchingPrescribedDrugs = false;
         draft.fetchedPrescribedDrugs = true;
         draft.prescribedDrugs = action.data;
-        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs);
+        draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs, isCompleteDrugInput);
         break;
 
       case FETCH_PRESCRIBED_DRUGS_FAILURE:

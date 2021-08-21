@@ -101,6 +101,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.intervalEndDate = action.data.intervalEndDate;
         draft.intervalCount = action.data.intervalCount;
         draft.intervalUnit = action.data.intervalUnit;
+        draft.growth = action.data.growth;
         break;
       }
 

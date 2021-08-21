@@ -139,7 +139,7 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
       headerName: 'Prescription',
       field: 'prescription.message',
       suppressSizeToFit: false,
-      minWidth: 200,
+      minWidth: 700,
       cellStyle: { display: 'flex', justifyContent: 'flex-start', alignItems: 'center' },
       flex: 1,
       // editable: (params: EditableCallbackParams) => editable && !params.data.isPriorDosage,

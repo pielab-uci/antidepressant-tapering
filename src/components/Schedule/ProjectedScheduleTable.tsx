@@ -110,8 +110,8 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
       unSortIcon: true,
       // editable: (params: EditableCallbackParams) => editable && !params.data.isPriorDosage,
       // cellEditor: 'datePicker',
-      minWidth: 80,
-      maxWidth: 125,
+      minWidth: 120,
+      maxWidth: 120,
       valueFormatter: (params: ValueFormatterParams) => {
         return params.value !== null ? format(params.value, 'MM/dd/yyyy') : '';
       },
@@ -126,8 +126,8 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
       unSortIcon: true,
       // editable: (params: EditableCallbackParams) => editable && !params.data.isPriorDosage,
       // cellEditor: 'datePicker',
-      minWidth: 80,
-      maxWidth: 125,
+      minWidth: 120,
+      maxWidth: 120,
       valueFormatter: (params: ValueFormatterParams) => {
         return params.value !== null ? format(params.value, 'MM/dd/yyyy') : '';
       },
@@ -208,7 +208,8 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
 
   const onFirstDataRendered = (params: FirstDataRenderedEvent) => {
     // console.log('allColumns: ', params.columnApi.getAllColumns());
-    params.columnApi.autoSizeColumns(['brand', 'startDate', 'endDate', 'prescription.message']);
+    params.columnApi.autoSizeColumns(['brand', 'startDate', 'endDate']);
+    // , 'prescription.message']);
   };
 
   const openModal = (event: RowDoubleClickedEvent) => {

@@ -259,7 +259,7 @@ export const prescription: PrescriptionFunction = (
     .reduce((res, [dosage, qty], i, arr) => {
       if (oralDosageInfo) {
         const { rate } = oralDosageInfo;
-        return `${res} ${(qty / rate.mg) * rate.ml}ml ${form} by mouth for daily ${intervalCount} ${checkedIntervalUnit}`;
+        return `${res} ${(qty / rate.mg) * rate.ml}ml ${form} by mouth daily ${intervalCount} ${checkedIntervalUnit}`;
       }
 
       const checkedForm = qty === 1 ? form : `${form}s`;

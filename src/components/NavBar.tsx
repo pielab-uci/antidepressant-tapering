@@ -75,9 +75,10 @@ const NavBar = () => {
     color: #0984E3;
     font-size: 0.8rem;
     padding: 5px 0 5px 30px;
-    height: 131px;
-    border-top-left-radius: 17px;
-    border-bottom-left-radius: 17px;
+    //height: 131px;
+    height: 40px;
+    border-top-left-radius: 13px;
+    border-bottom-left-radius: 13px;
     border-right: 1px solid #0984E3;
     display: ${location.pathname.match(/(\/patient.+)|(\/taper-configuration.+)/) === null
     ? 'none'
@@ -125,18 +126,18 @@ const NavBar = () => {
           </div>
           <div css={subMenuStyle}>
             <div css={boldOnRoute('schedule')}>Medication schedule</div>
-            <div css={boldOnRoute('symptomTracker')}>Symptom tracker</div>
-            <div css={boldOnRoute('report')}>Patient report</div>
+            {/* <div css={boldOnRoute('symptomTracker')}>Symptom tracker</div> */}
+            {/* <div css={boldOnRoute('report')}>Patient report</div> */}
           </div>
         </div>
-        <div css={TabStyle('symptomTemplates')}>
-          <div css={css`width: 40px;
-            height: 40px;
-            margin-right: 10px;`}>
-            <SymptomTemplatesMenuIcon/>
-          </div>
-          <div>Symptom Templates</div>
-        </div>
+        {/* <div css={TabStyle('symptomTemplates')}> */}
+        {/*  <div css={css`width: 40px; */}
+        {/*    height: 40px; */}
+        {/*    margin-right: 10px;`}> */}
+        {/*    <SymptomTemplatesMenuIcon/> */}
+        {/*  </div> */}
+        {/*  <div>Symptom Templates</div> */}
+        {/* </div> */}
         <div css={helpAndLogoutStyle}>
           <div>
             <HelpIcon/>

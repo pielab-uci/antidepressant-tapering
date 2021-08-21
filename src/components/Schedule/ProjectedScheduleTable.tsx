@@ -82,7 +82,7 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
       width: 10,
       checkboxSelection: (params: CheckboxSelectionCallbackParams) => !params.data.isPriorDosage && editable,
       cellStyle: { display: 'flex', justifyContent: 'center', alignItems: 'center' },
-      suppressSizeToFit: true,
+      suppressSizeToFit: false,
     },
     {
       headerName: 'Medication',
@@ -97,7 +97,7 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
       field: 'dosage',
       // editable: (params: EditableCallbackParams) => editable && !params.data.isPriorDosage,
       cellEditor: 'numberEditor',
-      width: 100,
+      maxWidth: 100,
       valueFormatter: (params: ValueFormatterParams) => `${params.value}mg`,
       // need to keep below valueSetter
       valueSetter: (params: ValueSetterParams) => params.newValue,
@@ -111,14 +111,14 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
       // editable: (params: EditableCallbackParams) => editable && !params.data.isPriorDosage,
       // cellEditor: 'datePicker',
       minWidth: 80,
-      maxWidth: 120,
+      maxWidth: 125,
       valueFormatter: (params: ValueFormatterParams) => {
         return params.value !== null ? format(params.value, 'MM/dd/yyyy') : '';
       },
       // need to keep below valueSetter
       valueSetter: (params: ValueSetterParams) => params.newValue,
       cellStyle: { display: 'flex', justifyContent: 'flex-start', alignItems: 'center' },
-      suppressSizeToFit: true,
+      suppressSizeToFit: false,
     }, {
       headerName: 'End Date',
       field: 'endDate',
@@ -127,18 +127,18 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
       // editable: (params: EditableCallbackParams) => editable && !params.data.isPriorDosage,
       // cellEditor: 'datePicker',
       minWidth: 80,
-      maxWidth: 115,
+      maxWidth: 125,
       valueFormatter: (params: ValueFormatterParams) => {
         return params.value !== null ? format(params.value, 'MM/dd/yyyy') : '';
       },
       // need to keep below valueSetter
       valueSetter: (params: ValueSetterParams) => params.newValue,
       cellStyle: { display: 'flex', justifyContent: 'flex-start', alignItems: 'center' },
-      suppressSizeToFit: true,
+      suppressSizeToFit: false,
     }, {
       headerName: 'Prescription',
       field: 'prescription.message',
-      suppressSizeToFit: true,
+      suppressSizeToFit: false,
       minWidth: 200,
       cellStyle: { display: 'flex', justifyContent: 'flex-start', alignItems: 'center' },
       flex: 1,
@@ -207,12 +207,8 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
   };
 
   const onFirstDataRendered = (params: FirstDataRenderedEvent) => {
-    // params.api.sizeColumnsToFit();
-    // gridColumnApi?.autoSizeAllColumns();
-    params.columnApi.autoSizeColumns(['Medication', 'startDate', 'endDate']);
-    // params.columnApi.autoSizeColumn('Medication');
-    // params.columnApi.autoSizeColumn('startDate');
-    // params.columnApi.autoSizeColumn('endDate');
+    // console.log('allColumns: ', params.columnApi.getAllColumns());
+    params.columnApi.autoSizeColumns(['brand', 'startDate', 'endDate', 'prescription.message']);
   };
 
   const openModal = (event: RowDoubleClickedEvent) => {
@@ -284,8 +280,6 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
              .ag-selection-checkbox {
                margin: 0 !important;
              }
-             
-             
            `}>
         <AgGridReact
           rowData={projectedSchedule.data}

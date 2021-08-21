@@ -46,14 +46,14 @@ const CreateTaperConfiguration = () => {
   const location = useLocation();
   const { path, url } = useRouteMatch();
 
-  useEffect(() => {
-    console.group('CreateTaperConfiguration');
-    console.log('history: ', history);
-    console.log('location: ', location);
-    console.log('path: ', path);
-    console.log('url: ', url);
-    console.groupEnd();
-  });
+  // useEffect(() => {
+  //   console.group('CreateTaperConfiguration');
+  //   console.log('history: ', history);
+  //   console.log('location: ', location);
+  //   console.log('path: ', path);
+  //   console.log('url: ', url);
+  //   console.groupEnd();
+  // });
 
   const addNewPrescriptionForm = useCallback(() => {
     dispatch({

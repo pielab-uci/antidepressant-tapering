@@ -76,6 +76,7 @@ const GoalDosageSettingForm = () => {
   }, []);
 
   useEffect(() => {
+    // TODO: to refactor..
     // if ((priorDosageSum < upcomingDosageSum && targetDosage < upcomingDosageSum)
     //   || (priorDosageSum > upcomingDosageSum && targetDosage > upcomingDosageSum)
     //   || (priorDosageSum === upcomingDosageSum && targetDosage !== upcomingDosageSum)) {

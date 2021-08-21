@@ -34,7 +34,8 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
   } = context;
   const { dosages } = context[time];
   const dosage = useRef('1mg');
-  const [mlDosage, setmlDosage] = useState((dosages['1mg'] / oralDosageInfo!.rate.mg) * oralDosageInfo!.rate.ml);
+  const [mlDosage, setmlDosage] = useState<number | undefined>((dosages['1mg'] / oralDosageInfo!.rate.mg) * oralDosageInfo!.rate.ml);
+  const [mgDosage, setmgDosage] = useState<number | undefined>(dosages['1mg']);
 
   const dosageDifferenceMessage = useDosageSumDifferenceMessage(time, priorDosageSum, upcomingDosageSum, growth);
   const dispatch = (action: UpcomingDosageChangeAction | PriorDosageChangeAction) => {
@@ -48,12 +49,24 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
   };
 
   const mgOnChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    console.group('OralFormDosage.mgOnChange');
     const { rate } = chosenDrugForm!.dosages as OralDosage;
-    const input = parseInt(e.target.value, 10);
-    const ml = (input / rate.mg) * rate.ml;
-    const mg = (ml / rate.ml) * rate.mg;
+    const mg = parseInt(e.target.value, 10);
+    console.log('mg: ', mg);
 
-    const actionData = { id, dosage: { dosage: dosage.current, quantity: mg } };
+    if (Number.isNaN(mg)) {
+      setmlDosage(undefined);
+      setmgDosage(undefined);
+    } else {
+      setmgDosage(mg);
+      const ml = (mg / rate.mg) * rate.ml;
+      setmlDosage(ml);
+    }
+
+    const actionData: UpcomingDosageChangeAction['data'] | PriorDosageChangeAction['data'] = {
+      id,
+      dosage: { dosage: dosage.current, quantity: Number.isNaN(mg) ? 0 : mg },
+    };
 
     if (actionData.dosage.quantity >= 0) {
       if (time === 'Next') {
@@ -62,16 +75,32 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
         dispatch(priorDosageChange(actionData));
       }
     }
-
-    setmlDosage(ml);
+    console.groupEnd();
   }, [chosenDrugForm, intervalDurationDays, priorDosageSum, upcomingDosageSum, oralDosageInfo]);
 
   const mlOnChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    console.group('OralFormDosage.mlOnChange');
     const ml = parseInt(e.target.value, 10);
+    console.log('ml: ', ml);
     const { rate } = chosenDrugForm!.dosages as OralDosage;
-    setmlDosage(ml);
-    const mg = (ml / rate.ml) * rate.mg;
-    const actionData = { id, dosage: { dosage: dosage.current, quantity: mg } };
+    const mg = Number.isNaN(ml) ? undefined : (ml / rate.ml) * rate.mg;
+
+    if (Number.isNaN(ml)) {
+      setmlDosage(undefined);
+      setmgDosage(undefined);
+    } else {
+      console.log('mlDosage before change: ', mlDosage);
+      setmlDosage(ml);
+      console.log('mlDosage after change: ', mlDosage);
+      console.log('mgDosage before change: ', mgDosage);
+      setmgDosage(mg);
+      console.log('mgDosage after change: ', mgDosage);
+    }
+
+    const actionData: UpcomingDosageChangeAction['data'] | PriorDosageChangeAction['data'] = {
+      id,
+      dosage: { dosage: dosage.current, quantity: mg === undefined ? 0 : mg },
+    };
 
     if (actionData.dosage.quantity >= 0) {
       if (time === 'Next') {
@@ -80,6 +109,7 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
         dispatch(priorDosageChange(actionData));
       }
     }
+    console.groupEnd();
   }, [chosenDrugForm, intervalDurationDays, priorDosageSum, upcomingDosageSum, oralDosageInfo]);
 
   return (
@@ -99,13 +129,14 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
             justify-content: space-between;
             margin-left: 64px;`}>
             <div>
-               <Input type='number'
-                     value={dosages['1mg']}
+              <Input type='number'
+                // value={dosages['1mg']}
+                     value={mgDosage}
                      onChange={mgOnChange}
                      readOnly={!editable}
                      min={0}
                      style={inputStyle}/> mg =
-               <Input type='number'
+              <Input type='number'
                      value={mlDosage}
                      onChange={mlOnChange}
                      readOnly={!editable}
@@ -119,7 +150,7 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
             align-items: flex-start;
             justify-content: center;
             margin-left: 20px;`}>
-            {time === 'Next' && dosageDifferenceMessage
+            {time === 'Next' && dosageDifferenceMessage && mgDosage !== undefined
             && (
               <div css={css`color: #0984E3;`}>
                 {dosageDifferenceMessage}

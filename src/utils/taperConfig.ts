@@ -389,6 +389,8 @@ export const generateTableRows = (drugs: Converted[], startRowIndexInPrescribedD
       availableDosageOptions: drug.availableDosageOptions,
       regularDosageOptions: drug.regularDosageOptions,
       form: drug.form,
+      currentDosageForm: drug.currentDosageForm,
+      nextDosageForm: drug.nextDosageForm,
       isPriorDosage: false,
       intervalDurationDays: drug.intervalDurationDays,
       intervalCount: drug.intervalCount,
@@ -428,7 +430,10 @@ export const generateTableRows = (drugs: Converted[], startRowIndexInPrescribedD
           dosage: newRowData.upcomingDosageSum,
           startDate: newRowData.startDate,
           endDate: newRowData.endDate,
-          prescription: prescription({ ...drug }, newRowData.unitDosages),
+          prescription: prescription({
+            ...drug,
+            form: drug.nextDosageForm,
+          }, newRowData.unitDosages),
           selected: false,
           goalDosage: drug.targetDosage,
           addedInCurrentVisit: !drug.prevVisit,
@@ -441,6 +446,8 @@ export const generateTableRows = (drugs: Converted[], startRowIndexInPrescribedD
           intervalUnit: drug.intervalUnit,
           measureUnit: drug.measureUnit,
           form: drug.form,
+          currentDosageForm: drug.nextDosageForm,
+          nextDosageForm: drug.nextDosageForm,
           oralDosageInfo: drug.oralDosageInfo ? drug.oralDosageInfo : undefined,
           changeDirection: drug.changeDirection,
         });
@@ -695,6 +702,8 @@ export const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule =
       intervalUnit: null,
       measureUnit: drug.measureUnit,
       form: drug.form,
+      currentDosageForm: drug.currentDosageForm,
+      nextDosageForm: drug.nextDosageForm,
     })) as TableRowData[]);
   console.groupEnd();
 

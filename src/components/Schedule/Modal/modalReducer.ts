@@ -85,6 +85,8 @@ const reducer = (state: RowEditingModalState = initialState, action: ModalAction
           ...clickedRow.prescribedDrug,
           isModal: true,
           applyInSchedule: false,
+          currentDosageForm: prevRow.nextDosageForm,
+          nextDosageForm: clickedRow.nextDosageForm,
           // id..?
           allowChangePriorDosage: false,
           intervalStartDate: clickedRow.startDate!,

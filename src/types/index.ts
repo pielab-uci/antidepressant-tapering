@@ -195,6 +195,8 @@ export interface TableRowData {
   oralDosageInfo?: OralDosage,
   measureUnit: string,
   form: DrugFormNames | null,
+  currentDosageForm: DrugFormNames | null,
+  nextDosageForm: DrugFormNames | null,
   goalDosage: number;
   changeDirection: 'increase'|'decrease'|'same';
 }

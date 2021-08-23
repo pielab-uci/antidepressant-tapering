@@ -111,6 +111,8 @@ const reducer = (state: RowEditingModalState = initialState, action: ModalAction
         drug.halfLife = correspondingDrugData.halfLife;
         drug.brand = action.data.brand;
         drug.form = null;
+        drug.currentDosageForm = null;
+        drug.nextDosageForm = null;
         drug.allowChangePriorDosage = false;
         drug.oralDosageInfo = null;
         drug.priorDosages = [];
@@ -122,8 +124,12 @@ const reducer = (state: RowEditingModalState = initialState, action: ModalAction
       case CHOOSE_FORM: {
         const drug = draft.prescribedDrug!;
         drug.form = action.data.form;
+        if (drug.currentDosageForm === null) {
+          drug.currentDosageForm = action.data.form;
+        }
+        drug.nextDosageForm = action.data.form;
         drug.minDosageUnit = action.data.minDosageUnit;
-        drug.priorDosages = [];
+        // drug.priorDosages = [];
         drug.upcomingDosages = [];
         drug.oralDosageInfo = action.data.oralDosageInfo;
         drug.availableDosageOptions = action.data.availableDosageOptions;

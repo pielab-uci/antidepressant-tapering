@@ -18,12 +18,15 @@ export interface PrescriptionFormState {
   chosenBrand: DrugOption | null;
   chosenDrugForm: DrugForm | null| undefined;
   /**
-   * currentDosageForm, nextDosageForm: used for modal when drug form is changed for next dosages
+   * currentDosageForm, nextDosageForm, currentDosageOptions, nextDosageOptions:
+   * used for modal when drug form is changed for next dosages
    * When drug form is changed in modal, it keeps the form and dosage of current dosage and
    * changes only those for the next dosage.
    */
   currentDosageForm: DrugFormNames | null;
   nextDosageForm: DrugFormNames | null;
+  currentDosageOptions: CapsuleOrTabletDosage[] | OralDosage;
+  nextDosageOptions: CapsuleOrTabletDosage[] | OralDosage;
 
   brandOptions: DrugOption[] | null;
   drugFormOptions: DrugForm[] | null;

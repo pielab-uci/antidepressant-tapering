@@ -6,9 +6,11 @@ import { DrugForm, isCapsuleOrTablet } from '../../types';
 import CapsuleOrTabletDosages from './CapsuleOrTabletDosages';
 import OralFormDosage from './OralFormDosage';
 import SelectGrowth from './SelectGrowth';
+import { DrugFormNames } from './actions';
 
 interface Props {
-  drugForm: DrugForm | null | undefined,
+  // drugForm: DrugForm | null | undefined,
+  drugForm: DrugFormNames | null | undefined;
   time: 'Current' | 'Next'
   editable: boolean;
 }
@@ -25,7 +27,8 @@ const Dosages: FC<Props> = ({ drugForm, time, editable }) => {
     </div>;
   }
 
-  if (isCapsuleOrTablet(drugForm)) {
+  // if (isCapsuleOrTablet(drugForm)) {
+  if (drugForm === 'capsule' || drugForm === 'tablet') {
     return (
       <div css={containerStyle.current}>
         <CapsuleOrTabletDosages time={time} editable={editable}/>

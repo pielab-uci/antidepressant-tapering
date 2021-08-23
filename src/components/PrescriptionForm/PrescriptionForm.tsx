@@ -22,7 +22,7 @@ import {
   ChooseFormAction,
   ChooseBrandAction,
   FetchDrugsAction,
-  LOAD_PRESCRIPTION_DATA, toggleAllowSplittingUnscoredTablet, PrescriptionFormActions, SET_IS_MODAL,
+  LOAD_PRESCRIPTION_DATA, toggleAllowSplittingUnscoredTablet, PrescriptionFormActions, SET_IS_MODAL, DrugFormNames,
 } from './actions';
 import { IPrescriptionFormContext, PrescriptionFormState } from './types';
 import { CapsuleOrTabletDosage, OralDosage, PrescribedDrug } from '../../types';
@@ -110,7 +110,7 @@ const PrescriptionForm: FC<Props> = ({
     externalDispatchWrapper(isModal)(action);
   };
 
-  const onFormChange = (value: string) => {
+  const onFormChange = (value: DrugFormNames) => {
     const chooseFormActionData: ChooseFormAction['data'] = {
       form: value,
       id: prescribedDrug.id,
@@ -206,8 +206,9 @@ const PrescriptionForm: FC<Props> = ({
           allowSplittingUnscoredTablet={allowSplittingUnscoredTablet}
           toggleAllowSplittingUnscoredTabletCheckbox={toggleAllowSplittingUnscoredTabletCheckbox}/>
 
-        <Dosages drugForm={chosenDrugForm} time={'Current'} editable={prescribedDrug.allowChangePriorDosage}/>
-        <Dosages drugForm={chosenDrugForm} time={'Next'} editable={true}/>
+        {/* <Dosages drugForm={chosenDrugForm} time={'Current'} editable={prescribedDrug.allowChangePriorDosage}/> */}
+        <Dosages drugForm={prescribedDrug.form} time={'Current'} editable={prescribedDrug.allowChangePriorDosage}/>
+        <Dosages drugForm={chosenDrugForm && chosenDrugForm.form} time={'Next'} editable={true}/>
 
         <SelectInterval/>
         <GoalDosageSettingForm/>

@@ -231,7 +231,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.name = correspondingDrugData.name;
         drug.halfLife = correspondingDrugData.halfLife;
         drug.brand = action.data.brand;
-        drug.form = '';
+        drug.form = null;
         drug.allowChangePriorDosage = true;
         drug.oralDosageInfo = null;
         drug.priorDosages = [];

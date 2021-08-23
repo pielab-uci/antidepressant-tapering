@@ -11,6 +11,7 @@ import {
 } from '../types';
 import { Schedule } from '../components/Schedule/ProjectedSchedule';
 import { drugNameBrandPairs } from '../redux/reducers/drugs';
+import { DrugFormNames } from '../components/PrescriptionForm/actions';
 
 export const isCompleteDrugInput = (drug: PrescribedDrug) => {
   const priorDosageSum = drug.priorDosages.reduce((prev, { dosage, quantity }) => {
@@ -23,7 +24,7 @@ export const isCompleteDrugInput = (drug: PrescribedDrug) => {
 
   return drug.name !== ''
     && drug.brand !== ''
-    && drug.form !== ''
+    && drug.form !== null
     && drug.intervalEndDate !== null
     && drug.intervalCount !== 0
     && (
@@ -221,7 +222,7 @@ export const calcMinimumQuantityForDosage = (availableOptions: string[], dosage:
 
 interface PrescriptionFunction {
   (args: {
-    form: string,
+    form: DrugFormNames | null,
     intervalDurationDays: number,
     intervalCount: number,
     intervalUnit: 'Days' | 'Weeks' | 'Months' | null,
@@ -231,7 +232,7 @@ interface PrescriptionFunction {
   : {
     message: string;
     data: {
-      form: string,
+      form: DrugFormNames | null,
       unit: string;
       intervalCount: number;
       intervalUnit: 'Days' | 'Weeks' | 'Months' | null;
@@ -779,7 +780,10 @@ const getCountRead = (num: number): string => {
   return counts[numStr] || numStr;
 };
 
-const capitalize = (str: string): string => {
+const capitalize = (str: DrugFormNames|null): string => {
+  if (str === null) {
+    return '';
+  }
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
@@ -905,7 +909,7 @@ export const calcFinalPrescription = (scheduleData: TableRowData[], tableSelecte
         const obj: ValueOf<Prescription> = {
           // name: '',
           brand: '',
-          form: '',
+          form: null,
           // availableDosages: [],
           regularDosageOptions: [],
           oralDosageInfo: null,

@@ -67,7 +67,7 @@ const prescriptionToDosages = (row: TableRowData): { dosage: string, quantity: n
 const isModalInputComplete = (drug: PrescribedDrug): boolean => {
   return drug.name !== ''
   && drug.brand !== ''
-  && drug.form !== ''
+  && drug.form !== null
   && drug.intervalEndDate !== null
   && drug.intervalCount !== 0
   && drug.upcomingDosages.length !== 0
@@ -110,7 +110,7 @@ const reducer = (state: RowEditingModalState = initialState, action: ModalAction
         drug.name = correspondingDrugData.name;
         drug.halfLife = correspondingDrugData.halfLife;
         drug.brand = action.data.brand;
-        drug.form = '';
+        drug.form = null;
         drug.allowChangePriorDosage = false;
         drug.oralDosageInfo = null;
         drug.priorDosages = [];

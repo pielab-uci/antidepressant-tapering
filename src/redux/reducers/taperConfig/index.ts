@@ -106,7 +106,7 @@ export const emptyPrescribedDrug = (id: number): PrescribedDrug => ({
   id,
   name: '',
   brand: '',
-  form: '',
+  form: null,
   halfLife: '',
   measureUnit: 'mg',
   isModal: false,

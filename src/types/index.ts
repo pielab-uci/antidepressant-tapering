@@ -1,5 +1,6 @@
 import { Schedule } from '../components/Schedule/ProjectedSchedule';
 import { ScheduleChartData } from '../utils/taperConfig';
+import { DrugFormNames } from '../components/PrescriptionForm/actions';
 
 export interface Clinician {
   id: number;
@@ -46,13 +47,13 @@ export interface DrugOption {
 }
 
 export interface CapsuleOrTabletForm {
-  form: string;
+  form: 'capsule' | 'tablet';
   measureUnit: string;
   dosages: CapsuleOrTabletDosage[];
 }
 
 export interface OralForm {
-  form: string;
+  form: 'oral solution' | 'oral suspension';
   measureUnit: string;
   dosages: OralDosage;
 }
@@ -77,7 +78,7 @@ export interface PrescribedDrug {
   id: number;
   name: string;
   brand: string;
-  form: string;
+  form: 'capsule' | 'tablet' | 'oral suspension' | 'oral solution' | null;
   halfLife: string;
   measureUnit: string;
   minDosageUnit: number;
@@ -125,7 +126,7 @@ export interface Prescription {
   [drugName: string]: {
     // name: string,
     brand: string,
-    form: string,
+    form: DrugFormNames | null,
     oralDosageInfo: OralDosage | null;
     /*
     // available options for capsule or tablet
@@ -159,7 +160,7 @@ export interface TableRowData {
   prescription: {
     message: string,
     data: {
-      form: string,
+      form: DrugFormNames | null,
       unit: string,
       intervalCount: number;
       intervalUnit: 'Days' | 'Weeks' | 'Months' | null;
@@ -191,7 +192,7 @@ export interface TableRowData {
   intervalUnit: 'Days' | 'Weeks' | 'Months' | null,
   oralDosageInfo?: OralDosage,
   measureUnit: string,
-  form: string,
+  form: DrugFormNames | null,
   goalDosage: number;
   changeDirection: 'increase'|'decrease'|'same';
 }

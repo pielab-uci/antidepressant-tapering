@@ -669,7 +669,19 @@ export const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule =
       dosage: drug.priorDosages.reduce((prev, { dosage, quantity }) => {
         return prev + parseFloat(dosage) * quantity;
       }, 0),
-      prescription: null,
+      prescription: {
+        ...prescription({
+          form: drug.currentDosageForm,
+          intervalCount: drug.intervalCount,
+          intervalUnit: drug.intervalUnit,
+          oralDosageInfo: drug.oralDosageInfo,
+          intervalDurationDays: drug.intervalDurationDays,
+        }, drug.priorDosages.reduce((prev, { dosage, quantity }) => {
+          prev[dosage] = quantity;
+          return prev;
+        }, {} as { [dosage: string]: number })),
+        message: '',
+      },
       startDate: null,
       endDate: tableDataSorted[0].startDate,
       selected: false,

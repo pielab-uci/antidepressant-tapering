@@ -231,7 +231,7 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.name = correspondingDrugData.name;
         drug.halfLife = correspondingDrugData.halfLife;
         drug.brand = action.data.brand;
-        drug.form = '';
+        drug.form = null;
         drug.allowChangePriorDosage = true;
         drug.oralDosageInfo = null;
         drug.priorDosages = [];
@@ -247,10 +247,16 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
 
       case CHOOSE_FORM: {
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
+        // TODO: remove drug.form?
         drug.form = action.data.form;
+        drug.nextDosageForm = action.data.form;
         drug.minDosageUnit = action.data.minDosageUnit;
-        drug.priorDosages = [];
         drug.upcomingDosages = [];
+
+        if (!drug.isModal) {
+          drug.priorDosages = [];
+          drug.currentDosageForm = action.data.form;
+        }
         drug.oralDosageInfo = action.data.oralDosageInfo;
         drug.availableDosageOptions = action.data.availableDosageOptions;
         drug.regularDosageOptions = action.data.regularDosageOptions;

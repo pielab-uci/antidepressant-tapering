@@ -18,6 +18,8 @@ const CapsuleOrTabletDosages: FC<Props> = ({ time, editable }) => {
   const context = useContext(PrescriptionFormContext);
   const {
     chosenDrugForm, dosageOptions, priorDosageSum, upcomingDosageSum, growth,
+    currentDosageForm, nextDosageForm,
+    currentDosageOptions, nextDosageOptions,
   } = context;
   const dosageDifferenceMessage = useDosageSumDifferenceMessage(time, priorDosageSum, upcomingDosageSum, growth);
 
@@ -38,13 +40,15 @@ const CapsuleOrTabletDosages: FC<Props> = ({ time, editable }) => {
             justify-content: space-between;
             width: 400px;
             margin-left: 64px;`}>
-            {(dosageOptions as CapsuleOrTabletDosage[])
+            {/* {(dosageOptions as CapsuleOrTabletDosage[]) */}
+            {((time === 'Current' ? currentDosageOptions : nextDosageOptions) as CapsuleOrTabletDosage[])
               .map((v: { dosage: string; isScored?: boolean }) => (
                 <CapsuleOrTabletUnit
                   key={`${time}_${chosenDrugForm!.form}_${v.dosage}`}
                   time={time}
                   editable={editable}
-                  form={chosenDrugForm!.form}
+                  form={time === 'Current' ? (currentDosageForm as 'capsule' | 'tablet') : (nextDosageForm as 'capsule' | 'tablet')}
+                  // form={chosenDrugForm!.form}
                   dosage={v.dosage}
                   isScored={v.isScored ? v.isScored : undefined}
                 />))

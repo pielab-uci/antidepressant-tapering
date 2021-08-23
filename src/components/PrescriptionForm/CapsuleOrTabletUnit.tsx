@@ -8,6 +8,7 @@ import { css } from '@emotion/react';
 import { PrescriptionFormContext } from './PrescriptionForm';
 import { TaperConfigActions } from '../../redux/reducers/taperConfig';
 import {
+  DrugFormNames,
   priorDosageChange, PriorDosageChangeAction, upcomingDosageChange, UpcomingDosageChangeAction,
 } from './actions';
 import {
@@ -15,7 +16,7 @@ import {
 } from '../../assets/icons';
 
 interface Props {
-  form: string;
+  form: 'capsule'|'tablet';
   time: 'Current' | 'Next'
   dosage: string;
   editable: boolean;

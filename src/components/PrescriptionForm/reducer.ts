@@ -27,6 +27,8 @@ export const initialState: PrescriptionFormState = {
   chosenDrug: null,
   chosenBrand: null,
   chosenDrugForm: null,
+  currentDosageForm: null,
+  nextDosageForm: null,
   brandOptions: [],
   drugFormOptions: [],
   dosageOptions: [],
@@ -69,6 +71,8 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.chosenBrand = draft.brandOptions!.find((brand) => brand.brand === action.data.brand)!;
         draft.drugFormOptions = draft.chosenBrand.forms;
         draft.chosenDrugForm = draft.drugFormOptions.find((form) => form.form === action.data.form)!;
+        draft.currentDosageForm = action.data.currentDosageForm;
+        draft.nextDosageForm = action.data.nextDosageForm;
         draft.dosageOptions = draft.chosenDrugForm.dosages;
         draft.goalDosage = action.data.targetDosage;
         draft.priorDosagesQty = action.data.priorDosages.reduce(
@@ -105,6 +109,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         break;
       }
 
+      // TODO: keep current form/drugs even after brand is changed..?
       case CHOOSE_BRAND: {
         const chosenBrandOption = draft.brandOptions!.find(
           (brand) => brand.brand === action.data.brand,
@@ -129,9 +134,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
       case CHOOSE_FORM: {
         const chosenDrugForm = draft.drugFormOptions!.find((form) => form.form === action.data.form)!;
         draft.chosenDrugForm = chosenDrugForm;
-        draft.priorDosagesQty = {};
         draft.upcomingDosagesQty = {};
-        draft.priorDosageSum = 0;
         draft.upcomingDosageSum = 0;
         draft.minDosageUnit = action.data.minDosageUnit;
         draft.regularDosageOptions = action.data.regularDosageOptions;
@@ -139,14 +142,28 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.oralDosageInfo = action.data.oralDosageInfo;
         draft.dosageOptions = chosenDrugForm.dosages;
 
+        draft.nextDosageForm = chosenDrugForm.form;
+
         if (isCapsuleOrTablet(chosenDrugForm)) {
           chosenDrugForm.dosages.forEach((dosage) => {
-            draft.priorDosagesQty[dosage.dosage] = 0;
             draft.upcomingDosagesQty[dosage.dosage] = 0;
           });
         } else {
-          draft.priorDosagesQty['1mg'] = 0;
           draft.upcomingDosagesQty['1mg'] = 0;
+        }
+
+        if (!draft.isModal) {
+          draft.priorDosagesQty = {};
+          draft.priorDosageSum = 0;
+          draft.currentDosageForm = chosenDrugForm.form;
+
+          if (isCapsuleOrTablet(chosenDrugForm)) {
+            chosenDrugForm.dosages.forEach((dosage) => {
+              draft.priorDosagesQty[dosage.dosage] = 0;
+            });
+          } else {
+            draft.priorDosagesQty['1mg'] = 0;
+          }
         }
         break;
       }

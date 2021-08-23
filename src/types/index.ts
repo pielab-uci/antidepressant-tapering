@@ -78,7 +78,9 @@ export interface PrescribedDrug {
   id: number;
   name: string;
   brand: string;
-  form: 'capsule' | 'tablet' | 'oral suspension' | 'oral solution' | null;
+  form: DrugFormNames | null;
+  currentDosageForm: DrugFormNames | null;
+  nextDosageForm: DrugFormNames | null;
   halfLife: string;
   measureUnit: string;
   minDosageUnit: number;

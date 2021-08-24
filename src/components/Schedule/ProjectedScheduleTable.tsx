@@ -110,8 +110,8 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
       unSortIcon: true,
       // editable: (params: EditableCallbackParams) => editable && !params.data.isPriorDosage,
       // cellEditor: 'datePicker',
-      minWidth: 120,
-      maxWidth: 120,
+      minWidth: 130,
+      maxWidth: 130,
       valueFormatter: (params: ValueFormatterParams) => {
         return params.value !== null ? format(params.value, 'MM/dd/yyyy') : '';
       },
@@ -126,8 +126,8 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
       unSortIcon: true,
       // editable: (params: EditableCallbackParams) => editable && !params.data.isPriorDosage,
       // cellEditor: 'datePicker',
-      minWidth: 120,
-      maxWidth: 120,
+      minWidth: 130,
+      maxWidth: 130,
       valueFormatter: (params: ValueFormatterParams) => {
         return params.value !== null ? format(params.value, 'MM/dd/yyyy') : '';
       },

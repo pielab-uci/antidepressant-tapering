@@ -133,6 +133,13 @@ const reducer = (state: RowEditingModalState = initialState, action: ModalAction
         drug.minDosageUnit = action.data.minDosageUnit;
         // drug.priorDosages = [];
         drug.upcomingDosages = [];
+        if (action.data.oralDosageInfo === null) {
+          if (drug.currentDosageForm !== 'oral solution' && drug.currentDosageForm !== 'oral suspension') {
+            drug.oralDosageInfo = action.data.oralDosageInfo;
+          }
+        } else {
+          drug.oralDosageInfo = action.data.oralDosageInfo;
+        }
         // if (drug.currentDosageForm !== 'oral solution' && drug.currentDosageForm !== 'oral suspension'
         //   && drug.nextDosageForm !== 'oral solution' && drug.nextDosageForm !== 'oral suspension') {
         //   drug.oralDosageInfo = action.data.oralDosageInfo;

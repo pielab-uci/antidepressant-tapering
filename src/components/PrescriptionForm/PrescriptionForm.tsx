@@ -134,7 +134,7 @@ const PrescriptionForm: FC<Props> = ({
           (newChosenDrugForm.dosages as CapsuleOrTabletDosage[])
             .flatMap((option) => {
               if (option.isScored) {
-                return [`${parseFloat(option.dosage) / 2}${newChosenDrugForm.measureUnit}`, option.dosage];
+                return [`${parseFloat(option.dosage) / 2} ${newChosenDrugForm.measureUnit}`, option.dosage];
               }
               return option.dosage;
             }),

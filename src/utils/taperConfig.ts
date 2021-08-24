@@ -259,7 +259,7 @@ export const prescription: PrescriptionFunction = (
     .reduce((res, [dosage, qty], i, arr) => {
       if (oralDosageInfo) {
         const { rate } = oralDosageInfo;
-        return `${res} ${(qty / rate.mg) * rate.ml}ml ${form} by mouth daily ${intervalCount} ${checkedIntervalUnit}`;
+        return `${res} ${(qty / rate.mg) * rate.ml} ml ${form} by mouth daily for ${intervalCount} ${checkedIntervalUnit}`;
       }
 
       const checkedForm = qty === 1 ? form : `${form}s`;
@@ -817,13 +817,13 @@ const generateNotesForPatientFromRows = (rows: TableRowData[]): string => {
           const { rate } = row.oralDosageInfo;
           const formCapitalized = capitalize(rowPrescription.data.form);
           if (i === arr.length - 1) {
-            const messageBeforeThen = `${prev}${formCapitalized}, ${(qty / rate.mg) * rate.ml}ml ${rowPrescription.data.form} by mouth daily from ${format(row.startDate!, 'MM/dd/yyyy')} to ${format(row.endDate!, 'MM/dd/yyyy')} (${rowPrescription.data.intervalCount} ${intervalUnit})`;
+            const messageBeforeThen = `${prev}${formCapitalized}, ${(qty / rate.mg) * rate.ml} ml ${rowPrescription.data.form} by mouth daily from ${format(row.startDate!, 'MM/dd/yyyy')} to ${format(row.endDate!, 'MM/dd/yyyy')} (${rowPrescription.data.intervalCount} ${intervalUnit})`;
             if (j === rowArr.length - 1) {
               return `${messageBeforeThen},\n\tThen STOP.\n`;
             }
             return `${messageBeforeThen} then,\n`;
           }
-          return `${prev}${formCapitalized}, ${(qty / rate.mg) * rate.ml}ml ${rowPrescription.data.form} + `;
+          return `${prev}${formCapitalized}, ${(qty / rate.mg) * rate.ml} ml ${rowPrescription.data.form} + `;
         }, '');
       return `${message}\t${messageLine}`;
     }, messageHeading).trim();
@@ -854,13 +854,13 @@ const generateNotesForPharmacyFromRows = (rows: TableRowData[], finalPrescriptio
 
           const { rate } = row.oralDosageInfo;
           if (i === arr.length - 1) {
-            const messageBeforeThen = `${prev}${i === 0 ? `${drugTitle}, take ` : ''}${(qty / rate.mg) * rate.ml}ml ${rowPrescription.data.form} by mouth daily (subtotal: ${(qty / rate.mg) * rate.ml * rowPrescription.data.intervalDurationDays}ml)`;
+            const messageBeforeThen = `${prev}${i === 0 ? `${drugTitle}, take ` : ''}${(qty / rate.mg) * rate.ml} ml ${rowPrescription.data.form} by mouth daily (subtotal: ${(qty / rate.mg) * rate.ml * rowPrescription.data.intervalDurationDays} ml)`;
             if (j === rowArr.length - 1) {
               return `${messageBeforeThen}.\n`;
             }
             return `${messageBeforeThen};\n`;
           }
-          return `${prev}${i === 0 ? `${drugTitle}, take ` : ''}${(qty / rate.ml) * rate.ml}ml ${rowPrescription.data.form} by mouth daily (subtotal: ${(qty / rate.mg) * rate.ml * rowPrescription.data.intervalDurationDays}ml) + `;
+          return `${prev}${i === 0 ? `${drugTitle}, take ` : ''}${(qty / rate.ml) * rate.ml} ml ${rowPrescription.data.form} by mouth daily (subtotal: ${(qty / rate.mg) * rate.ml * rowPrescription.data.intervalDurationDays} ml) + `;
         }, '');
       return `${message}${messageLine}`;
     }, '');

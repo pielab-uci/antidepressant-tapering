@@ -9,12 +9,11 @@ import {
 } from 'react';
 import { useSelector } from 'react-redux';
 import {
-  CapsuleOrTabletForm, DrugForm, DrugOption, OralForm, PrescribedDrug,
+  PillForm, DrugForm, DrugFormNames, DrugOption, OralForm, PrescribedDrug,
 } from '../../types';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import { RootState } from '../../redux/reducers';
 import { PrescriptionFormContext } from './PrescriptionForm';
-import { DrugFormNames } from './actions';
 
 const { OptGroup, Option } = Select;
 
@@ -95,8 +94,8 @@ const PrescriptionSettingsForm: FC<Props> = ({
             <label>Form:</label>
             <Select value={chosenDrugForm?.form} onChange={onFormChange} style={{ width: 200 }}>
               {drugFormOptions?.map(
-                (form: CapsuleOrTabletForm | OralForm) => <Option key={form.form}
-                                                                  value={form.form}>{form.form}</Option>,
+                (form: PillForm | OralForm) => <Option key={form.form}
+                                                       value={form.form}>{form.form}</Option>,
               )}
             </Select>
           </div>

@@ -1,6 +1,5 @@
 import { Schedule } from '../components/Schedule/ProjectedSchedule';
 import { ScheduleChartData } from '../utils/taperConfig';
-import { DrugFormNames } from '../components/PrescriptionForm/actions';
 
 export interface Clinician {
   id: number;
@@ -46,21 +45,25 @@ export interface DrugOption {
   forms: DrugForm[]
 }
 
-export interface CapsuleOrTabletForm {
-  form: 'capsule' | 'tablet';
+export type OralFormNames = 'oral solution' | 'oral suspension';
+export type PillFormNames = 'capsule' | 'tablet';
+// export type DrugFormNames = 'capsule' | 'tablet' | 'oral solution' | 'oral suspension';
+export type DrugFormNames = OralFormNames | PillFormNames;
+export interface PillForm {
+  form: PillFormNames;
   measureUnit: string;
-  dosages: CapsuleOrTabletDosage[];
+  dosages: PillDosage[];
 }
 
 export interface OralForm {
-  form: 'oral solution' | 'oral suspension';
+  form: OralFormNames;
   measureUnit: string;
   dosages: OralDosage;
 }
 
-export type DrugForm = CapsuleOrTabletForm | OralForm;
+export type DrugForm = PillForm | OralForm;
 
-export interface CapsuleOrTabletDosage {
+export interface PillDosage {
   dosage: string;
   isScored?: boolean;
 }
@@ -70,7 +73,7 @@ export interface OralDosage {
   bottles: string[]
 }
 
-export const isCapsuleOrTablet = (form: DrugForm | PrescribedDrug): form is CapsuleOrTabletForm => {
+export const isCapsuleOrTablet = (form: DrugForm | PrescribedDrug): form is PillForm => {
   return form.form === 'tablet' || form.form === 'capsule';
 };
 

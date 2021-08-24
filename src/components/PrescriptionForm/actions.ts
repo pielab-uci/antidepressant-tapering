@@ -1,4 +1,6 @@
-import { Drug, OralDosage, PrescribedDrug } from '../../types';
+import {
+  Drug, DrugFormNames, OralDosage, PrescribedDrug,
+} from '../../types';
 import { SetIsInputComplete, ValidateInputCompletionAction } from '../../redux/actions/taperConfig';
 
 export const LOAD_PRESCRIPTION_DATA = 'LOAD_PRESCRIPTION_DATA' as const;
@@ -23,7 +25,6 @@ export interface ChooseBrandAction {
 }
 
 export const CHOOSE_FORM = 'CHOOSE_FORM' as const;
-export type DrugFormNames = 'capsule' | 'tablet' | 'oral solution' | 'oral suspension';
 export interface ChooseFormAction {
   type: typeof CHOOSE_FORM,
   data: { id: number;

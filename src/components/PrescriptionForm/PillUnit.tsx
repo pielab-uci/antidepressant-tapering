@@ -8,7 +8,6 @@ import { css } from '@emotion/react';
 import { PrescriptionFormContext } from './PrescriptionForm';
 import { TaperConfigActions } from '../../redux/reducers/taperConfig';
 import {
-  DrugFormNames,
   priorDosageChange, PriorDosageChangeAction, upcomingDosageChange, UpcomingDosageChangeAction,
 } from './actions';
 import {
@@ -23,7 +22,7 @@ interface Props {
   isScored?: boolean;
 }
 
-const CapsuleOrTabletUnit: FC<Props> = ({
+const PillUnit: FC<Props> = ({
   time, form, dosage, isScored, editable,
 }) => {
   const context = useContext(PrescriptionFormContext);
@@ -144,4 +143,4 @@ const CapsuleOrTabletUnit: FC<Props> = ({
   );
 };
 
-export default CapsuleOrTabletUnit;
+export default PillUnit;

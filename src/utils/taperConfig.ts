@@ -7,11 +7,10 @@ import isBefore from 'date-fns/esm/isBefore';
 import sub from 'date-fns/esm/sub';
 
 import {
-  OralDosage, PrescribedDrug, TableRowData, Converted, Prescription, ValueOf,
+  OralDosage, PrescribedDrug, TableRowData, Converted, Prescription, ValueOf, DrugFormNames,
 } from '../types';
 import { Schedule } from '../components/Schedule/ProjectedSchedule';
 import { drugNameBrandPairs } from '../redux/reducers/drugs';
-import { DrugFormNames } from '../components/PrescriptionForm/actions';
 
 export const isCompleteDrugInput = (drug: PrescribedDrug) => {
   const priorDosageSum = drug.priorDosages.reduce((prev, { dosage, quantity }) => {

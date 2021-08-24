@@ -27,9 +27,13 @@ export const initialState: PrescriptionFormState = {
   chosenDrug: null,
   chosenBrand: null,
   chosenDrugForm: null,
+  currentDosageForm: null,
+  nextDosageForm: null,
   brandOptions: [],
   drugFormOptions: [],
   dosageOptions: [],
+  currentDosageOptions: [],
+  nextDosageOptions: [],
   availableDosageOptions: [],
   regularDosageOptions: [],
   minDosageUnit: 0,
@@ -69,6 +73,10 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.chosenBrand = draft.brandOptions!.find((brand) => brand.brand === action.data.brand)!;
         draft.drugFormOptions = draft.chosenBrand.forms;
         draft.chosenDrugForm = draft.drugFormOptions.find((form) => form.form === action.data.form)!;
+        draft.currentDosageForm = action.data.currentDosageForm;
+        draft.nextDosageForm = action.data.nextDosageForm;
+        draft.currentDosageOptions = draft.drugFormOptions.find((form) => form.form === draft.currentDosageForm)!.dosages;
+        draft.nextDosageOptions = draft.drugFormOptions.find((form) => form.form === draft.nextDosageForm)!.dosages;
         draft.dosageOptions = draft.chosenDrugForm.dosages;
         draft.goalDosage = action.data.targetDosage;
         draft.priorDosagesQty = action.data.priorDosages.reduce(
@@ -97,6 +105,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
           });
         }
         draft.oralDosageInfo = action.data.oralDosageInfo || null;
+        draft.isModal = action.data.isModal;
         draft.intervalStartDate = action.data.intervalStartDate;
         draft.intervalEndDate = action.data.intervalEndDate;
         draft.intervalCount = action.data.intervalCount;
@@ -105,6 +114,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         break;
       }
 
+      // TODO: keep current form/drugs even after brand is changed..?
       case CHOOSE_BRAND: {
         const chosenBrandOption = draft.brandOptions!.find(
           (brand) => brand.brand === action.data.brand,
@@ -118,6 +128,8 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.drugs!.splice(0, 0, draft.drugs!.splice(chosenDrugIdx, 1)[0]);
         draft.chosenBrand = chosenBrandOption;
         draft.chosenDrugForm = null;
+        draft.currentDosageForm = null;
+        draft.nextDosageForm = null;
         draft.goalDosage = 0;
         draft.drugFormOptions = chosenBrandOption.forms;
         draft.priorDosagesQty = {};
@@ -129,9 +141,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
       case CHOOSE_FORM: {
         const chosenDrugForm = draft.drugFormOptions!.find((form) => form.form === action.data.form)!;
         draft.chosenDrugForm = chosenDrugForm;
-        draft.priorDosagesQty = {};
         draft.upcomingDosagesQty = {};
-        draft.priorDosageSum = 0;
         draft.upcomingDosageSum = 0;
         draft.minDosageUnit = action.data.minDosageUnit;
         draft.regularDosageOptions = action.data.regularDosageOptions;
@@ -139,14 +149,30 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.oralDosageInfo = action.data.oralDosageInfo;
         draft.dosageOptions = chosenDrugForm.dosages;
 
+        draft.nextDosageForm = chosenDrugForm.form;
+        draft.nextDosageOptions = chosenDrugForm.dosages;
+
         if (isCapsuleOrTablet(chosenDrugForm)) {
           chosenDrugForm.dosages.forEach((dosage) => {
-            draft.priorDosagesQty[dosage.dosage] = 0;
             draft.upcomingDosagesQty[dosage.dosage] = 0;
           });
         } else {
-          draft.priorDosagesQty['1mg'] = 0;
           draft.upcomingDosagesQty['1mg'] = 0;
+        }
+
+        if (!draft.isModal) {
+          draft.priorDosagesQty = {};
+          draft.priorDosageSum = 0;
+          draft.currentDosageForm = chosenDrugForm.form;
+          draft.currentDosageOptions = chosenDrugForm.dosages;
+
+          if (isCapsuleOrTablet(chosenDrugForm)) {
+            chosenDrugForm.dosages.forEach((dosage) => {
+              draft.priorDosagesQty[dosage.dosage] = 0;
+            });
+          } else {
+            draft.priorDosagesQty['1mg'] = 0;
+          }
         }
         break;
       }

@@ -14,6 +14,7 @@ import {
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import { RootState } from '../../redux/reducers';
 import { PrescriptionFormContext } from './PrescriptionForm';
+import { DrugFormNames } from './actions';
 
 const { OptGroup, Option } = Select;
 
@@ -22,7 +23,7 @@ interface Props {
   chosenBrand: DrugOption | null;
   onBrandChange: (value: string) => void;
   chosenDrugForm: DrugForm | undefined | null;
-  onFormChange: (value: string) => void;
+  onFormChange: (value: DrugFormNames) => void;
   allowSplittingUnscoredTablet: boolean;
   toggleAllowSplittingUnscoredTabletCheckbox: (e: CheckboxChangeEvent) => void;
 }

@@ -20,7 +20,7 @@ import {
   SET_GOAL_DOSAGE, SET_GROWTH,
   UPCOMING_DOSAGE_CHANGE,
 } from './actions';
-import { PillDosage, isCapsuleOrTablet } from '../../types';
+import { PillDosage, isCapsuleOrTablet, OralFormNames } from '../../types';
 
 export const initialState: PrescriptionFormState = {
   drugs: null,
@@ -45,6 +45,8 @@ export const initialState: PrescriptionFormState = {
   goalDosage: 0,
   allowSplittingUnscoredTablet: false,
   oralDosageInfo: null,
+  currentOralDosageInfo: null,
+  nextOralDosageInfo: null,
   intervalStartDate: (() => {
     const date = new Date();
     return new Date(date.valueOf() + date.getTimezoneOffset() * 60 * 1000);
@@ -146,7 +148,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.minDosageUnit = action.data.minDosageUnit;
         draft.regularDosageOptions = action.data.regularDosageOptions;
         draft.availableDosageOptions = action.data.availableDosageOptions;
-        draft.oralDosageInfo = action.data.oralDosageInfo;
+
         draft.dosageOptions = chosenDrugForm.dosages;
 
         draft.nextDosageForm = chosenDrugForm.form;
@@ -173,7 +175,19 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
           } else {
             draft.priorDosagesQty['1mg'] = 0;
           }
+          /** have to keep oralDosageInfo when currentDrugForm or nextDrugForm is an oral form. */
+          draft.oralDosageInfo = action.data.oralDosageInfo;
         }
+        //  if (action.data.oralDosageInfo === null && draft.currentDosageForm !== 'oral solution' && draft.currentDosageForm !== 'oral suspension'
+        //     && draft.nextDosageForm !== 'oral solution' && draft.nextDosageForm !== 'oral suspension') {
+        //   draft.oralDosageInfo = action.data.oralDosageInfo;
+        // }
+        if (draft.isModal) {
+          if (draft.currentDosageForm !== 'oral solution' && draft.currentDosageForm !== 'oral suspension') {
+            draft.oralDosageInfo = action.data.oralDosageInfo;
+          }
+        }
+
         break;
       }
 

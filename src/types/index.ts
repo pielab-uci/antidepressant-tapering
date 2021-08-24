@@ -125,6 +125,8 @@ export interface PrescribedDrug {
   prevVisit: boolean;
   prescribedAt: Date;
   oralDosageInfo?: OralDosage | null;
+  currentOralDosageInfo?: OralDosage | null;
+  nextOralDosageInfo?: OralDosage|null;
 }
 
 export interface Prescription {
@@ -196,6 +198,8 @@ export interface TableRowData {
   intervalCount: number,
   intervalUnit: 'Days' | 'Weeks' | 'Months' | null,
   oralDosageInfo?: OralDosage,
+  currentOralDosageInfo?: OralDosage,
+  nextOralDosageInfo?: OralDosage,
   measureUnit: string,
   form: DrugFormNames | null,
   currentDosageForm: DrugFormNames | null,

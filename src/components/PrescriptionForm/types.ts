@@ -47,7 +47,9 @@ export interface PrescriptionFormState {
   upcomingDosageSum: number;
   goalDosage: number;
   allowSplittingUnscoredTablet: boolean;
-  oralDosageInfo: { rate: { mg: number, ml: number }, bottles: string[] } | null;
+  oralDosageInfo: OralDosage | null;
+  currentOralDosageInfo: OralDosage | null;
+  nextOralDosageInfo: OralDosage | null;
   intervalStartDate: Date;
   intervalEndDate: Date | null;
   intervalUnit: 'Days'|'Weeks'|'Months';

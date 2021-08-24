@@ -66,12 +66,12 @@ const prescriptionToDosages = (row: TableRowData): { dosage: string, quantity: n
 
 const isModalInputComplete = (drug: PrescribedDrug): boolean => {
   return drug.name !== ''
-  && drug.brand !== ''
-  && drug.form !== null
-  && drug.intervalEndDate !== null
-  && drug.intervalCount !== 0
-  && drug.upcomingDosages.length !== 0
-  && !drug.upcomingDosages.every((dosage) => dosage.quantity === 0);
+    && drug.brand !== ''
+    && drug.form !== null
+    && drug.intervalEndDate !== null
+    && drug.intervalCount !== 0
+    && drug.upcomingDosages.length !== 0
+    && !drug.upcomingDosages.every((dosage) => dosage.quantity === 0);
 };
 
 const reducer = (state: RowEditingModalState = initialState, action: ModalActions): RowEditingModalState => {
@@ -133,7 +133,10 @@ const reducer = (state: RowEditingModalState = initialState, action: ModalAction
         drug.minDosageUnit = action.data.minDosageUnit;
         // drug.priorDosages = [];
         drug.upcomingDosages = [];
-        drug.oralDosageInfo = action.data.oralDosageInfo;
+        // if (drug.currentDosageForm !== 'oral solution' && drug.currentDosageForm !== 'oral suspension'
+        //   && drug.nextDosageForm !== 'oral solution' && drug.nextDosageForm !== 'oral suspension') {
+        //   drug.oralDosageInfo = action.data.oralDosageInfo;
+        // }
         drug.availableDosageOptions = action.data.availableDosageOptions;
         drug.regularDosageOptions = action.data.regularDosageOptions;
         draft.isModalInputComplete = false;

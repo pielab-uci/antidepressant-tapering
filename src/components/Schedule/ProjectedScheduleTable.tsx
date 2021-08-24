@@ -98,7 +98,7 @@ const ProjectedScheduleTable: FC<{ editable: boolean, projectedSchedule: Schedul
       // editable: (params: EditableCallbackParams) => editable && !params.data.isPriorDosage,
       cellEditor: 'numberEditor',
       maxWidth: 100,
-      valueFormatter: (params: ValueFormatterParams) => `${params.value}mg`,
+      valueFormatter: (params: ValueFormatterParams) => `${params.value} mg`,
       // need to keep below valueSetter
       valueSetter: (params: ValueSetterParams) => params.newValue,
       // valueSetter: valueSetter((x: string) => parseFloat(x) >= 0),

@@ -25,11 +25,11 @@ export interface ChooseBrandAction {
 }
 
 export const CHOOSE_FORM = 'CHOOSE_FORM' as const;
-
+export type DrugFormNames = 'capsule' | 'tablet' | 'oral solution' | 'oral suspension';
 export interface ChooseFormAction {
   type: typeof CHOOSE_FORM,
   data: { id: number;
-    form: string,
+    form: DrugFormNames,
     minDosageUnit: number,
     availableDosageOptions: string[],
     oralDosageInfo: OralDosage|null,

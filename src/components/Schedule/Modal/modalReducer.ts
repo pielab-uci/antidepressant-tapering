@@ -67,7 +67,7 @@ const prescriptionToDosages = (row: TableRowData): { dosage: string, quantity: n
 const isModalInputComplete = (drug: PrescribedDrug): boolean => {
   return drug.name !== ''
   && drug.brand !== ''
-  && drug.form !== ''
+  && drug.form !== null
   && drug.intervalEndDate !== null
   && drug.intervalCount !== 0
   && drug.upcomingDosages.length !== 0
@@ -85,6 +85,8 @@ const reducer = (state: RowEditingModalState = initialState, action: ModalAction
           ...clickedRow.prescribedDrug,
           isModal: true,
           applyInSchedule: false,
+          currentDosageForm: prevRow.nextDosageForm,
+          nextDosageForm: clickedRow.nextDosageForm,
           // id..?
           allowChangePriorDosage: false,
           intervalStartDate: clickedRow.startDate!,
@@ -110,7 +112,9 @@ const reducer = (state: RowEditingModalState = initialState, action: ModalAction
         drug.name = correspondingDrugData.name;
         drug.halfLife = correspondingDrugData.halfLife;
         drug.brand = action.data.brand;
-        drug.form = '';
+        drug.form = null;
+        drug.currentDosageForm = null;
+        drug.nextDosageForm = null;
         drug.allowChangePriorDosage = false;
         drug.oralDosageInfo = null;
         drug.priorDosages = [];
@@ -122,8 +126,12 @@ const reducer = (state: RowEditingModalState = initialState, action: ModalAction
       case CHOOSE_FORM: {
         const drug = draft.prescribedDrug!;
         drug.form = action.data.form;
+        if (drug.currentDosageForm === null) {
+          drug.currentDosageForm = action.data.form;
+        }
+        drug.nextDosageForm = action.data.form;
         drug.minDosageUnit = action.data.minDosageUnit;
-        drug.priorDosages = [];
+        // drug.priorDosages = [];
         drug.upcomingDosages = [];
         drug.oralDosageInfo = action.data.oralDosageInfo;
         drug.availableDosageOptions = action.data.availableDosageOptions;

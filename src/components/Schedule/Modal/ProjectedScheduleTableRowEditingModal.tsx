@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useState } from 'react';
 import Modal from 'antd/es/modal';
 import { useDispatch, useSelector } from 'react-redux';
 import { css } from '@emotion/react';
 import { useReducer } from 'reinspect';
-import { TableRowData } from '../../../types';
+import { PrescribedDrug, TableRowData } from '../../../types';
 import { RootState } from '../../../redux/reducers';
 import { TaperConfigState } from '../../../redux/reducers/taperConfig';
 import PrescriptionForm from '../../PrescriptionForm/PrescriptionForm';

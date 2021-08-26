@@ -11,6 +11,7 @@ import {
 } from '../types';
 import { Schedule } from '../components/Schedule/ProjectedSchedule';
 import { drugNameBrandPairs } from '../redux/reducers/drugs';
+import { DrugFormNames } from '../components/PrescriptionForm/actions';
 
 export const isCompleteDrugInput = (drug: PrescribedDrug) => {
   const priorDosageSum = drug.priorDosages.reduce((prev, { dosage, quantity }) => {
@@ -23,7 +24,7 @@ export const isCompleteDrugInput = (drug: PrescribedDrug) => {
 
   return drug.name !== ''
     && drug.brand !== ''
-    && drug.form !== ''
+    && drug.form !== null
     && drug.intervalEndDate !== null
     && drug.intervalCount !== 0
     && (
@@ -221,7 +222,7 @@ export const calcMinimumQuantityForDosage = (availableOptions: string[], dosage:
 
 interface PrescriptionFunction {
   (args: {
-    form: string,
+    form: DrugFormNames | null,
     intervalDurationDays: number,
     intervalCount: number,
     intervalUnit: 'Days' | 'Weeks' | 'Months' | null,
@@ -231,7 +232,7 @@ interface PrescriptionFunction {
   : {
     message: string;
     data: {
-      form: string,
+      form: DrugFormNames | null,
       unit: string;
       intervalCount: number;
       intervalUnit: 'Days' | 'Weeks' | 'Months' | null;
@@ -259,7 +260,7 @@ export const prescription: PrescriptionFunction = (
     .reduce((res, [dosage, qty], i, arr) => {
       if (oralDosageInfo) {
         const { rate } = oralDosageInfo;
-        return `${res} ${(qty / rate.mg) * rate.ml}ml ${form} by mouth daily ${intervalCount} ${checkedIntervalUnit}`;
+        return `${res} ${(qty / rate.mg) * rate.ml} ml ${form} by mouth daily for ${intervalCount} ${checkedIntervalUnit}`;
       }
 
       const checkedForm = qty === 1 ? form : `${form}s`;
@@ -388,6 +389,8 @@ export const generateTableRows = (drugs: Converted[], startRowIndexInPrescribedD
       availableDosageOptions: drug.availableDosageOptions,
       regularDosageOptions: drug.regularDosageOptions,
       form: drug.form,
+      currentDosageForm: drug.currentDosageForm,
+      nextDosageForm: drug.nextDosageForm,
       isPriorDosage: false,
       intervalDurationDays: drug.intervalDurationDays,
       intervalCount: drug.intervalCount,
@@ -427,7 +430,10 @@ export const generateTableRows = (drugs: Converted[], startRowIndexInPrescribedD
           dosage: newRowData.upcomingDosageSum,
           startDate: newRowData.startDate,
           endDate: newRowData.endDate,
-          prescription: prescription({ ...drug }, newRowData.unitDosages),
+          prescription: prescription({
+            ...drug,
+            form: drug.nextDosageForm,
+          }, newRowData.unitDosages),
           selected: false,
           goalDosage: drug.targetDosage,
           addedInCurrentVisit: !drug.prevVisit,
@@ -440,6 +446,8 @@ export const generateTableRows = (drugs: Converted[], startRowIndexInPrescribedD
           intervalUnit: drug.intervalUnit,
           measureUnit: drug.measureUnit,
           form: drug.form,
+          currentDosageForm: drug.nextDosageForm,
+          nextDosageForm: drug.nextDosageForm,
           oralDosageInfo: drug.oralDosageInfo ? drug.oralDosageInfo : undefined,
           changeDirection: drug.changeDirection,
         });
@@ -668,7 +676,19 @@ export const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule =
       dosage: drug.priorDosages.reduce((prev, { dosage, quantity }) => {
         return prev + parseFloat(dosage) * quantity;
       }, 0),
-      prescription: null,
+      prescription: {
+        ...prescription({
+          form: drug.currentDosageForm,
+          intervalCount: drug.intervalCount,
+          intervalUnit: drug.intervalUnit,
+          oralDosageInfo: drug.oralDosageInfo,
+          intervalDurationDays: drug.intervalDurationDays,
+        }, drug.priorDosages.reduce((prev, { dosage, quantity }) => {
+          prev[dosage] = quantity;
+          return prev;
+        }, {} as { [dosage: string]: number })),
+        message: '',
+      },
       startDate: null,
       endDate: tableDataSorted[0].startDate,
       selected: false,
@@ -682,6 +702,8 @@ export const scheduleGenerator = (prescribedDrugs: PrescribedDrug[]): Schedule =
       intervalUnit: null,
       measureUnit: drug.measureUnit,
       form: drug.form,
+      currentDosageForm: drug.currentDosageForm,
+      nextDosageForm: drug.nextDosageForm,
     })) as TableRowData[]);
   console.groupEnd();
 
@@ -779,7 +801,10 @@ const getCountRead = (num: number): string => {
   return counts[numStr] || numStr;
 };
 
-const capitalize = (str: string): string => {
+const capitalize = (str: DrugFormNames|null): string => {
+  if (str === null) {
+    return '';
+  }
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
@@ -820,13 +845,13 @@ const generateNotesForPatientFromRows = (rows: TableRowData[]): string => {
           const { rate } = row.oralDosageInfo;
           const formCapitalized = capitalize(rowPrescription.data.form);
           if (i === arr.length - 1) {
-            const messageBeforeThen = `${prev}${formCapitalized}, ${(qty / rate.mg) * rate.ml}ml ${rowPrescription.data.form} by mouth daily from ${format(row.startDate!, 'MM/dd/yyyy')} to ${format(row.endDate!, 'MM/dd/yyyy')} (${rowPrescription.data.intervalCount} ${intervalUnit})`;
+            const messageBeforeThen = `${prev}${formCapitalized}, ${(qty / rate.mg) * rate.ml} ml ${rowPrescription.data.form} by mouth daily from ${format(row.startDate!, 'MM/dd/yyyy')} to ${format(row.endDate!, 'MM/dd/yyyy')} (${rowPrescription.data.intervalCount} ${intervalUnit})`;
             if (j === rowArr.length - 1) {
               return `${messageBeforeThen},\n\tThen STOP.\n`;
             }
             return `${messageBeforeThen} then,\n`;
           }
-          return `${prev}${formCapitalized}, ${(qty / rate.mg) * rate.ml}ml ${rowPrescription.data.form} + `;
+          return `${prev}${formCapitalized}, ${(qty / rate.mg) * rate.ml} ml ${rowPrescription.data.form} + `;
         }, '');
       return `${message}\t${messageLine}`;
     }, messageHeading).trim();
@@ -857,13 +882,13 @@ const generateNotesForPharmacyFromRows = (rows: TableRowData[], finalPrescriptio
 
           const { rate } = row.oralDosageInfo;
           if (i === arr.length - 1) {
-            const messageBeforeThen = `${prev}${i === 0 ? `${drugTitle}, take ` : ''}${(qty / rate.mg) * rate.ml}ml ${rowPrescription.data.form} by mouth daily (subtotal: ${(qty / rate.mg) * rate.ml * rowPrescription.data.intervalDurationDays}ml)`;
+            const messageBeforeThen = `${prev}${i === 0 ? `${drugTitle}, take ` : ''}${(qty / rate.mg) * rate.ml} ml ${rowPrescription.data.form} by mouth daily (subtotal: ${(qty / rate.mg) * rate.ml * rowPrescription.data.intervalDurationDays} ml)`;
             if (j === rowArr.length - 1) {
               return `${messageBeforeThen}.\n`;
             }
             return `${messageBeforeThen};\n`;
           }
-          return `${prev}${i === 0 ? `${drugTitle}, take ` : ''}${(qty / rate.ml) * rate.ml}ml ${rowPrescription.data.form} by mouth daily (subtotal: ${(qty / rate.mg) * rate.ml * rowPrescription.data.intervalDurationDays}ml) + `;
+          return `${prev}${i === 0 ? `${drugTitle}, take ` : ''}${(qty / rate.ml) * rate.ml} ml ${rowPrescription.data.form} by mouth daily (subtotal: ${(qty / rate.mg) * rate.ml * rowPrescription.data.intervalDurationDays} ml) + `;
         }, '');
       return `${message}${messageLine}`;
     }, '');
@@ -908,7 +933,7 @@ export const calcFinalPrescription = (scheduleData: TableRowData[], tableSelecte
         const obj: ValueOf<Prescription> = {
           // name: '',
           brand: '',
-          form: '',
+          form: null,
           // availableDosages: [],
           regularDosageOptions: [],
           oralDosageInfo: null,

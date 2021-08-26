@@ -197,21 +197,21 @@ const PatientLandingPage: FC = () => {
           {renderChart()}
         </div>}
       </div>
-      <div css={css`width: 40%;`}>
-        <div css={css`display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-top: 70px;`}>
-          <h3>Symptom Tracker</h3>
-          <Button type='primary'
-                  css={css`
-                    border-radius: 10px;
-                    background-color: #0984E3;`}
-                  disabled={true}>
-            Create New</Button>
-        </div>
-        {renderSymptomTracker()}
-      </div>
+      {/* <div css={css`width: 40%;`}> */}
+      {/*  <div css={css`display: flex; */}
+      {/*    align-items: center; */}
+      {/*    justify-content: space-between; */}
+      {/*    margin-top: 70px;`}> */}
+      {/*    <h3>Symptom Tracker</h3> */}
+      {/*    <Button type='primary' */}
+      {/*            css={css` */}
+      {/*              border-radius: 10px; */}
+      {/*              background-color: #0984E3;`} */}
+      {/*            disabled={true}> */}
+      {/*      Create New</Button> */}
+      {/*  </div> */}
+      {/*  {renderSymptomTracker()} */}
+      {/* </div> */}
       {/* </div> */}
       <hr/>
       {renderNoteSection()}

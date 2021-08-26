@@ -330,6 +330,17 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
       case ALLOW_SPLITTING_UNSCORED_TABLET: {
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
         drug.allowSplittingUnscoredTablet = action.data.allow;
+        // TODO: continue from here..
+        if (action.data.allow) {
+          drug.availableDosageOptions = [...new Set(action.data.dosageOptions.map((option) => {
+            if (option.isScored) {
+              return option.dosage;
+            }
+            return [`${parseFloat(option.dosage) / 2}mg`, option.dosage];
+          }).flat())];
+        } else {
+          drug.availableDosageOptions = drug.regularDosageOptions!;
+        }
         draft.isSaved = false;
         break;
       }

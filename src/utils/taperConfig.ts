@@ -808,6 +808,9 @@ const generateNotesForPatientFromRows = (rows: TableRowData[]): string => {
             if (i === arr.length - 1) {
               const messageBeforeThen = `${prev}${dosage} ${rowPrescription.data.form}s, ${quantity} ${rowPrescription.data.form}(s) by mouth daily from ${format(row.startDate!, 'MM/dd/yyyy')} to ${format(row.endDate!, 'MM/dd/yyyy')} (${rowPrescription.data.intervalCount} ${intervalUnit})`;
               if (j === rowArr.length - 1) {
+                if (row.changeDirection === 'increase') {
+                  return `${messageBeforeThen}.\n`;
+                }
                 return `${messageBeforeThen},\n\tThen STOP.\n`;
               }
               return `${messageBeforeThen} then,\n`;

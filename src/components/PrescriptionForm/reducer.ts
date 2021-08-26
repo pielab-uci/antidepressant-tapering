@@ -70,6 +70,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.drugFormOptions = draft.chosenBrand.forms;
         draft.chosenDrugForm = draft.drugFormOptions.find((form) => form.form === action.data.form)!;
         draft.dosageOptions = draft.chosenDrugForm.dosages;
+        draft.allowSplittingUnscoredTablet = action.data.allowSplittingUnscoredTablet;
         draft.goalDosage = action.data.targetDosage;
         draft.priorDosagesQty = action.data.priorDosages.reduce(
           (prev: { [dosage: string]: number }, currentDosage) => {
@@ -195,7 +196,15 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
 
       case ALLOW_SPLITTING_UNSCORED_TABLET:
         draft.allowSplittingUnscoredTablet = action.data.allow;
-        if (!action.data.allow) {
+        if (action.data.allow) {
+          draft.availableDosageOptions = [...new Set((draft.dosageOptions as CapsuleOrTabletDosage[]).map((option) => {
+            if (option.isScored) {
+              return option.dosage;
+            }
+            return [`${parseFloat(option.dosage) / 2}mg`, option.dosage];
+          }).flat())];
+        } else {
+          draft.availableDosageOptions = draft.regularDosageOptions!;
           Object.entries(draft.priorDosagesQty).forEach(([k, v]) => {
             draft.priorDosagesQty[k] = Math.floor(v);
           });
@@ -203,6 +212,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
             draft.upcomingDosagesQty[k] = Math.floor(v);
           });
         }
+
         break;
 
       case INTERVAL_START_DATE_CHANGE:

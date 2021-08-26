@@ -78,7 +78,7 @@ const PrescriptionForm: FC<Props> = ({
   };
 
   const {
-    chosenBrand, chosenDrugForm, drugFormOptions,
+    chosenBrand, chosenDrugForm, drugFormOptions, dosageOptions,
     priorDosagesQty, upcomingDosagesQty, allowSplittingUnscoredTablet,
   } = state;
   const { drugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
@@ -167,10 +167,11 @@ const PrescriptionForm: FC<Props> = ({
   };
 
   const toggleAllowSplittingUnscoredTabletCheckbox = (e: CheckboxChangeEvent) => {
-    formActionDispatch(toggleAllowSplittingUnscoredTablet({ id: prescribedDrug.id, allow: e.target.checked }));
+    formActionDispatch(toggleAllowSplittingUnscoredTablet({ id: prescribedDrug.id, allow: e.target.checked, dosageOptions: (dosageOptions as CapsuleOrTabletDosage[]) }));
     externalDispatchWrapper(isModal)(toggleAllowSplittingUnscoredTablet({
       id: prescribedDrug.id,
       allow: e.target.checked,
+      dosageOptions: (dosageOptions as CapsuleOrTabletDosage[]),
     }));
   };
 

@@ -22,10 +22,12 @@ import {
   ChooseFormAction,
   ChooseBrandAction,
   FetchDrugsAction,
-  LOAD_PRESCRIPTION_DATA, toggleAllowSplittingUnscoredTablet, PrescriptionFormActions, SET_IS_MODAL, DrugFormNames,
+  LOAD_PRESCRIPTION_DATA, toggleAllowSplittingUnscoredTablet, PrescriptionFormActions, SET_IS_MODAL,
 } from './actions';
 import { IPrescriptionFormContext, PrescriptionFormState } from './types';
-import { PillDosage, OralDosage, PrescribedDrug } from '../../types';
+import {
+  PillDosage, DrugFormNames, OralDosage, PrescribedDrug,
+} from '../../types';
 import {
   CLEAR_SCHEDULE,
   REMOVE_DRUG_FORM,

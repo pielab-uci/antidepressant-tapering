@@ -87,7 +87,10 @@ const ConfirmTaperConfiguration = () => {
       <div css={scheduleStyle}>
         <h1 css={css`font-weight: bold;
           font-size: 1.5rem;
-          text-align: center;`}>Prescription has been added.</h1>
+          //text-align: center;
+          text-align: left;
+        `}>
+          Prescription has been added.</h1>
         <div css={css`margin-top: 44px;`}>
           <h3>Share projected schedule and notes with patient</h3>
           <div css={css`

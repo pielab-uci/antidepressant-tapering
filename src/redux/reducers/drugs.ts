@@ -1,5 +1,5 @@
 import {
-  CapsuleOrTabletForm, Drug, OralDosage, OralForm,
+  PillForm, Drug, OralDosage, OralForm,
 } from '../../types';
 
 export const drugNameBrandPairs: { [name: string]: string } = {
@@ -29,12 +29,12 @@ const drugs: Drug[] = [
               form: 'capsule',
               dosages: [{ dosage: '10 mg' }, { dosage: '20 mg' }, { dosage: '40 mg' }],
               measureUnit: 'mg',
-            } as CapsuleOrTabletForm,
+            } as PillForm,
             {
               form: 'tablet',
               dosages: [{ dosage: '10 mg', isScored: true }, { dosage: '20 mg', isScored: true }, { dosage: '60 mg', isScored: true }],
               measureUnit: 'mg',
-            } as CapsuleOrTabletForm,
+            } as PillForm,
           ],
         },
         {
@@ -44,7 +44,7 @@ const drugs: Drug[] = [
               form: 'capsule',
               dosages: [{ dosage: '10 mg' }, { dosage: '20 mg' }, { dosage: '40 mg' }],
               measureUnit: 'mg',
-            } as CapsuleOrTabletForm,
+            } as PillForm,
           ],
         },
       ],
@@ -73,7 +73,7 @@ const drugs: Drug[] = [
               { dosage: '20 mg', isScored: true },
               { dosage: '40 mg', isScored: true }],
             measureUnit: 'mg',
-          } as CapsuleOrTabletForm,
+          } as PillForm,
         ],
       },
       {
@@ -86,7 +86,7 @@ const drugs: Drug[] = [
               { dosage: '20 mg', isScored: true },
               { dosage: '40 mg', isScored: true }],
             measureUnit: 'mg',
-          } as CapsuleOrTabletForm,
+          } as PillForm,
         ],
       },
     ],
@@ -113,7 +113,7 @@ const drugs: Drug[] = [
               { dosage: '50 mg', isScored: true },
               { dosage: '100 mg', isScored: true }],
             measureUnit: 'mg',
-          } as CapsuleOrTabletForm,
+          } as PillForm,
         ],
       },
       {
@@ -133,7 +133,7 @@ const drugs: Drug[] = [
               { dosage: '50 mg', isScored: true },
               { dosage: '100 mg', isScored: true }],
             measureUnit: 'mg',
-          } as CapsuleOrTabletForm,
+          } as PillForm,
         ],
       },
     ],
@@ -152,7 +152,7 @@ const drugs: Drug[] = [
               { dosage: '30 mg', isScored: false },
               { dosage: '40 mg', isScored: false }],
             measureUnit: 'mg',
-          } as CapsuleOrTabletForm,
+          } as PillForm,
         ],
       },
       {
@@ -174,7 +174,7 @@ const drugs: Drug[] = [
               { dosage: '30 mg', isScored: false },
               { dosage: '40 mg', isScored: false }],
             measureUnit: 'mg',
-          } as CapsuleOrTabletForm,
+          } as PillForm,
         ],
       },
     ],
@@ -202,7 +202,7 @@ const drugs: Drug[] = [
               { dosage: '10 mg', isScored: true },
               { dosage: '20 mg', isScored: true }],
             measureUnit: 'mg',
-          } as CapsuleOrTabletForm,
+          } as PillForm,
         ],
       },
       {
@@ -215,7 +215,7 @@ const drugs: Drug[] = [
               { dosage: '10 mg', isScored: true },
               { dosage: '20 mg', isScored: true }],
             measureUnit: 'mg',
-          } as CapsuleOrTabletForm,
+          } as PillForm,
         ],
       },
     ],

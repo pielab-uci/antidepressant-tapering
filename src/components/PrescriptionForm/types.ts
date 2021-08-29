@@ -3,12 +3,10 @@ import {
   initialState,
 } from './reducer';
 import {
-  DrugFormNames,
   PrescriptionFormActions,
 } from './actions';
 import {
-  PillDosage,
-  Drug, DrugForm, DrugOption, OralDosage,
+  PillDosage, Drug, DrugForm, DrugFormNames, DrugOption, OralDosage,
 } from '../../types';
 import { ModalActions } from '../Schedule/Modal/modalReducer';
 
@@ -48,7 +46,9 @@ export interface PrescriptionFormState {
   upcomingDosageSum: number;
   goalDosage: number;
   allowSplittingUnscoredTablet: boolean;
-  oralDosageInfo: { rate: { mg: number, ml: number }, bottles: string[] } | null;
+  oralDosageInfo: OralDosage | null;
+  currentOralDosageInfo: OralDosage | null;
+  nextOralDosageInfo: OralDosage | null;
   intervalStartDate: Date;
   intervalEndDate: Date | null;
   intervalUnit: 'Days'|'Weeks'|'Months';

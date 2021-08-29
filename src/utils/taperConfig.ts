@@ -7,11 +7,10 @@ import isBefore from 'date-fns/esm/isBefore';
 import sub from 'date-fns/esm/sub';
 
 import {
-  OralDosage, PrescribedDrug, TableRowData, Converted, Prescription, ValueOf,
+  OralDosage, PrescribedDrug, TableRowData, Converted, Prescription, ValueOf, DrugFormNames,
 } from '../types';
 import { Schedule } from '../components/Schedule/ProjectedSchedule';
 import { drugNameBrandPairs } from '../redux/reducers/drugs';
-import { DrugFormNames } from '../components/PrescriptionForm/actions';
 
 export const isCompleteDrugInput = (drug: PrescribedDrug) => {
   const priorDosageSum = drug.priorDosages.reduce((prev, { dosage, quantity }) => {
@@ -258,8 +257,8 @@ export const prescription: PrescriptionFunction = (
   const message = Object.entries(dosageQty)
     .filter(([dosage, qty]) => qty !== 0)
     .reduce((res, [dosage, qty], i, arr) => {
-      if (oralDosageInfo) {
-        const { rate } = oralDosageInfo;
+      if (form === 'oral solution' || form === 'oral suspension') {
+        const { rate } = oralDosageInfo!;
         return `${res} ${(qty / rate.mg) * rate.ml} ml ${form} by mouth daily for ${intervalCount} ${checkedIntervalUnit}`;
       }
 

@@ -2,11 +2,10 @@ import * as React from 'react';
 import { FC, useRef } from 'react';
 import { css } from '@emotion/react';
 import { SerializedStyles } from '@emotion/utils';
-import { DrugForm, isCapsuleOrTablet } from '../../types';
-import CapsuleOrTabletDosages from './CapsuleOrTabletDosages';
+import { DrugForm, DrugFormNames, isCapsuleOrTablet } from '../../types';
+import PillDosages from './PillDosages';
 import OralFormDosage from './OralFormDosage';
 import SelectGrowth from './SelectGrowth';
-import { DrugFormNames } from './actions';
 
 interface Props {
   // drugForm: DrugForm | null | undefined,
@@ -31,7 +30,7 @@ const Dosages: FC<Props> = ({ drugForm, time, editable }) => {
   if (drugForm === 'capsule' || drugForm === 'tablet') {
     return (
       <div css={containerStyle.current}>
-        <CapsuleOrTabletDosages time={time} editable={editable}/>
+        <PillDosages time={time} editable={editable}/>
       </div>
     );
   }

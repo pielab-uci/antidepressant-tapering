@@ -25,7 +25,7 @@ import {
   LOAD_PRESCRIPTION_DATA, toggleAllowSplittingUnscoredTablet, PrescriptionFormActions, SET_IS_MODAL, DrugFormNames,
 } from './actions';
 import { IPrescriptionFormContext, PrescriptionFormState } from './types';
-import { CapsuleOrTabletDosage, OralDosage, PrescribedDrug } from '../../types';
+import { PillDosage, OralDosage, PrescribedDrug } from '../../types';
 import {
   CLEAR_SCHEDULE,
   REMOVE_DRUG_FORM,
@@ -125,14 +125,14 @@ const PrescriptionForm: FC<Props> = ({
     if (value === 'capsule' || value === 'tablet') {
       chooseFormActionData.oralDosageInfo = null;
       // TODO: consider if tablet is scored..?
-      const minDosage = Math.min(...(newChosenDrugForm.dosages as CapsuleOrTabletDosage[])
+      const minDosage = Math.min(...(newChosenDrugForm.dosages as PillDosage[])
         .map((dosage) => parseFloat(dosage.dosage)));
       chooseFormActionData.minDosageUnit = value === 'capsule' ? minDosage : minDosage / 2;
-      chooseFormActionData.regularDosageOptions = (newChosenDrugForm.dosages as CapsuleOrTabletDosage[])
+      chooseFormActionData.regularDosageOptions = (newChosenDrugForm.dosages as PillDosage[])
         .map((option) => option.dosage);
       chooseFormActionData.availableDosageOptions = [
         ...new Set(
-          (newChosenDrugForm.dosages as CapsuleOrTabletDosage[])
+          (newChosenDrugForm.dosages as PillDosage[])
             .flatMap((option) => {
               if (option.isScored) {
                 return [`${parseFloat(option.dosage) / 2} ${newChosenDrugForm.measureUnit}`, option.dosage];
@@ -168,11 +168,11 @@ const PrescriptionForm: FC<Props> = ({
   };
 
   const toggleAllowSplittingUnscoredTabletCheckbox = (e: CheckboxChangeEvent) => {
-    formActionDispatch(toggleAllowSplittingUnscoredTablet({ id: prescribedDrug.id, allow: e.target.checked, dosageOptions: (dosageOptions as CapsuleOrTabletDosage[]) }));
+    formActionDispatch(toggleAllowSplittingUnscoredTablet({ id: prescribedDrug.id, allow: e.target.checked, dosageOptions: (dosageOptions as PillDosage[]) }));
     externalDispatchWrapper(isModal)(toggleAllowSplittingUnscoredTablet({
       id: prescribedDrug.id,
       allow: e.target.checked,
-      dosageOptions: (dosageOptions as CapsuleOrTabletDosage[]),
+      dosageOptions: (dosageOptions as PillDosage[]),
     }));
   };
 

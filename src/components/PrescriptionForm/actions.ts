@@ -1,5 +1,5 @@
 import {
-  CapsuleOrTabletDosage, Drug, OralDosage, PrescribedDrug,
+  PillDosage, Drug, OralDosage, PrescribedDrug,
 } from '../../types';
 import { SetIsInputComplete, ValidateInputCompletionAction } from '../../redux/actions/taperConfig';
 
@@ -71,7 +71,7 @@ export const ALLOW_SPLITTING_UNSCORED_TABLET = 'ALLOW_SPLITTING_UNSCORED_TABLET'
 
 export interface AllowSplittingUnscoredTabletAction {
   type: typeof ALLOW_SPLITTING_UNSCORED_TABLET;
-  data: { id: number, allow: boolean, dosageOptions: CapsuleOrTabletDosage[] };
+  data: { id: number, allow: boolean, dosageOptions: PillDosage[] };
 }
 
 export const toggleAllowSplittingUnscoredTablet = (data: AllowSplittingUnscoredTabletAction['data']): AllowSplittingUnscoredTabletAction => ({

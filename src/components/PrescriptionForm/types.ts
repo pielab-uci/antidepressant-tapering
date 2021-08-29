@@ -7,7 +7,7 @@ import {
   PrescriptionFormActions,
 } from './actions';
 import {
-  CapsuleOrTabletDosage,
+  PillDosage,
   Drug, DrugForm, DrugOption, OralDosage,
 } from '../../types';
 import { ModalActions } from '../Schedule/Modal/modalReducer';
@@ -25,12 +25,12 @@ export interface PrescriptionFormState {
    */
   currentDosageForm: DrugFormNames | null;
   nextDosageForm: DrugFormNames | null;
-  currentDosageOptions: CapsuleOrTabletDosage[] | OralDosage;
-  nextDosageOptions: CapsuleOrTabletDosage[] | OralDosage;
+  currentDosageOptions: PillDosage[] | OralDosage;
+  nextDosageOptions: PillDosage[] | OralDosage;
 
   brandOptions: DrugOption[] | null;
   drugFormOptions: DrugForm[] | null;
-  dosageOptions: CapsuleOrTabletDosage[]| OralDosage;
+  dosageOptions: PillDosage[]| OralDosage;
   /**
    * available dosage options including splitting tablet
    */

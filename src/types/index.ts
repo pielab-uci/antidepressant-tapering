@@ -49,7 +49,7 @@ export interface DrugOption {
 export interface CapsuleOrTabletForm {
   form: 'capsule' | 'tablet';
   measureUnit: string;
-  dosages: CapsuleOrTabletDosage[];
+  dosages: PillDosage[];
 }
 
 export interface OralForm {
@@ -60,7 +60,7 @@ export interface OralForm {
 
 export type DrugForm = CapsuleOrTabletForm | OralForm;
 
-export interface CapsuleOrTabletDosage {
+export interface PillDosage {
   dosage: string;
   isScored?: boolean;
 }

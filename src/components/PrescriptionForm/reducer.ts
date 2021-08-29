@@ -20,7 +20,7 @@ import {
   SET_GOAL_DOSAGE, SET_GROWTH,
   UPCOMING_DOSAGE_CHANGE,
 } from './actions';
-import { CapsuleOrTabletDosage, isCapsuleOrTablet } from '../../types';
+import { PillDosage, isCapsuleOrTablet } from '../../types';
 
 export const initialState: PrescriptionFormState = {
   drugs: null,
@@ -95,7 +95,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         );
         draft.upcomingDosageSum = action.data.upcomingDosageSum;
         if (isCapsuleOrTablet(draft.chosenDrugForm)) {
-          (draft.dosageOptions as CapsuleOrTabletDosage[]).forEach((dosage) => {
+          (draft.dosageOptions as PillDosage[]).forEach((dosage) => {
             if (!Object.keys(draft.priorDosagesQty).includes(dosage.dosage)) {
               draft.priorDosagesQty[dosage.dosage] = 0;
             }
@@ -223,7 +223,7 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
       case ALLOW_SPLITTING_UNSCORED_TABLET:
         draft.allowSplittingUnscoredTablet = action.data.allow;
         if (action.data.allow) {
-          draft.availableDosageOptions = [...new Set((draft.dosageOptions as CapsuleOrTabletDosage[]).map((option) => {
+          draft.availableDosageOptions = [...new Set((draft.dosageOptions as PillDosage[]).map((option) => {
             if (option.isScored) {
               return option.dosage;
             }

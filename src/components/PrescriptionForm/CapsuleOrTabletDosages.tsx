@@ -5,7 +5,7 @@ import {
 import { css } from '@emotion/react';
 import CapsuleOrTabletUnit from './CapsuleOrTabletUnit';
 import { PrescriptionFormContext } from './PrescriptionForm';
-import { CapsuleOrTabletDosage } from '../../types';
+import { PillDosage } from '../../types';
 import useDosageSumDifferenceMessage from '../../hooks/useDosageSumDifferenceMessage';
 import SelectGrowth from './SelectGrowth';
 
@@ -41,7 +41,7 @@ const CapsuleOrTabletDosages: FC<Props> = ({ time, editable }) => {
             width: 400px;
             margin-left: 64px;`}>
             {/* {(dosageOptions as CapsuleOrTabletDosage[]) */}
-            {((time === 'Current' ? currentDosageOptions : nextDosageOptions) as CapsuleOrTabletDosage[])
+            {((time === 'Current' ? currentDosageOptions : nextDosageOptions) as PillDosage[])
               .map((v: { dosage: string; isScored?: boolean }) => (
                 <CapsuleOrTabletUnit
                   key={`${time}_${chosenDrugForm!.form}_${v.dosage}`}

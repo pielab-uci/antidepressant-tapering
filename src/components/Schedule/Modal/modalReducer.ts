@@ -117,7 +117,7 @@ const reducer = (state: RowEditingModalState = initialState, action: ModalAction
         drug.nextDosageForm = null;
         drug.allowChangePriorDosage = false;
         drug.oralDosageInfo = null;
-        drug.currentOralDosageInfo = null;
+        // drug.currentOralDosageInfo = null;
         drug.nextOralDosageInfo = null;
         drug.currentDosages = [];
         drug.nextDosages = [];
@@ -135,6 +135,7 @@ const reducer = (state: RowEditingModalState = initialState, action: ModalAction
         drug.minDosageUnit = action.data.minDosageUnit;
         // drug.currentDosages = [];
         drug.nextDosages = [];
+
         if (action.data.oralDosageInfo === null) {
           if (drug.currentDosageForm !== 'oral solution' && drug.currentDosageForm !== 'oral suspension') {
             drug.oralDosageInfo = action.data.oralDosageInfo;

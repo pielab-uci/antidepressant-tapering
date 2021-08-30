@@ -190,11 +190,14 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
           draft.oralDosageInfo = action.data.oralDosageInfo;
           draft.currentOralDosageInfo = action.data.oralDosageInfo;
           draft.nextOralDosageInfo = action.data.oralDosageInfo;
+        } else {
+          draft.nextOralDosageInfo = action.data.oralDosageInfo;
         }
         //  if (action.data.oralDosageInfo === null && draft.currentDosageForm !== 'oral solution' && draft.currentDosageForm !== 'oral suspension'
         //     && draft.nextDosageForm !== 'oral solution' && draft.nextDosageForm !== 'oral suspension') {
         //   draft.oralDosageInfo = action.data.oralDosageInfo;
         // }
+
         if (draft.isModal) {
           if (draft.currentDosageForm !== 'oral solution' && draft.currentDosageForm !== 'oral suspension') {
             draft.oralDosageInfo = action.data.oralDosageInfo;

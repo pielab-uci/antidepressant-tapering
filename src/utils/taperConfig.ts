@@ -821,6 +821,7 @@ const capitalize = (str: DrugFormNames|null): string => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
+// oralDosageInfo -> nextOralDosageInfo
 const generateNotesForPatientFromRows = (rows: TableRowData[]): string => {
   const drugTitle = rows[0].brand.includes('generic')
     ? `${rows[0].drug.replace(' (generic)', '')} (${drugNameBrandPairs[rows[0].drug]})`

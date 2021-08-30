@@ -137,15 +137,18 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
           draft.nextDosageForm = null;
           draft.currentOralDosageInfo = null;
           draft.nextOralDosageInfo = null;
+          draft.nextDosageSum = 0;
         } else {
           draft.nextDosageForm = null;
           draft.nextOralDosageInfo = null;
+          draft.nextDosageSum = 0;
         }
 
         draft.currentDosageForm = null;
         draft.goalDosage = 0;
         draft.drugFormOptions = chosenBrandOption.forms;
         draft.currentDosagesQty = {};
+        draft.currentDosageSum = 0;
         draft.oralDosageInfo = null;
         draft.nextDosagesQty = {};
         break;

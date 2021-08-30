@@ -35,6 +35,7 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
   const { dosages } = context[time];
   const dosage = useRef('1mg');
   const oralDosageInfo = useRef<OralDosage>(time === 'Current' ? currentOralDosageInfo! : nextOralDosageInfo!);
+  console.log('time: ', time, 'currentOralDosageInfo: ', currentOralDosageInfo, 'nextOralDosageInfo: ', nextOralDosageInfo, 'oralDosageInfo: ', oralDosageInfo);
   const [mlDosage, setmlDosage] = useState<number | undefined>((dosages['1mg'] / oralDosageInfo!.current.rate.mg) * oralDosageInfo!.current.rate.ml);
   // const [mlDosage, setmlDosage] = useState<number | undefined>((dosages['1mg'] / oralDosageInfo!.rate.mg) * oralDosageInfo!.rate.ml);
   const [mgDosage, setmgDosage] = useState<number | undefined>(dosages['1mg']);
@@ -51,10 +52,8 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
   };
 
   const mgOnChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    console.group('OralFormDosage.mgOnChange');
     const { rate } = chosenDrugForm!.dosages as OralDosage;
     const mg = parseInt(e.target.value, 10);
-    console.log('mg: ', mg);
 
     if (Number.isNaN(mg)) {
       setmlDosage(undefined);
@@ -77,13 +76,10 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
         dispatch(currentDosageChange(actionData));
       }
     }
-    console.groupEnd();
   }, [chosenDrugForm, intervalDurationDays, currentDosageSum, nextDosageSum, oralDosageInfo, currentOralDosageInfo, nextOralDosageInfo]);
 
   const mlOnChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    console.group('OralFormDosage.mlOnChange');
     const ml = parseInt(e.target.value, 10);
-    console.log('ml: ', ml);
     const { rate } = chosenDrugForm!.dosages as OralDosage;
     const mg = Number.isNaN(ml) ? undefined : (ml / rate.ml) * rate.mg;
 
@@ -91,12 +87,8 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
       setmlDosage(undefined);
       setmgDosage(undefined);
     } else {
-      console.log('mlDosage before change: ', mlDosage);
       setmlDosage(ml);
-      console.log('mlDosage after change: ', mlDosage);
-      console.log('mgDosage before change: ', mgDosage);
       setmgDosage(mg);
-      console.log('mgDosage after change: ', mgDosage);
     }
 
     const actionData: NextDosageChangeAction['data'] | CurrentDosageChangeAction['data'] = {
@@ -111,7 +103,6 @@ const OralFormDosage: FC<Props> = ({ time, editable }) => {
         dispatch(currentDosageChange(actionData));
       }
     }
-    console.groupEnd();
   }, [chosenDrugForm, intervalDurationDays, currentDosageSum, nextDosageSum, oralDosageInfo, currentOralDosageInfo, nextOralDosageInfo]);
 
   return (

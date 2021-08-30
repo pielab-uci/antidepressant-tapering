@@ -95,6 +95,8 @@ const reducer = (state: RowEditingModalState = initialState, action: ModalAction
           intervalCount: clickedRow.intervalCount,
           currentDosages: prescriptionToDosages(prevRow),
           nextDosages: prescriptionToDosages(clickedRow),
+          currentOralDosageInfo: clickedRow.currentOralDosageInfo,
+          nextOralDosageInfo: clickedRow.nextOralDosageInfo,
           currentDosageSum: prevRow.dosage,
           nextDosageSum: clickedRow.dosage,
           // targetDosage: prescribedDrugs?.find((drug) => drug.brand === clickedRow.brand)?.targetDosage

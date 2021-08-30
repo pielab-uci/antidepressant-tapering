@@ -366,6 +366,7 @@ export const generateTableRows = (drugs: Converted[], startRowIndexInPrescribedD
     const upcomingDosagesNoRepetition = [...new Set(upcomingDosages)];
     console.log('upcomingDosages: ', upcomingDosages);
     console.log('upcomingDosagesNoRepetition: ', upcomingDosagesNoRepetition);
+
     rows.push({
       rowIndexInPrescribedDrug: startRowIndexInPrescribedDrug,
       prescribedDrugId: drug.id,
@@ -418,6 +419,8 @@ export const generateTableRows = (drugs: Converted[], startRowIndexInPrescribedD
       intervalCount: drug.intervalCount,
       intervalUnit: drug.intervalUnit,
       oralDosageInfo: drug.oralDosageInfo ? drug.oralDosageInfo : undefined,
+      currentOralDosageInfo: drug.nextOralDosageInfo,
+      nextOralDosageInfo: drug.nextOralDosageInfo,
     };
 
     // Array(lengthOfProjection).fill(null).forEach((_, i) => {
@@ -451,8 +454,8 @@ export const generateTableRows = (drugs: Converted[], startRowIndexInPrescribedD
           currentDosageForm: drug.nextDosageForm,
           nextDosageForm: drug.nextDosageForm,
           oralDosageInfo: drug.oralDosageInfo || null,
-          currentOralDosageInfo: drug.currentOralDosageInfo,
-          nextOralDosageInfo: drug.nextOralDosageInfo,
+          currentOralDosageInfo: newRowData.currentOralDosageInfo,
+          nextOralDosageInfo: newRowData.nextOralDosageInfo,
           changeDirection: drug.changeDirection,
         });
 

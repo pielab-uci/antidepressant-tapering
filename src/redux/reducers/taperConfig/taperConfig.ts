@@ -477,12 +477,12 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
          */
 
         // Delete related rows
-        // TODO: delete rows within the rows with same drug
         draft.projectedSchedule.data = draft.projectedSchedule.data
           .filter((row) => (row.brand !== action.data.clickedRow.brand)
             || (row.brand === action.data.clickedRow.brand
             && row.rowIndexInPrescribedDrug < action.data.clickedRow.rowIndexInPrescribedDrug));
 
+        // making new rows
         const converted: Converted[] = convert([action.data.prescribedDrug]);
 
         const generatedTableRows: TableRowData[] = generateTableRows(converted, action.data.clickedRow.rowIndexInPrescribedDrug);

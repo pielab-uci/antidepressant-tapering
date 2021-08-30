@@ -10,19 +10,19 @@ import { PrescriptionFormContext } from './PrescriptionForm';
 import { TaperConfigActions } from '../../redux/reducers/taperConfig';
 import {
   SET_GOAL_DOSAGE,
-  SetUpcomingDosageGoalAction,
+  SetNextDosageGoalAction,
 } from './actions';
 import { SET_IS_INPUT_COMPLETE, VALIDATE_INPUT_COMPLETION } from '../../redux/actions/taperConfig';
 
 const GoalDosageSettingForm = () => {
   const {
-    id, goalDosage, formActionDispatch, priorDosagesQty, priorDosageSum,
-    upcomingDosagesQty, upcomingDosageSum, availableDosageOptions,
+    id, goalDosage, formActionDispatch, currentDosagesQty, currentDosageSum,
+    nextDosagesQty, nextDosageSum, availableDosageOptions,
     modal: { isModal, modalDispatch },
   } = useContext(PrescriptionFormContext);
   const [goalDosageValid, setGoalDosageValid] = useState<boolean|null>(null);
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
-  const dispatch = (action: SetUpcomingDosageGoalAction) => {
+  const dispatch = (action: SetNextDosageGoalAction) => {
     if (isModal) {
       formActionDispatch(action);
       modalDispatch!(action);
@@ -32,34 +32,34 @@ const GoalDosageSettingForm = () => {
     }
   };
 
-  const isGoalDosageInvalid = useCallback((priorDosageSum: number, upcomingDosageSum: number, goalDosage: number, availableDosageOptions: string[]) => {
-    const notValidIncreasing = priorDosageSum < upcomingDosageSum && goalDosage < upcomingDosageSum;
-    const notValidDecreasing = priorDosageSum > upcomingDosageSum && goalDosage > upcomingDosageSum;
-    const notValidSame = priorDosageSum === upcomingDosageSum && goalDosage !== upcomingDosageSum;
+  const isGoalDosageInvalid = useCallback((currentDosageSum: number, nextDosageSum: number, goalDosage: number, availableDosageOptions: string[]) => {
+    const notValidIncreasing = currentDosageSum < nextDosageSum && goalDosage < nextDosageSum;
+    const notValidDecreasing = currentDosageSum > nextDosageSum && goalDosage > nextDosageSum;
+    const notValidSame = currentDosageSum === nextDosageSum && goalDosage !== nextDosageSum;
     const notDividable = availableDosageOptions.length !== 0 && !availableDosageOptions.map((option) => parseFloat(option))
       .some((option) => goalDosage % option === 0);
 
     console.group('TargetDosageSettingForm.isTargetDosageInvalid');
     if (notValidIncreasing) {
       console.group('notValidIncreasing');
-      console.log('priorDosageSum: ', priorDosageSum);
-      console.log('upcomingDosageSum: ', upcomingDosageSum);
+      console.log('currentDosageSum: ', currentDosageSum);
+      console.log('nextDosageSum: ', nextDosageSum);
       console.log('goalDosage: ', goalDosage);
       console.groupEnd();
     }
 
     if (notValidDecreasing) {
       console.group('notValidDecreasing');
-      console.log('priorDosageSum: ', priorDosageSum);
-      console.log('upcomingDosageSum: ', upcomingDosageSum);
+      console.log('priorDosageSum: ', currentDosageSum);
+      console.log('nextDosageSum: ', nextDosageSum);
       console.log('goalDosage: ', goalDosage);
       console.groupEnd();
     }
 
     if (notValidSame) {
       console.group('notValidSame');
-      console.log('priorDosageSum: ', priorDosageSum);
-      console.log('upcomingDosageSum: ', upcomingDosageSum);
+      console.log('priorDosageSum: ', currentDosageSum);
+      console.log('nextDosageSum: ', nextDosageSum);
       console.log('goalDosage: ', goalDosage);
       console.groupEnd();
     }
@@ -67,8 +67,8 @@ const GoalDosageSettingForm = () => {
     if (notDividable) {
       console.log('notDividable');
       console.log('availableOptions: ', availableDosageOptions);
-      console.log('priorDosageSum: ', priorDosageSum);
-      console.log('upcomingDosageSum: ', upcomingDosageSum);
+      console.log('priorDosageSum: ', currentDosageSum);
+      console.log('nextDosageSum: ', nextDosageSum);
       console.log('goalDosage: ', goalDosage);
     }
     console.groupEnd();
@@ -80,7 +80,7 @@ const GoalDosageSettingForm = () => {
     // if ((priorDosageSum < upcomingDosageSum && targetDosage < upcomingDosageSum)
     //   || (priorDosageSum > upcomingDosageSum && targetDosage > upcomingDosageSum)
     //   || (priorDosageSum === upcomingDosageSum && targetDosage !== upcomingDosageSum)) {
-    if (isGoalDosageInvalid(priorDosageSum, upcomingDosageSum, goalDosage, availableDosageOptions)) {
+    if (isGoalDosageInvalid(currentDosageSum, nextDosageSum, goalDosage, availableDosageOptions)) {
       setGoalDosageValid(false);
       if (isModal) {
         modalDispatch!({
@@ -107,7 +107,7 @@ const GoalDosageSettingForm = () => {
         });
       }
     }
-  }, [upcomingDosageSum, priorDosageSum, goalDosage]);
+  }, [nextDosageSum, currentDosageSum, goalDosage]);
 
   const onChangeGoalDosage = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
@@ -126,15 +126,15 @@ const GoalDosageSettingForm = () => {
         return 'Goal dosage cannot be made with the combination of given dosage options.';
       }
 
-      if (priorDosageSum < upcomingDosageSum) {
-        return 'When you increase the dosage, goal dosage must be more than upcoming dosage.';
+      if (currentDosageSum < nextDosageSum) {
+        return 'When you increase the dosage, goal dosage must be more than next dosage.';
       }
 
-      if (priorDosageSum > upcomingDosageSum) {
-        return 'When you decrease the dosage, goal dosage must be less than upcoming dosage.';
+      if (currentDosageSum > nextDosageSum) {
+        return 'When you decrease the dosage, goal dosage must be less than next dosage.';
       }
 
-      return 'When you do not make any change to the dosage, goal dosage must be equal to upcoming dosage.';
+      return 'When you do not make any change to the dosage, goal dosage must be equal to next dosage.';
     };
 
     return <div css={css`color: red;

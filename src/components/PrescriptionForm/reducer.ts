@@ -16,9 +16,9 @@ import {
   INTERVAL_UNIT_CHANGE,
   LOAD_PRESCRIPTION_DATA,
   PrescriptionFormActions,
-  PRIOR_DOSAGE_CHANGE,
+  CURRENT_DOSAGE_CHANGE,
   SET_GOAL_DOSAGE, SET_GROWTH,
-  UPCOMING_DOSAGE_CHANGE,
+  NEXT_DOSAGE_CHANGE,
 } from './actions';
 import { PillDosage, isCapsuleOrTablet, OralFormNames } from '../../types';
 
@@ -37,11 +37,11 @@ export const initialState: PrescriptionFormState = {
   availableDosageOptions: [],
   regularDosageOptions: [],
   minDosageUnit: 0,
-  priorDosagesQty: {},
+  currentDosagesQty: {},
   isModal: false,
-  priorDosageSum: 0,
-  upcomingDosagesQty: {},
-  upcomingDosageSum: 0,
+  currentDosageSum: 0,
+  nextDosagesQty: {},
+  nextDosageSum: 0,
   goalDosage: 0,
   allowSplittingUnscoredTablet: false,
   oralDosageInfo: null,
@@ -82,32 +82,34 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.dosageOptions = draft.chosenDrugForm.dosages;
         draft.allowSplittingUnscoredTablet = action.data.allowSplittingUnscoredTablet;
         draft.goalDosage = action.data.targetDosage;
-        draft.priorDosagesQty = action.data.priorDosages.reduce(
+        draft.currentDosagesQty = action.data.currentDosages.reduce(
           (prev: { [dosage: string]: number }, currentDosage) => {
             prev[currentDosage.dosage] = currentDosage.quantity;
             return prev;
           }, {},
         );
-        draft.priorDosageSum = action.data.priorDosageSum;
-        draft.upcomingDosagesQty = action.data.upcomingDosages.reduce(
+        draft.currentDosageSum = action.data.currentDosageSum;
+        draft.nextDosagesQty = action.data.nextDosages.reduce(
           (prev: { [dosage: string]: number }, nextDosage) => {
             prev[nextDosage.dosage] = nextDosage.quantity;
             return prev;
           }, {},
         );
-        draft.upcomingDosageSum = action.data.upcomingDosageSum;
+        draft.nextDosageSum = action.data.nextDosageSum;
         if (isCapsuleOrTablet(draft.chosenDrugForm)) {
           (draft.dosageOptions as PillDosage[]).forEach((dosage) => {
-            if (!Object.keys(draft.priorDosagesQty).includes(dosage.dosage)) {
-              draft.priorDosagesQty[dosage.dosage] = 0;
+            if (!Object.keys(draft.currentDosagesQty).includes(dosage.dosage)) {
+              draft.currentDosagesQty[dosage.dosage] = 0;
             }
 
-            if (!Object.keys(draft.upcomingDosagesQty).includes(dosage.dosage)) {
-              draft.upcomingDosagesQty[dosage.dosage] = 0;
+            if (!Object.keys(draft.nextDosagesQty).includes(dosage.dosage)) {
+              draft.nextDosagesQty[dosage.dosage] = 0;
             }
           });
         }
         draft.oralDosageInfo = action.data.oralDosageInfo || null;
+        draft.currentOralDosageInfo = action.data.currentOralDosageInfo || null;
+        draft.nextOralDosageInfo = action.data.nextOralDosageInfo || null;
         draft.isModal = action.data.isModal;
         draft.intervalStartDate = action.data.intervalStartDate;
         draft.intervalEndDate = action.data.intervalEndDate;
@@ -117,7 +119,6 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         break;
       }
 
-      // TODO: keep current form/drugs even after brand is changed..?
       case CHOOSE_BRAND: {
         const chosenBrandOption = draft.brandOptions!.find(
           (brand) => brand.brand === action.data.brand,
@@ -131,21 +132,30 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         draft.drugs!.splice(0, 0, draft.drugs!.splice(chosenDrugIdx, 1)[0]);
         draft.chosenBrand = chosenBrandOption;
         draft.chosenDrugForm = null;
+        if (!draft.isModal) {
+          draft.currentDosageForm = null;
+          draft.nextDosageForm = null;
+          draft.currentOralDosageInfo = null;
+          draft.nextOralDosageInfo = null;
+        } else {
+          draft.nextDosageForm = null;
+          draft.nextOralDosageInfo = null;
+        }
+
         draft.currentDosageForm = null;
-        draft.nextDosageForm = null;
         draft.goalDosage = 0;
         draft.drugFormOptions = chosenBrandOption.forms;
-        draft.priorDosagesQty = {};
+        draft.currentDosagesQty = {};
         draft.oralDosageInfo = null;
-        draft.upcomingDosagesQty = {};
+        draft.nextDosagesQty = {};
         break;
       }
 
       case CHOOSE_FORM: {
         const chosenDrugForm = draft.drugFormOptions!.find((form) => form.form === action.data.form)!;
         draft.chosenDrugForm = chosenDrugForm;
-        draft.upcomingDosagesQty = {};
-        draft.upcomingDosageSum = 0;
+        draft.nextDosagesQty = {};
+        draft.nextDosageSum = 0;
         draft.minDosageUnit = action.data.minDosageUnit;
         draft.regularDosageOptions = action.data.regularDosageOptions;
         draft.availableDosageOptions = action.data.availableDosageOptions;
@@ -157,27 +167,29 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
 
         if (isCapsuleOrTablet(chosenDrugForm)) {
           chosenDrugForm.dosages.forEach((dosage) => {
-            draft.upcomingDosagesQty[dosage.dosage] = 0;
+            draft.nextDosagesQty[dosage.dosage] = 0;
           });
         } else {
-          draft.upcomingDosagesQty['1mg'] = 0;
+          draft.nextDosagesQty['1mg'] = 0;
         }
 
         if (!draft.isModal) {
-          draft.priorDosagesQty = {};
-          draft.priorDosageSum = 0;
+          draft.currentDosagesQty = {};
+          draft.currentDosageSum = 0;
           draft.currentDosageForm = chosenDrugForm.form;
           draft.currentDosageOptions = chosenDrugForm.dosages;
 
           if (isCapsuleOrTablet(chosenDrugForm)) {
             chosenDrugForm.dosages.forEach((dosage) => {
-              draft.priorDosagesQty[dosage.dosage] = 0;
+              draft.currentDosagesQty[dosage.dosage] = 0;
             });
           } else {
-            draft.priorDosagesQty['1mg'] = 0;
+            draft.currentDosagesQty['1mg'] = 0;
           }
           /** have to keep oralDosageInfo when currentDrugForm or nextDrugForm is an oral form. */
           draft.oralDosageInfo = action.data.oralDosageInfo;
+          draft.currentOralDosageInfo = action.data.oralDosageInfo;
+          draft.nextOralDosageInfo = action.data.oralDosageInfo;
         }
         //  if (action.data.oralDosageInfo === null && draft.currentDosageForm !== 'oral solution' && draft.currentDosageForm !== 'oral suspension'
         //     && draft.nextDosageForm !== 'oral solution' && draft.nextDosageForm !== 'oral suspension') {
@@ -192,39 +204,39 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
         break;
       }
 
-      case PRIOR_DOSAGE_CHANGE: {
+      case CURRENT_DOSAGE_CHANGE: {
         if (action.data.dosage.quantity >= 0) {
-          draft.priorDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;
-          draft.priorDosageSum = Object.entries(draft.priorDosagesQty).reduce((prev, [k, v]) => {
+          draft.currentDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;
+          draft.currentDosageSum = Object.entries(draft.currentDosagesQty).reduce((prev, [k, v]) => {
             return prev + parseFloat(k) * v;
           }, 0);
 
-          if (draft.upcomingDosageSum > draft.priorDosageSum) {
-            draft.goalDosage = draft.upcomingDosageSum;
-          } else if (draft.upcomingDosageSum < draft.priorDosageSum) {
+          if (draft.nextDosageSum > draft.currentDosageSum) {
+            draft.goalDosage = draft.nextDosageSum;
+          } else if (draft.nextDosageSum < draft.currentDosageSum) {
             draft.goalDosage = 0;
           } else {
-            draft.goalDosage = draft.priorDosageSum;
+            draft.goalDosage = draft.currentDosageSum;
           }
         }
         break;
       }
 
-      case UPCOMING_DOSAGE_CHANGE: {
+      case NEXT_DOSAGE_CHANGE: {
         if (action.data.dosage.quantity >= 0) {
-          draft.upcomingDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;
-          draft.upcomingDosageSum = Object.entries(draft.upcomingDosagesQty).reduce((prev, [k, v]) => {
+          draft.nextDosagesQty[action.data.dosage.dosage] = action.data.dosage.quantity;
+          draft.nextDosageSum = Object.entries(draft.nextDosagesQty).reduce((prev, [k, v]) => {
             return prev + parseFloat(k) * v;
           }, 0);
 
-          if (draft.priorDosageSum < draft.upcomingDosageSum) {
-            draft.goalDosage = draft.upcomingDosageSum;
-          } else if (draft.priorDosageSum > draft.upcomingDosageSum) {
+          if (draft.currentDosageSum < draft.nextDosageSum) {
+            draft.goalDosage = draft.nextDosageSum;
+          } else if (draft.currentDosageSum > draft.nextDosageSum) {
             if (!draft.isModal) {
               draft.goalDosage = 0;
             }
           } else {
-            draft.goalDosage = draft.upcomingDosageSum;
+            draft.goalDosage = draft.nextDosageSum;
           }
         }
         break;
@@ -245,11 +257,11 @@ export const reducer = (state: PrescriptionFormState, action: PrescriptionFormAc
           }).flat())];
         } else {
           draft.availableDosageOptions = draft.regularDosageOptions!;
-          Object.entries(draft.priorDosagesQty).forEach(([k, v]) => {
-            draft.priorDosagesQty[k] = Math.floor(v);
+          Object.entries(draft.currentDosagesQty).forEach(([k, v]) => {
+            draft.currentDosagesQty[k] = Math.floor(v);
           });
-          Object.entries(draft.upcomingDosagesQty).forEach(([k, v]) => {
-            draft.upcomingDosagesQty[k] = Math.floor(v);
+          Object.entries(draft.nextDosagesQty).forEach(([k, v]) => {
+            draft.nextDosagesQty[k] = Math.floor(v);
           });
         }
 

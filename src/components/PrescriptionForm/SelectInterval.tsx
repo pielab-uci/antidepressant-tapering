@@ -59,7 +59,7 @@ const SelectInterval = () => {
   const {
     formActionDispatch, intervalCount, intervalUnit,
     intervalStartDate, intervalEndDate, id,
-    upcomingDosagesQty, modal: { isModal, modalDispatch },
+    nextDosagesQty, modal: { isModal, modalDispatch },
   } = useContext(PrescriptionFormContext);
   const dispatch = (action: IntervalActions) => {
     if (isModal) {
@@ -153,7 +153,7 @@ const SelectInterval = () => {
     dispatch(intervalCountChange({
       count, id, intervalEndDate: endDate, intervalDurationDays,
     }));
-  }, [intervalStartDate, intervalUnit, upcomingDosagesQty]);
+  }, [intervalStartDate, intervalUnit, nextDosagesQty]);
 
   const onWheelEventHandler = (e: React.WheelEvent<HTMLInputElement>) => {
     e.currentTarget.blur();

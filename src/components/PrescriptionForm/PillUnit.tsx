@@ -8,7 +8,7 @@ import { css } from '@emotion/react';
 import { PrescriptionFormContext } from './PrescriptionForm';
 import { TaperConfigActions } from '../../redux/reducers/taperConfig';
 import {
-  priorDosageChange, PriorDosageChangeAction, upcomingDosageChange, UpcomingDosageChangeAction,
+  currentDosageChange, CurrentDosageChangeAction, nextDosageChange, NextDosageChangeAction,
 } from './actions';
 import {
   ArrowDown, ArrowUp, CapsuleIcon, ScoredTabletIcon, UnscoredTabletIcon,
@@ -31,7 +31,7 @@ const PillUnit: FC<Props> = ({
   } = context;
   const { dosages } = context[time];
   const taperConfigActionDispatch = useDispatch<Dispatch<TaperConfigActions>>();
-  const dispatch = (action: UpcomingDosageChangeAction | PriorDosageChangeAction) => {
+  const dispatch = (action: NextDosageChangeAction | CurrentDosageChangeAction) => {
     if (isModal) {
       formActionDispatch(action);
       modalDispatch!(action);
@@ -61,9 +61,9 @@ const PillUnit: FC<Props> = ({
 
     if (actionData.dosage.quantity >= 0) {
       if (time === 'Next') {
-        dispatch(upcomingDosageChange(actionData));
+        dispatch(nextDosageChange(actionData));
       } else {
-        dispatch(priorDosageChange(actionData));
+        dispatch(currentDosageChange(actionData));
       }
     }
   }, [dosages, intervalDurationDays, allowSplittingUnscoredTablet]);
@@ -79,9 +79,9 @@ const PillUnit: FC<Props> = ({
 
     if (actionData.dosage.quantity >= 0) {
       if (time === 'Next') {
-        dispatch(upcomingDosageChange(actionData));
+        dispatch(nextDosageChange(actionData));
       } else {
-        dispatch(priorDosageChange(actionData));
+        dispatch(currentDosageChange(actionData));
       }
     }
   }, [dosages, intervalDurationDays, allowSplittingUnscoredTablet]);

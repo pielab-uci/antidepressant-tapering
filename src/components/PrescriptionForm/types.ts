@@ -40,10 +40,10 @@ export interface PrescriptionFormState {
   regularDosageOptions: string[]|null;
   isModal: boolean;
   minDosageUnit: number;
-  priorDosagesQty: { [key: string]: number };
-  priorDosageSum: number;
-  upcomingDosagesQty: { [key: string]: number };
-  upcomingDosageSum: number;
+  currentDosagesQty: { [key: string]: number };
+  currentDosageSum: number;
+  nextDosagesQty: { [key: string]: number };
+  nextDosageSum: number;
   goalDosage: number;
   allowSplittingUnscoredTablet: boolean;
   oralDosageInfo: OralDosage | null;
@@ -61,10 +61,10 @@ export type IPrescriptionFormContext = PrescriptionFormState
 & {
   modal: { isModal: boolean, modalDispatch?: Dispatch<ModalActions> }
   Current: {
-    dosages: typeof initialState.priorDosagesQty,
+    dosages: typeof initialState.currentDosagesQty,
   };
   Next: {
-    dosages: typeof initialState.upcomingDosagesQty,
+    dosages: typeof initialState.nextDosagesQty,
   };
   formActionDispatch: Dispatch<PrescriptionFormActions>;
   id: number;

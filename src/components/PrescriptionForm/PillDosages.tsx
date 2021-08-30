@@ -17,11 +17,11 @@ interface Props {
 const PillDosages: FC<Props> = ({ time, editable }) => {
   const context = useContext(PrescriptionFormContext);
   const {
-    chosenDrugForm, dosageOptions, priorDosageSum, upcomingDosageSum, growth,
+    chosenDrugForm, dosageOptions, currentDosageSum, nextDosageSum, growth,
     currentDosageForm, nextDosageForm,
     currentDosageOptions, nextDosageOptions,
   } = context;
-  const dosageDifferenceMessage = useDosageSumDifferenceMessage(time, priorDosageSum, upcomingDosageSum, growth);
+  const dosageDifferenceMessage = useDosageSumDifferenceMessage(time, currentDosageSum, nextDosageSum, growth);
 
   return (
     <>
@@ -44,7 +44,8 @@ const PillDosages: FC<Props> = ({ time, editable }) => {
             {((time === 'Current' ? currentDosageOptions : nextDosageOptions) as PillDosage[])
               .map((v: { dosage: string; isScored?: boolean }) => (
                 <PillUnit
-                  key={`${time}_${chosenDrugForm!.form}_${v.dosage}`}
+                  // key={`${time}_${chosenDrugForm!.form}_${v.dosage}`}
+                  key={time === 'Current' ? `Current_${currentDosageForm}_${v.dosage}` : `Next_${nextDosageForm}_${v.dosage}`}
                   time={time}
                   editable={editable}
                   form={time === 'Current' ? (currentDosageForm as 'capsule' | 'tablet') : (nextDosageForm as 'capsule' | 'tablet')}
@@ -68,7 +69,7 @@ const PillDosages: FC<Props> = ({ time, editable }) => {
             <div>
               Total:
               {/* {dosageSum} */}
-              {time === 'Next' ? upcomingDosageSum : priorDosageSum}
+              {time === 'Next' ? nextDosageSum : currentDosageSum}
               {' '}
               {chosenDrugForm!.measureUnit}
             </div>

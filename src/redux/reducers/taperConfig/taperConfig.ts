@@ -44,9 +44,9 @@ import {
   INTERVAL_START_DATE_CHANGE,
   INTERVAL_UNIT_CHANGE,
   PrescriptionFormActions,
-  PRIOR_DOSAGE_CHANGE,
+  CURRENT_DOSAGE_CHANGE,
   SET_GOAL_DOSAGE, SET_GROWTH,
-  UPCOMING_DOSAGE_CHANGE,
+  NEXT_DOSAGE_CHANGE,
 } from '../../../components/PrescriptionForm/actions';
 import {
   alignEndDates,
@@ -232,10 +232,16 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.halfLife = correspondingDrugData.halfLife;
         drug.brand = action.data.brand;
         drug.form = null;
+        drug.nextDosageForm = null;
+        drug.nextOralDosageInfo = null;
+        if (!drug.isModal) {
+          drug.currentDosageForm = null;
+          drug.currentOralDosageInfo = null;
+        }
         drug.allowChangePriorDosage = true;
         drug.oralDosageInfo = null;
-        drug.priorDosages = [];
-        drug.upcomingDosages = [];
+        drug.currentDosages = [];
+        drug.nextDosages = [];
         drug.targetDosage = 0;
         draft.isInputComplete = false;
         draft.isSaved = false;
@@ -251,13 +257,16 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         drug.form = action.data.form;
         drug.nextDosageForm = action.data.form;
         drug.minDosageUnit = action.data.minDosageUnit;
-        drug.upcomingDosages = [];
+        drug.nextDosages = [];
+        drug.nextOralDosageInfo = action.data.oralDosageInfo;
+        drug.oralDosageInfo = action.data.oralDosageInfo;
 
         if (!drug.isModal) {
-          drug.priorDosages = [];
+          drug.currentDosages = [];
           drug.currentDosageForm = action.data.form;
+          drug.currentOralDosageInfo = action.data.oralDosageInfo;
         }
-        drug.oralDosageInfo = action.data.oralDosageInfo;
+
         drug.availableDosageOptions = action.data.availableDosageOptions;
         drug.regularDosageOptions = action.data.regularDosageOptions;
         draft.isInputComplete = false;
@@ -267,28 +276,28 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         break;
       }
 
-      case PRIOR_DOSAGE_CHANGE: {
+      case CURRENT_DOSAGE_CHANGE: {
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
-        const idx = drug.priorDosages.findIndex(
+        const idx = drug.currentDosages.findIndex(
           (curDosage) => curDosage.dosage === action.data.dosage.dosage,
         );
 
         if (idx === -1) {
-          drug.priorDosages.push(action.data.dosage);
+          drug.currentDosages.push(action.data.dosage);
         } else {
-          drug.priorDosages[idx] = action.data.dosage;
+          drug.currentDosages[idx] = action.data.dosage;
         }
 
-        drug.priorDosageSum = drug.priorDosages.reduce((prev, { dosage, quantity }) => {
+        drug.currentDosageSum = drug.currentDosages.reduce((prev, { dosage, quantity }) => {
           return prev + parseFloat(dosage) * quantity;
         }, 0);
 
-        if (drug.priorDosageSum > drug.upcomingDosageSum) {
+        if (drug.currentDosageSum > drug.nextDosageSum) {
           drug.targetDosage = 0;
-        } else if (drug.priorDosageSum < drug.upcomingDosageSum) {
-          drug.targetDosage = drug.upcomingDosageSum;
+        } else if (drug.currentDosageSum < drug.nextDosageSum) {
+          drug.targetDosage = drug.nextDosageSum;
         } else {
-          drug.targetDosage = drug.priorDosageSum;
+          drug.targetDosage = drug.currentDosageSum;
         }
 
         draft.isSaved = false;
@@ -296,30 +305,30 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         break;
       }
 
-      case UPCOMING_DOSAGE_CHANGE: {
+      case NEXT_DOSAGE_CHANGE: {
         const drug = draft.prescribedDrugs!.find((d) => d.id === action.data.id)!;
-        const idx = drug.upcomingDosages.findIndex(
+        const idx = drug.nextDosages.findIndex(
           (nextDosage) => nextDosage.dosage === action.data.dosage.dosage,
         );
 
         if (idx === -1) {
-          drug.upcomingDosages.push(action.data.dosage);
+          drug.nextDosages.push(action.data.dosage);
         } else {
-          drug.upcomingDosages[idx] = action.data.dosage;
+          drug.nextDosages[idx] = action.data.dosage;
         }
 
-        drug.upcomingDosageSum = drug.upcomingDosages.reduce((prev, { dosage, quantity }) => {
+        drug.nextDosageSum = drug.nextDosages.reduce((prev, { dosage, quantity }) => {
           return prev + parseFloat(dosage) * quantity;
         }, 0);
 
-        if (drug.priorDosageSum < drug.upcomingDosageSum) {
-          drug.targetDosage = drug.upcomingDosageSum;
-        } else if (drug.priorDosageSum > drug.upcomingDosageSum) {
+        if (drug.currentDosageSum < drug.nextDosageSum) {
+          drug.targetDosage = drug.nextDosageSum;
+        } else if (drug.currentDosageSum > drug.nextDosageSum) {
           if (!drug.isModal) {
             drug.targetDosage = 0;
           }
         } else {
-          drug.targetDosage = drug.upcomingDosageSum;
+          drug.targetDosage = drug.nextDosageSum;
         }
 
         draft.isInputComplete = validateCompleteInputs(draft.prescribedDrugs, isCompleteDrugInput);

@@ -8,9 +8,9 @@ import {
   INTERVAL_END_DATE_CHANGE,
   INTERVAL_START_DATE_CHANGE,
   INTERVAL_UNIT_CHANGE,
-  PRIOR_DOSAGE_CHANGE,
+  CURRENT_DOSAGE_CHANGE,
   SET_GOAL_DOSAGE,
-  UPCOMING_DOSAGE_CHANGE,
+  NEXT_DOSAGE_CHANGE,
 } from '../../PrescriptionForm/actions';
 import drugs from '../../../redux/reducers/drugs';
 import {
@@ -70,8 +70,8 @@ const isModalInputComplete = (drug: PrescribedDrug): boolean => {
     && drug.form !== null
     && drug.intervalEndDate !== null
     && drug.intervalCount !== 0
-    && drug.upcomingDosages.length !== 0
-    && !drug.upcomingDosages.every((dosage) => dosage.quantity === 0);
+    && drug.nextDosages.length !== 0
+    && !drug.nextDosages.every((dosage) => dosage.quantity === 0);
 };
 
 const reducer = (state: RowEditingModalState = initialState, action: ModalActions): RowEditingModalState => {
@@ -93,10 +93,10 @@ const reducer = (state: RowEditingModalState = initialState, action: ModalAction
           intervalEndDate: clickedRow.endDate!,
           intervalUnit: clickedRow.intervalUnit!,
           intervalCount: clickedRow.intervalCount,
-          priorDosages: prescriptionToDosages(prevRow),
-          upcomingDosages: prescriptionToDosages(clickedRow),
-          priorDosageSum: prevRow.dosage,
-          upcomingDosageSum: clickedRow.dosage,
+          currentDosages: prescriptionToDosages(prevRow),
+          nextDosages: prescriptionToDosages(clickedRow),
+          currentDosageSum: prevRow.dosage,
+          nextDosageSum: clickedRow.dosage,
           // targetDosage: prescribedDrugs?.find((drug) => drug.brand === clickedRow.brand)?.targetDosage
           //   || (clickedRow.changeDirection === 'decrease' ? 0 : clickedRow.dosage),
           targetDosage: clickedRow.goalDosage,
@@ -117,8 +117,10 @@ const reducer = (state: RowEditingModalState = initialState, action: ModalAction
         drug.nextDosageForm = null;
         drug.allowChangePriorDosage = false;
         drug.oralDosageInfo = null;
-        drug.priorDosages = [];
-        drug.upcomingDosages = [];
+        drug.currentOralDosageInfo = null;
+        drug.nextOralDosageInfo = null;
+        drug.currentDosages = [];
+        drug.nextDosages = [];
         draft.isModalInputComplete = false;
         break;
       }
@@ -131,14 +133,15 @@ const reducer = (state: RowEditingModalState = initialState, action: ModalAction
         }
         drug.nextDosageForm = action.data.form;
         drug.minDosageUnit = action.data.minDosageUnit;
-        // drug.priorDosages = [];
-        drug.upcomingDosages = [];
+        // drug.currentDosages = [];
+        drug.nextDosages = [];
         if (action.data.oralDosageInfo === null) {
           if (drug.currentDosageForm !== 'oral solution' && drug.currentDosageForm !== 'oral suspension') {
             drug.oralDosageInfo = action.data.oralDosageInfo;
           }
         } else {
           drug.oralDosageInfo = action.data.oralDosageInfo;
+          drug.nextOralDosageInfo = action.data.oralDosageInfo;
         }
         // if (drug.currentDosageForm !== 'oral solution' && drug.currentDosageForm !== 'oral suspension'
         //   && drug.nextDosageForm !== 'oral solution' && drug.nextDosageForm !== 'oral suspension') {
@@ -150,33 +153,33 @@ const reducer = (state: RowEditingModalState = initialState, action: ModalAction
         break;
       }
 
-      case PRIOR_DOSAGE_CHANGE: {
+      case CURRENT_DOSAGE_CHANGE: {
         const drug = draft.prescribedDrug!;
-        const idx = drug.priorDosages.findIndex((curDosage) => curDosage.dosage === action.data.dosage.dosage);
+        const idx = drug.currentDosages.findIndex((curDosage) => curDosage.dosage === action.data.dosage.dosage);
 
         if (idx === -1) {
-          drug.priorDosages.push(action.data.dosage);
+          drug.currentDosages.push(action.data.dosage);
         } else {
-          drug.priorDosages[idx] = action.data.dosage;
+          drug.currentDosages[idx] = action.data.dosage;
         }
 
-        drug.priorDosageSum = drug.priorDosages.reduce((prev, { dosage, quantity }) => {
+        drug.currentDosageSum = drug.currentDosages.reduce((prev, { dosage, quantity }) => {
           return prev + parseFloat(dosage) * quantity;
         }, 0);
         draft.isModalInputComplete = validateCompleteInputs([drug], isModalInputComplete);
         break;
       }
 
-      case UPCOMING_DOSAGE_CHANGE: {
+      case NEXT_DOSAGE_CHANGE: {
         const drug: PrescribedDrug = draft.prescribedDrug!;
-        const idx = drug.upcomingDosages.findIndex((nextDosage) => nextDosage.dosage === action.data.dosage.dosage);
+        const idx = drug.nextDosages.findIndex((nextDosage) => nextDosage.dosage === action.data.dosage.dosage);
 
         if (idx === -1) {
-          drug.upcomingDosages.push(action.data.dosage);
+          drug.nextDosages.push(action.data.dosage);
         } else {
-          drug.upcomingDosages[idx] = action.data.dosage;
+          drug.nextDosages[idx] = action.data.dosage;
         }
-        drug.upcomingDosageSum = drug.upcomingDosages.reduce((prev, { dosage, quantity }) => {
+        drug.nextDosageSum = drug.nextDosages.reduce((prev, { dosage, quantity }) => {
           return prev + parseFloat(dosage) * quantity;
         }, 0);
 

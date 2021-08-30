@@ -17,8 +17,8 @@ import {
   CHOOSE_BRAND,
   CHOOSE_FORM,
   FETCH_DRUGS,
-  priorDosageChange,
-  upcomingDosageChange,
+  currentDosageChange,
+  nextDosageChange,
   ChooseFormAction,
   ChooseBrandAction,
   FetchDrugsAction,
@@ -44,10 +44,10 @@ export const PrescriptionFormContext = createContext<IPrescriptionFormContext>({
   ...initialState,
   modal: { isModal: false },
   Current: {
-    dosages: initialState.priorDosagesQty,
+    dosages: initialState.currentDosagesQty,
   },
   Next: {
-    dosages: initialState.upcomingDosagesQty,
+    dosages: initialState.nextDosagesQty,
   },
   formActionDispatch: () => {
   },
@@ -81,7 +81,7 @@ const PrescriptionForm: FC<Props> = ({
 
   const {
     chosenBrand, chosenDrugForm, drugFormOptions, dosageOptions,
-    priorDosagesQty, upcomingDosagesQty, allowSplittingUnscoredTablet,
+    currentDosagesQty, nextDosagesQty, allowSplittingUnscoredTablet,
     currentDosageForm, nextDosageForm,
   } = state;
   const { drugs } = useSelector<RootState, TaperConfigState>((state) => state.taperConfig);
@@ -184,12 +184,12 @@ const PrescriptionForm: FC<Props> = ({
       id: prescribedDrug.id,
       modal: { isModal, modalDispatch },
       Current: {
-        dosages: priorDosagesQty,
-        dosageChangeAction: priorDosageChange,
+        dosages: currentDosagesQty,
+        dosageChangeAction: currentDosageChange,
       },
       Next: {
-        dosages: upcomingDosagesQty,
-        dosageChangeAction: upcomingDosageChange,
+        dosages: nextDosagesQty,
+        dosageChangeAction: nextDosageChange,
       },
       formActionDispatch,
     }}

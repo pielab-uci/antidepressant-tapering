@@ -35,33 +35,33 @@ export interface ChooseFormAction {
     regularDosageOptions: string[]|null };
 }
 
-export const PRIOR_DOSAGE_CHANGE = 'PRIOR_DOSAGE_CHANGE' as const;
+export const CURRENT_DOSAGE_CHANGE = 'CURRENT_DOSAGE_CHANGE' as const;
 
-export interface PriorDosageChangeAction {
-  type: typeof PRIOR_DOSAGE_CHANGE;
+export interface CurrentDosageChangeAction {
+  type: typeof CURRENT_DOSAGE_CHANGE;
   data: { id: number, dosage: { dosage: string, quantity: number } };
 }
 
-export const priorDosageChange = (data: PriorDosageChangeAction['data']): PriorDosageChangeAction => ({
-  type: PRIOR_DOSAGE_CHANGE,
+export const currentDosageChange = (data: CurrentDosageChangeAction['data']): CurrentDosageChangeAction => ({
+  type: CURRENT_DOSAGE_CHANGE,
   data,
 });
 
-export const UPCOMING_DOSAGE_CHANGE = 'UPCOMING_DOSAGE_CHANGE' as const;
+export const NEXT_DOSAGE_CHANGE = 'NEXT_DOSAGE_CHANGE' as const;
 
-export interface UpcomingDosageChangeAction {
-  type: typeof UPCOMING_DOSAGE_CHANGE;
+export interface NextDosageChangeAction {
+  type: typeof NEXT_DOSAGE_CHANGE;
   data: { id: number, dosage: { dosage: string, quantity: number } };
 }
 
-export const upcomingDosageChange = (data: UpcomingDosageChangeAction['data']): UpcomingDosageChangeAction => ({
-  type: UPCOMING_DOSAGE_CHANGE,
+export const nextDosageChange = (data: NextDosageChangeAction['data']): NextDosageChangeAction => ({
+  type: NEXT_DOSAGE_CHANGE,
   data,
 });
 
-export const SET_GOAL_DOSAGE = 'SET_UPCOMING_DOSAGE_GOAL';
+export const SET_GOAL_DOSAGE = 'SET_NEXT_DOSAGE_GOAL';
 
-export interface SetUpcomingDosageGoalAction {
+export interface SetNextDosageGoalAction {
   type: typeof SET_GOAL_DOSAGE,
   data: { id: number, dosage: number }
 }
@@ -177,9 +177,9 @@ export type PrescriptionFormActions =
   | LoadPrescriptionDataAction
   | ChooseBrandAction
   | ChooseFormAction
-  | PriorDosageChangeAction
-  | UpcomingDosageChangeAction
-  | SetUpcomingDosageGoalAction
+  | CurrentDosageChangeAction
+  | NextDosageChangeAction
+  | SetNextDosageGoalAction
   | AllowSplittingUnscoredTabletAction
   | SetIsModalAction
   | SetGrowthAction

@@ -130,7 +130,7 @@ export interface PrescribedDrug {
 }
 
 export interface Prescription {
-  [drugName: string]: {
+  [drugName_form: string]: {
     // name: string,
     brand: string,
     form: DrugFormNames | null,

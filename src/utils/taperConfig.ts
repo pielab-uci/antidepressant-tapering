@@ -923,7 +923,7 @@ const generateNotesForPharmacyFromRows = (rows: TableRowData[], finalPrescriptio
   const linesWithTotal = finalPrescription.length === 0 || finalPrescription.some((prescription) => Object.keys(prescription).length === 0)
     ? ''
     : finalPrescription.map((prescription) => {
-      return Object.entries(prescription.dosageQty).reduce((prev, [dosage, qty]) => {
+      return Object.entries(prescription.dosageQty).filter(([dosage, qty]) => qty !== 0).reduce((prev, [dosage, qty]) => {
         return `${prev}${drugTitle} ${dosage} ${prescription.form} (total: ${Math.round(qty)}).\n`;
       }, '');
     }).join('');

@@ -943,7 +943,7 @@ export const calcFinalPrescription = (scheduleData: TableRowData[], tableSelecte
   const finalPrescription = scheduleData
     .filter((row, i) => tableSelectedRows.includes(i))
     .reduce((prev, row) => {
-      if (!prev[`${row.drug}_${row.form}`]) {
+      if (!prev[row.drug]) {
         const obj: ValueOf<Prescription> = {
           // name: '',
           brand: '',
@@ -970,15 +970,15 @@ export const calcFinalPrescription = (scheduleData: TableRowData[], tableSelecte
             }
             return dosages;
           }, {} as { [dosage: string]: number });
-        prev[`${row.drug}_${row.form}`] = obj;
+        prev[row.drug] = obj;
         // prev[row.prescribedDrugId] = obj;
       } else {
         Object.entries(row.unitDosages!)
           .forEach(([dosage, qty]) => {
-            if (!prev[`${row.drug}_${row.form}`].dosageQty[dosage]) {
-              prev[`${row.drug}_${row.form}`].dosageQty[dosage] = qty * row.intervalDurationDays!;
+            if (!prev[row.drug].dosageQty[dosage]) {
+              prev[row.drug].dosageQty[dosage] = qty * row.intervalDurationDays!;
             } else {
-              prev[`${row.drug}_${row.form}`].dosageQty[dosage] += qty * row.intervalDurationDays!;
+              prev[row.drug].dosageQty[dosage] += qty * row.intervalDurationDays!;
             }
           });
       }

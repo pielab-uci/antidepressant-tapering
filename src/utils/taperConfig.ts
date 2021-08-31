@@ -107,7 +107,8 @@ const calcProjectedDosages = (drug: Converted, prescribedDosage: number, length:
       const nextTemp = drug.changeRate * res[i];
       const remainder = nextTemp % minDosage;
 
-      if (nextTemp < drug.targetDosage!) {
+      if ((drug.changeDirection === 'decrease' && nextTemp < drug.targetDosage!)
+        || (drug.changeDirection === 'increase' && nextTemp > drug.targetDosage!)) {
         res.push(drug.targetDosage!);
       } else if (remainder === 0) {
         res.push(nextTemp);
@@ -919,12 +920,6 @@ const generateNotesForPharmacyFromRows = (rows: TableRowData[], finalPrescriptio
       return `${message}${messageLine}`;
     }, '');
 
-  // const linesWithTotal = !finalPrescription || Object.keys(finalPrescription).length === 0
-  //   ? ''
-  //   : Object.entries(finalPrescription.dosageQty).reduce((prev, [dosage, qty], idx, entryArr) => {
-  //     return `${prev}${drugTitle} ${dosage} ${finalPrescription.form} (total: ${Math.round(qty)}).\n`;
-  //   }, '');
-
   const linesWithTotal = finalPrescription.length === 0 || finalPrescription.some((prescription) => Object.keys(prescription).length === 0)
     ? ''
     : finalPrescription.map((prescription) => {
@@ -932,13 +927,7 @@ const generateNotesForPharmacyFromRows = (rows: TableRowData[], finalPrescriptio
         return `${prev}${drugTitle} ${dosage} ${prescription.form} (total: ${Math.round(qty)}).\n`;
       }, '');
     }).join('');
-  // const linesWithTotal = !finalPrescription || Object.keys(finalPrescription).length === 0
-  //   ? ''
-  //   : Object.entries(finalPrescription).map(([drugName_form, prescription]:[string, ValueOf<Prescription>]) => {
-  //     return Object.entries(prescription.dosageQty).reduce((prev, [dosage, qty]) => {
-  //       return `${prev}${drugTitle} ${dosage} ${prescription.form} (total: ${Math.round(qty)}).\n`;
-  //     }, '');
-  //   }).join('\n');
+
   return `${linesWithSubtotal}${linesWithTotal}`;
 };
 
@@ -964,6 +953,7 @@ export const generateInstructionsFromSchedule = (schedule: Schedule, idx: 'both'
     patient: notesForPatient, pharmacy: notesForPharmacy,
   };
 };
+
 export const calcFinalPrescription = (scheduleData: TableRowData[], tableSelectedRows: (number | null)[]): Prescriptions => {
   const finalPrescription = scheduleData
     .filter((row, i) => tableSelectedRows.includes(i))
@@ -1022,71 +1012,3 @@ export const calcFinalPrescription = (scheduleData: TableRowData[], tableSelecte
 
   return finalPrescription;
 };
-//
-// export const calcFinalPrescription = (scheduleData: TableRowData[], tableSelectedRows: (number | null)[]): Prescriptions => {
-//   const finalPrescription = scheduleData
-//     .filter((row, i) => tableSelectedRows.includes(i))
-//     .reduce((prev, row) => {
-//       if (!prev[row.drug]) {
-//         prev[row.drug] = [];
-//         const obj: Prescription = {
-//           // name: '',
-//           brand: '',
-//           form: null,
-//           // availableDosages: [],
-//           regularDosageOptions: [],
-//           oralDosageInfo: null,
-//           dosageQty: {},
-//         };
-//         // obj.name = row.drug;
-//         obj.brand = row.brand;
-//         obj.form = row.form;
-//         if (row.oralDosageInfo) {
-//           obj.oralDosageInfo = row.oralDosageInfo;
-//         }
-//         // obj.availableDosages = row.availableDosageOptions!;
-//         obj.regularDosageOptions = row.regularDosageOptions!;
-//         obj.dosageQty = Object.entries(row.unitDosages!)
-//           .reduce((dosages, [dosage, qty]) => {
-//             if (!dosages[dosage]) {
-//               dosages[dosage] = qty * row.intervalDurationDays!;
-//             } else {
-//               dosages[dosage] += qty * row.intervalDurationDays!;
-//             }
-//             return dosages;
-//           }, {} as { [dosage: string]: number });
-//         // prev[row.drug] = obj;
-//         prev[row.drug].push(obj);
-//         // prev[row.prescribedDrugId] = obj;
-//       } else {
-//         Object.entries(row.unitDosages!)
-//           .forEach(([dosage, qty]) => {
-//             if (!prev[row.drug].find((prescription) => prescription.form === row.form)!.dosageQty[dosage]) {
-//               prev[row.drug].find((prescription) => prescription.form === row.form)!.dosageQty[dosage] = qty * row.intervalDurationDays!;
-//             } else {
-//               prev[row.drug].find((prescription) => prescription.form === row.form)!.dosageQty[dosage] += qty * row.intervalDurationDays!;
-//             }
-//             // if (!prev[row.drug].dosageQty[dosage]) {
-//             //   prev[row.drug].dosageQty[dosage] = qty * row.intervalDurationDays!;
-//             // } else {
-//             //   prev[row.drug].dosageQty[dosage] += qty * row.intervalDurationDays!;
-//             // }
-//           });
-//       }
-//       return prev;
-//     }, {} as Prescriptions);
-//
-//   Object.entries(finalPrescription).forEach(([id, prescriptions]) => {
-//     prescriptions.forEach((prescription) => {
-//       if (prescription.oralDosageInfo) {
-//         const dosageInMl = prescription.dosageQty['1mg'] / prescription.oralDosageInfo.rate.mg * prescription.oralDosageInfo.rate.ml;
-//         prescription.dosageQty = calcMinimumQuantityForDosage(prescription.oralDosageInfo.bottles, dosageInMl, null);
-//       }
-//     });
-//     // if (prescription.oralDosageInfo) {
-//     //   const dosageInMl = prescription.dosageQty['1mg'] / prescription.oralDosageInfo.rate.mg * prescription.oralDosageInfo.rate.ml;
-//     //   prescription.dosageQty = calcMinimumQuantityForDosage(prescription.oralDosageInfo.bottles, dosageInMl, null);
-//     // }
-//   });
-//   return finalPrescription;
-// };

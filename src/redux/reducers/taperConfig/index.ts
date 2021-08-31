@@ -1,6 +1,6 @@
 import add from 'date-fns/esm/add';
 import {
-  Drug, PrescribedDrug, Prescription, TaperingConfiguration,
+  Drug, PrescribedDrug, Prescriptions, TaperingConfiguration,
 } from '../../../types';
 import { Schedule } from '../../../components/Schedule/ProjectedSchedule';
 import { ScheduleChartData } from '../../../utils/taperConfig';
@@ -39,7 +39,7 @@ export interface TaperConfigState {
   projectedSchedule: Schedule;
   scheduleChartData: ScheduleChartData;
   tableSelectedRows: (number | null)[];
-  finalPrescription: Prescription;
+  finalPrescription: Prescriptions;
   isInputComplete: boolean;
 
   intervalDurationDays: number,

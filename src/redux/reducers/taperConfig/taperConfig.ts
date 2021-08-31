@@ -202,11 +202,13 @@ const taperConfigReducer = (state: TaperConfigState = initialState, action: Tape
         break;
       }
 
-      case FINAL_PRESCRIPTION_QUANTITY_CHANGE:
-        draft.finalPrescription[action.data.id].dosageQty[action.data.dosage] = action.data.quantity;
-        draft.instructionsForPharmacy = generateInstructionsFromSchedule(draft.projectedSchedule, 'pharmacyOnly', draft.finalPrescription).pharmacy!;
-        draft.isSaved = false;
-        break;
+      // directly edit notes for patient or pharmacy
+      // case FINAL_PRESCRIPTION_QUANTITY_CHANGE:
+      //   // draft.finalPrescription[action.data.id].dosageQty[action.data.dosage] = action.data.quantity;
+      //   // draft.finalPrescription[action.data.id].find(prescription => prescrioption.form === action.data.)
+      //   draft.instructionsForPharmacy = generateInstructionsFromSchedule(draft.projectedSchedule, 'pharmacyOnly', draft.finalPrescription).pharmacy!;
+      //   draft.isSaved = false;
+      //   break;
 
       case CHANGE_MESSAGE_FOR_PATIENT:
         draft.instructionsForPatient = action.data;

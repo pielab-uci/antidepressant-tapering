@@ -1,6 +1,7 @@
 import { CellEditingStoppedEvent } from 'ag-grid-community';
 import {
-  PrescribedDrug, Prescription, TableRowData, TaperingConfiguration,
+  DrugFormNames,
+  PrescribedDrug, Prescriptions, TableRowData, TaperingConfiguration,
 } from '../../types';
 import { Schedule } from '../../components/Schedule/ProjectedSchedule';
 import { ScheduleChartData } from '../../utils/taperConfig';
@@ -224,7 +225,7 @@ export const FINAL_PRESCRIPTION_QUANTITY_CHANGE = 'FINAL_PRESCRIPTION_QUANTITY_C
 
 export interface FinalPrescriptionQuantityChange {
   type: typeof FINAL_PRESCRIPTION_QUANTITY_CHANGE,
-  data: { id: number, dosage: string, quantity: number }
+  data: { id: number, dosage: string, quantity: number, form: DrugFormNames }
 }
 
 export const finalPrescriptionQuantityChange = (data: FinalPrescriptionQuantityChange['data']): FinalPrescriptionQuantityChange => ({

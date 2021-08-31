@@ -30,7 +30,7 @@ export interface TaperingConfiguration {
   projectedSchedule: Schedule;
   instructionsForPatient: string;
   instructionsForPharmacy: string;
-  finalPrescription: Prescription;
+  finalPrescription: Prescriptions;
   scheduleChartData: ScheduleChartData;
 }
 
@@ -130,18 +130,20 @@ export interface PrescribedDrug {
 }
 
 export interface Prescription {
-  [drugName: string]: {
-    // name: string,
-    brand: string,
-    form: DrugFormNames | null,
-    oralDosageInfo: OralDosage | null;
-    /*
-    // available options for capsule or tablet
-    availableDosages: string[];
-     */
-    regularDosageOptions: string[];
-    dosageQty: { [dosage: string]: number }
-  }
+  // name: string,
+  brand: string,
+  form: DrugFormNames | null,
+  oralDosageInfo: OralDosage | null;
+  /*
+  // available options for capsule or tablet
+  availableDosages: string[];
+   */
+  regularDosageOptions: string[];
+  dosageQty: { [dosage: string]: number }
+}
+
+export interface Prescriptions {
+  [drugName: string]: Prescription[];
 }
 
 export type ValueOf<T> = T[keyof T];

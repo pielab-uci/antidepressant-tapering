@@ -8,7 +8,6 @@ import { ProjectedScheduleChart, ProjectedScheduleTable } from '.';
 import { RootState } from '../../redux/reducers';
 import { TaperConfigState } from '../../redux/reducers/taperConfig';
 import { PrescribedDrug, TableRowData } from '../../types';
-import PrescribedQuantitiesForDrug from './PrescribedQuantitiesForDrug';
 
 export interface Schedule {
   drugs: PrescribedDrug[];
@@ -67,13 +66,6 @@ const ProjectedSchedule: FC<{ editable: boolean, title: string }> = ({ editable,
               </div>
             </div>
           </div>
-          {/* <h3 css={css`font-size: 18px; */}
-          {/*  margin-top: 33px;`}>Prescription for upcoming intervals</h3> */}
-          {/* {Object.entries(finalPrescription).map(([id, prescription]) => { */}
-          {/*  return <PrescribedQuantitiesForDrug */}
-          {/*    key={`PrescribedQuantitiesFor${id}`} id={parseFloat(id)} prescription={prescription} */}
-          {/*    editable={editable}/>; */}
-          {/* })} */}
 
         </> : <div>No schedule yet</div>
       }

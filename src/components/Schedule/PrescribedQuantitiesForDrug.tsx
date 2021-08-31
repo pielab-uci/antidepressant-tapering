@@ -1,3 +1,4 @@
+/*
 import * as React from 'react';
 import {
   ChangeEvent,
@@ -79,3 +80,4 @@ const PrescribedQuantitiesForDrug: FC<Props> = ({ id, prescription, editable }) 
 };
 
 export default PrescribedQuantitiesForDrug;
+*/

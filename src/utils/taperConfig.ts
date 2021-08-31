@@ -871,7 +871,7 @@ const generateNotesForPatientFromRows = (rows: TableRowData[]): string => {
     }, messageHeading).trim();
 };
 
-const generateNotesForPharmacyFromRows = (rows: TableRowData[], finalPrescription: ValueOf<Prescription>): string => {
+const generateNotesForPharmacyFromRows = (rows: TableRowData[], finalPrescriptionValue: ValueOf<Prescription>): string => {
   const drugTitle = rows[0].brand.includes('generic')
     ? `${rows[0].drug.replace(' (generic)', '')} (${drugNameBrandPairs[rows[0].drug]})`
     : `${rows[0].brand.split(' ')[0]} (${rows[0].drug})`;
@@ -907,22 +907,22 @@ const generateNotesForPharmacyFromRows = (rows: TableRowData[], finalPrescriptio
       return `${message}${messageLine}`;
     }, '');
 
-  const linesWithTotal = !finalPrescription || Object.keys(finalPrescription).length === 0
+  const linesWithTotal = !finalPrescriptionValue || Object.keys(finalPrescriptionValue).length === 0
     ? ''
-    : Object.entries(finalPrescription.dosageQty).reduce((prev, [dosage, qty], idx, entryArr) => {
-      return `${prev}${drugTitle} ${dosage} ${finalPrescription.form} (total: ${Math.round(qty)}).\n`;
+    : Object.entries(finalPrescriptionValue.dosageQty).reduce((prev, [dosage, qty], idx, entryArr) => {
+      return `${prev}${drugTitle} ${dosage} ${finalPrescriptionValue.form} (total: ${Math.round(qty)}).\n`;
     }, '');
 
   return `${linesWithSubtotal}${linesWithTotal}`;
 };
 
 export const generateInstructionsFromSchedule = (schedule: Schedule, idx: 'both' | 'patientOnly' | 'pharmacyOnly', finalPrescription: Prescription): { patient: string | null, pharmacy: string | null } => {
-  const rowsGroupByDrug: { [drug: string]: TableRowData[] } = schedule.data
+  const rowsGroupByDrug: { [drugName_form: string]: TableRowData[] } = schedule.data
     .reduce((acc, row) => {
-      return Object.keys(acc).includes(row.drug)
-        ? { ...acc, [row.drug]: [...acc[row.drug], row] }
-        : { ...acc, [row.drug]: [] };
-    }, {} as { [drug: string]: TableRowData[] });
+      return Object.keys(acc).includes(`${row.drug}_${row.form}`)
+        ? { ...acc, [`${row.drug}_${row.form}`]: [...acc[`${row.drug}_${row.form}`], row] }
+        : { ...acc, [`${row.drug}_${row.form}`]: [] };
+    }, {} as { [drugName_form: string]: TableRowData[] });
   const notesForPatient = idx === 'pharmacyOnly'
     ? null
     : Object.values(rowsGroupByDrug)
@@ -932,7 +932,7 @@ export const generateInstructionsFromSchedule = (schedule: Schedule, idx: 'both'
   const notesForPharmacy = idx === 'patientOnly'
     ? null
     : Object.entries(rowsGroupByDrug)
-      .map(([drugName, rows]) => generateNotesForPharmacyFromRows(rows, finalPrescription[drugName]))
+      .map(([drugName_form, rows]) => generateNotesForPharmacyFromRows(rows, finalPrescription[drugName_form]))
       .reduce((acc, message) => `${acc}${message}\n`, '');
   return {
     patient: notesForPatient, pharmacy: notesForPharmacy,

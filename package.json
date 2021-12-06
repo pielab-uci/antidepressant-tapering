@@ -2,7 +2,7 @@
   "name": "tapering-antidepressant",
   "version": "1.0.0",
   "description": "",
-  "homepage": "https://frmh0313.github.io/antidepressant-tapering",
+  "homepage": "https://pielab-uci.github.io/antidepressant-tapering",
   "dependencies": {
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.3.0",

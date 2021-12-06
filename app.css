@@ -1,0 +1,60 @@
+.ProjectedScheduleTable {
+    --alpha-not-selected: 0.2;
+    --alpha-selected: 0.5;
+}
+
+.Fluoxetine {
+    --rgb: 0, 184, 148;
+}
+
+.Citalopram {
+    --rgb: 232, 67, 147;
+}
+
+.Sertraline {
+    --rgb: 9, 132, 195;
+}
+
+.Paroxetine {
+    --rgb: 108, 72, 247;
+}
+
+.Escitalopram {
+    --rgb: 255, 117, 117;
+}
+
+.Fluoxetine,
+.Citalopram,
+.Escitalopram,
+.Paroxetine,
+.Sertraline {
+    background-color: rgba(var(--rgb), var(--alpha-not-selected)) !important;
+}
+
+.PriorDosage {
+    background-color: rgba(100, 100, 100, 0.5) !important;
+}
+
+.Fluoxetine.ag-row-selected,
+.Citalopram.ag-row-selected,
+.Escitalopram.ag-row-selected,
+.Paroxetine.ag-row-selected,
+.Sertraline.ag-row-selected {
+    background-color: rgba(var(--rgb), var(--alpha-selected)) !important;
+}
+
+.ag-row-hover {
+    cursor: pointer;
+}
+
+/* jomhuria-regular - latin */
+@font-face {
+    font-family: 'Jomhuria';
+    font-style: normal;
+    font-weight: 400;
+    font-display: block;
+    src: local(''),
+    url(/antidepressant-tapering/4af284db69a5838428ae.woff2) format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+    url(/antidepressant-tapering/6ab99d0e98691b4a8cf9.woff) format('woff');  /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+

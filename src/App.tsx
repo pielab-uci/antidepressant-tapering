@@ -45,46 +45,41 @@ const App = () => {
 
   return (
     <>
-      {!me ? <LoginPage/>
-        : (
-          <>
-            <Router>
-              <div css={css`
-                height: 100%;
-                //height: auto;
-                display: flex;
-                font-family: Verdana;
-                flex-direction: column;
-                overflow-y: hidden;
+      <Router>
+        <div css={css`
+          height: 100%;
+          //height: auto;
+          display: flex;
+          font-family: Verdana;
+          flex-direction: column;
+          overflow-y: hidden;
 
-                input[type=number]::-webkit-inner-spin-button,
-                input[type=number]::-webkit-outer-spin-button {
-                  opacity: 1;
-                }`}>
-                <Header/>
-                <section css={css`
-                  display: flex;
-                  height: 95%;
-                  //padding-top: 2%;
-                  padding-top: 1%;
-                `}>
-                  <NavBar/>
-                  <main css={mainStyle}>
-                    <div>
-                      <Switch>
-                        <Route path='/logging-configuration'
-                               render={checkCurrentPatientAndRender(currentPatient, LoggingConfigurationPage)}/>
-                        <Route path='/symptom-report'
-                               render={checkCurrentPatientAndRender(currentPatient, SymptomReportPage)}/>
-                        <Route path="/" component={HomePage}/>
-                      </Switch>
-                    </div>
-                  </main>
-                </section>
+          input[type=number]::-webkit-inner-spin-button,
+          input[type=number]::-webkit-outer-spin-button {
+            opacity: 1;
+          }`}>
+          <Header/>
+          <section css={css`
+            display: flex;
+            height: 95%;
+            //padding-top: 2%;
+            padding-top: 1%;
+          `}>
+            <NavBar/>
+            <main css={mainStyle}>
+              <div>
+                <Switch>
+                  <Route path='/logging-configuration'
+                         render={checkCurrentPatientAndRender(currentPatient, LoggingConfigurationPage)}/>
+                  <Route path='/symptom-report'
+                         render={checkCurrentPatientAndRender(currentPatient, SymptomReportPage)}/>
+                  <Route path="/" component={HomePage}/>
+                </Switch>
               </div>
-            </Router>
-          </>
-        )}
+            </main>
+          </section>
+        </div>
+      </Router>
     </>
   );
 };

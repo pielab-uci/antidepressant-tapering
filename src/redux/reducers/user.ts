@@ -23,6 +23,7 @@ import {
 } from '../actions/user';
 import { Clinician, Patient } from '../../types';
 import { ADD_OR_UPDATE_TAPER_CONFIG_SUCCESS, AddOrUpdateTaperConfigSuccessAction } from '../actions/taperConfig';
+import { john, sally } from '../sagas/dummies';
 
 export interface UserState {
   loggingIn: boolean;
@@ -44,7 +45,8 @@ export interface UserState {
   // patients: Omit<Patient, 'password'|'taperingConfigurations'>[];
   patients: Omit<Patient, 'password'>[];
   currentPatient: Omit<Patient, 'password'>|null;
-  me: Omit<Clinician, 'password'>|null;
+  // me: Omit<Clinician, 'password'>|null;
+  me: Omit<Clinician, 'password'>;
 }
 
 export const initialState: UserState = {
@@ -66,7 +68,16 @@ export const initialState: UserState = {
 
   patients: [],
   currentPatient: null,
-  me: null,
+  me: {
+    id: 1,
+    email: '',
+    // name: action.data.name,
+    name: 'Test',
+    patients: [
+      { id: sally.id, name: sally.name },
+      { id: john.id, name: john.name },
+    ],
+  },
 };
 
 type UserReducerAction =

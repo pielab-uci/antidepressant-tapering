@@ -38,7 +38,8 @@ function loginAPI(action: LoginRequestAction): { data: Omit<Clinician, 'password
     data: {
       id: 1,
       email: '',
-      name: action.data.name,
+      // name: action.data.name,
+      name: 'Test',
       patients: [
         { id: sally.id, name: sally.name },
         { id: john.id, name: john.name },

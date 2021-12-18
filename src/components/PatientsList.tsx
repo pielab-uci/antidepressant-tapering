@@ -31,7 +31,7 @@ const searchStyle = css`
   height: 50px;
   width: 588px;
   padding-top: 10px;
-  
+
   & .ant-input {
     border-radius: 10px;
   }
@@ -42,9 +42,12 @@ const buttonStyle = css`
   height: 41px;
   margin-left: auto;
   border-radius: 17px;
-  background-color:#0984E3;
+  background-color: #0984E3;
 `;
 
+const psStyle = css`
+
+`;
 const PatientsList: FC<Props> = ({ patients }) => {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -75,7 +78,7 @@ const PatientsList: FC<Props> = ({ patients }) => {
   }, [currentPatient, prescribedDrugs]);
    */
   return (
-    <div css={css`height:100%;`}>
+    <div css={css`height: 100%;`}>
       <div css={headerStyle}>
         <h3 css={titleStyle}>Patients</h3>
         <Input.Search
@@ -88,7 +91,8 @@ const PatientsList: FC<Props> = ({ patients }) => {
           css={buttonStyle}>New Patient</Button>
       </div>
       <Table
-        css={css`font-size: 1.2rem; cursor: pointer;`}
+        css={css`font-size: 1.2rem;
+          cursor: pointer;`}
         columns={columns}
         dataSource={patients.map((d) => ({ ...d, key: `${d.name}_${d.id}` }))}
         onRow={(record) => ({
@@ -99,6 +103,13 @@ const PatientsList: FC<Props> = ({ patients }) => {
         })
         }
       />
+      <div css={css`font-size:0.7rem;`}>
+      <p>All patient names and subsequent data are fabricated and for demonstration purposes only.</p>
+      <p>Eunkyung Jo, Myeonghan Ryu, Georgia Kenderova, Samuel So, Bryan Shapiro, Alexandra Papoutsaki, and Daniel A. Epstein. 2022.<br/>
+        <strong>Designing Flexible Longitudinal Regimens: Supporting Clinician Planning for Discontinuation of Psychiatric Drugs.</strong> <br/>
+        In <em>CHI Conference on Human Factors in Computing Systems (CHI ’22), April 29-May 5, 2022, New Orleans, LA, USA.</em> ACM, New York, NY, USA, 28 pages. <br/>
+        <a href={'https://doi.org/10.1145/3491102.3502206'}>https://doi.org/10.1145/3491102.3502206</a></p>
+      </div>
     </div>
   );
 };

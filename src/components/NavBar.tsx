@@ -143,10 +143,6 @@ const NavBar = () => {
             <HelpIcon/>
             <div>Help</div>
           </div>
-          <div>
-            <LogOutIcon/>
-            <div>Log Out</div>
-          </div>
         </div>
       </div>
     </div>
